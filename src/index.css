@@ -3,6 +3,11 @@
   src: url('assets/DIN Condensed Bold.ttf');
 }
 
+@font-face {
+  font-family: 'Ultra Regular';
+  src: url('assets/Ultra-Regular.ttf');
+}
+
 * {
   margin: 0;
   padding: 0;
