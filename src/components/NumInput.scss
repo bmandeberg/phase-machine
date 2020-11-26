@@ -1,0 +1,81 @@
+@import '../sass-globals.scss';
+
+.react-numeric-input {
+  position: relative;
+  input {
+    box-sizing: border-box;
+    border: 1px solid $orange;
+    padding-left: 4px;
+    padding-top: 5px;
+    display: block;
+    height: 21px;
+    font-family: 'DIN Condensed Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+      'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    color: $lightTextGray;
+    font-size: 15px;
+    &:focus {
+      outline: none;
+    }
+  }
+  b {
+    position: absolute;
+    right: 0;
+    width: 20px;
+    border-color: $orange;
+    border-style: solid;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.1s ease 0s;
+    background: $lightOrange;
+    box-sizing: border-box;
+    i {
+      position: absolute;
+      top: 3px;
+      left: 6px;
+      width: 0px;
+      height: 0px;
+      margin-left: -3px;
+    }
+    &:hover {
+      background: #ffcaa5;
+    }
+  }
+  b:first-of-type {
+    top: 0;
+    height: 11px;
+    border-width: 1px 1px 1px;
+    i {
+      border-width: 0px 6px 4px;
+      border-color: transparent transparent $orange;
+      border-style: solid;
+      margin-top: -1px;
+    }
+  }
+  b:last-of-type {
+    top: 11px;
+    height: 10px;
+    border-width: 0px 1px 1px;
+    i {
+      border-width: 4px 6px 0px;
+      border-color: $orange transparent transparent;
+      border-style: solid;
+    }
+  }
+}
+
+.num-input {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  &.small-num-input {
+    input {
+      height: 21px;
+      width: 52px;
+    }
+  }
+  p {
+    height: 14px;
+    position: absolute;
+    bottom: -2px;
+  }
+}
