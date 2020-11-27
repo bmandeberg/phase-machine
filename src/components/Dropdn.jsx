@@ -4,6 +4,15 @@ import classNames from 'classnames'
 import Dropdown from 'react-dropdown'
 import './Dropdn.scss'
 
+function longestText(options) {
+  if (options.length) {
+    return options.reduce((a, b) => {
+      return a.length > b.length ? a : b
+    })
+  }
+  return null
+}
+
 export default function Dropdn(props) {
   return (
     <div className={classNames('dropdown-container', props.className)}>
@@ -13,6 +22,7 @@ export default function Dropdn(props) {
         value={props.value}
         placeholder={props.placeholder || 'Select an option'}
       />
+      <div className="dropdown-min-width">{longestText(props.options)}</div>
       <p className="dropdown-label">{props.label.toUpperCase()}</p>
     </div>
   )
