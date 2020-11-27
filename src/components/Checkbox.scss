@@ -1,0 +1,26 @@
+@import '../sass-globals.scss';
+
+.checkbox {
+  width: 21px;
+  height: 21px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border: 1px solid $orange;
+  padding: 3px;
+  cursor: pointer;
+  &.checked {
+    background-color: $green;
+    border: $green;
+  }
+}
+
+.checkmark-container {
+  position: relative;
+  text-transform: uppercase;
+  .checkmark-label {
+    height: 14px;
+    position: absolute;
+    bottom: -2px;
+    white-space: nowrap;
+  }
+}

@@ -4,6 +4,7 @@ import NumInput from './NumInput'
 import Dropdn from './Dropdn'
 import SplitButton from './SplitButton'
 import RadioButtons from './RadioButtons'
+import Checkbox from './Checkbox'
 import logo from '../assets/logo.svg'
 import play from '../assets/play.svg'
 import stop from '../assets/stop.svg'
@@ -19,6 +20,7 @@ export default function Transport(props) {
   const [view, setView] = useState(VIEWS[0])
   const [midiOut, setMidiOut] = useState(null)
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
+  const [channelSync, setChannelSync] = useState(false)
 
   useEffect(() => {
     if (props.midiOutputs.length) {
@@ -63,6 +65,7 @@ export default function Transport(props) {
           setSelected={setScrollTo}
         />
       )}
+      <Checkbox checked={channelSync} setChecked={setChannelSync} label="Channel Sync" />
     </div>
   )
 }
