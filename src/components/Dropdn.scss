@@ -84,17 +84,18 @@
   height: 12px;
 }
 
-.Dropdown-option:hover, .Dropdown-option.is-selected {
+.Dropdown-option:hover,
+.Dropdown-option.is-selected {
   background-color: $lightOrange;
   color: $orange;
 }
 
 .Dropdown-noresults {
   box-sizing: border-box;
-  color: #ccc;
+  color: $lightTextGray;
   cursor: default;
   display: block;
-  padding: 8px 10px;
+  padding: 10px;
 }
 
 .dropdown-container {

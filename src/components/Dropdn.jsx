@@ -11,7 +11,7 @@ export default function Dropdn(props) {
         options={props.options}
         onChange={(e) => props.setValue(e.value)}
         value={props.value}
-        placeholder="Select an option"
+        placeholder={props.placeholder || 'Select an option'}
       />
       <p className="dropdown-label">{props.label.toUpperCase()}</p>
     </div>
@@ -23,4 +23,5 @@ Dropdn.propTypes = {
   options: PropTypes.array,
   setValue: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  placeholder: PropTypes.string,
 }

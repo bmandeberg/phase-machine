@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import PropTypes from 'prop-types'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
 import SplitButton from './SplitButton'
@@ -7,13 +8,20 @@ import play from '../assets/play.svg'
 import stop from '../assets/stop.svg'
 import './Transport.scss'
 
-const VIEW_OPTIONS = ['stacked', 'horizontal', 'grid']
+const VIEWS = ['stacked', 'horizontal', 'grid']
 
-export default function Transport() {
+export default function Transport(props) {
   const [playing, setPlaying] = useState(false)
   const [tempo, setTempo] = useState(120)
   const [numChannels, setNumChannels] = useState(4)
-  const [view, setView] = useState(VIEW_OPTIONS[0])
+  const [view, setView] = useState(VIEWS[0])
+  const [midiOut, setMidiOut] = useState(null)
+
+  useEffect(() => {
+    if (props.midiOutputs.length) {
+      setMidiOut((midiOut) => (!midiOut ? props.midiOutputs[0] : null))
+    }
+  }, [props.midiOutputs])
 
   const playStop = useCallback(() => {
     setPlaying((playing) => !playing)
@@ -34,7 +42,18 @@ export default function Transport() {
         step={1}
       />
       <SplitButton className="transport-item" label="Preset" />
-      <Dropdn className="transport-item" label="View" options={VIEW_OPTIONS} setValue={setView} value={view} />
+      <Dropdn className="transport-item" label="View" options={VIEWS} setValue={setView} value={view} />
+      <Dropdn
+        className="transport-item"
+        label="MIDI Out"
+        options={props.midiOutputs}
+        setValue={setMidiOut}
+        value={midiOut}
+        placeholder="No MIDI Out"
+      />
     </div>
   )
+}
+Transport.propTypes = {
+  midiOutputs: PropTypes.array,
 }

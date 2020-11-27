@@ -1,16 +1,19 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import WebMidi from 'webmidi'
 import Transport from './components/Transport'
 import './App.css'
 
-function App() {
+export default function App() {
+  const [midiOutputs, setMidiOutputs] = useState([])
+
   useEffect(() => {
     WebMidi.enable((err) => {
-      console.log(WebMidi.outputs)
+      setMidiOutputs(WebMidi.outputs)
+    })
+    WebMidi.addListener('connected', () => {
+      setMidiOutputs(WebMidi.outputs)
     })
   }, [])
 
-  return <Transport />
+  return <Transport midiOutputs={midiOutputs} />
 }
-
-export default App
