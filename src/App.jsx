@@ -8,10 +8,14 @@ export default function App() {
 
   useEffect(() => {
     WebMidi.enable((err) => {
-      setMidiOutputs(WebMidi.outputs)
-    })
-    WebMidi.addListener('connected', () => {
-      setMidiOutputs(WebMidi.outputs)
+      if (err) {
+        alert('Unable to enable Web MIDI 😢')
+      } else {
+        setMidiOutputs(WebMidi.outputs)
+        WebMidi.addListener('connected', () => {
+          setMidiOutputs(WebMidi.outputs)
+        })
+      }
     })
   }, [])
 
