@@ -1,0 +1,40 @@
+@import '../sass-globals.scss';
+
+.radio-buttons {
+  .radio-button {
+    height: 21px;
+    display: inline-block;
+    box-sizing: border-box;
+    margin-right: 6px;
+    padding: 3px 4px;
+    border: 1px solid $orange;
+    color: $orange;
+    background-color: $lightOrange;
+    cursor: pointer;
+    &:last-of-type {
+      margin-right: 0;
+    }
+    &:hover {
+      background-color: $darkLightOrange;
+    }
+    &:active {
+      background-color: $darkerLightOrange;
+    }
+    &.radio-button-selected {
+      margin-top: -1px;
+      background-color: $green;
+      border: 1px solid $green;
+      color: #ffffff;
+    }
+  }
+}
+
+.radio-buttons-container {
+  position: relative;
+  text-transform: uppercase;
+  .radio-buttons-label {
+    height: 14px;
+    position: absolute;
+    bottom: -2px;
+  }
+}

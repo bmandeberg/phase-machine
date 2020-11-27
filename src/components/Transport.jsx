@@ -3,12 +3,14 @@ import PropTypes from 'prop-types'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
 import SplitButton from './SplitButton'
+import RadioButtons from './RadioButtons'
 import logo from '../assets/logo.svg'
 import play from '../assets/play.svg'
 import stop from '../assets/stop.svg'
 import './Transport.scss'
 
 const VIEWS = ['stacked', 'horizontal', 'grid']
+const SECTIONS = ['key', 'piano roll', 'pitch set', 'sequencer']
 
 export default function Transport(props) {
   const [playing, setPlaying] = useState(false)
@@ -16,6 +18,7 @@ export default function Transport(props) {
   const [numChannels, setNumChannels] = useState(4)
   const [view, setView] = useState(VIEWS[0])
   const [midiOut, setMidiOut] = useState(null)
+  const [scrollTo, setScrollTo] = useState(SECTIONS[0])
 
   useEffect(() => {
     if (props.midiOutputs.length) {
@@ -51,6 +54,15 @@ export default function Transport(props) {
         value={midiOut}
         placeholder="No MIDI Out"
       />
+      {view === 'horizontal' && (
+        <RadioButtons
+          className="transport-item"
+          label="Scroll To"
+          options={SECTIONS}
+          selected={scrollTo}
+          setSelected={setScrollTo}
+        />
+      )}
     </div>
   )
 }
