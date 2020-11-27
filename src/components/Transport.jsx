@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
+import SplitButton from './SplitButton'
 import logo from '../assets/logo.svg'
 import play from '../assets/play.svg'
 import stop from '../assets/stop.svg'
@@ -32,6 +33,7 @@ export default function Transport() {
         max={4}
         step={1}
       />
+      <SplitButton className="transport-item" label="Preset" />
       <Dropdn className="transport-item" label="View" options={VIEW_OPTIONS} setValue={setView} value={view} />
     </div>
   )

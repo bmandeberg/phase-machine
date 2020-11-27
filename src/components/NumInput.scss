@@ -39,6 +39,9 @@
     &:hover {
       background: $darkLightOrange;
     }
+    &:active {
+      background-color: $darkerLightOrange;
+    }
   }
   b:first-of-type {
     top: 0;
