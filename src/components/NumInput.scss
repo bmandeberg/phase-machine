@@ -37,7 +37,7 @@
       margin-left: -3px;
     }
     &:hover {
-      background: #ffcaa5;
+      background: $darkLightOrange;
     }
   }
   b:first-of-type {
@@ -73,7 +73,7 @@
       width: 52px;
     }
   }
-  p {
+  .num-input-label {
     height: 14px;
     position: absolute;
     bottom: -2px;

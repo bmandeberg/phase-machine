@@ -14,7 +14,6 @@ $margin: 12px;
   #play-stop {
     width: 40px;
     height: 40px;
-    margin-right: $margin;
     cursor: pointer;
   }
 }
@@ -22,4 +21,8 @@ $margin: 12px;
 #logo {
   height: 40px;
   margin-right: 7px;
+}
+
+.transport-item {
+  margin-right: $margin;
 }
