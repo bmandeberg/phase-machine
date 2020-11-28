@@ -10,7 +10,9 @@ export default function RadioButtons(props) {
         {props.options.map((option) => (
           <div
             className={classNames('radio-button', { 'radio-button-selected': props.selected === option })}
-            onClick={() => props.setSelected(option)}>
+            onClick={() => props.setSelected(option)}
+            key={option}
+          >
             {option}
           </div>
         ))}
