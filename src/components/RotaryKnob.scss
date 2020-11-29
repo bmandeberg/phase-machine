@@ -1,0 +1,17 @@
+.knob-container {
+  position: relative;
+  text-transform: uppercase;
+  display: inline-block;
+  .knob {
+    margin: 0 auto;
+    cursor: grab;
+    &.grabbing {
+      cursor: grabbing;
+    }
+  }
+  .knob-label {
+    margin-top: 7px;
+    font-size: 24px;
+    height: 24px;
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
+import { VIEWS, SECTIONS } from '../globals'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
 import SplitButton from './SplitButton'
@@ -20,10 +21,8 @@ export default function Header({
   setMidiOut,
   numChannels,
   setNumChannels,
-  VIEWS,
   view,
   setView,
-  SECTIONS,
   scrollTo,
   setScrollTo,
   channelSync,

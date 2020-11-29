@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import WebMidi from 'webmidi'
+import classNames from 'classnames'
+import { VIEWS, SECTIONS } from './globals'
 import Header from './components/Header'
+import Channel from './components/Channel'
 import './App.css'
-
-const VIEWS = ['stacked', 'horizontal', 'grid']
-const SECTIONS = ['key', 'piano roll', 'pitch set', 'sequencer']
 
 export default function App() {
   const [tempo, setTempo] = useState(120)
@@ -15,37 +15,42 @@ export default function App() {
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
 
+  const [turningKnob, setTurningKnob] = useState(false)
+
   useEffect(() => {
     WebMidi.enable((err) => {
       if (err) {
         alert('Unable to enable Web MIDI 😢')
       } else {
         WebMidi.addListener('connected', () => {
-          setMidiOut((midiOut) => (!midiOut ? WebMidi.outputs[0] : midiOut))
+          setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0])
         })
       }
     })
   }, [])
 
   return (
-    <Header
-      tempo={tempo}
-      setTempo={setTempo}
-      playing={playing}
-      setPlaying={setPlaying}
-      midiOutputs={WebMidi.outputs}
-      midiOut={midiOut}
-      setMidiOut={setMidiOut}
-      numChannels={numChannels}
-      setNumChannels={setNumChannels}
-      VIEWS={VIEWS}
-      view={view}
-      setView={setView}
-      SECTIONS={SECTIONS}
-      scrollTo={scrollTo}
-      setScrollTo={setScrollTo}
-      channelSync={channelSync}
-      setChannelSync={setChannelSync}
-    />
+    <div id="container" className={classNames({ 'turning-knob': turningKnob })}>
+      <Header
+        tempo={tempo}
+        setTempo={setTempo}
+        playing={playing}
+        setPlaying={setPlaying}
+        midiOutputs={WebMidi.outputs}
+        midiOut={midiOut}
+        setMidiOut={setMidiOut}
+        numChannels={numChannels}
+        setNumChannels={setNumChannels}
+        view={view}
+        setView={setView}
+        scrollTo={scrollTo}
+        setScrollTo={setScrollTo}
+        channelSync={channelSync}
+        setChannelSync={setChannelSync}
+      />
+      <div className="channels">
+        <Channel channelNum={0} setTurningKnob={setTurningKnob} turningKnob={turningKnob} />
+      </div>
+    </div>
   )
 }
