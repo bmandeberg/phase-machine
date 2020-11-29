@@ -49,7 +49,7 @@ export default function App() {
         setChannelSync={setChannelSync}
       />
       <div className="channels">
-        <Channel channelNum={0} setTurningKnob={setTurningKnob} turningKnob={turningKnob} />
+        <Channel channelNum={0} setTurningKnob={setTurningKnob} turningKnob={turningKnob} view={view} />
       </div>
     </div>
   )

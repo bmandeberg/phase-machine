@@ -1,4 +1,22 @@
+@import '../sass-globals.scss';
 
 .channel {
-  padding: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.channel-number {
+  text-align: center;
+  font-family: 'Ultra Regular', 'Baskerville', 'serif';
+  font-size: 19px;
+  line-height: 15px;
+  align-self: flex-start;
+}
+
+.channel-horizontal {
+  height: 95px;
+  .channel-number {
+    padding-top: 16px;
+    width: 43px;
+  }
 }
