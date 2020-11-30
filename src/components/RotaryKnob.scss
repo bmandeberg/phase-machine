@@ -2,6 +2,8 @@
   position: relative;
   text-transform: uppercase;
   display: inline-block;
+  vertical-align: top;
+  margin-top: 7px;
   .knob {
     margin: 0 auto;
     cursor: grab;
@@ -10,7 +12,7 @@
     }
   }
   .knob-label {
-    margin-top: 7px;
+    margin-top: 5px;
     font-size: 24px;
     height: 24px;
   }

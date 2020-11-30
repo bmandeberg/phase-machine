@@ -1,18 +1,22 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import checkmark from '../assets/checkmark.svg'
 import './Checkbox.scss'
 
-export default function Checkbox(props) {
+export default function Checkbox({ label, className, checked, setChecked }) {
+  const toggle = useCallback(() => {
+    setChecked(!checked)
+  }, [checked, setChecked])
+
   return (
-    <div className={classNames('checkmark-container', props.className)}>
-      <div
-        className={classNames('checkbox', { checked: props.checked })}
-        onClick={() => props.setChecked(!props.checked)}>
-        {props.checked && <img src={checkmark} alt="" />}
+    <div className={classNames('checkmark-container', className)}>
+      <div className={classNames('checkbox', { checked: checked })} onClick={toggle}>
+        {checked && <img src={checkmark} alt="" />}
       </div>
-      <p className="checkmark-label">{props.label}</p>
+      <p className="checkmark-label" onClick={toggle}>
+        {label}
+      </p>
     </div>
   )
 }

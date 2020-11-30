@@ -86,5 +86,5 @@ Header.propTypes = {
   scrollTo: PropTypes.string,
   setScrollTo: PropTypes.func,
   channelSync: PropTypes.bool,
-  setChannelSync: PropTypes.bool,
+  setChannelSync: PropTypes.func,
 }

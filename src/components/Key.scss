@@ -1,0 +1,45 @@
+@import '../sass-globals.scss';
+
+.key {
+  height: 66px;
+  vertical-align: top;
+  box-sizing: border-box;
+  margin-top: 14px;
+  margin-right: 16px;
+  position: relative;
+  .pitch-class {
+    height: 38px;
+    width: 16px;
+    background: $darkGray;
+    border: 2px solid #ffffff;
+    border-top: none;
+    display: inline-block;
+    position: absolute;
+    margin-left: -9px;
+    cursor: pointer;
+    &:hover {
+      background: lighten($darkGray, 9%);
+    }
+    &.white-key {
+      width: 23px;
+      height: 100%;
+      background: $lightGray;
+      position: static;
+      margin-left: 0;
+      border-right: none;
+      border-bottom: none;
+      &:hover {
+        background: lighten($lightGray, 3%);
+      }
+    }
+    &.selected {
+      background: $green;
+      &:hover {
+        background: lighten($green, 20%);
+      }
+    }
+    &:first-of-type {
+      border-right: none;
+    }
+  }
+}

@@ -1,8 +1,8 @@
 @import '../sass-globals.scss';
 
-.channel {
-  display: flex;
-  align-items: center;
+
+.channel-module {
+  display: inline-block;
 }
 
 .channel-number {
@@ -10,11 +10,12 @@
   font-family: 'Ultra Regular', 'Baskerville', 'serif';
   font-size: 19px;
   line-height: 15px;
-  align-self: flex-start;
+  vertical-align: top;
 }
 
 .channel-horizontal {
-  height: 95px;
+  height: 96px;
+  border-bottom: 1px solid #dfdfdf;
   .channel-number {
     padding-top: 16px;
     width: 43px;
