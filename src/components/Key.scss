@@ -1,11 +1,10 @@
 @import '../sass-globals.scss';
 
 .key {
-  height: 66px;
+  height: 64px;
   vertical-align: top;
   box-sizing: border-box;
-  margin-top: 14px;
-  margin-right: 16px;
+  margin-top: 16px;
   position: relative;
   .pitch-class {
     height: 38px;
@@ -18,7 +17,7 @@
     margin-left: -9px;
     cursor: pointer;
     &:hover {
-      background: lighten($darkGray, 9%);
+      background: $darkGrayHover;
     }
     &.white-key {
       width: 23px;
@@ -29,13 +28,19 @@
       border-right: none;
       border-bottom: none;
       &:hover {
-        background: lighten($lightGray, 3%);
+        background: $lightGrayHover
       }
     }
     &.selected {
       background: $green;
       &:hover {
-        background: lighten($green, 20%);
+        background: $greenHover;
+      }
+    }
+    &.playing {
+      background: $orange;
+      &:hover {
+        background: $orangeHover;
       }
     }
     &:first-of-type {

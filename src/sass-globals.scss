@@ -1,13 +1,18 @@
 $yellow: #fff9ae;
 $darkYellow: #ece74c;
 $green: #33ff00;
+$greenHover: lighten($green, 20%);
 $blue: #008dff;
 $pink: #ff00ff;
 $red: #ff413e;
+$redHover: lighten($red, 10%);
 $orange: #ff9700;
+$orangeHover: lighten($orange, 10%);
 $lightOrange: #ffe4d1;
 $darkLightOrange: #ffd2b1;
 $darkerLightOrange: #ffc49a;
 $lightGray: #e6e6e6;
+$lightGrayHover: lighten($lightGray, 3%);
 $darkGray: #666666;
+$darkGrayHover: lighten($darkGray, 8%);
 $lightTextGray: #999999;

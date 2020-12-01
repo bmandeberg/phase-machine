@@ -5,7 +5,7 @@ import './Key.scss'
 
 const NUM_NOTES = 12
 
-export default function Key({ musicalKey, setKey }) {
+export default function Key({ musicalKey, setKey, playingPitchClass }) {
   const whiteKey = useCallback((i) => {
     if (i <= 4) {
       return i % 2 === 0
@@ -30,7 +30,11 @@ export default function Key({ musicalKey, setKey }) {
       {Array.from(Array(NUM_NOTES).keys()).map((i) => (
         <div
           key={i}
-          className={classNames('pitch-class', { 'white-key': whiteKey(i), selected: musicalKey[i] })}
+          className={classNames('pitch-class', {
+            'white-key': whiteKey(i),
+            selected: musicalKey[i],
+            playing: playingPitchClass === i,
+          })}
           onClick={() => togglePitchClass(i)}></div>
       ))}
     </div>
@@ -39,4 +43,5 @@ export default function Key({ musicalKey, setKey }) {
 Key.propTypes = {
   musicalKey: PropTypes.array,
   setKey: PropTypes.func,
+  playingPitchClass: PropTypes.number,
 }

@@ -1,16 +1,18 @@
 @import '../sass-globals.scss';
 
-
 .channel-module {
   display: inline-block;
+  vertical-align: top;
+  margin-right: 16px;
 }
 
 .channel-number {
+  display: inline-block;
+  vertical-align: top;
   text-align: center;
   font-family: 'Ultra Regular', 'Baskerville', 'serif';
   font-size: 19px;
   line-height: 15px;
-  vertical-align: top;
 }
 
 .channel-horizontal {
@@ -19,5 +21,9 @@
   .channel-number {
     padding-top: 16px;
     width: 43px;
+    vertical-align: top;
+  }
+  .mute-solo {
+    height: 66px;
   }
 }
