@@ -6,7 +6,7 @@ import './NumInput.scss'
 
 export default function NumInput(props) {
   return (
-    <div className={classNames('num-input small-num-input', props.className)}>
+    <div className={classNames('num-input', props.className)}>
       <NumericInput
         min={props.min}
         max={props.max}

@@ -5,6 +5,7 @@ import RotaryKnob from './RotaryKnob'
 import Key from './Key'
 import MuteSolo from './MuteSolo'
 import './Channel.scss'
+import NumInput from './NumInput'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
@@ -14,6 +15,7 @@ export default function Channel(props) {
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
   const [mute, setMute] = useState(false)
   const [solo, setSolo] = useState(false)
+  const [shift, setShift] = useState(0)
 
   const content = useMemo(() => {
     if (props.view === 'stacked') {
@@ -32,11 +34,21 @@ export default function Channel(props) {
           />
           <div className="channel-module">
             <RotaryKnob
+              className="channel-module"
               value={velocity}
               setValue={setVelocity}
               label="Velocity"
               setTurningKnob={props.setTurningKnob}
               turningKnob={props.turningKnob}
+            />
+            <NumInput
+              className="channel-module"
+              value={shift}
+              setValue={setShift}
+              label="Shift"
+              min={0}
+              max={12}
+              step={1}
             />
           </div>
         </div>

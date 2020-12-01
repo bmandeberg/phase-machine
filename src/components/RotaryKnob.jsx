@@ -5,7 +5,7 @@ import { KNOB_MAX } from '../globals'
 import { Knob } from 'react-rotary-knob'
 import './RotaryKnob.scss'
 
-export default function RotaryKnob({ value, setValue, min, max, label, setTurningKnob, turningKnob }) {
+export default function RotaryKnob({ value, setValue, min, max, label, setTurningKnob, turningKnob, className }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => max || KNOB_MAX, [max])
   const updateValue = useCallback(
@@ -27,9 +27,9 @@ export default function RotaryKnob({ value, setValue, min, max, label, setTurnin
   )
 
   return (
-    <div className="knob-container">
+    <div className={classNames('knob-container', className)}>
       <Knob
-        className={classNames('knob', {grabbing: turningKnob})}
+        className={classNames('knob', { grabbing: turningKnob })}
         min={minVal}
         max={maxVal}
         value={value}
@@ -59,6 +59,7 @@ RotaryKnob.propTypes = {
   label: PropTypes.string,
   setTurningKnob: PropTypes.func,
   turningKnob: PropTypes.bool,
+  className: PropTypes.string,
 }
 
 const skin = {

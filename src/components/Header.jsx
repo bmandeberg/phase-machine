@@ -36,9 +36,17 @@ export default function Header({
     <div id="header">
       <img id="logo" src={logo} alt="Phase Machine" />
       <img id="play-stop" className="header-item" src={playing ? stop : play} alt="PLAY" onClick={playStop} />
-      <NumInput className="header-item" value={tempo} setValue={setTempo} label="Tempo" min={0} max={200} step={1} />
       <NumInput
-        className="header-item"
+        className="header-item small-input"
+        value={tempo}
+        setValue={setTempo}
+        label="Tempo"
+        min={0}
+        max={200}
+        step={1}
+      />
+      <NumInput
+        className="header-item small-input"
         value={numChannels}
         setValue={setNumChannels}
         label="Channels"
