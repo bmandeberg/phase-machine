@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { VIEWS, SECTIONS } from '../globals'
+import { VIEWS, SECTIONS, MAX_CHANNELS } from '../globals'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
 import SplitButton from './SplitButton'
@@ -42,8 +42,8 @@ export default function Header({
         value={numChannels}
         setValue={setNumChannels}
         label="Channels"
-        min={0}
-        max={4}
+        min={1}
+        max={MAX_CHANNELS}
         step={1}
       />
       <SplitButton className="header-item" label="Preset" />

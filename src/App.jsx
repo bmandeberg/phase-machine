@@ -9,11 +9,12 @@ import './App.css'
 export default function App() {
   const [tempo, setTempo] = useState(120)
   const [playing, setPlaying] = useState(false)
-  const [numChannels, setNumChannels] = useState(4)
+  const [numChannels, setNumChannels] = useState(1)
   const [view, setView] = useState(VIEWS[0])
   const [midiOut, setMidiOut] = useState(null)
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
+  const [numChannelsSoloed, setNumChannelsSoloed] = useState(0)
 
   const [turningKnob, setTurningKnob] = useState(false)
 
@@ -49,7 +50,17 @@ export default function App() {
         setChannelSync={setChannelSync}
       />
       <div className="channels">
-        <Channel channelNum={0} setTurningKnob={setTurningKnob} turningKnob={turningKnob} view={view} />
+        {Array.from(Array(numChannels).keys()).map((i) => (
+          <Channel
+            key={i}
+            channelNum={i}
+            setTurningKnob={setTurningKnob}
+            turningKnob={turningKnob}
+            view={view}
+            numChannelsSoloed={numChannelsSoloed}
+            setNumChannelsSoloed={setNumChannelsSoloed}
+          />
+        ))}
       </div>
     </div>
   )

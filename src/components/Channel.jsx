@@ -19,13 +19,17 @@ export default function Channel(props) {
     if (props.view === 'stacked') {
       return (
         <div className="channel channel-horizontal">
-          <div
-            style={{ color: CHANNEL_COLORS[props.channelNum % CHANNEL_COLORS.length] }}
-            className="channel-number">
+          <div style={{ color: CHANNEL_COLORS[props.channelNum % CHANNEL_COLORS.length] }} className="channel-number">
             {props.channelNum + 1}
           </div>
           <Key musicalKey={key} setKey={setKey} playingPitchClass={playingPitchClass} />
-          <MuteSolo mute={mute} setMute={setMute} solo={solo} setSolo={setSolo} />
+          <MuteSolo
+            mute={mute}
+            setMute={setMute}
+            solo={solo}
+            setSolo={setSolo}
+            setNumChannelsSoloed={props.setNumChannelsSoloed}
+          />
           <div className="channel-module">
             <RotaryKnob
               value={velocity}
@@ -44,6 +48,7 @@ export default function Channel(props) {
     props.setTurningKnob,
     props.turningKnob,
     props.channelNum,
+    props.setNumChannelsSoloed,
     velocity,
     key,
     playingPitchClass,
@@ -58,4 +63,6 @@ Channel.propTypes = {
   setTurningKnob: PropTypes.func,
   turningKnob: PropTypes.bool,
   view: PropTypes.string,
+  numChannelsSoloed: PropTypes.number,
+  setNumChannelsSoloed: PropTypes.func,
 }
