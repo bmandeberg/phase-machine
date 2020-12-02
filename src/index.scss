@@ -28,7 +28,8 @@ body {
   color: $darkGray;
 }
 
-#root, #container {
+#root,
+#container {
   width: 100%;
   min-height: 100vh;
   height: 100%;
@@ -36,4 +37,11 @@ body {
 
 #container.turning-knob {
   cursor: grabbing !important;
+}
+
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

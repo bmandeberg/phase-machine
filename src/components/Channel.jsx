@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { KNOB_MAX } from '../globals'
 import RotaryKnob from './RotaryKnob'
@@ -41,15 +41,7 @@ export default function Channel(props) {
               setTurningKnob={props.setTurningKnob}
               turningKnob={props.turningKnob}
             />
-            <NumInput
-              className="channel-module"
-              value={shift}
-              setValue={setShift}
-              label="Shift"
-              min={0}
-              max={12}
-              step={1}
-            />
+            <NumInput className="channel-module" value={shift} setValue={setShift} label="Shift" step={1} />
           </div>
         </div>
       )

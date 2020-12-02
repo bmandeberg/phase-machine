@@ -16,10 +16,10 @@ export default function MuteSolo({ mute, setMute, solo, setSolo, setNumChannelsS
 
   return (
     <div className="mute-solo channel-module">
-      <div className={classNames('button mute', { muted: mute })} onClick={toggleMute}>
+      <div className={classNames('button no-select mute', { muted: mute })} onClick={toggleMute}>
         M
       </div>
-      <div className={classNames('button solo', { soloed: solo })} onClick={toggleSolo}>
+      <div className={classNames('button no-select solo', { soloed: solo })} onClick={toggleSolo}>
         S
       </div>
     </div>
