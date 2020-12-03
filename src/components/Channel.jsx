@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX } from '../globals'
+import { KNOB_MAX, BLANK_PITCH_CLASSES } from '../globals'
 import RotaryKnob from './RotaryKnob'
 import Key from './Key'
 import MuteSolo from './MuteSolo'
@@ -9,6 +9,10 @@ import NumInput from './NumInput'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
+function pitchClassWrapper(n) {
+  return n < 0 ? 11 + ((n + 1) % 12) : n % 12
+}
+
 export default function Channel(props) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
@@ -16,6 +20,29 @@ export default function Channel(props) {
   const [mute, setMute] = useState(false)
   const [solo, setSolo] = useState(false)
   const [shift, setShift] = useState(0)
+
+  const doShift = useCallback(
+    (shiftAmt) => {
+      const blankPitches = BLANK_PITCH_CLASSES()
+      for (let i = 0; i < key.length; i++) {
+        if (key[i]) {
+          const shiftedPitchClass = pitchClassWrapper(i + shiftAmt)
+          blankPitches[shiftedPitchClass] = true
+        }
+      }
+      setKey(blankPitches)
+    },
+    [key]
+  )
+
+  const updateShift = useCallback(
+    (newShift) => {
+      newShift = pitchClassWrapper(newShift)
+      doShift(newShift - shift)
+      setShift(newShift)
+    },
+    [doShift, shift]
+  )
 
   const content = useMemo(() => {
     if (props.view === 'stacked') {
@@ -32,32 +59,32 @@ export default function Channel(props) {
             setSolo={setSolo}
             setNumChannelsSoloed={props.setNumChannelsSoloed}
           />
-          <div className="channel-module">
-            <RotaryKnob
-              className="channel-module"
-              value={velocity}
-              setValue={setVelocity}
-              label="Velocity"
-              setTurningKnob={props.setTurningKnob}
-              turningKnob={props.turningKnob}
-            />
-            <NumInput className="channel-module" value={shift} setValue={setShift} label="Shift" step={1} />
-          </div>
+          <RotaryKnob
+            className="channel-module"
+            value={velocity}
+            setValue={setVelocity}
+            label="Velocity"
+            setTurningKnob={props.setTurningKnob}
+            turningKnob={props.turningKnob}
+          />
+          <NumInput className="channel-module" value={shift} setValue={updateShift} label="Shift" step={1} />
         </div>
       )
     }
     return null
   }, [
     props.view,
-    props.setTurningKnob,
-    props.turningKnob,
     props.channelNum,
     props.setNumChannelsSoloed,
-    velocity,
+    props.setTurningKnob,
+    props.turningKnob,
     key,
     playingPitchClass,
     mute,
     solo,
+    velocity,
+    shift,
+    updateShift,
   ])
 
   return content

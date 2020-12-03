@@ -30,6 +30,9 @@
       "react-app",
       "react-app/jest"
     ],
+    "plugins": [
+      "react-hooks"
+    ],
     "rules": {
       "react/prop-types": [
         1,
@@ -37,6 +40,12 @@
           "ignore": [
             "children"
           ]
+        }
+      ],
+      "react-hooks/exhaustive-deps": [
+        1,
+        {
+          "enableDangerousAutofixThisMayCauseInfiniteLoops": true
         }
       ]
     }
@@ -52,5 +61,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-plugin-react-hooks": "^4.2.0"
   }
 }
