@@ -43,7 +43,7 @@ export default function Header({
         label="Tempo"
         min={0}
         max={200}
-        step={1}
+        smallInput
       />
       <NumInput
         className="header-item small-input"
@@ -52,7 +52,7 @@ export default function Header({
         label="Channels"
         min={1}
         max={MAX_CHANNELS}
-        step={1}
+        smallInput
       />
       <SplitButton className="header-item" label="Preset" />
       <Dropdn className="header-item" label="View" options={VIEWS} setValue={setView} value={view} />

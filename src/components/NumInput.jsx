@@ -13,11 +13,10 @@ export default function NumInput(props) {
   }, [props.value])
 
   return (
-    <div ref={input} className={classNames('num-input', props.className)}>
+    <div ref={input} className={classNames('num-input', props.className, {'small-input': props.smallInput})}>
       <NumericInput
         min={props.min}
         max={props.max}
-        step={props.step}
         value={props.value}
         onChange={(value) => {
           props.setValue(value)
@@ -36,6 +35,5 @@ NumInput.propTypes = {
   className: PropTypes.string,
   min: PropTypes.number,
   max: PropTypes.number,
-  step: PropTypes.number,
-  format: PropTypes.func,
+  smallInput: PropTypes.bool,
 }

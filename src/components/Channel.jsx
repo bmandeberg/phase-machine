@@ -47,9 +47,7 @@ export default function Channel(props) {
     [doShift, shift]
   )
 
-  const flip = useCallback(() => {
-
-  }, [])
+  const flip = useCallback(() => {}, [])
 
   const opposite = useCallback(() => {
     setKey((key) => {
@@ -83,7 +81,7 @@ export default function Channel(props) {
           setTurningKnob={props.setTurningKnob}
           turningKnob={props.turningKnob}
         />
-        <NumInput className="channel-module" value={shift} setValue={updateShift} label="Shift" step={1} />
+        <NumInput className="channel-module" value={shift} setValue={updateShift} label="Shift" />
         <RotaryKnob
           className="channel-module"
           value={axis}
