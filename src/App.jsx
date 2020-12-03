@@ -4,7 +4,6 @@ import classNames from 'classnames'
 import { VIEWS, SECTIONS } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
-import './App.css'
 
 export default function App() {
   const [tempo, setTempo] = useState(120)
@@ -49,7 +48,7 @@ export default function App() {
         channelSync={channelSync}
         setChannelSync={setChannelSync}
       />
-      <div className="channels">
+      <div id="channels">
         {Array.from(Array(numChannels).keys()).map((i) => (
           <Channel
             key={i}
