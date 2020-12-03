@@ -15,6 +15,10 @@
   line-height: 15px;
 }
 
+.channel {
+  position: relative;
+}
+
 .channel-horizontal {
   height: 96px;
   border-bottom: 1px solid #dfdfdf;
@@ -25,5 +29,14 @@
   }
   .mute-solo {
     height: 66px;
+  }
+  .arrow-small {
+    width: 18px;
+    position: absolute;
+    left: 482px;
+    top: 28px;
+  }
+  .flip-opposite {
+    margin-left: 11px;
   }
 }

@@ -10,7 +10,7 @@
     box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.05);
     height: 28px;
     width: 55px;
-    border: 1px solid #cccccc;
+    border: 1px solid $mediumGray;
     padding-left: 6px;
     padding-top: 5px;
     font-size: 19px;
@@ -22,7 +22,7 @@
     position: absolute;
     right: 0;
     width: 28px;
-    border-color: #cccccc;
+    border-color: $mediumGray;
     border-style: solid;
     text-align: center;
     cursor: pointer;
@@ -41,7 +41,7 @@
       background: $lightGrayHover;
     }
     &:active {
-      background-color: #cccccc;
+      background-color: $mediumGray;
     }
   }
   b:first-of-type {

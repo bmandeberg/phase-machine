@@ -1,6 +1,7 @@
 .knob-container {
   position: relative;
   text-transform: uppercase;
+  text-align: center;
   display: inline-block;
   vertical-align: top;
   margin-top: 7px;
@@ -15,5 +16,8 @@
     margin-top: 5px;
     font-size: 24px;
     height: 24px;
+  }
+  &.axis-knob {
+    margin-top: 14px;
   }
 }
