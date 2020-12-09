@@ -23,6 +23,7 @@ export default function Channel(props) {
   const [solo, setSolo] = useState(false)
   const [shift, setShift] = useState(0)
   const [axis, setAxis] = useState(0)
+  const [turningAxisKnob, setTurningAxisKnob] = useState(false)
 
   const doShift = useCallback(
     (shiftAmt) => {
@@ -65,7 +66,14 @@ export default function Channel(props) {
         <div style={{ color: CHANNEL_COLORS[props.channelNum % CHANNEL_COLORS.length] }} className="channel-number">
           {props.channelNum + 1}
         </div>
-        <Key musicalKey={key} setKey={setKey} playingPitchClass={playingPitchClass} />
+        <Key
+          className="channel-module"
+          musicalKey={key}
+          setKey={setKey}
+          playingPitchClass={playingPitchClass}
+          pianoKeys
+          turningAxisKnob={turningAxisKnob}
+        />
         <MuteSolo
           mute={mute}
           setMute={setMute}
@@ -89,6 +97,11 @@ export default function Channel(props) {
           setTurningKnob={props.setTurningKnob}
           turningKnob={props.turningKnob}
           axisKnob
+          musicalKey={key}
+          setKey={setKey}
+          playingPitchClass={playingPitchClass}
+          turningAxisKnob={turningAxisKnob}
+          setTurningAxisKnob={setTurningAxisKnob}
         />
         <img className="arrow-small" src={arrowSmall} alt="" />
         <FlipOpposite flip={flip} opposite={opposite} />

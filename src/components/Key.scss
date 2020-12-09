@@ -1,50 +1,83 @@
 @import '../sass-globals.scss';
 
 .key {
-  height: 64px;
-  vertical-align: top;
-  box-sizing: border-box;
-  margin-top: 16px;
   position: relative;
-  .pitch-class {
-    height: 38px;
-    width: 16px;
-    background: $darkGray;
-    border: 2px solid #ffffff;
-    border-top: none;
-    display: inline-block;
-    position: absolute;
-    margin-left: -9px;
-    cursor: pointer;
-    &:hover {
-      background: $darkGrayHover;
-    }
-    &.white-key {
-      width: 23px;
-      height: 100%;
-      background: $lightGray;
-      position: static;
-      margin-left: 0;
-      border-right: none;
-      border-bottom: none;
+  &.piano-keys {
+    height: 64px;
+    vertical-align: top;
+    box-sizing: border-box;
+    margin-top: 16px;
+    position: relative;
+    .pitch-class {
+      height: 38px;
+      width: 16px;
+      background: $darkGray;
+      border: 2px solid #ffffff;
+      border-top: none;
+      display: inline-block;
+      position: absolute;
+      margin-left: -9px;
       &:hover {
-        background: $lightGrayHover
+        background: $darkGrayHover;
+      }
+      &.white-key {
+        width: 23px;
+        height: 100%;
+        background: $lightGray;
+        position: static;
+        margin-left: 0;
+        border-right: none;
+        border-bottom: none;
+        &:hover {
+          background: $lightGrayHover;
+        }
+      }
+      &.selected {
+        background: $green;
+        &:hover {
+          background: $greenHover;
+        }
+      }
+      &.playing {
+        background: $orange;
+        &:hover {
+          background: $orangeHover;
+        }
+      }
+      &:first-of-type {
+        border-right: none;
       }
     }
+    &.to-top {
+      z-index: 2001;
+    }
+  }
+  &.clock {
+    width: 239px;
+    height: 239px;
+    .pitch-class {
+      position: absolute;
+      left: 101px;
+      top: 102px;
+      height: 22px;
+      width: 22px;
+      border-radius: 11px;
+      background: $darkGray;
+      &:hover {
+        background: $darkGrayHover;
+      }
+    }
+    .pitch-class-labels {
+      pointer-events: none;
+    }
+  }
+  .pitch-class {
+    cursor: pointer;
     &.selected {
       background: $green;
       &:hover {
         background: $greenHover;
       }
-    }
-    &.playing {
-      background: $orange;
-      &:hover {
-        background: $orangeHover;
-      }
-    }
-    &:first-of-type {
-      border-right: none;
     }
   }
 }

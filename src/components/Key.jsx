@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
+import pitchClassesCircle from '../assets/pitch-classes-circle.svg'
 import classNames from 'classnames'
 import './Key.scss'
 
 const NUM_NOTES = 12
 
-export default function Key({ musicalKey, setKey, playingPitchClass }) {
+export default function Key({ musicalKey, setKey, playingPitchClass, className, pianoKeys, turningAxisKnob }) {
   const whiteKey = useCallback((i) => {
     if (i <= 4) {
       return i % 2 === 0
@@ -26,7 +27,13 @@ export default function Key({ musicalKey, setKey, playingPitchClass }) {
   )
 
   return (
-    <div className="key channel-module">
+    <div
+      className={classNames('key', className, {
+        'piano-keys': pianoKeys,
+        clock: !pianoKeys,
+        'to-top': turningAxisKnob,
+      })}>
+      {!pianoKeys && <img className="pitch-class-labels no-select" src={pitchClassesCircle} alt="" />}
       {Array.from(Array(NUM_NOTES).keys()).map((i) => (
         <div
           key={i}
@@ -35,6 +42,9 @@ export default function Key({ musicalKey, setKey, playingPitchClass }) {
             selected: musicalKey[i],
             playing: playingPitchClass === i,
           })}
+          style={{
+            transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : null,
+          }}
           onClick={() => togglePitchClass(i)}></div>
       ))}
     </div>
@@ -44,4 +54,7 @@ Key.propTypes = {
   musicalKey: PropTypes.array,
   setKey: PropTypes.func,
   playingPitchClass: PropTypes.number,
+  pianoKeys: PropTypes.bool,
+  className: PropTypes.string,
+  turningAxisKnob: PropTypes.bool,
 }

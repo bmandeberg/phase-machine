@@ -1,3 +1,5 @@
+@import '../sass-globals.scss';
+
 .knob-container {
   position: relative;
   text-transform: uppercase;
@@ -19,5 +21,55 @@
   }
   &.axis-knob {
     margin-top: 14px;
+    &::before {
+      content: '';
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      background: #ffffff;
+      opacity: 0;
+      transition: opacity $transitionTime;
+    }
+    .key {
+      z-index: -1;
+    }
+    .axis-knob-helper {
+      transition: opacity $transitionTime;
+      opacity: 0;
+    }
+    .axis-knob-supplemental {
+      position: absolute;
+      left: -93px;
+      top: -93px;
+      z-index: 3000;
+      transform: scale(0);
+      pointer-events: none;
+      transition: transform $transitionTime ease-in-out;
+    }
+    .axis-line {
+      position: absolute;
+      pointer-events: none;
+      z-index: -1;
+      rect {
+        stroke: lighten($pink, 30%);
+        stroke-width: 2;
+        stroke-dasharray: 6, 3;
+      }
+    }
+    &.knob-active {
+      z-index: 2000;
+      .axis-knob-helper {
+        opacity: 1;
+      }
+      &::before {
+        opacity: 0.9;
+      }
+      .axis-knob-supplemental {
+        transform: scale(0.75);
+      }
+    }
   }
 }

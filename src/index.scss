@@ -39,6 +39,7 @@ body {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  overflow-x: auto;
 }
 
 #container.turning-knob {
@@ -53,7 +54,7 @@ body {
 }
 
 #channels {
-  overflow-x: auto;
+  overflow-y: visible;
   margin-top: 62px;
   flex-grow: 1;
 }
