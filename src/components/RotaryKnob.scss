@@ -33,6 +33,10 @@
       opacity: 0;
       transition: opacity $transitionTime;
     }
+    .knob-label {
+      transition: opacity $transitionTime;
+      opacity: 1;
+    }
     .key {
       z-index: -1;
     }
@@ -54,7 +58,7 @@
       pointer-events: none;
       z-index: -1;
       rect {
-        stroke: lighten($pink, 30%);
+        stroke: lighten($pink, 25%);
         stroke-width: 2;
         stroke-dasharray: 6, 3;
       }
@@ -69,6 +73,9 @@
       }
       .axis-knob-supplemental {
         transform: scale(0.75);
+      }
+      .knob-label {
+        opacity: 0.1;
       }
     }
   }

@@ -18,6 +18,8 @@ function pitchClassWrapper(n) {
 export default function Channel(props) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
+  const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
+  const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
   const [mute, setMute] = useState(false)
   const [solo, setSolo] = useState(false)
@@ -73,6 +75,8 @@ export default function Channel(props) {
           playingPitchClass={playingPitchClass}
           pianoKeys
           turningAxisKnob={turningAxisKnob}
+          keyPreview={keyPreview}
+          showKeyPreview={showKeyPreview}
         />
         <MuteSolo
           mute={mute}
@@ -102,6 +106,8 @@ export default function Channel(props) {
           playingPitchClass={playingPitchClass}
           turningAxisKnob={turningAxisKnob}
           setTurningAxisKnob={setTurningAxisKnob}
+          keyPreview={keyPreview}
+          showKeyPreview={showKeyPreview}
         />
         <img className="arrow-small" src={arrowSmall} alt="" />
         <FlipOpposite flip={flip} opposite={opposite} />

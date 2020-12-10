@@ -23,6 +23,8 @@ export default function RotaryKnob({
   playingPitchClass,
   turningAxisKnob,
   setTurningAxisKnob,
+  keyPreview,
+  showKeyPreview,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -64,6 +66,7 @@ export default function RotaryKnob({
       {axisKnob && (
         <div className="axis-knob-helper">
           <svg
+            xmlns="http://www.w3.org/2000/svg"
             style={{
               transform: `rotate(${value * 15}deg)`,
               left: AXIS_LINE_SIZE / -2 + 21,
@@ -93,6 +96,8 @@ export default function RotaryKnob({
             setKey={setKey}
             playingPitchClass={playingPitchClass}
             className="axis-knob-supplemental"
+            keyPreview={keyPreview}
+            showKeyPreview={showKeyPreview}
           />
         </div>
       )}
@@ -140,6 +145,8 @@ RotaryKnob.propTypes = {
   playingPitchClass: PropTypes.number,
   turningAxisKnob: PropTypes.bool,
   setTurningAxisKnob: PropTypes.func,
+  keyPreview: PropTypes.array,
+  showKeyPreview: PropTypes.bool,
 }
 
 const skin = {

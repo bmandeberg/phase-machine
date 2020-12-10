@@ -48,6 +48,17 @@
         border-right: none;
       }
     }
+    .piano-key-selected {
+      position: absolute;
+      left: 2px;
+      top: 0;
+      path,
+      rect {
+        fill: none;
+        stroke: $pink;
+        stroke-width: 8px;
+      }
+    }
     &.to-top {
       z-index: 2001;
     }
@@ -56,12 +67,13 @@
     width: 239px;
     height: 239px;
     .pitch-class {
+      box-sizing: border-box;
       position: absolute;
       left: 101px;
       top: 102px;
       height: 22px;
       width: 22px;
-      border-radius: 11px;
+      border-radius: 24px;
       background: $darkGray;
       &:hover {
         background: $darkGrayHover;
@@ -78,6 +90,9 @@
       &:hover {
         background: $greenHover;
       }
+    }
+    &.previewed {
+      border: 5px solid $pink;
     }
   }
 }
