@@ -1,14 +1,18 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import './FlipOpposite.scss'
 
-export default function FlipOpposite({ flip, opposite }) {
+export default function FlipOpposite({ flip, previewFlip, opposite, previewOpposite, setShowKeyPreview }) {
+  const hideKeyPreview = useCallback(() => {
+    setShowKeyPreview(false)
+  }, [setShowKeyPreview])
+
   return (
     <div className="flip-opposite channel-module">
-      <div className="button no-select" onClick={flip}>
+      <div className="button no-select" onClick={flip} onMouseOver={previewFlip} onMouseOut={hideKeyPreview}>
         Flip
       </div>
-      <div className="button no-select" onClick={opposite}>
+      <div className="button no-select" onClick={opposite} onMouseOver={previewOpposite} onMouseOut={hideKeyPreview}>
         Opposite
       </div>
     </div>
@@ -16,5 +20,8 @@ export default function FlipOpposite({ flip, opposite }) {
 }
 FlipOpposite.propTypes = {
   flip: PropTypes.func,
+  previewFlip: PropTypes.func,
   opposite: PropTypes.func,
+  previewOpposite: PropTypes.func,
+  setShowKeyPreview: PropTypes.func,
 }

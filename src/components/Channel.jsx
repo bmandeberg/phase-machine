@@ -72,7 +72,13 @@ export default function Channel(props) {
 
   const doOpposite = useCallback(() => {
     setKey((key) => opposite(key))
-  }, [])
+    setKeyPreview(key)
+  }, [key])
+
+  const previewOpposite = useCallback(() => {
+    setKeyPreview(opposite(key))
+    setShowKeyPreview(true)
+  }, [key])
 
   const updateAxis = useCallback(
     (a) => {
@@ -81,6 +87,17 @@ export default function Channel(props) {
     },
     [key]
   )
+
+  const doFlip = useCallback(() => {
+    const flippedKey = flip(axis, key)
+    setKey(flippedKey)
+    setKeyPreview(key)
+  }, [axis, key])
+
+  const previewFlip = useCallback(() => {
+    setKeyPreview(flip(axis, key))
+    setShowKeyPreview(true)
+  }, [axis, key])
 
   if (props.view === 'stacked') {
     return (
@@ -131,7 +148,13 @@ export default function Channel(props) {
           setShowKeyPreview={setShowKeyPreview}
         />
         <img className="arrow-small" src={arrowSmall} alt="" />
-        <FlipOpposite flip={flip} opposite={doOpposite} />
+        <FlipOpposite
+          flip={doFlip}
+          previewFlip={previewFlip}
+          opposite={doOpposite}
+          previewOpposite={previewOpposite}
+          setShowKeyPreview={setShowKeyPreview}
+        />
       </div>
     )
   }

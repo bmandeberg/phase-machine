@@ -11,37 +11,37 @@
     .pitch-class {
       height: 38px;
       width: 16px;
-      background: $darkGray;
+      background-color: $darkGray;
       border: 2px solid #ffffff;
       border-top: none;
       display: inline-block;
       position: absolute;
       margin-left: -9px;
       &:hover {
-        background: $darkGrayHover;
+        background-color: $darkGrayHover;
       }
       &.white-key {
         width: 23px;
         height: 100%;
-        background: $lightGray;
+        background-color: $lightGray;
         position: static;
         margin-left: 0;
         border-right: none;
         border-bottom: none;
         &:hover {
-          background: $lightGrayHover;
+          background-color: $lightGrayHover;
         }
       }
       &.selected {
-        background: $green;
+        background-color: $green;
         &:hover {
-          background: $greenHover;
+          background-color: $greenHover;
         }
       }
       &.playing {
-        background: $orange;
+        background-color: $orange;
         &:hover {
-          background: $orangeHover;
+          background-color: $orangeHover;
         }
       }
       &:first-of-type {
@@ -80,9 +80,9 @@
       height: 22px;
       width: 22px;
       border-radius: 24px;
-      background: $darkGray;
+      background-color: $darkGray;
       &:hover {
-        background: $darkGrayHover;
+        background-color: $darkGrayHover;
       }
     }
     .pitch-class-labels {
@@ -94,11 +94,11 @@
     border-style: solid;
     border-color: $pink;
     border-width: 0;
-    transition: border-width $transitionTime / 4;
+    transition: border-width $transitionTime / 4, background-color $transitionTime / 4;
     &.selected {
-      background: $green;
+      background-color: $green;
       &:hover {
-        background: $greenHover;
+        background-color: $greenHover;
       }
     }
     &.previewed {
