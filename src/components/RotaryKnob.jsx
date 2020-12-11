@@ -25,6 +25,7 @@ export default function RotaryKnob({
   setTurningAxisKnob,
   keyPreview,
   showKeyPreview,
+  setShowKeyPreview,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -32,7 +33,10 @@ export default function RotaryKnob({
   const updateValue = useCallback(
     (val) => {
       if (axisKnob) {
-        setValue(Math.round(val))
+        const roundedVal = Math.round(val)
+        if (roundedVal !== value) {
+          setValue(roundedVal)
+        }
       } else {
         const maxDistance = (maxVal - minVal) / 5
         let distance = Math.abs(val - value)
@@ -54,12 +58,14 @@ export default function RotaryKnob({
   const startTurning = useCallback(() => {
     setTurningKnob(true)
     setTurningAxisKnob(true)
-  }, [setTurningAxisKnob, setTurningKnob])
+    setShowKeyPreview(true)
+  }, [setShowKeyPreview, setTurningAxisKnob, setTurningKnob])
 
   const stopTurning = useCallback(() => {
     setTurningKnob(false)
     setTurningAxisKnob(false)
-  }, [setTurningAxisKnob, setTurningKnob])
+    setShowKeyPreview(false)
+  }, [setShowKeyPreview, setTurningAxisKnob, setTurningKnob])
 
   return (
     <div className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>
@@ -147,6 +153,7 @@ RotaryKnob.propTypes = {
   setTurningAxisKnob: PropTypes.func,
   keyPreview: PropTypes.array,
   showKeyPreview: PropTypes.bool,
+  setShowKeyPreview: PropTypes.func,
 }
 
 const skin = {

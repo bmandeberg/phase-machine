@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX, BLANK_PITCH_CLASSES } from '../globals'
+import { KNOB_MAX, BLANK_PITCH_CLASSES, RANDOM_PITCH_CLASSES } from '../globals'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
 import Key from './Key'
@@ -15,10 +15,30 @@ function pitchClassWrapper(n) {
   return n < 0 ? 11 + ((n + 1) % 12) : n % 12
 }
 
+function flip(axis, key) {
+  const dedupAxis = (axis / 2) % 6
+  const keyCopy = key.slice()
+  key.forEach((pitchClass, i) => {
+    if (i % 6 !== dedupAxis) {
+      const flippedIndex = pitchClassWrapper(dedupAxis - (i - dedupAxis))
+      keyCopy[flippedIndex] = pitchClass
+    }
+  })
+  return keyCopy
+}
+
+function opposite(key) {
+  const keyCopy = key.slice()
+  key.forEach((pitchClass, i) => {
+    keyCopy[i] = !pitchClass
+  })
+  return keyCopy
+}
+
 export default function Channel(props) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
-  const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
+  const [keyPreview, setKeyPreview] = useState(RANDOM_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
   const [mute, setMute] = useState(false)
@@ -50,17 +70,17 @@ export default function Channel(props) {
     [doShift, shift]
   )
 
-  const flip = useCallback(() => {}, [])
-
-  const opposite = useCallback(() => {
-    setKey((key) => {
-      const keyCopy = key.slice()
-      key.forEach((pitchClass, i) => {
-        keyCopy[i] = !pitchClass
-      })
-      return keyCopy
-    })
+  const doOpposite = useCallback(() => {
+    setKey((key) => opposite(key))
   }, [])
+
+  const updateAxis = useCallback(
+    (a) => {
+      setAxis(a)
+      setKeyPreview(flip(a, key))
+    },
+    [key]
+  )
 
   if (props.view === 'stacked') {
     return (
@@ -97,7 +117,7 @@ export default function Channel(props) {
         <RotaryKnob
           className="channel-module"
           value={axis}
-          setValue={setAxis}
+          setValue={updateAxis}
           setTurningKnob={props.setTurningKnob}
           turningKnob={props.turningKnob}
           axisKnob
@@ -108,9 +128,10 @@ export default function Channel(props) {
           setTurningAxisKnob={setTurningAxisKnob}
           keyPreview={keyPreview}
           showKeyPreview={showKeyPreview}
+          setShowKeyPreview={setShowKeyPreview}
         />
         <img className="arrow-small" src={arrowSmall} alt="" />
-        <FlipOpposite flip={flip} opposite={opposite} />
+        <FlipOpposite flip={flip} opposite={doOpposite} />
       </div>
     )
   }

@@ -52,11 +52,17 @@
       position: absolute;
       left: 2px;
       top: 0;
+      opacity: 0;
+      transition: opacity $transitionTime / 1.5;
+      pointer-events: none;
       path,
       rect {
         fill: none;
         stroke: $pink;
-        stroke-width: 8px;
+        stroke-width: 6px;
+      }
+      &.visible {
+        opacity: 1;
       }
     }
     &.to-top {
@@ -85,6 +91,10 @@
   }
   .pitch-class {
     cursor: pointer;
+    border-style: solid;
+    border-color: $pink;
+    border-width: 0;
+    transition: border-width $transitionTime / 4;
     &.selected {
       background: $green;
       &:hover {
@@ -92,7 +102,7 @@
       }
     }
     &.previewed {
-      border: 5px solid $pink;
+      border-width: 5px;
     }
   }
 }

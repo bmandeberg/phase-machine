@@ -58,7 +58,7 @@
       pointer-events: none;
       z-index: -1;
       rect {
-        stroke: lighten($pink, 25%);
+        stroke: lighten($pink, 22%);
         stroke-width: 2;
         stroke-dasharray: 6, 3;
       }
@@ -72,7 +72,7 @@
         opacity: 0.9;
       }
       .axis-knob-supplemental {
-        transform: scale(0.75);
+        transform: scale(0.82);
       }
       .knob-label {
         opacity: 0.1;

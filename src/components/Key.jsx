@@ -72,12 +72,14 @@ Key.propTypes = {
 }
 
 function SelectedKey({ left, type, visible }) {
-  if (!visible) {
-    return null
-  }
   if (type === 0) {
     return (
-      <svg style={{ left }} className="piano-key-selected" width="23" height="64" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        style={{ left }}
+        className={classNames('piano-key-selected', { visible })}
+        width="23"
+        height="64"
+        xmlns="http://www.w3.org/2000/svg">
         <defs>
           <clipPath id="key-1-clip">
             <path d="M0 0 V 64 H 23 v -24 h -9 V 0 Z" />
@@ -88,13 +90,23 @@ function SelectedKey({ left, type, visible }) {
     )
   } else if (type === 1) {
     return (
-      <svg style={{ left }} className="piano-key-selected" width="16" height="38" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        style={{ left }}
+        className={classNames('piano-key-selected', { visible })}
+        width="16"
+        height="38"
+        xmlns="http://www.w3.org/2000/svg">
         <rect x="0" y="0" width="16" height="38" />
       </svg>
     )
   } else if (type === 2) {
     return (
-      <svg style={{ left }} className="piano-key-selected" width="23" height="64" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        style={{ left }}
+        className={classNames('piano-key-selected', { visible })}
+        width="23"
+        height="64"
+        xmlns="http://www.w3.org/2000/svg">
         <defs>
           <clipPath id="key-3-clip">
             <path d="M0 40 V 64 H 23 V 40 H 14 V 0 H 9 V 40 Z" />
@@ -105,7 +117,12 @@ function SelectedKey({ left, type, visible }) {
     )
   } else if (type === 3) {
     return (
-      <svg style={{ left }} className="piano-key-selected" width="23" height="64" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        style={{ left }}
+        className={classNames('piano-key-selected', { visible })}
+        width="23"
+        height="64"
+        xmlns="http://www.w3.org/2000/svg">
         <defs>
           <clipPath id="key-4-clip">
             <path d="M0 40 V 64 H 23 V 0 H 9 V 40 Z" />
