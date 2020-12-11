@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX, BLANK_PITCH_CLASSES, RANDOM_PITCH_CLASSES } from '../globals'
+import { KNOB_MAX, BLANK_PITCH_CLASSES } from '../globals'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
 import Key from './Key'
@@ -35,39 +35,55 @@ function opposite(key) {
   return keyCopy
 }
 
-export default function Channel(props) {
+function shift(shiftAmt, key) {
+  const shiftedPitches = BLANK_PITCH_CLASSES()
+  for (let i = 0; i < key.length; i++) {
+    if (key[i]) {
+      const shiftedPitchClass = pitchClassWrapper(i + shiftAmt)
+      shiftedPitches[shiftedPitchClass] = true
+    }
+  }
+  return shiftedPitches
+}
+
+export default function Channel({
+  channelNum,
+  setTurningKnob,
+  turningKnob,
+  view,
+  numChannelsSoloed,
+  setNumChannelsSoloed,
+}) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
-  const [keyPreview, setKeyPreview] = useState(RANDOM_PITCH_CLASSES())
+  const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
   const [mute, setMute] = useState(false)
   const [solo, setSolo] = useState(false)
-  const [shift, setShift] = useState(0)
+  const [shiftAmt, setShift] = useState(0)
+  const [shiftDirectionForward, setShiftDirectionForward] = useState(true)
   const [axis, setAxis] = useState(0)
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
-
-  const doShift = useCallback(
-    (shiftAmt) => {
-      const blankPitches = BLANK_PITCH_CLASSES()
-      for (let i = 0; i < key.length; i++) {
-        if (key[i]) {
-          const shiftedPitchClass = pitchClassWrapper(i + shiftAmt)
-          blankPitches[shiftedPitchClass] = true
-        }
-      }
-      setKey(blankPitches)
-    },
-    [key]
-  )
 
   const updateShift = useCallback(
     (newShift) => {
       newShift = pitchClassWrapper(newShift)
-      doShift(newShift - shift)
+      setKey((key) => shift(newShift - shiftAmt, key))
       setShift(newShift)
+      const nextShift = pitchClassWrapper(newShift + (shiftDirectionForward ? 1 : -1))
+      setKeyPreview(shift(nextShift - shiftAmt, key))
     },
-    [doShift, shift]
+    [key, shiftAmt, shiftDirectionForward]
+  )
+
+  const previewShift = useCallback(
+    (forward) => {
+      const newShift = pitchClassWrapper(shiftAmt + (forward ? 1 : -1))
+      setKeyPreview(shift(newShift - shiftAmt, key))
+      setShowKeyPreview(true)
+    },
+    [key, shiftAmt]
   )
 
   const doOpposite = useCallback(() => {
@@ -89,8 +105,7 @@ export default function Channel(props) {
   )
 
   const doFlip = useCallback(() => {
-    const flippedKey = flip(axis, key)
-    setKey(flippedKey)
+    setKey((key) => flip(axis, key))
     setKeyPreview(key)
   }, [axis, key])
 
@@ -99,11 +114,23 @@ export default function Channel(props) {
     setShowKeyPreview(true)
   }, [axis, key])
 
-  if (props.view === 'stacked') {
+  const startChangingAxis = useCallback(() => {
+    setTurningKnob(true)
+    setTurningAxisKnob(true)
+    previewFlip()
+  }, [previewFlip, setTurningKnob])
+
+  const stopChangingAxis = useCallback(() => {
+    setTurningKnob(false)
+    setTurningAxisKnob(false)
+    setShowKeyPreview(false)
+  }, [setTurningKnob])
+
+  if (view === 'stacked') {
     return (
       <div className="channel channel-horizontal">
-        <div style={{ color: CHANNEL_COLORS[props.channelNum % CHANNEL_COLORS.length] }} className="channel-number">
-          {props.channelNum + 1}
+        <div style={{ color: CHANNEL_COLORS[channelNum % CHANNEL_COLORS.length] }} className="channel-number">
+          {channelNum + 1}
         </div>
         <Key
           className="channel-module"
@@ -120,32 +147,39 @@ export default function Channel(props) {
           setMute={setMute}
           solo={solo}
           setSolo={setSolo}
-          setNumChannelsSoloed={props.setNumChannelsSoloed}
+          setNumChannelsSoloed={setNumChannelsSoloed}
         />
         <RotaryKnob
           className="channel-module"
           value={velocity}
           setValue={setVelocity}
           label="Velocity"
-          setTurningKnob={props.setTurningKnob}
-          turningKnob={props.turningKnob}
+          setTurningKnob={setTurningKnob}
+          turningKnob={turningKnob}
         />
-        <NumInput className="channel-module" value={shift} setValue={updateShift} label="Shift" />
+        <NumInput
+          className="channel-module"
+          value={shiftAmt}
+          setValue={updateShift}
+          label="Shift"
+          previewShift={previewShift}
+          setShowKeyPreview={setShowKeyPreview}
+          setShiftDirectionForward={setShiftDirectionForward}
+        />
         <RotaryKnob
           className="channel-module"
           value={axis}
           setValue={updateAxis}
-          setTurningKnob={props.setTurningKnob}
-          turningKnob={props.turningKnob}
+          turningKnob={turningKnob}
           axisKnob
           musicalKey={key}
           setKey={setKey}
           playingPitchClass={playingPitchClass}
           turningAxisKnob={turningAxisKnob}
-          setTurningAxisKnob={setTurningAxisKnob}
           keyPreview={keyPreview}
           showKeyPreview={showKeyPreview}
-          setShowKeyPreview={setShowKeyPreview}
+          startChangingAxis={startChangingAxis}
+          stopChangingAxis={stopChangingAxis}
         />
         <img className="arrow-small" src={arrowSmall} alt="" />
         <FlipOpposite

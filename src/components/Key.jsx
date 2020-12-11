@@ -56,7 +56,9 @@ export default function Key({
           onClick={() => togglePitchClass(i)}></div>
       ))}
       {pianoKeys &&
-        [...Array(12)].map((d, i) => <SelectedKey visible={showKeyPreview && keyPreview[i]} {...SELECTED_KEYS[i]} />)}
+        [...Array(12)].map((d, i) => (
+          <SelectedKey key={i} visible={showKeyPreview && keyPreview[i]} {...SELECTED_KEYS[i]} />
+        ))}
     </div>
   )
 }
@@ -85,7 +87,7 @@ function SelectedKey({ left, type, visible }) {
             <path d="M0 0 V 64 H 23 v -24 h -9 V 0 Z" />
           </clipPath>
         </defs>
-        <path d="M0 0 V 64 H 23 v -24 h -9 V 0 Z" clip-path="url(#key-1-clip)" />
+        <path d="M0 0 V 64 H 23 v -24 h -9 V 0 Z" clipPath="url(#key-1-clip)" />
       </svg>
     )
   } else if (type === 1) {
@@ -112,7 +114,7 @@ function SelectedKey({ left, type, visible }) {
             <path d="M0 40 V 64 H 23 V 40 H 14 V 0 H 9 V 40 Z" />
           </clipPath>
         </defs>
-        <path d="M0 40 V 64 H 23 V 40 H 14 V 0 H 9 V 40 Z" clip-path="url(#key-3-clip)" />
+        <path d="M0 40 V 64 H 23 V 40 H 14 V 0 H 9 V 40 Z" clipPath="url(#key-3-clip)" />
       </svg>
     )
   } else if (type === 3) {
@@ -128,7 +130,7 @@ function SelectedKey({ left, type, visible }) {
             <path d="M0 40 V 64 H 23 V 0 H 9 V 40 Z" />
           </clipPath>
         </defs>
-        <path d="M0 40 V 64 H 23 V 0 H 9 V 40 Z" clip-path="url(#key-4-clip)" />
+        <path d="M0 40 V 64 H 23 V 0 H 9 V 40 Z" clipPath="url(#key-4-clip)" />
       </svg>
     )
   }

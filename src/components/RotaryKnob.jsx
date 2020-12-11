@@ -14,7 +14,6 @@ export default function RotaryKnob({
   min,
   max,
   label,
-  setTurningKnob,
   turningKnob,
   className,
   axisKnob,
@@ -22,10 +21,10 @@ export default function RotaryKnob({
   setKey,
   playingPitchClass,
   turningAxisKnob,
-  setTurningAxisKnob,
   keyPreview,
   showKeyPreview,
-  setShowKeyPreview,
+  startChangingAxis,
+  stopChangingAxis,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -54,18 +53,6 @@ export default function RotaryKnob({
     },
     [axisKnob, maxVal, minVal, value, setValue]
   )
-
-  const startTurning = useCallback(() => {
-    setTurningKnob(true)
-    setTurningAxisKnob(true)
-    setShowKeyPreview(true)
-  }, [setShowKeyPreview, setTurningAxisKnob, setTurningKnob])
-
-  const stopTurning = useCallback(() => {
-    setTurningKnob(false)
-    setTurningAxisKnob(false)
-    setShowKeyPreview(false)
-  }, [setShowKeyPreview, setTurningAxisKnob, setTurningKnob])
 
   return (
     <div className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>
@@ -127,8 +114,8 @@ export default function RotaryKnob({
                 height: '49px',
               }
         }
-        onStart={startTurning}
-        onEnd={stopTurning}
+        onStart={axisKnob && startChangingAxis}
+        onEnd={axisKnob && stopChangingAxis}
         clampMax={axisKnob ? 360 : 270}
         rotateDegrees={axisKnob ? 0 : -135}
       />
@@ -142,7 +129,6 @@ RotaryKnob.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
   label: PropTypes.string,
-  setTurningKnob: PropTypes.func,
   turningKnob: PropTypes.bool,
   className: PropTypes.string,
   axisKnob: PropTypes.bool,
@@ -150,10 +136,10 @@ RotaryKnob.propTypes = {
   setKey: PropTypes.func,
   playingPitchClass: PropTypes.number,
   turningAxisKnob: PropTypes.bool,
-  setTurningAxisKnob: PropTypes.func,
   keyPreview: PropTypes.array,
   showKeyPreview: PropTypes.bool,
-  setShowKeyPreview: PropTypes.func,
+  startChangingAxis: PropTypes.func,
+  stopChangingAxis: PropTypes.func,
 }
 
 const skin = {
