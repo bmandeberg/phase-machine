@@ -72,10 +72,16 @@
   flex-direction: column;
   position: relative;
   margin-top: 16px;
+  &.shift-input {
+    width: 61px;
+  }
   .num-input-label {
     margin-top: 17px;
     font-size: 24px;
     height: 24px;
+  }
+  .button {
+    margin-top: 8px;
   }
 }
 

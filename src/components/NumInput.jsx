@@ -12,9 +12,11 @@ export default function NumInput({
   min,
   max,
   smallInput,
-  previewShift,
+  preview,
   setShowKeyPreview,
-  setShiftDirectionForward,
+  setDirectionForward,
+  buttonText,
+  buttonAction,
 }) {
   const input = useRef()
 
@@ -25,22 +27,24 @@ export default function NumInput({
   }, [setShowKeyPreview])
 
   const showPreviewForward = useCallback(() => {
-    previewShift(true)
-    setShiftDirectionForward(true)
-  }, [previewShift, setShiftDirectionForward])
+    preview(true)
+    setDirectionForward(true)
+  }, [preview, setDirectionForward])
 
   const showPreviewBack = useCallback(() => {
-    previewShift(false)
-    setShiftDirectionForward(false)
-  }, [previewShift, setShiftDirectionForward])
+    preview(false)
+    setDirectionForward(false)
+  }, [preview, setDirectionForward])
 
   useEffect(() => {
-    const inputEl = input.current.querySelector('input')
-    inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
-  }, [])
+    setTimeout(() => {
+      const inputEl = input.current.querySelector('input')
+      inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
+    }, 500)
+  }, [value])
 
   useEffect(() => {
-    if (previewShift && setShowKeyPreview && input.current) {
+    if (preview && setShowKeyPreview && input.current) {
       const buttons = input.current.querySelectorAll('b')
       if (buttons.length) {
         buttons[0].addEventListener('mouseover', showPreviewForward)
@@ -55,7 +59,7 @@ export default function NumInput({
         buttons[1].removeEventListener('mouseout', hidePreview)
       }
     }
-  }, [hidePreview, previewShift, setShowKeyPreview, showPreviewBack, showPreviewForward])
+  }, [hidePreview, preview, setShowKeyPreview, showPreviewBack, showPreviewForward])
 
   return (
     <div ref={input} className={classNames('num-input', className, { 'small-input': smallInput })}>
@@ -69,7 +73,13 @@ export default function NumInput({
         style={false}
         strict
       />
-      <p className="num-input-label">{label.toUpperCase()}</p>
+      {buttonText && buttonAction ? (
+        <div className="button" onClick={buttonAction} onMouseOver={() => preview()} onMouseOut={hidePreview}>
+          {buttonText}
+        </div>
+      ) : (
+        <p className="num-input-label">{label.toUpperCase()}</p>
+      )}
     </div>
   )
 }
@@ -81,7 +91,9 @@ NumInput.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
   smallInput: PropTypes.bool,
-  previewShift: PropTypes.func,
+  preview: PropTypes.func,
   setShowKeyPreview: PropTypes.func,
-  setShiftDirectionForward: PropTypes.func,
+  setDirectionForward: PropTypes.func,
+  buttonText: PropTypes.string,
+  buttonAction: PropTypes.func,
 }

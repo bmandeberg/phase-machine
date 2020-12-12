@@ -2,23 +2,4 @@
 
 .flip-opposite {
   margin-top: 16px;
-  .button {
-    height: 28px;
-    line-height: 34px;
-    font-size: 16px;
-    text-transform: uppercase;
-    text-align: center;
-    background: $lightGray;
-    padding: 0 7px;
-    cursor: pointer;
-    &:hover {
-      background: $lightGrayHover;
-    }
-    &:active {
-      background: $mediumGray;
-    }
-    &:first-of-type {
-      margin-bottom: 8px;
-    }
-  }
 }

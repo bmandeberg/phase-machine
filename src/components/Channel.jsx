@@ -35,15 +35,28 @@ function opposite(key) {
   return keyCopy
 }
 
+function shiftWrapper(n, shiftDirectionForward) {
+  if (n < -11) {
+    n = 11
+  } else if (n > 11) {
+    n = -11
+  } else if (n === 0) {
+    n += shiftDirectionForward ? 1 : -1
+  } else {
+    n %= 12
+  }
+  return n
+}
+
 function shift(shiftAmt, key) {
-  const shiftedPitches = BLANK_PITCH_CLASSES()
+  const shiftedPitchClasses = BLANK_PITCH_CLASSES()
   for (let i = 0; i < key.length; i++) {
     if (key[i]) {
-      const shiftedPitchClass = pitchClassWrapper(i + shiftAmt)
-      shiftedPitches[shiftedPitchClass] = true
+      const shiftedIndex = pitchClassWrapper(i + shiftAmt)
+      shiftedPitchClasses[shiftedIndex] = true
     }
   }
-  return shiftedPitches
+  return shiftedPitchClasses
 }
 
 export default function Channel({
@@ -61,30 +74,34 @@ export default function Channel({
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
   const [mute, setMute] = useState(false)
   const [solo, setSolo] = useState(false)
-  const [shiftAmt, setShift] = useState(0)
+  const [shiftAmt, setShiftAmt] = useState(1)
   const [shiftDirectionForward, setShiftDirectionForward] = useState(true)
   const [axis, setAxis] = useState(0)
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
 
-  const updateShift = useCallback(
-    (newShift) => {
-      newShift = pitchClassWrapper(newShift)
-      setKey((key) => shift(newShift - shiftAmt, key))
-      setShift(newShift)
-      const nextShift = pitchClassWrapper(newShift + (shiftDirectionForward ? 1 : -1))
-      setKeyPreview(shift(nextShift - shiftAmt, key))
+  const previewShift = useCallback(
+    (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
+      newShift = shiftWrapper(newShift, forward)
+      setKeyPreview(shift(newShift, previewKey))
+      setShowKeyPreview(true)
     },
     [key, shiftAmt, shiftDirectionForward]
   )
 
-  const previewShift = useCallback(
-    (forward) => {
-      const newShift = pitchClassWrapper(shiftAmt + (forward ? 1 : -1))
-      setKeyPreview(shift(newShift - shiftAmt, key))
-      setShowKeyPreview(true)
+  const updateShift = useCallback(
+    (newShift) => {
+      newShift = shiftWrapper(newShift, shiftDirectionForward)
+      setShiftAmt(newShift)
+      previewShift(shiftDirectionForward, newShift)
     },
-    [key, shiftAmt]
+    [previewShift, shiftDirectionForward]
   )
+
+  const doShift = useCallback(() => {
+    const shiftedKey = shift(shiftAmt, key)
+    setKey(shiftedKey)
+    previewShift(shiftDirectionForward, shiftAmt, shiftedKey)
+  }, [key, previewShift, shiftAmt, shiftDirectionForward])
 
   const doOpposite = useCallback(() => {
     setKey((key) => opposite(key))
@@ -158,13 +175,15 @@ export default function Channel({
           turningKnob={turningKnob}
         />
         <NumInput
-          className="channel-module"
+          className="channel-module shift-input"
           value={shiftAmt}
           setValue={updateShift}
           label="Shift"
-          previewShift={previewShift}
+          preview={previewShift}
           setShowKeyPreview={setShowKeyPreview}
-          setShiftDirectionForward={setShiftDirectionForward}
+          setDirectionForward={setShiftDirectionForward}
+          buttonText="Shift"
+          buttonAction={doShift}
         />
         <RotaryKnob
           className="channel-module"

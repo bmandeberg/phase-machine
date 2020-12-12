@@ -4,11 +4,12 @@ $buttonSize: 28px;
 
 .mute-solo {
   text-transform: uppercase;
-  font-size: 23px;
   margin-top: 16px;
   .button {
     width: $buttonSize;
     height: $buttonSize;
+    font-size: 23px;
+    padding: 0;
     background: $lightGray;
     text-align: center;
     line-height: 36px;
