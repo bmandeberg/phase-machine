@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
+import { whiteKey } from '../globals'
 import pitchClassesCircle from '../assets/pitch-classes-circle.svg'
 import classNames from 'classnames'
 import './Key.scss'
@@ -14,14 +15,6 @@ export default function Key({
   keyPreview,
   showKeyPreview,
 }) {
-  const whiteKey = useCallback((i) => {
-    if (i <= 4) {
-      return i % 2 === 0
-    } else {
-      return i % 2 !== 0
-    }
-  }, [])
-
   const togglePitchClass = useCallback(
     (i) => {
       setKey((key) => {

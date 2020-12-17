@@ -1,63 +1,16 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX, BLANK_PITCH_CLASSES } from '../globals'
+import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C } from '../globals'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
 import Key from './Key'
 import MuteSolo from './MuteSolo'
 import FlipOpposite from './FlipOpposite'
+import PianoRoll from './PianoRoll'
 import arrowSmall from '../assets/arrow-small.svg'
 import './Channel.scss'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
-
-function pitchClassWrapper(n) {
-  return n < 0 ? 11 + ((n + 1) % 12) : n % 12
-}
-
-function flip(axis, key) {
-  const dedupAxis = (axis / 2) % 6
-  const keyCopy = key.slice()
-  key.forEach((pitchClass, i) => {
-    if (i % 6 !== dedupAxis) {
-      const flippedIndex = pitchClassWrapper(dedupAxis - (i - dedupAxis))
-      keyCopy[flippedIndex] = pitchClass
-    }
-  })
-  return keyCopy
-}
-
-function opposite(key) {
-  const keyCopy = key.slice()
-  key.forEach((pitchClass, i) => {
-    keyCopy[i] = !pitchClass
-  })
-  return keyCopy
-}
-
-function shiftWrapper(n, shiftDirectionForward) {
-  if (n < -11) {
-    n = 11
-  } else if (n > 11) {
-    n = -11
-  } else if (n === 0) {
-    n += shiftDirectionForward ? 1 : -1
-  } else {
-    n %= 12
-  }
-  return n
-}
-
-function shift(shiftAmt, key) {
-  const shiftedPitchClasses = BLANK_PITCH_CLASSES()
-  for (let i = 0; i < key.length; i++) {
-    if (key[i]) {
-      const shiftedIndex = pitchClassWrapper(i + shiftAmt)
-      shiftedPitchClasses[shiftedIndex] = true
-    }
-  }
-  return shiftedPitchClasses
-}
 
 export default function Channel({
   channelNum,
@@ -72,12 +25,15 @@ export default function Channel({
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
+  const [playingNote, setPlayingNote] = useState(null)
   const [mute, setMute] = useState(false)
   const [solo, setSolo] = useState(false)
   const [shiftAmt, setShiftAmt] = useState(1)
   const [shiftDirectionForward, setShiftDirectionForward] = useState(true)
   const [axis, setAxis] = useState(0)
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
+  const [rangeStart, setRangeStart] = useState(MIDDLE_C)
+  const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
 
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -208,6 +164,12 @@ export default function Channel({
           previewOpposite={previewOpposite}
           setShowKeyPreview={setShowKeyPreview}
         />
+        <PianoRoll
+          rangeStart={rangeStart}
+          setRangeStart={setRangeStart}
+          rangeEnd={rangeEnd}
+          setRangeEnd={setRangeEnd}
+        />
       </div>
     )
   }
@@ -220,4 +182,52 @@ Channel.propTypes = {
   view: PropTypes.string,
   numChannelsSoloed: PropTypes.number,
   setNumChannelsSoloed: PropTypes.func,
+}
+
+function pitchClassWrapper(n) {
+  return n < 0 ? 11 + ((n + 1) % 12) : n % 12
+}
+
+function flip(axis, key) {
+  const dedupAxis = (axis / 2) % 6
+  const keyCopy = key.slice()
+  key.forEach((pitchClass, i) => {
+    if (i % 6 !== dedupAxis) {
+      const flippedIndex = pitchClassWrapper(dedupAxis - (i - dedupAxis))
+      keyCopy[flippedIndex] = pitchClass
+    }
+  })
+  return keyCopy
+}
+
+function opposite(key) {
+  const keyCopy = key.slice()
+  key.forEach((pitchClass, i) => {
+    keyCopy[i] = !pitchClass
+  })
+  return keyCopy
+}
+
+function shiftWrapper(n, shiftDirectionForward) {
+  if (n < -11) {
+    n = 11
+  } else if (n > 11) {
+    n = -11
+  } else if (n === 0) {
+    n += shiftDirectionForward ? 1 : -1
+  } else {
+    n %= 12
+  }
+  return n
+}
+
+function shift(shiftAmt, key) {
+  const shiftedPitchClasses = BLANK_PITCH_CLASSES()
+  for (let i = 0; i < key.length; i++) {
+    if (key[i]) {
+      const shiftedIndex = pitchClassWrapper(i + shiftAmt)
+      shiftedPitchClasses[shiftedIndex] = true
+    }
+  }
+  return shiftedPitchClasses
 }
