@@ -49,12 +49,50 @@
   .piano-roll-range {
     position: absolute;
     top: -2px;
-    z-index: 1999;
-    pointer-events: none;
+    z-index: 1998;
     path {
       fill: none;
       stroke: $green;
       stroke-width: 2px;
+      transition: filter 1.5s;
+    }
+  }
+  .piano-roll-range-glow {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity $transitionTime / 2;
+    path {
+      filter: url(#glow);
+    }
+  }
+  .range-resize {
+    height: 100%;
+    position: absolute;
+    top: -2px;
+    z-index: 1999;
+    cursor: ew-resize;
+    opacity: 0.5;
+    // background: red;
+    // &:hover {
+    //   background: lightblue;
+    // }
+    &:hover ~ svg {
+      opacity: 1;
+    }
+  }
+  .range-drag {
+    position: absolute;
+    top: -2px;
+    height: 100%;
+    opacity: 0.5;
+    z-index: 1999;
+    cursor: grab;
+    // background: blue;
+    // &:hover {
+    //   background: yellow;
+    // }
+    &:hover ~ svg {
+      opacity: 1;
     }
   }
 }

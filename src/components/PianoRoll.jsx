@@ -37,6 +37,38 @@ export default function PianoRoll({ playingNote, rangeStart, setRangeStart, rang
           )}`}
         />
       </svg>
+      <div style={{ left: pxStart.px - 6, width: pxStart.boundary ? 14 : 10 }} className="range-resize"></div>
+      <div
+        style={{
+          left: pxStart.px + (pxStart.boundary ? 8 : 4),
+          width: pxEnd.px - pxStart.px - 10 - (pxStart.boundary ? 4 : 0) - (pxEnd.boundary ? 4 : 0),
+        }}
+        className="range-drag"></div>
+      <div
+        style={{ left: pxEnd.px - (pxEnd.boundary ? 10 : 6), width: pxEnd.boundary ? 14 : 10 }}
+        className="range-resize"></div>
+      <svg
+        style={{ left: pxStart.px - 2 }}
+        className="piano-roll-range piano-roll-range-glow"
+        width={pxEnd.px - pxStart.px + 2}
+        height="99"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur id="blur" result="coloredBlur" stdDeviation="4"></feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="coloredBlur"></feMergeNode>
+              <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+          </filter>
+        </defs>
+        <path
+          d={`${noteLeftBoundary(pxStart.boundary, 1, CHANNEL_HEIGHT)} ${noteRightBoundary(
+            pxEnd.boundary,
+            pxEnd.px - pxStart.px + 1
+          )}`}
+        />
+      </svg>
     </div>
   )
 }
