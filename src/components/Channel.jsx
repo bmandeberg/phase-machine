@@ -36,6 +36,7 @@ export default function Channel({
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
   const [rangeStart, setRangeStart] = useState(MIDDLE_C)
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
+  const [depth, setDepth] = useState(KNOB_MAX)
 
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -176,6 +177,15 @@ export default function Channel({
           setGrabbing={setGrabbing}
           resizing={resizing}
           setResizing={setResizing}
+        />
+        <RotaryKnob
+          className="channel-module"
+          value={depth}
+          setValue={setDepth}
+          label="Depth"
+          setGrabbing={setGrabbing}
+          grabbing={grabbing}
+          leftShift={-4}
         />
       </div>
     )

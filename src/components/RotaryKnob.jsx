@@ -26,6 +26,7 @@ export default function RotaryKnob({
   showKeyPreview,
   startChangingAxis,
   stopChangingAxis,
+  leftShift,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -64,7 +65,9 @@ export default function RotaryKnob({
   }, [setGrabbing])
 
   return (
-    <div className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>
+    <div
+      style={{ marginLeft: leftShift }}
+      className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>
       {axisKnob && (
         <div className="axis-knob-helper">
           <svg
@@ -150,6 +153,7 @@ RotaryKnob.propTypes = {
   showKeyPreview: PropTypes.bool,
   startChangingAxis: PropTypes.func,
   stopChangingAxis: PropTypes.func,
+  leftShift: PropTypes.number,
 }
 
 const skin = {
