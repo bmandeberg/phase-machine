@@ -185,7 +185,7 @@ export default function Channel({
           label="Depth"
           setGrabbing={setGrabbing}
           grabbing={grabbing}
-          leftShift={-4}
+          squeeze={4}
         />
       </div>
     )

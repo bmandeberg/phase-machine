@@ -26,7 +26,7 @@ export default function RotaryKnob({
   showKeyPreview,
   startChangingAxis,
   stopChangingAxis,
-  leftShift,
+  squeeze,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -66,7 +66,7 @@ export default function RotaryKnob({
 
   return (
     <div
-      style={{ marginLeft: leftShift }}
+      style={{ marginLeft: squeeze && -squeeze, marginRight: squeeze && 16 - squeeze }}
       className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>
       {axisKnob && (
         <div className="axis-knob-helper">
@@ -153,7 +153,7 @@ RotaryKnob.propTypes = {
   showKeyPreview: PropTypes.bool,
   startChangingAxis: PropTypes.func,
   stopChangingAxis: PropTypes.func,
-  leftShift: PropTypes.number,
+  squeeze: PropTypes.number,
 }
 
 const skin = {
