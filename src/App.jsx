@@ -15,7 +15,7 @@ export default function App() {
   const [channelSync, setChannelSync] = useState(false)
   const [numChannelsSoloed, setNumChannelsSoloed] = useState(0)
 
-  const [turningKnob, setTurningKnob] = useState(false)
+  const [grabbing, setGrabbing] = useState(false)
 
   useEffect(() => {
     WebMidi.enable((err) => {
@@ -30,7 +30,7 @@ export default function App() {
   }, [])
 
   return (
-    <div id="container" className={classNames({ 'turning-knob': turningKnob })}>
+    <div id="container" className={classNames({ grabbing: grabbing })}>
       <Header
         tempo={tempo}
         setTempo={setTempo}
@@ -53,8 +53,8 @@ export default function App() {
           <Channel
             key={i}
             channelNum={i}
-            setTurningKnob={setTurningKnob}
-            turningKnob={turningKnob}
+            setGrabbing={setGrabbing}
+            grabbing={grabbing}
             view={view}
             numChannelsSoloed={numChannelsSoloed}
             setNumChannelsSoloed={setNumChannelsSoloed}

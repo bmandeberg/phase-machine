@@ -14,7 +14,8 @@ export default function RotaryKnob({
   min,
   max,
   label,
-  turningKnob,
+  grabbing,
+  setGrabbing,
   className,
   axisKnob,
   musicalKey,
@@ -53,6 +54,14 @@ export default function RotaryKnob({
     },
     [axisKnob, maxVal, minVal, value, setValue]
   )
+
+  const startTurningKnob = useCallback(() => {
+    setGrabbing(true)
+  }, [])
+
+  const stopTurningKnob = useCallback(() => {
+    setGrabbing(false)
+  }, [])
 
   return (
     <div className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>
@@ -95,7 +104,7 @@ export default function RotaryKnob({
         </div>
       )}
       <Knob
-        className={classNames('knob', { grabbing: turningKnob })}
+        className={classNames('knob', { grabbing: grabbing })}
         min={minVal}
         max={maxVal}
         value={value}
@@ -114,8 +123,8 @@ export default function RotaryKnob({
                 height: '49px',
               }
         }
-        onStart={axisKnob && startChangingAxis}
-        onEnd={axisKnob && stopChangingAxis}
+        onStart={axisKnob ? startChangingAxis : startTurningKnob}
+        onEnd={axisKnob ? stopChangingAxis : stopTurningKnob}
         clampMax={axisKnob ? 360 : 270}
         rotateDegrees={axisKnob ? 0 : -135}
       />
@@ -129,7 +138,8 @@ RotaryKnob.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
   label: PropTypes.string,
-  turningKnob: PropTypes.bool,
+  grabbing: PropTypes.bool,
+  setGrabbing: PropTypes.func,
   className: PropTypes.string,
   axisKnob: PropTypes.bool,
   musicalKey: PropTypes.array,

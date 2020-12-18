@@ -12,14 +12,7 @@ import './Channel.scss'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
-export default function Channel({
-  channelNum,
-  setTurningKnob,
-  turningKnob,
-  view,
-  numChannelsSoloed,
-  setNumChannelsSoloed,
-}) {
+export default function Channel({ channelNum, setGrabbing, grabbing, view, numChannelsSoloed, setNumChannelsSoloed }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
@@ -88,16 +81,16 @@ export default function Channel({
   }, [axis, key])
 
   const startChangingAxis = useCallback(() => {
-    setTurningKnob(true)
+    setGrabbing(true)
     setTurningAxisKnob(true)
     previewFlip()
-  }, [previewFlip, setTurningKnob])
+  }, [previewFlip, setGrabbing])
 
   const stopChangingAxis = useCallback(() => {
-    setTurningKnob(false)
+    setGrabbing(false)
     setTurningAxisKnob(false)
     setShowKeyPreview(false)
-  }, [setTurningKnob])
+  }, [setGrabbing])
 
   if (view === 'stacked') {
     return (
@@ -127,8 +120,8 @@ export default function Channel({
           value={velocity}
           setValue={setVelocity}
           label="Velocity"
-          setTurningKnob={setTurningKnob}
-          turningKnob={turningKnob}
+          setGrabbing={setGrabbing}
+          grabbing={grabbing}
         />
         <NumInput
           className="channel-module shift-input"
@@ -145,7 +138,7 @@ export default function Channel({
           className="channel-module"
           value={axis}
           setValue={updateAxis}
-          turningKnob={turningKnob}
+          grabbing={grabbing}
           axisKnob
           musicalKey={key}
           setKey={setKey}
@@ -178,8 +171,8 @@ export default function Channel({
 }
 Channel.propTypes = {
   channelNum: PropTypes.number,
-  setTurningKnob: PropTypes.func,
-  turningKnob: PropTypes.bool,
+  setGrabbing: PropTypes.func,
+  grabbing: PropTypes.bool,
   view: PropTypes.string,
   numChannelsSoloed: PropTypes.number,
   setNumChannelsSoloed: PropTypes.func,
