@@ -68,3 +68,7 @@ export const whiteKey = (i) => {
 export const MIDDLE_C = 36
 
 export const OCTAVES = 8
+
+export function constrain(n, min, max) {
+  return Math.min(Math.max(n, min), max)
+}

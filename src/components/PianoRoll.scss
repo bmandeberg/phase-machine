@@ -64,6 +64,9 @@
     path {
       filter: url(#glow);
     }
+    &.show-range-glow {
+      opacity: 1;
+    }
   }
   .range-resize {
     height: 100%;

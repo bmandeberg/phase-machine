@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { whiteKey, OCTAVES } from '../globals'
+import { whiteKey, OCTAVES, constrain } from '../globals'
 import { useGesture } from 'react-use-gesture'
 import './PianoRoll.scss'
 
@@ -21,6 +21,7 @@ export default function PianoRoll({
   resizing,
   setResizing,
 }) {
+  const [changingRange, setChangingRange] = useState(false)
   const [rangeStartReference, setRangeStartReference] = useState(rangeStart)
   const [rangeEndReference, setRangeEndReference] = useState(rangeEnd)
   const pxStart = useMemo(() => noteToPx(rangeStart, false), [rangeStart])
@@ -28,53 +29,59 @@ export default function PianoRoll({
 
   const dragRangeLeft = useGesture({
     onDrag: ({ movement: [mx, my] }) => {
-      const newRangeStart = rangeStartReference + keyOffset(mx)
-      if (newRangeStart !== rangeStart && newRangeStart >= 0 && newRangeStart < rangeEnd) {
+      const newRangeStart = constrain(rangeStartReference + keyOffset(mx), 0, rangeEnd - 1)
+      if (newRangeStart !== rangeStart) {
         setRangeStart(newRangeStart)
       }
     },
     onDragStart: () => {
       setResizing(true)
+      setChangingRange(true)
     },
     onDragEnd: () => {
       setRangeStartReference(rangeStart)
       setResizing(false)
+      setChangingRange(false)
     },
   })
 
   const dragRangeRight = useGesture({
     onDrag: ({ movement: [mx, my] }) => {
-      const newRangeEnd = rangeEndReference + keyOffset(mx)
-      if (newRangeEnd !== rangeEnd && newRangeEnd <= OCTAVES * 12 && newRangeEnd > rangeStart) {
+      const newRangeEnd = constrain(rangeEndReference + keyOffset(mx), rangeStart + 1, OCTAVES * 12)
+      if (newRangeEnd !== rangeEnd) {
         setRangeEnd(newRangeEnd)
       }
     },
     onDragStart: () => {
       setResizing(true)
+      setChangingRange(true)
     },
     onDragEnd: () => {
       setRangeEndReference(rangeEnd)
       setResizing(false)
+      setChangingRange(false)
     },
   })
 
   const dragRange = useGesture({
     onDrag: ({ movement: [mx, my] }) => {
-      const offset = keyOffset(mx)
+      const offset = constrain(keyOffset(mx), -rangeStartReference, OCTAVES * 12 - rangeEndReference)
       const newRangeStart = rangeStartReference + offset
       const newRangeEnd = rangeEndReference + offset
-      if (newRangeStart !== rangeStart && newRangeStart >= 0 && newRangeEnd <= OCTAVES * 12) {
+      if (newRangeStart !== rangeStart) {
         setRangeStart(newRangeStart)
         setRangeEnd(newRangeEnd)
       }
     },
     onDragStart: () => {
       setGrabbing(true)
+      setChangingRange(true)
     },
     onDragEnd: () => {
       setRangeStartReference(rangeStart)
       setRangeEndReference(rangeEnd)
       setGrabbing(false)
+      setChangingRange(false)
     },
   })
 
@@ -119,7 +126,7 @@ export default function PianoRoll({
         className="range-resize"></div>
       <svg
         style={{ left: pxStart.px - 2 }}
-        className="piano-roll-range piano-roll-range-glow"
+        className={classNames('piano-roll-range piano-roll-range-glow', {'show-range-glow': changingRange})}
         width={pxEnd.px - pxStart.px + 2}
         height="99"
         xmlns="http://www.w3.org/2000/svg">
