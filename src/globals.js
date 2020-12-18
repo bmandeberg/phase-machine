@@ -33,6 +33,8 @@ export const RATES = [
   '0',
 ]
 
+export const ARP_MODES = ['up', 'up/down', 'down', '+/-', 'random']
+
 export const KNOB_MAX = 127
 
 export const MAX_CHANNELS = 4

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C, RATES } from '../globals'
+import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C, RATES, ARP_MODES } from '../globals'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
@@ -26,6 +26,7 @@ export default function Channel({
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyRate, setKeyRate] = useState('4n')
+  const [keyArpMode, setKeyArpMode] = useState(ARP_MODES[0])
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
@@ -196,6 +197,13 @@ export default function Channel({
           setValue={setKeyRate}
           value={keyRate}
           noTextTransform
+        />
+        <Dropdn
+          className="channel-module"
+          label="Arp Mode"
+          options={ARP_MODES}
+          setValue={setKeyArpMode}
+          value={keyArpMode}
         />
       </div>
     )
