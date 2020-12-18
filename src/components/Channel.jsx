@@ -27,6 +27,7 @@ export default function Channel({
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyRate, setKeyRate] = useState('4n')
   const [keyArpMode, setKeyArpMode] = useState(ARP_MODES[0])
+  const [keySwing, setKeySwing] = useState(0)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
@@ -204,6 +205,15 @@ export default function Channel({
           options={ARP_MODES}
           setValue={setKeyArpMode}
           value={keyArpMode}
+        />
+        <RotaryKnob
+          className="channel-module"
+          value={keySwing}
+          setValue={setKeySwing}
+          label="Swing"
+          setGrabbing={setGrabbing}
+          grabbing={grabbing}
+          squeeze={2}
         />
       </div>
     )
