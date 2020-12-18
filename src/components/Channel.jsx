@@ -12,7 +12,16 @@ import './Channel.scss'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
-export default function Channel({ channelNum, setGrabbing, grabbing, view, numChannelsSoloed, setNumChannelsSoloed }) {
+export default function Channel({
+  channelNum,
+  setGrabbing,
+  grabbing,
+  resizing,
+  setResizing,
+  view,
+  numChannelsSoloed,
+  setNumChannelsSoloed,
+}) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
@@ -163,6 +172,10 @@ export default function Channel({ channelNum, setGrabbing, grabbing, view, numCh
           rangeEnd={rangeEnd}
           setRangeEnd={setRangeEnd}
           channelNum={channelNum}
+          grabbing={grabbing}
+          setGrabbing={setGrabbing}
+          resizing={resizing}
+          setResizing={setResizing}
         />
       </div>
     )
@@ -171,8 +184,10 @@ export default function Channel({ channelNum, setGrabbing, grabbing, view, numCh
 }
 Channel.propTypes = {
   channelNum: PropTypes.number,
-  setGrabbing: PropTypes.func,
   grabbing: PropTypes.bool,
+  setGrabbing: PropTypes.func,
+  resizing: PropTypes.bool,
+  setResizing: PropTypes.func,
   view: PropTypes.string,
   numChannelsSoloed: PropTypes.number,
   setNumChannelsSoloed: PropTypes.func,

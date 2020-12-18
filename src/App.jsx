@@ -16,6 +16,7 @@ export default function App() {
   const [numChannelsSoloed, setNumChannelsSoloed] = useState(0)
 
   const [grabbing, setGrabbing] = useState(false)
+  const [resizing, setResizing] = useState(false)
 
   useEffect(() => {
     WebMidi.enable((err) => {
@@ -30,7 +31,7 @@ export default function App() {
   }, [])
 
   return (
-    <div id="container" className={classNames({ grabbing: grabbing })}>
+    <div id="container" className={classNames({ grabbing, resizing })}>
       <Header
         tempo={tempo}
         setTempo={setTempo}
@@ -55,6 +56,8 @@ export default function App() {
             channelNum={i}
             setGrabbing={setGrabbing}
             grabbing={grabbing}
+            resizing={resizing}
+            setResizing={setResizing}
             view={view}
             numChannelsSoloed={numChannelsSoloed}
             setNumChannelsSoloed={setNumChannelsSoloed}

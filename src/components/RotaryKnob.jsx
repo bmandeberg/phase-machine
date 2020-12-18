@@ -57,11 +57,11 @@ export default function RotaryKnob({
 
   const startTurningKnob = useCallback(() => {
     setGrabbing(true)
-  }, [])
+  }, [setGrabbing])
 
   const stopTurningKnob = useCallback(() => {
     setGrabbing(false)
-  }, [])
+  }, [setGrabbing])
 
   return (
     <div className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>

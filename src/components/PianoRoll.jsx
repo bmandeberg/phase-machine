@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { whiteKey, OCTAVES } from '../globals'
+import { useGesture } from 'react-use-gesture'
 import './PianoRoll.scss'
 
 const CHANNEL_HEIGHT = 98
@@ -9,9 +10,73 @@ const BLACK_KEY_HEIGHT = 58
 const BLACK_KEY_WIDTH = 8
 const WHITE_KEY_WIDTH = 13
 
-export default function PianoRoll({ playingNote, rangeStart, setRangeStart, rangeEnd, setRangeEnd }) {
+export default function PianoRoll({
+  playingNote,
+  rangeStart,
+  setRangeStart,
+  rangeEnd,
+  setRangeEnd,
+  grabbing,
+  setGrabbing,
+  resizing,
+  setResizing,
+}) {
+  const [rangeStartReference, setRangeStartReference] = useState(rangeStart)
+  const [rangeEndReference, setRangeEndReference] = useState(rangeEnd)
   const pxStart = useMemo(() => noteToPx(rangeStart, false), [rangeStart])
   const pxEnd = useMemo(() => noteToPx(rangeEnd - 1, true), [rangeEnd])
+
+  const dragRangeLeft = useGesture({
+    onDrag: ({ movement: [mx, my] }) => {
+      const newRangeStart = rangeStartReference + keyOffset(mx)
+      if (newRangeStart !== rangeStart && newRangeStart >= 0 && newRangeStart < rangeEnd) {
+        setRangeStart(newRangeStart)
+      }
+    },
+    onDragStart: () => {
+      setResizing(true)
+    },
+    onDragEnd: () => {
+      setRangeStartReference(rangeStart)
+      setResizing(false)
+    },
+  })
+
+  const dragRangeRight = useGesture({
+    onDrag: ({ movement: [mx, my] }) => {
+      const newRangeEnd = rangeEndReference + keyOffset(mx)
+      if (newRangeEnd !== rangeEnd && newRangeEnd <= OCTAVES * 12 && newRangeEnd > rangeStart) {
+        setRangeEnd(newRangeEnd)
+      }
+    },
+    onDragStart: () => {
+      setResizing(true)
+    },
+    onDragEnd: () => {
+      setRangeEndReference(rangeEnd)
+      setResizing(false)
+    },
+  })
+
+  const dragRange = useGesture({
+    onDrag: ({ movement: [mx, my] }) => {
+      const offset = keyOffset(mx)
+      const newRangeStart = rangeStartReference + offset
+      const newRangeEnd = rangeEndReference + offset
+      if (newRangeStart !== rangeStart && newRangeStart >= 0 && newRangeEnd <= OCTAVES * 12) {
+        setRangeStart(newRangeStart)
+        setRangeEnd(newRangeEnd)
+      }
+    },
+    onDragStart: () => {
+      setGrabbing(true)
+    },
+    onDragEnd: () => {
+      setRangeStartReference(rangeStart)
+      setRangeEndReference(rangeEnd)
+      setGrabbing(false)
+    },
+  })
 
   return (
     <div className="piano-roll channel-module">
@@ -37,14 +102,19 @@ export default function PianoRoll({ playingNote, rangeStart, setRangeStart, rang
           )}`}
         />
       </svg>
-      <div style={{ left: pxStart.px - 6, width: pxStart.boundary ? 14 : 10 }} className="range-resize"></div>
       <div
+        {...dragRangeLeft()}
+        style={{ left: pxStart.px - 6, width: pxStart.boundary ? 14 : 10 }}
+        className="range-resize"></div>
+      <div
+        {...dragRange()}
         style={{
           left: pxStart.px + (pxStart.boundary ? 8 : 4),
           width: pxEnd.px - pxStart.px - 10 - (pxStart.boundary ? 4 : 0) - (pxEnd.boundary ? 4 : 0),
         }}
-        className="range-drag"></div>
+        className={classNames('range-drag', { grabbing, resizing })}></div>
       <div
+        {...dragRangeRight()}
         style={{ left: pxEnd.px - (pxEnd.boundary ? 10 : 6), width: pxEnd.boundary ? 14 : 10 }}
         className="range-resize"></div>
       <svg
@@ -78,6 +148,10 @@ PianoRoll.propTypes = {
   setRangeStart: PropTypes.func,
   rangeEnd: PropTypes.number,
   setRangeEnd: PropTypes.func,
+  grabbing: PropTypes.bool,
+  setGrabbing: PropTypes.func,
+  resizing: PropTypes.bool,
+  setResizing: PropTypes.func,
 }
 
 function noteLeftBoundary(i, x, height) {
@@ -88,6 +162,8 @@ function noteLeftBoundary(i, x, height) {
       return `M${x} 1 V ${BLACK_KEY_HEIGHT} h ${BLACK_KEY_WIDTH / 2} V ${height}`
     case 2:
       return `M${x + BLACK_KEY_WIDTH / 2} 1 V ${BLACK_KEY_HEIGHT} h ${BLACK_KEY_WIDTH / -2} V ${height}`
+    default:
+      return ''
   }
 }
 
@@ -99,6 +175,8 @@ function noteRightBoundary(i, x) {
       return ` H ${x} V ${BLACK_KEY_HEIGHT} h ${BLACK_KEY_WIDTH / -2} V 1 Z`
     case 2:
       return ` H ${x - BLACK_KEY_WIDTH / 2} V ${BLACK_KEY_HEIGHT} h ${BLACK_KEY_WIDTH / 2} V 1 Z`
+    default:
+      return ''
   }
 }
 
@@ -137,4 +215,8 @@ function noteToPx(note, after) {
     px += afterPx
   }
   return { px, boundary }
+}
+
+function keyOffset(x) {
+  return Math.round(x / ((WHITE_KEY_WIDTH * 7) / 12))
 }

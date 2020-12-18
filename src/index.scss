@@ -46,6 +46,10 @@ body {
   cursor: grabbing !important;
 }
 
+.resizing {
+  cursor: ew-resize !important;
+}
+
 .no-select {
   -webkit-user-select: none;
   -moz-user-select: none;
