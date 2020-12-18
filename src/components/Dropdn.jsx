@@ -15,7 +15,11 @@ function longestText(options) {
 
 export default function Dropdn(props) {
   return (
-    <div className={classNames('dropdown-container', props.className)}>
+    <div
+      className={classNames('dropdown-container', props.className, {
+        'small-dropdown': props.smallDropdown,
+        'no-text-transform': props.noTextTransform,
+      })}>
       <Dropdown
         options={props.options}
         onChange={(e) => props.setValue(e.value)}
@@ -23,7 +27,7 @@ export default function Dropdn(props) {
         placeholder={props.placeholder || 'Select an option'}
       />
       <div className="dropdown-min-width">{longestText(props.options)}</div>
-      <p className="dropdown-label">{props.label.toUpperCase()}</p>
+      <p className="dropdown-label">{props.label}</p>
     </div>
   )
 }
@@ -34,4 +38,6 @@ Dropdn.propTypes = {
   setValue: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   placeholder: PropTypes.string,
+  smallDropdown: PropTypes.bool,
+  noTextTransform: PropTypes.bool,
 }

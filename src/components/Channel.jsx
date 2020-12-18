@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C } from '../globals'
+import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C, RATES } from '../globals'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
+import Dropdn from './Dropdn'
 import Key from './Key'
 import MuteSolo from './MuteSolo'
 import FlipOpposite from './FlipOpposite'
@@ -24,6 +25,7 @@ export default function Channel({
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
+  const [keyRate, setKeyRate] = useState('4n')
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
@@ -186,6 +188,14 @@ export default function Channel({
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           squeeze={4}
+        />
+        <Dropdn
+          className="channel-module"
+          label="Rate"
+          options={RATES}
+          setValue={setKeyRate}
+          value={keyRate}
+          noTextTransform
         />
       </div>
     )

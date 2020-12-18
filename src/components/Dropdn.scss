@@ -2,60 +2,60 @@
 
 .Dropdown-root {
   position: relative;
+  &.is-open .Dropdown-arrow {
+    margin-top: 10px !important;
+    border-color: transparent transparent $darkGray !important;
+    border-width: 0px 7px 5px !important;
+  }
 }
 
 .Dropdown-control {
   position: relative;
   overflow: hidden;
-  background-color: $lightOrange;
-  border: 1px solid $orange;
+  background-color: $lightGray;
+  border: 1px solid $mediumGray;
   box-sizing: border-box;
-  color: $orange;
+  color: $darkGray;
   cursor: pointer;
   outline: none;
-  height: 21px;
   min-width: 52px;
-  padding: 3px 25px 3px 4px;
-  font-size: 15px;
+  height: 28px;
+  padding: 4px 32px 4px 5px;
+  font-size: 19px;
   text-transform: uppercase;
 }
 
 .Dropdown-arrow-wrapper {
-  width: 20px;
-  height: 20px;
-  border: 1px solid $orange;
-  background-color: $lightOrange;
+  width: 26px;
+  height: 26px;
+  border: 1px solid $mediumGray;
+  background-color: $lightGray;
   position: absolute;
   right: -1px;
   top: -1px;
   &:hover {
-    background-color: $darkLightOrange;
+    background-color: $lightGrayHover;
   }
   &:active {
-    background-color: $darkerLightOrange;
+    background-color: $mediumGray;
   }
 }
 
 .Dropdown-arrow {
-  border-color: $orange transparent transparent;
+  border-color: $darkGray transparent transparent;
   border-style: solid;
-  border-width: 4px 6px 0;
+  border-width: 5px 7px 0px;
   display: block;
   height: 0;
   width: 0;
-  margin-top: 8px;
-  margin-left: 4px;
-}
-
-.is-open .Dropdown-arrow {
-  border-color: transparent transparent $orange;
-  border-width: 0 6px 4px;
+  margin-top: 11px;
+  margin-left: 6px;
 }
 
 .Dropdown-menu {
   text-transform: uppercase;
   background-color: white;
-  border: 1px solid $orange;
+  border: 1px solid $mediumGray;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
   margin-top: -1px;
@@ -75,18 +75,19 @@
 }
 
 .Dropdown-option {
+  font-size: 16px;
   color: $lightTextGray;
   cursor: pointer;
   display: block;
   padding: 4px;
-  line-height: 15px;
-  height: 12px;
+  line-height: 19px;
+  height: 14px;
 }
 
 .Dropdown-option:hover,
 .Dropdown-option.is-selected {
-  background-color: $lightOrange;
-  color: $orange;
+  background-color: $lightGray;
+  color: $darkGray;
 }
 
 .Dropdown-noresults {
@@ -99,14 +100,82 @@
 
 .dropdown-container {
   position: relative;
+  margin-top: 16px;
   .dropdown-min-width {
     text-transform: uppercase;
-    padding: 0 26px 0 5px;
+    padding: 0 34px 0 5px;
+    font-size: 19px;
     visibility: hidden;
   }
   .dropdown-label {
-    height: 14px;
     position: absolute;
-    bottom: -2px;
+    bottom: -18px;
+    font-size: 24px;
+    height: 24px;
+    text-transform: uppercase;
+  }
+  &.small-dropdown {
+    margin-top: 0;
+    .Dropdown-control {
+      background-color: $lightOrange;
+      border: 1px solid $orange;
+      color: $orange;
+      height: 21px;
+      padding: 3px 25px 3px 4px;
+      font-size: 15px;
+    }
+    .Dropdown-arrow-wrapper {
+      width: 20px;
+      height: 20px;
+      border: 1px solid $orange;
+      background-color: $lightOrange;
+      &:hover {
+        background-color: $darkLightOrange;
+      }
+      &:active {
+        background-color: $darkerLightOrange;
+      }
+    }
+    .Dropdown-arrow {
+      border-color: $orange transparent transparent;
+      border-width: 4px 6px 0;
+      margin-top: 8px;
+      margin-left: 4px;
+    }
+    .Dropdown-root.is-open .Dropdown-arrow {
+      margin-top: 7px !important;
+      border-color: transparent transparent $orange !important;
+      border-width: 0 6px 4px !important;
+    }
+    .Dropdown-menu {
+      border: 1px solid $orange;
+    }
+    .Dropdown-option {
+      font-size: 15px;
+      line-height: 15px;
+      height: 12px;
+    }
+    .Dropdown-option:hover,
+    .Dropdown-option.is-selected {
+      background-color: $lightOrange;
+      color: $orange;
+    }
+    .dropdown-min-width {
+      text-transform: uppercase;
+      padding: 0 26px 0 5px;
+      visibility: hidden;
+    }
+    .dropdown-label {
+      height: 14px;
+      bottom: -2px;
+      font-size: 15px;
+    }
+  }
+  &.no-text-transform {
+    .Dropdown-control,
+    .Dropdown-menu,
+    .dropdown-min-width {
+      text-transform: none;
+    }
   }
 }

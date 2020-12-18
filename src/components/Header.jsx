@@ -55,7 +55,7 @@ export default function Header({
         smallInput
       />
       <SplitButton className="header-item" label="Preset" />
-      <Dropdn className="header-item" label="View" options={VIEWS} setValue={setView} value={view} />
+      <Dropdn className="header-item" label="View" options={VIEWS} setValue={setView} value={view} smallDropdown />
       <Dropdn
         className="header-item"
         label="MIDI Out"
@@ -63,6 +63,7 @@ export default function Header({
         setValue={setMidiOut}
         value={midiOut}
         placeholder="No MIDI Out"
+        smallDropdown
       />
       {view === 'horizontal' && (
         <RadioButtons
