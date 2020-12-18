@@ -169,6 +169,7 @@ export default function Channel({
           setRangeStart={setRangeStart}
           rangeEnd={rangeEnd}
           setRangeEnd={setRangeEnd}
+          channelNum={channelNum}
         />
       </div>
     )

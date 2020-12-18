@@ -49,8 +49,12 @@
   .piano-roll-range {
     position: absolute;
     top: -2px;
-    height: calc(100% - 2px);
-    border: 2px solid $green;
-    z-index: 2000;
+    z-index: 1999;
+    pointer-events: none;
+    path {
+      fill: none;
+      stroke: $green;
+      stroke-width: 2px;
+    }
   }
 }
