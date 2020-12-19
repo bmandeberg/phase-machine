@@ -11,13 +11,12 @@ export default function RadioButtons(props) {
           <div
             className={classNames('radio-button', { 'radio-button-selected': props.selected === option })}
             onClick={() => props.setSelected(option)}
-            key={option}
-          >
+            key={option}>
             {option}
           </div>
         ))}
       </div>
-      <p className="radio-buttons-label">{props.label}</p>
+      <p className="radio-buttons no-select">{props.label}</p>
     </div>
   )
 }

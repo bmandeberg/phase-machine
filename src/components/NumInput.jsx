@@ -79,7 +79,7 @@ export default function NumInput({
           {buttonText}
         </div>
       ) : (
-        <p className="num-input-label">{label}</p>
+        <p className="num-input-label no-select">{label}</p>
       )}
     </div>
   )

@@ -21,7 +21,7 @@ export default function SplitButton(props) {
           className="split-button-action split-button-arrow split-button-arrow-right"
           onClick={props.rightAction || notImplemented}></div>
       </div>
-      <p className="split-button-label">{props.label}</p>
+      <p className="split-button-label no-select">{props.label}</p>
     </div>
   )
 }

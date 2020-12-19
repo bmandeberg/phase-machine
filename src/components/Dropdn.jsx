@@ -27,7 +27,7 @@ export default function Dropdn(props) {
         placeholder={props.placeholder || 'Select an option'}
       />
       <div className="dropdown-min-width">{longestText(props.options)}</div>
-      <p className="dropdown-label">{props.label}</p>
+      <p className="dropdown-label no-select">{props.label}</p>
     </div>
   )
 }

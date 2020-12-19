@@ -131,7 +131,7 @@ export default function RotaryKnob({
         clampMax={axisKnob ? 360 : 270}
         rotateDegrees={axisKnob ? 0 : -135}
       />
-      <div className="knob-label">{axisKnob ? 'Axis' : label}</div>
+      <div className="knob-label no-select">{axisKnob ? 'Axis' : label}</div>
     </div>
   )
 }

@@ -14,7 +14,7 @@ export default function Checkbox({ label, className, checked, setChecked }) {
       <div className={classNames('checkbox', { checked: checked })} onClick={toggle}>
         {checked && <img className="no-select" src={checkmark} alt="" />}
       </div>
-      <p className="checkmark-label" onClick={toggle}>
+      <p className="checkmark-label no-select" onClick={toggle}>
         {label}
       </p>
     </div>
