@@ -9,19 +9,33 @@ function notImplemented() {
 
 export default function SplitButton(props) {
   return (
-    <div className={classNames('split-button-container', props.className)}>
-      <div className="split-button">
-        <div
-          className="split-button-action split-button-arrow split-button-arrow-left"
-          onClick={props.leftAction || notImplemented}></div>
-        <div className="split-button-action split-button-content" onClick={props.contentAction || notImplemented}>
-          {props.content || 'Edit'}
+    <div className={classNames('split-button-container', props.className, { 'small-split-button': props.small })}>
+      {props.small ? (
+        <div className="split-button">
+          <div
+            className="split-button-action split-button-arrow split-button-arrow-left"
+            onClick={props.leftAction || notImplemented}></div>
+          <div className="split-button-action split-button-content" onClick={props.contentAction || notImplemented}>
+            {props.content || 'Edit'}
+          </div>
+          <div
+            className="split-button-action split-button-arrow split-button-arrow-right"
+            onClick={props.rightAction || notImplemented}></div>
         </div>
-        <div
-          className="split-button-action split-button-arrow split-button-arrow-right"
-          onClick={props.rightAction || notImplemented}></div>
-      </div>
-      <p className="split-button-label no-select">{props.label}</p>
+      ) : (
+        <div className="split-button">
+          <div className="split-button-action split-button-content" onClick={props.contentAction || notImplemented}>
+            {props.content || 'Edit'}
+          </div>
+          <div
+            className="split-button-action split-button-arrow split-button-arrow-left"
+            onClick={props.leftAction || notImplemented}></div>
+          <div
+            className="split-button-action split-button-arrow split-button-arrow-right"
+            onClick={props.rightAction || notImplemented}></div>
+        </div>
+      )}
+      {props.label && <p className="split-button-label no-select">{props.label}</p>}
     </div>
   )
 }
@@ -32,4 +46,5 @@ SplitButton.propTypes = {
   leftAction: PropTypes.func,
   rightAction: PropTypes.func,
   contentAction: PropTypes.func,
+  small: PropTypes.bool,
 }

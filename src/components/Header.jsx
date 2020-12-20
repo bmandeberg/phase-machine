@@ -43,7 +43,7 @@ export default function Header({
         label="Tempo"
         min={0}
         max={200}
-        smallInput
+        small
       />
       <NumInput
         className="header-item small-input"
@@ -52,10 +52,10 @@ export default function Header({
         label="Channels"
         min={1}
         max={MAX_CHANNELS}
-        smallInput
+        small
       />
-      <SplitButton className="header-item" label="Preset" />
-      <Dropdn className="header-item" label="View" options={VIEWS} setValue={setView} value={view} smallDropdown />
+      <SplitButton className="header-item" label="Preset" small />
+      <Dropdn className="header-item" label="View" options={VIEWS} setValue={setView} value={view} small />
       <Dropdn
         className="header-item"
         label="MIDI Out"
@@ -63,7 +63,7 @@ export default function Header({
         setValue={setMidiOut}
         value={midiOut}
         placeholder="No MIDI Out"
-        smallDropdown
+        small
       />
       {view === 'horizontal' && (
         <RadioButtons

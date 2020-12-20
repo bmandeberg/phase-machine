@@ -1,35 +1,41 @@
 @import '../sass-globals.scss';
 
 .split-button {
-  height: 21px;
-  border: 1px solid $orange;
-  background-color: $lightOrange;
+  background-color: $lightGray;
   box-sizing: border-box;
-  color: $orange;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 19px;
+  line-height: 19px;
   .split-button-action {
     position: relative;
-    display: inline-block;
-    vertical-align: top;
-    height: 100%;
-    border-right: 1px solid $orange;
     box-sizing: border-box;
     &:last-of-type {
       border-right: none;
     }
     &:hover {
-      background-color: $darkLightOrange;
+      background-color: $lightGrayHover;
     }
     &:active {
-      background-color: $darkerLightOrange;
+      background-color: $mediumGray;
     }
   }
   .split-button-content {
-    padding: 3px 4px;
+    padding: 10px;
+    padding-bottom: 4px;
+    min-width: 43px;
   }
   .split-button-arrow {
-    width: 16px;
+    height: 20px;
+    width: 50%;
+    background-color: #d3d3d3;
+    display: inline-block;
+    vertical-align: bottom;
+    &:hover {
+      background-color: $mediumGray;
+    }
+    &:active {
+      background-color: #aaaaaa;
+    }
     &::before {
       content: '';
       position: absolute;
@@ -38,15 +44,20 @@
       height: 0;
       border-style: solid;
     }
-    &.split-button-arrow-left::before {
-      border-color: transparent $orange transparent transparent;
-      border-width: 6px 5px 6px 0;
-      left: 4px;
+    &.split-button-arrow-left {
+      border-right: 1px solid $lightTextGray;
+      &::before {
+        border-color: transparent $darkGray transparent transparent;
+        border-width: 6px 5px 6px 0;
+        left: 7px;
+      }
     }
-    &.split-button-arrow-right::before {
-      border-color: transparent transparent transparent $orange;
-      border-width: 6px 0 6px 5px;
-      left: 6px;
+    &.split-button-arrow-right {
+      &::before {
+        border-color: transparent transparent transparent $darkGray;
+        border-width: 6px 0 6px 5px;
+        right: 8px;
+      }
     }
   }
 }
@@ -54,9 +65,67 @@
 .split-button-container {
   position: relative;
   text-transform: uppercase;
+  display: inline-block;
   .split-button-label {
     height: 14px;
     position: absolute;
     bottom: -2px;
+  }
+  &.small-split-button {
+    height: auto;
+    .split-button {
+      height: 21px;
+      border: 1px solid $orange;
+      background-color: $lightOrange;
+      color: $orange;
+      font-size: 15px;
+      line-height: 18px;
+      .split-button-action {
+        display: inline-block;
+        vertical-align: top;
+        height: 100%;
+        border-right: 1px solid $orange;
+        &:last-of-type {
+          border-right: none;
+        }
+        &:hover {
+          background-color: $darkLightOrange;
+        }
+        &:active {
+          background-color: $darkerLightOrange;
+        }
+      }
+      .split-button-content {
+        padding: 3px 4px;
+        min-width: 0;
+      }
+      .split-button-arrow {
+        background-color: $lightOrange;
+        &::before {
+          content: '';
+          position: absolute;
+          top: 4px;
+          width: 0;
+          height: 0;
+          border-style: solid;
+        }
+        &.split-button-arrow-left {
+          width: 16px;
+          &::before {
+            border-color: transparent $orange transparent transparent;
+            border-width: 6px 5px 6px 0;
+            left: 4px;
+          }
+        }
+        &.split-button-arrow-right {
+          width: 16px;
+          &::before {
+            border-color: transparent transparent transparent $orange;
+            border-width: 6px 0 6px 5px;
+            left: 6px;
+          }
+        }
+      }
+    }
   }
 }

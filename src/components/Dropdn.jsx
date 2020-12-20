@@ -17,7 +17,7 @@ export default function Dropdn(props) {
   return (
     <div
       className={classNames('dropdown-container', props.className, {
-        'small-dropdown': props.smallDropdown,
+        'small-dropdown': props.small,
         'no-text-transform': props.noTextTransform,
         'inline-dropdown': props.inline,
       })}>
@@ -41,7 +41,7 @@ Dropdn.propTypes = {
   setValue: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   placeholder: PropTypes.string,
-  smallDropdown: PropTypes.bool,
+  small: PropTypes.bool,
   noTextTransform: PropTypes.bool,
   inline: PropTypes.bool,
 }

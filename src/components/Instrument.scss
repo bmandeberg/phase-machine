@@ -1,0 +1,34 @@
+@import '../sass-globals.scss';
+
+.instrument {
+  margin-top: 16px;
+  text-transform: uppercase;
+  .instrument-switch-container {
+    margin-right: 16px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  .instrument-switch {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .switch-label {
+    display: inline-block;
+    vertical-align: bottom;
+    font-size: 18px;
+    line-height: 16px;
+    &:first-of-type {
+      margin-right: 7px;
+    }
+    &:last-of-type {
+      margin-left: 7px;
+    }
+  }
+  .instrument-label {
+    position: absolute;
+    bottom: 16px;
+    font-size: 24px;
+    height: 24px;
+    line-height: 36px;
+  }
+}

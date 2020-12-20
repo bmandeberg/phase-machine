@@ -18,6 +18,7 @@ import MuteSolo from './MuteSolo'
 import FlipOpposite from './FlipOpposite'
 import PianoRoll from './PianoRoll'
 import Sequencer from './Sequencer'
+import Instrument from './Instrument'
 import arrowSmall from '../assets/arrow-small.svg'
 import './Channel.scss'
 
@@ -58,6 +59,8 @@ export default function Channel({
   const [seqArpMode, setSeqArpMode] = useState(ARP_MODES[0])
   const [seqSwing, setSeqSwing] = useState(0)
   const [noteLength, setNoteLength] = useState(KNOB_MAX / 2)
+  const [instrumentOn, setInstrumentOn] = useState(true)
+  const [instrumentType, setInstrumentType] = useState('saw')
 
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -285,6 +288,13 @@ export default function Channel({
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
+          <Instrument
+            className="channel-module"
+            instrumentOn={instrumentOn}
+            setInstrumentOn={setInstrumentOn}
+            instrumentType={instrumentType}
+            setInstrumentType={setInstrumentType}
+          />
         </div>
       </div>
     )

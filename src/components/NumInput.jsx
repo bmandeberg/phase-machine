@@ -11,7 +11,7 @@ export default function NumInput({
   className,
   min,
   max,
-  smallInput,
+  small,
   inline,
   preview,
   setShowKeyPreview,
@@ -72,7 +72,7 @@ export default function NumInput({
   }, [hidePreview, preview, setShowKeyPreview, showPreview, showPreviewBack, showPreviewForward])
 
   return (
-    <div ref={input} className={classNames('num-input', className, { 'small-input': smallInput, 'inline-input': inline })}>
+    <div ref={input} className={classNames('num-input', className, { 'small-input': small, 'inline-input': inline })}>
       {/* eslint-disable-next-line */}
       <NumericInput min={min} max={max} value={value} onChange={setValue} style={false} strict />
       {buttonText && buttonAction ? (
@@ -92,7 +92,7 @@ NumInput.propTypes = {
   className: PropTypes.string,
   min: PropTypes.number,
   max: PropTypes.number,
-  smallInput: PropTypes.bool,
+  small: PropTypes.bool,
   inline: PropTypes.bool,
   preview: PropTypes.func,
   setShowKeyPreview: PropTypes.func,
