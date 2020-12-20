@@ -1,6 +1,15 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C, RATES, ARP_MODES, CHANNEL_HEIGHT } from '../globals'
+import {
+  KNOB_MAX,
+  BLANK_PITCH_CLASSES,
+  MIDDLE_C,
+  RATES,
+  ARP_MODES,
+  CHANNEL_HEIGHT,
+  MAX_SEQUENCER_LENGTH,
+  DEFAULT_TIME_DIVISION,
+} from '../globals'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
@@ -8,6 +17,7 @@ import Key from './Key'
 import MuteSolo from './MuteSolo'
 import FlipOpposite from './FlipOpposite'
 import PianoRoll from './PianoRoll'
+import Sequencer from './Sequencer'
 import arrowSmall from '../assets/arrow-small.svg'
 import './Channel.scss'
 
@@ -26,7 +36,7 @@ export default function Channel({
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
-  const [keyRate, setKeyRate] = useState('4n')
+  const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
   const [keyArpMode, setKeyArpMode] = useState(ARP_MODES[0])
   const [keySwing, setKeySwing] = useState(0)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
@@ -41,6 +51,13 @@ export default function Channel({
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
   const [rangeStart, setRangeStart] = useState(MIDDLE_C)
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
+  const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCER_LENGTH)].map(() => Math.random() > 0.65))
+  const [seqLength, setSeqLength] = useState(MAX_SEQUENCER_LENGTH)
+  const [playingStep, setPlayingStep] = useState(0)
+  const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
+  const [seqArpMode, setSeqArpMode] = useState(ARP_MODES[0])
+  const [seqSwing, setSeqSwing] = useState(0)
+  const [noteLength, setNoteLength] = useState(KNOB_MAX / 2)
 
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -212,11 +229,17 @@ export default function Channel({
           grabbing={grabbing}
           squeeze={2}
         />
-        <div
-          style={{ top: numChannels * CHANNEL_HEIGHT }}
-          className="channel channel-horizontal stacked-auxiliary">
+        <div style={{ top: numChannels * CHANNEL_HEIGHT }} className="channel channel-horizontal stacked-auxiliary">
           {channelNumEl}
-          </div>
+          <Sequencer
+            className="channel-module"
+            seqSteps={seqSteps}
+            setSeqSteps={setSeqSteps}
+            seqLength={seqLength}
+            playingStep={playingStep}
+          />
+          <div className="channel-module border"></div>
+        </div>
       </div>
     )
   }
