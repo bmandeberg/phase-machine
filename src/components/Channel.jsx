@@ -7,7 +7,7 @@ import {
   RATES,
   ARP_MODES,
   CHANNEL_HEIGHT,
-  MAX_SEQUENCER_LENGTH,
+  MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
 } from '../globals'
 import RotaryKnob from './RotaryKnob'
@@ -51,8 +51,8 @@ export default function Channel({
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
   const [rangeStart, setRangeStart] = useState(MIDDLE_C)
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
-  const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCER_LENGTH)].map(() => Math.random() > 0.65))
-  const [seqLength, setSeqLength] = useState(MAX_SEQUENCER_LENGTH)
+  const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
+  const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
   const [playingStep, setPlayingStep] = useState(0)
   const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
   const [seqArpMode, setSeqArpMode] = useState(ARP_MODES[0])
@@ -236,8 +236,54 @@ export default function Channel({
             seqSteps={seqSteps}
             setSeqSteps={setSeqSteps}
             seqLength={seqLength}
-            playingStep={playingStep}
-          />
+            playingStep={playingStep}>
+            <div className="sequencer-controls">
+              <NumInput
+                className="channel-module"
+                value={seqLength}
+                setValue={setSeqLength}
+                label="Length"
+                min={1}
+                max={MAX_SEQUENCE_LENGTH}
+                inline
+              />
+              <Dropdn
+                className="channel-module"
+                label="Rate"
+                options={RATES}
+                setValue={setSeqRate}
+                value={seqRate}
+                noTextTransform
+                inline
+              />
+              <Dropdn
+                className="channel-module"
+                label="Arp Mode"
+                options={ARP_MODES}
+                setValue={setSeqArpMode}
+                value={seqArpMode}
+                inline
+              />
+              <RotaryKnob
+                className="channel-module"
+                value={seqSwing}
+                setValue={setSeqSwing}
+                label="Swing"
+                setGrabbing={setGrabbing}
+                grabbing={grabbing}
+                inline
+              />
+              <RotaryKnob
+                className="channel-module"
+                value={noteLength}
+                setValue={setNoteLength}
+                label="Note Length"
+                setGrabbing={setGrabbing}
+                grabbing={grabbing}
+                inline
+              />
+            </div>
+          </Sequencer>
           <div className="channel-module border"></div>
         </div>
       </div>

@@ -6,6 +6,12 @@
   justify-content: space-between;
 }
 
+.sequencer-controls {
+  .channel-module {
+    margin-right: 28px;
+  }
+}
+
 .sequence-step {
   width: 22px;
   height: 22px;

@@ -19,14 +19,17 @@ export default function Dropdn(props) {
       className={classNames('dropdown-container', props.className, {
         'small-dropdown': props.smallDropdown,
         'no-text-transform': props.noTextTransform,
+        'inline-dropdown': props.inline,
       })}>
-      <Dropdown
-        options={props.options}
-        onChange={(e) => props.setValue(e.value)}
-        value={props.value}
-        placeholder={props.placeholder || 'Select an option'}
-      />
-      <div className="dropdown-min-width">{longestText(props.options)}</div>
+      <div className="dropdown">
+        <Dropdown
+          options={props.options}
+          onChange={(e) => props.setValue(e.value)}
+          value={props.value}
+          placeholder={props.placeholder || 'Select an option'}
+        />
+        <div className="dropdown-min-width">{longestText(props.options)}</div>
+      </div>
       <p className="dropdown-label no-select">{props.label}</p>
     </div>
   )
@@ -40,4 +43,5 @@ Dropdn.propTypes = {
   placeholder: PropTypes.string,
   smallDropdown: PropTypes.bool,
   noTextTransform: PropTypes.bool,
+  inline: PropTypes.bool,
 }

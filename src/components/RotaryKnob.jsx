@@ -27,6 +27,7 @@ export default function RotaryKnob({
   startChangingAxis,
   stopChangingAxis,
   squeeze,
+  inline,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -64,10 +65,30 @@ export default function RotaryKnob({
     setGrabbing(false)
   }, [setGrabbing])
 
+  const knobSize = useMemo(() => {
+    if (axisKnob) {
+      return {
+        width: '42px',
+        height: '42px',
+      }
+    } else if (inline) {
+      return {
+        width: '39px',
+        height: '35px',
+      }
+    } else {
+      return {}
+    }
+  }, [axisKnob, inline])
+
   return (
     <div
       style={{ marginLeft: squeeze && -squeeze, marginRight: squeeze && 16 - squeeze }}
-      className={classNames('knob-container', className, { 'axis-knob': axisKnob, 'knob-active': turningAxisKnob })}>
+      className={classNames('knob-container', className, {
+        'axis-knob': axisKnob,
+        'knob-active': turningAxisKnob,
+        'inline-knob': inline,
+      })}>
       {axisKnob && (
         <div className="axis-knob-helper">
           <svg
@@ -115,17 +136,7 @@ export default function RotaryKnob({
         skin={axisKnob ? axisSkin : skin}
         unlockDistance={30}
         preciseMode={false}
-        style={
-          axisKnob
-            ? {
-                width: '42px',
-                height: '42px',
-              }
-            : {
-                width: '55px',
-                height: '49px',
-              }
-        }
+        style={knobSize}
         onStart={axisKnob ? startChangingAxis : startTurningKnob}
         onEnd={axisKnob ? stopChangingAxis : stopTurningKnob}
         clampMax={axisKnob ? 360 : 270}
@@ -154,6 +165,7 @@ RotaryKnob.propTypes = {
   startChangingAxis: PropTypes.func,
   stopChangingAxis: PropTypes.func,
   squeeze: PropTypes.number,
+  inline: PropTypes.bool,
 }
 
 const skin = {

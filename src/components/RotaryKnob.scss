@@ -79,4 +79,19 @@
       }
     }
   }
+  &.inline-knob {
+    margin-top: 8px;
+    .knob {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: -4px;
+    }
+    .knob-label {
+      margin-top: 0;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 36px;
+      margin-left: 4px;
+    }
+  }
 }

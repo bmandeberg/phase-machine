@@ -68,8 +68,7 @@
 }
 
 .num-input {
-  display: flex;
-  flex-direction: column;
+  display: inline-block;
   position: relative;
   margin-top: 16px;
   &.shift-input {
@@ -134,5 +133,21 @@
     height: 14px;
     position: absolute;
     bottom: -2px;
+  }
+}
+
+.num-input.inline-input {
+  margin-top: 14px;
+  .react-numeric-input {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .num-input-label {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 0;
+    line-height: 32px;
+    margin-left: 8px;
   }
 }
