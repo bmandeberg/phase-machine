@@ -49,6 +49,7 @@ export default function App() {
         channelSync={channelSync}
         setChannelSync={setChannelSync}
       />
+      <div id="header-border"></div>
       <div id="channels">
         {Array.from(Array(numChannels).keys()).map((i) => (
           <Channel
