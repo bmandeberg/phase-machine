@@ -72,3 +72,5 @@ export const OCTAVES = 8
 export function constrain(n, min, max) {
   return Math.min(Math.max(n, min), max)
 }
+
+export const CHANNEL_HEIGHT = 97

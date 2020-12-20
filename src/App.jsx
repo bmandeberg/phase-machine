@@ -52,6 +52,7 @@ export default function App() {
       <div id="channels">
         {Array.from(Array(numChannels).keys()).map((i) => (
           <Channel
+            numChannels={numChannels}
             key={i}
             channelNum={i}
             setGrabbing={setGrabbing}

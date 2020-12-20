@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C, RATES, ARP_MODES } from '../globals'
+import { KNOB_MAX, BLANK_PITCH_CLASSES, MIDDLE_C, RATES, ARP_MODES, CHANNEL_HEIGHT } from '../globals'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
@@ -14,6 +14,7 @@ import './Channel.scss'
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
 export default function Channel({
+  numChannels,
   channelNum,
   setGrabbing,
   grabbing,
@@ -105,12 +106,18 @@ export default function Channel({
     setShowKeyPreview(false)
   }, [setGrabbing])
 
+  const channelNumEl = useMemo(() => {
+    return (
+      <div style={{ color: CHANNEL_COLORS[channelNum % CHANNEL_COLORS.length] }} className="channel-number">
+        {channelNum + 1}
+      </div>
+    )
+  }, [channelNum])
+
   if (view === 'stacked') {
     return (
       <div className="channel channel-horizontal">
-        <div style={{ color: CHANNEL_COLORS[channelNum % CHANNEL_COLORS.length] }} className="channel-number">
-          {channelNum + 1}
-        </div>
+        {channelNumEl}
         <Key
           className="channel-module"
           musicalKey={key}
@@ -205,12 +212,18 @@ export default function Channel({
           grabbing={grabbing}
           squeeze={2}
         />
+        <div
+          style={{ top: numChannels * CHANNEL_HEIGHT }}
+          className="channel channel-horizontal stacked-auxiliary">
+          {channelNumEl}
+          </div>
       </div>
     )
   }
   return null
 }
 Channel.propTypes = {
+  numChannels: PropTypes.number,
   channelNum: PropTypes.number,
   grabbing: PropTypes.bool,
   setGrabbing: PropTypes.func,
