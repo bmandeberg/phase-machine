@@ -1,4 +1,4 @@
-export const VIEWS = ['stacked', 'horizontal', 'grid']
+export const VIEWS = ['stacked', 'horizontal', 'clock']
 
 export const SECTIONS = ['key', 'piano roll', 'pitch set', 'sequencer']
 

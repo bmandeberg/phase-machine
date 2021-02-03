@@ -16,7 +16,7 @@ export default function RadioButtons(props) {
           </div>
         ))}
       </div>
-      <p className="radio-buttons no-select">{props.label}</p>
+      <p className="radio-buttons radio-buttons-label no-select">{props.label}</p>
     </div>
   )
 }

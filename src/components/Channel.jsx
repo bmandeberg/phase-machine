@@ -405,6 +405,40 @@ export default function Channel({
         </div>
       </div>
     )
+  } else if (view === 'horizontal') {
+    return (
+      <div className="channel channel-horizontal">
+        {channelNumEl}
+        {keyEl}
+        {muteSoloEl}
+        {velocityEl}
+        {shiftEl}
+        {axisEl}
+        <img className="arrow-small" src={arrowSmall} alt="" />
+        {flipOppositeEl}
+        {pianoRollEl}
+        {keyRateEl}
+        {keyArpModeEl}
+        {keySwingEl}
+        <div className="channel-module border"></div>
+        <Sequencer
+          className="channel-module"
+          seqSteps={seqSteps}
+          setSeqSteps={setSeqSteps}
+          seqLength={seqLength}
+          playingStep={playingStep}>
+          <div className="sequencer-controls">
+            {seqLengthEl}
+            {seqRateEl}
+            {seqArpModeEl}
+            {seqSwingEl}
+            {noteLengthEl}
+          </div>
+        </Sequencer>
+        <div className="channel-module border"></div>
+        {instrumentEl}
+      </div>
+    )
   }
   return null
 }

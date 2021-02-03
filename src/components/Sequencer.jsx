@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { MAX_SEQUENCE_LENGTH } from '../globals'
+
 import './Sequencer.scss'
 
 export default function Sequencer({ className, seqSteps, setSeqSteps, seqLength, playingStep, children }) {
@@ -26,7 +27,9 @@ export default function Sequencer({ className, seqSteps, setSeqSteps, seqLength,
               playing: playingStep === i,
               hidden: i >= seqLength,
             })}
-            onClick={() => updateSeq(i)}></div>
+            onClick={() => updateSeq(i)}
+            key={i}
+          ></div>
         ))}
       </div>
       {children}
@@ -39,5 +42,5 @@ Sequencer.propTypes = {
   setSeqSteps: PropTypes.func,
   seqLength: PropTypes.number,
   playingStep: PropTypes.number,
-  children: PropTypes.array,
+  children: PropTypes.object,
 }
