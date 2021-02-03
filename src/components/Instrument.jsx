@@ -20,8 +20,8 @@ export default function Instrument({ className, instrumentOn, setInstrumentOn, i
           onColor={'#e6e6e6'}
           offHandleColor={'#666666'}
           onHandleColor={'#33ff00'}
-          width={44}
-          height={22}
+          width={48}
+          height={24}
         />
         <p className="switch-label">On</p>
         <div className="instrument-label">Instrument</div>

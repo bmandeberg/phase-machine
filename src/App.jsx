@@ -51,7 +51,7 @@ export default function App() {
       />
       <div id="header-border"></div>
       <div id="channels">
-        {Array.from(Array(numChannels).keys()).map((i) => (
+        {[...Array(numChannels)].map((d, i) => (
           <Channel
             numChannels={numChannels}
             key={i}
