@@ -134,104 +134,256 @@ export default function Channel({
     )
   }, [channelNum])
 
+  const keyEl = useMemo(() => {
+    return (
+      <Key
+        className="channel-module"
+        musicalKey={key}
+        setKey={setKey}
+        playingPitchClass={playingPitchClass}
+        pianoKeys
+        turningAxisKnob={turningAxisKnob}
+        keyPreview={keyPreview}
+        showKeyPreview={showKeyPreview}
+      />
+    )
+  }, [key, keyPreview, playingPitchClass, showKeyPreview, turningAxisKnob])
+
+  const muteSoloEl = useMemo(() => {
+    return (
+      <MuteSolo
+        mute={mute}
+        setMute={setMute}
+        solo={solo}
+        setSolo={setSolo}
+        setNumChannelsSoloed={setNumChannelsSoloed}
+      />
+    )
+  }, [mute, setNumChannelsSoloed, solo])
+
+  const velocityEl = useMemo(() => {
+    return (
+      <RotaryKnob
+        className="channel-module"
+        value={velocity}
+        setValue={setVelocity}
+        label="Velocity"
+        setGrabbing={setGrabbing}
+        grabbing={grabbing}
+      />
+    )
+  }, [grabbing, setGrabbing, velocity])
+
+  const shiftEl = useMemo(() => {
+    return (
+      <NumInput
+        className="channel-module shift-input"
+        value={shiftAmt}
+        setValue={updateShift}
+        label="Shift"
+        preview={previewShift}
+        setShowKeyPreview={setShowKeyPreview}
+        setDirectionForward={setShiftDirectionForward}
+        buttonText="Shift"
+        buttonAction={doShift}
+      />
+    )
+  }, [doShift, previewShift, shiftAmt, updateShift])
+
+  const axisEl = useMemo(() => {
+    return (
+      <RotaryKnob
+        className="channel-module"
+        value={axis}
+        setValue={updateAxis}
+        grabbing={grabbing}
+        axisKnob
+        musicalKey={key}
+        setKey={setKey}
+        playingPitchClass={playingPitchClass}
+        turningAxisKnob={turningAxisKnob}
+        keyPreview={keyPreview}
+        showKeyPreview={showKeyPreview}
+        startChangingAxis={startChangingAxis}
+        stopChangingAxis={stopChangingAxis}
+      />
+    )
+  }, [
+    axis,
+    grabbing,
+    key,
+    keyPreview,
+    playingPitchClass,
+    showKeyPreview,
+    startChangingAxis,
+    stopChangingAxis,
+    turningAxisKnob,
+    updateAxis,
+  ])
+
+  const flipOppositeEl = useMemo(() => {
+    return (
+      <FlipOpposite
+        flip={doFlip}
+        previewFlip={previewFlip}
+        opposite={doOpposite}
+        previewOpposite={previewOpposite}
+        setShowKeyPreview={setShowKeyPreview}
+      />
+    )
+  }, [doFlip, doOpposite, previewFlip, previewOpposite])
+
+  const pianoRollEl = useMemo(() => {
+    return (
+      <PianoRoll
+        rangeStart={rangeStart}
+        setRangeStart={setRangeStart}
+        rangeEnd={rangeEnd}
+        setRangeEnd={setRangeEnd}
+        channelNum={channelNum}
+        grabbing={grabbing}
+        setGrabbing={setGrabbing}
+        resizing={resizing}
+        setResizing={setResizing}
+      />
+    )
+  }, [channelNum, grabbing, rangeEnd, rangeStart, resizing, setGrabbing, setResizing])
+
+  const keyRateEl = useMemo(() => {
+    return (
+      <Dropdn
+        className="channel-module"
+        label="Rate"
+        options={RATES}
+        setValue={setKeyRate}
+        value={keyRate}
+        noTextTransform
+      />
+    )
+  }, [keyRate])
+
+  const keyArpModeEl = useMemo(() => {
+    return (
+      <Dropdn
+        className="channel-module"
+        label="Arp Mode"
+        options={ARP_MODES}
+        setValue={setKeyArpMode}
+        value={keyArpMode}
+      />
+    )
+  }, [keyArpMode])
+
+  const keySwingEl = useMemo(() => {
+    return (
+      <RotaryKnob
+        className="channel-module"
+        value={keySwing}
+        setValue={setKeySwing}
+        label="Swing"
+        setGrabbing={setGrabbing}
+        grabbing={grabbing}
+        squeeze={2}
+      />
+    )
+  }, [grabbing, keySwing, setGrabbing])
+
+  const seqLengthEl = useMemo(() => {
+    return (
+      <NumInput
+        className="channel-module"
+        value={seqLength}
+        setValue={setSeqLength}
+        label="Length"
+        min={1}
+        max={MAX_SEQUENCE_LENGTH}
+        inline
+      />
+    )
+  }, [seqLength])
+
+  const seqRateEl = useMemo(() => {
+    return (
+      <Dropdn
+        className="channel-module"
+        label="Rate"
+        options={RATES}
+        setValue={setSeqRate}
+        value={seqRate}
+        noTextTransform
+        inline
+      />
+    )
+  }, [seqRate])
+
+  const seqArpModeEl = useMemo(() => {
+    return (
+      <Dropdn
+        className="channel-module"
+        label="Arp Mode"
+        options={ARP_MODES}
+        setValue={setSeqArpMode}
+        value={seqArpMode}
+        inline
+      />
+    )
+  }, [seqArpMode])
+
+  const seqSwingEl = useMemo(() => {
+    return (
+      <RotaryKnob
+        className="channel-module"
+        value={seqSwing}
+        setValue={setSeqSwing}
+        label="Swing"
+        setGrabbing={setGrabbing}
+        grabbing={grabbing}
+        inline
+      />
+    )
+  }, [grabbing, seqSwing, setGrabbing])
+
+  const noteLengthEl = useMemo(() => {
+    return (
+      <RotaryKnob
+        className="channel-module"
+        value={noteLength}
+        setValue={setNoteLength}
+        label="Note Length"
+        setGrabbing={setGrabbing}
+        grabbing={grabbing}
+        inline
+      />
+    )
+  }, [grabbing, noteLength, setGrabbing])
+
+  const instrumentEl = useMemo(() => {
+    return (
+      <Instrument
+        className="channel-module"
+        instrumentOn={instrumentOn}
+        setInstrumentOn={setInstrumentOn}
+        instrumentType={instrumentType}
+        setInstrumentType={setInstrumentType}
+      />
+    )
+  }, [instrumentOn, instrumentType])
+
   if (view === 'stacked') {
     return (
       <div className="channel channel-horizontal">
         {channelNumEl}
-        <Key
-          className="channel-module"
-          musicalKey={key}
-          setKey={setKey}
-          playingPitchClass={playingPitchClass}
-          pianoKeys
-          turningAxisKnob={turningAxisKnob}
-          keyPreview={keyPreview}
-          showKeyPreview={showKeyPreview}
-        />
-        <MuteSolo
-          mute={mute}
-          setMute={setMute}
-          solo={solo}
-          setSolo={setSolo}
-          setNumChannelsSoloed={setNumChannelsSoloed}
-        />
-        <RotaryKnob
-          className="channel-module"
-          value={velocity}
-          setValue={setVelocity}
-          label="Velocity"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-        />
-        <NumInput
-          className="channel-module shift-input"
-          value={shiftAmt}
-          setValue={updateShift}
-          label="Shift"
-          preview={previewShift}
-          setShowKeyPreview={setShowKeyPreview}
-          setDirectionForward={setShiftDirectionForward}
-          buttonText="Shift"
-          buttonAction={doShift}
-        />
-        <RotaryKnob
-          className="channel-module"
-          value={axis}
-          setValue={updateAxis}
-          grabbing={grabbing}
-          axisKnob
-          musicalKey={key}
-          setKey={setKey}
-          playingPitchClass={playingPitchClass}
-          turningAxisKnob={turningAxisKnob}
-          keyPreview={keyPreview}
-          showKeyPreview={showKeyPreview}
-          startChangingAxis={startChangingAxis}
-          stopChangingAxis={stopChangingAxis}
-        />
+        {keyEl}
+        {muteSoloEl}
+        {velocityEl}
+        {shiftEl}
+        {axisEl}
         <img className="arrow-small" src={arrowSmall} alt="" />
-        <FlipOpposite
-          flip={doFlip}
-          previewFlip={previewFlip}
-          opposite={doOpposite}
-          previewOpposite={previewOpposite}
-          setShowKeyPreview={setShowKeyPreview}
-        />
-        <PianoRoll
-          rangeStart={rangeStart}
-          setRangeStart={setRangeStart}
-          rangeEnd={rangeEnd}
-          setRangeEnd={setRangeEnd}
-          channelNum={channelNum}
-          grabbing={grabbing}
-          setGrabbing={setGrabbing}
-          resizing={resizing}
-          setResizing={setResizing}
-        />
-        <Dropdn
-          className="channel-module"
-          label="Rate"
-          options={RATES}
-          setValue={setKeyRate}
-          value={keyRate}
-          noTextTransform
-        />
-        <Dropdn
-          className="channel-module"
-          label="Arp Mode"
-          options={ARP_MODES}
-          setValue={setKeyArpMode}
-          value={keyArpMode}
-        />
-        <RotaryKnob
-          className="channel-module"
-          value={keySwing}
-          setValue={setKeySwing}
-          label="Swing"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          squeeze={2}
-        />
+        {flipOppositeEl}
+        {pianoRollEl}
+        {keyRateEl}
+        {keyArpModeEl}
+        {keySwingEl}
         <div style={{ top: numChannels * CHANNEL_HEIGHT }} className="channel channel-horizontal stacked-auxiliary">
           {channelNumEl}
           <Sequencer
@@ -241,60 +393,15 @@ export default function Channel({
             seqLength={seqLength}
             playingStep={playingStep}>
             <div className="sequencer-controls">
-              <NumInput
-                className="channel-module"
-                value={seqLength}
-                setValue={setSeqLength}
-                label="Length"
-                min={1}
-                max={MAX_SEQUENCE_LENGTH}
-                inline
-              />
-              <Dropdn
-                className="channel-module"
-                label="Rate"
-                options={RATES}
-                setValue={setSeqRate}
-                value={seqRate}
-                noTextTransform
-                inline
-              />
-              <Dropdn
-                className="channel-module"
-                label="Arp Mode"
-                options={ARP_MODES}
-                setValue={setSeqArpMode}
-                value={seqArpMode}
-                inline
-              />
-              <RotaryKnob
-                className="channel-module"
-                value={seqSwing}
-                setValue={setSeqSwing}
-                label="Swing"
-                setGrabbing={setGrabbing}
-                grabbing={grabbing}
-                inline
-              />
-              <RotaryKnob
-                className="channel-module"
-                value={noteLength}
-                setValue={setNoteLength}
-                label="Note Length"
-                setGrabbing={setGrabbing}
-                grabbing={grabbing}
-                inline
-              />
+              {seqLengthEl}
+              {seqRateEl}
+              {seqArpModeEl}
+              {seqSwingEl}
+              {noteLengthEl}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
-          <Instrument
-            className="channel-module"
-            instrumentOn={instrumentOn}
-            setInstrumentOn={setInstrumentOn}
-            instrumentType={instrumentType}
-            setInstrumentType={setInstrumentType}
-          />
+          {instrumentEl}
         </div>
       </div>
     )
