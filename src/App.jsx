@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { VIEWS, SECTIONS } from './globals'
@@ -18,6 +18,8 @@ export default function App() {
   const [grabbing, setGrabbing] = useState(false)
   const [resizing, setResizing] = useState(false)
 
+  const container = useRef()
+
   useEffect(() => {
     WebMidi.enable((err) => {
       if (err) {
@@ -28,10 +30,51 @@ export default function App() {
         })
       }
     })
+    const containerEl = container.current
+    function handleScroll() {
+      const scrollPositions = [
+        0,
+        document.querySelector('.piano-roll').offsetLeft,
+        document.querySelector('.sequencer').offsetLeft - 16,
+      ]
+      let scrollEl = 0
+      for (let i = 0; i < SECTIONS.length; i++) {
+        if (containerEl.scrollLeft >= scrollPositions[i]) {
+          scrollEl = i
+        }
+      }
+      setScrollTo((scrollTo) => (SECTIONS[scrollEl] !== scrollTo ? SECTIONS[scrollEl] : scrollTo))
+    }
+    containerEl.addEventListener('scroll', handleScroll)
+    return () => {
+      containerEl.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
+  const doScroll = useCallback((scrollEl) => {
+    const scrollPositions = [
+      0,
+      document.querySelector('.piano-roll').offsetLeft,
+      document.querySelector('.sequencer').offsetLeft - 16,
+    ]
+    const scrollElIndex = SECTIONS.indexOf(scrollEl)
+    if (scrollElIndex !== -1) {
+      container.current.scroll({
+        left: scrollPositions[scrollElIndex],
+        behavior: 'smooth',
+      })
+    }
+    setScrollTo(scrollEl)
+  }, [])
+
+  useEffect(() => {
+    container.current.scroll({
+      left: 0,
+    })
+  }, [view])
+
   return (
-    <div id="container" className={classNames({ grabbing, resizing })}>
+    <div id="container" ref={container} className={classNames({ grabbing, resizing })}>
       <Header
         tempo={tempo}
         setTempo={setTempo}
@@ -45,7 +88,7 @@ export default function App() {
         view={view}
         setView={setView}
         scrollTo={scrollTo}
-        setScrollTo={setScrollTo}
+        setScrollTo={doScroll}
         channelSync={channelSync}
         setChannelSync={setChannelSync}
       />

@@ -1,6 +1,6 @@
 export const VIEWS = ['stacked', 'horizontal', 'clock']
 
-export const SECTIONS = ['key', 'piano roll', 'pitch set', 'sequencer']
+export const SECTIONS = ['key', 'piano roll', 'sequencer']
 
 export const RATES = [
   '1m',
