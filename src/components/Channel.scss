@@ -13,6 +13,9 @@
   font-family: 'Ultra Regular', 'Baskerville', 'serif';
   font-size: 19px;
   line-height: 15px;
+  padding-top: 16px;
+  width: 43px;
+  vertical-align: top;
 }
 
 .channel {
@@ -25,11 +28,6 @@
   white-space: nowrap;
   display: inline-block;
   border-right: 1px solid $lightMediumGray;
-  .channel-number {
-    padding-top: 16px;
-    width: 43px;
-    vertical-align: top;
-  }
   .mute-solo {
     height: 66px;
   }
@@ -45,6 +43,74 @@
   .sequencer {
     margin-top: 16px;
     width: 1254px;
+  }
+}
+
+.channel-clock {
+  display: inline-block;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $lightMediumGray;
+  border-right: 1px solid $lightMediumGray;
+  .channel-number {
+    padding-top: 23px;
+  }
+  .mute-solo {
+    margin-right: 8px;
+    .button {
+      display: inline-block;
+    }
+    .mute {
+      margin-bottom: 0;
+      margin-right: 8px;
+    }
+  }
+  .key {
+    margin-top: 16px;
+    margin-right: 32px;
+    margin-left: 41px;
+  }
+}
+
+.channel-vertical {
+  &.left-vertical {
+    margin-left: -4px;
+  }
+  display: inline-block;
+  vertical-align: top;
+  .channel-module {
+    margin-right: 0;
+    display: block;
+  }
+  .flip-opposite {
+    margin-right: auto;
+    margin-left: auto;
+    width: 61px;
+  }
+  .num-input {
+    display: block;
+    margin-top: 19px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .knob-container {
+    margin-top: 0;
+  }
+  .dropdown-container {
+    margin-top: 16px;
+  }
+  .key-arp-mode {
+    margin-bottom: 32px;
+  }
+  .key-rate {
+    margin-bottom: 21px;
+  }
+  .key-swing {
+    .knob {
+      margin: 0;
+    }
+    .knob-label {
+      width: 50px;
+    }
   }
 }
 

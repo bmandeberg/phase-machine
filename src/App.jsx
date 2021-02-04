@@ -9,7 +9,7 @@ export default function App() {
   const [tempo, setTempo] = useState(120)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(4)
-  const [view, setView] = useState(VIEWS[0])
+  const [view, setView] = useState(VIEWS[2])
   const [midiOut, setMidiOut] = useState(null)
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
@@ -19,6 +19,7 @@ export default function App() {
   const [resizing, setResizing] = useState(false)
 
   const container = useRef()
+  const viewRef = useRef()
 
   useEffect(() => {
     WebMidi.enable((err) => {
@@ -32,23 +33,30 @@ export default function App() {
     })
     const containerEl = container.current
     function handleScroll() {
-      const scrollPositions = [
-        0,
-        document.querySelector('.piano-roll').offsetLeft,
-        document.querySelector('.sequencer').offsetLeft - 16,
-      ]
-      let scrollEl = 0
-      for (let i = 0; i < SECTIONS.length; i++) {
-        if (containerEl.scrollLeft >= scrollPositions[i]) {
-          scrollEl = i
+      if (viewRef.current === 'horizontal') {
+        const scrollPositions = [
+          0,
+          document.querySelector('.piano-roll').offsetLeft,
+          document.querySelector('.sequencer').offsetLeft - 16,
+        ]
+        let scrollEl = 0
+        for (let i = 0; i < SECTIONS.length; i++) {
+          if (containerEl.scrollLeft >= scrollPositions[i]) {
+            scrollEl = i
+          }
         }
+        setScrollTo((scrollTo) => (SECTIONS[scrollEl] !== scrollTo ? SECTIONS[scrollEl] : scrollTo))
       }
-      setScrollTo((scrollTo) => (SECTIONS[scrollEl] !== scrollTo ? SECTIONS[scrollEl] : scrollTo))
     }
     containerEl.addEventListener('scroll', handleScroll)
     return () => {
       containerEl.removeEventListener('scroll', handleScroll)
     }
+  }, [])
+
+  const updateView = useCallback((view) => {
+    viewRef.current = view
+    setView(view)
   }, [])
 
   const doScroll = useCallback((scrollEl) => {
@@ -86,7 +94,7 @@ export default function App() {
         numChannels={numChannels}
         setNumChannels={setNumChannels}
         view={view}
-        setView={setView}
+        setView={updateView}
         scrollTo={scrollTo}
         setScrollTo={doScroll}
         channelSync={channelSync}

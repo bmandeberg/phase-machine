@@ -149,6 +149,20 @@ export default function Channel({
     )
   }, [key, keyPreview, playingPitchClass, showKeyPreview, turningAxisKnob])
 
+  const keyElClock = useMemo(() => {
+    return (
+      <Key
+        className="channel-module"
+        musicalKey={key}
+        setKey={setKey}
+        playingPitchClass={playingPitchClass}
+        turningAxisKnob={turningAxisKnob}
+        keyPreview={keyPreview}
+        showKeyPreview={showKeyPreview}
+      />
+    )
+  }, [key, keyPreview, playingPitchClass, showKeyPreview, turningAxisKnob])
+
   const muteSoloEl = useMemo(() => {
     return (
       <MuteSolo
@@ -252,7 +266,7 @@ export default function Channel({
   const keyRateEl = useMemo(() => {
     return (
       <Dropdn
-        className="channel-module"
+        className="channel-module key-rate"
         label="Rate"
         options={RATES}
         setValue={setKeyRate}
@@ -265,7 +279,7 @@ export default function Channel({
   const keyArpModeEl = useMemo(() => {
     return (
       <Dropdn
-        className="channel-module"
+        className="channel-module key-arp-mode"
         label="Arp Mode"
         options={ARP_MODES}
         setValue={setKeyArpMode}
@@ -277,13 +291,26 @@ export default function Channel({
   const keySwingEl = useMemo(() => {
     return (
       <RotaryKnob
-        className="channel-module"
+        className="channel-module key-swing"
         value={keySwing}
         setValue={setKeySwing}
         label="Swing"
         setGrabbing={setGrabbing}
         grabbing={grabbing}
         squeeze={2}
+      />
+    )
+  }, [grabbing, keySwing, setGrabbing])
+
+  const keySwingElVertical = useMemo(() => {
+    return (
+      <RotaryKnob
+        className="channel-module key-swing"
+        value={keySwing}
+        setValue={setKeySwing}
+        label="Swing"
+        setGrabbing={setGrabbing}
+        grabbing={grabbing}
       />
     )
   }, [grabbing, keySwing, setGrabbing])
@@ -437,6 +464,24 @@ export default function Channel({
         </Sequencer>
         <div className="channel-module border"></div>
         {instrumentEl}
+      </div>
+    )
+  } else if (view === 'clock') {
+    return (
+      <div className="channel channel-clock">
+        {channelNumEl}
+        {muteSoloEl}
+        <div className="channel-vertical left-vertical">
+          {flipOppositeEl}
+          {shiftEl}
+          {velocityEl}
+        </div>
+        {keyElClock}
+        <div className="channel-vertical">
+          {keyArpModeEl}
+          {keyRateEl}
+          {keySwingElVertical}
+        </div>
       </div>
     )
   }
