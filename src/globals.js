@@ -37,7 +37,7 @@ export const ARP_MODES = ['up', 'up/down', 'down', '+/-', 'random']
 
 export const KNOB_MAX = 127
 
-export const MAX_CHANNELS = 4
+export const MAX_CHANNELS = 8
 
 export const BLANK_PITCH_CLASSES = () => [
   false,

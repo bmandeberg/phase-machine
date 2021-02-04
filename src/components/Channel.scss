@@ -53,11 +53,7 @@
   border: 1px solid $lightMediumGray;
   margin-top: -1px;
   margin-left: -1px;
-  width: 758px;
-  transition: width $transitionTime;
-  &.drawer-closed {
-    width: 602px;
-  }
+  width: 656px;
   .channel-number {
     padding-top: 23px;
   }
@@ -82,19 +78,27 @@
     left: 186px;
     width: 119px;
   }
+  .piano-roll-container {
+    width: 624px;
+    overflow-x: auto;
+    margin-left: 16px;
+  }
   .piano-roll {
     margin-top: 16px;
-    margin-left: 16px;
+    margin-right: 0;
   }
   .channel-drawer-control {
     $arrow-size: 8px;
     width: 28px;
     height: 14px;
-    background: $green;
+    background: $mediumGray;
     position: absolute;
     top: 231px;
     left: 16px;
     cursor: pointer;
+    &:hover {
+      background: $lightMediumGray;
+    }
     .arrow-down {
       width: 0;
       height: 0;
@@ -105,7 +109,6 @@
       margin: 0 auto;
       margin-top: 5px;
     }
-    background: $mediumGray;
     &.drawer-open {
       background: $green;
       &:hover {
@@ -122,10 +125,56 @@
   .channel-clock-bottom {
     max-height: 0;
     overflow: hidden;
-    transition: max-height $transitionTime;
+    transition: max-height $transitionTime ease-out;
     &.drawer-open {
-      max-height: 300px;
+      max-height: 284px;
     }
+    .num-input {
+      margin-top: 0;
+      .num-input-label {
+        margin-top: 13px;
+      }
+    }
+    .dropdown-container {
+      margin-top: 0;
+      .dropdown-label {
+        bottom: 0;
+      }
+    }
+    .knob-container {
+      margin-top: -14px;
+    }
+    .channel-module {
+      margin-right: 0;
+    }
+    .instrument {
+      margin-top: 0;
+      .instrument-label {
+        bottom: 4px;
+      }
+    }
+  }
+  .sequencer {
+    margin-top: 17px;
+    margin-bottom: 3px;
+    margin-left: 32px;
+    width: 608px;
+    .sequencer-container {
+      display: block;
+    }
+    .sequence-step {
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 16px;
+      margin-bottom: 16px;
+    }
+  }
+  .sequencer-controls {
+    position: relative;
+    margin: 0 16px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
 }
 
