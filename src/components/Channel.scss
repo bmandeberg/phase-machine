@@ -125,9 +125,10 @@
   .channel-clock-bottom {
     max-height: 0;
     overflow: hidden;
-    transition: max-height $transitionTime ease-out;
+    transition: all $transitionTime ease-out;
     &.drawer-open {
       max-height: 284px;
+      margin-bottom: -5px;
     }
     .num-input {
       margin-top: 0;

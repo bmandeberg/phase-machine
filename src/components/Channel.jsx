@@ -291,7 +291,7 @@ export default function Channel({
           label="Swing"
           setGrabbing={setGrabbing}
           grabbing={grabbing}
-          squeeze={!vertical && 2}
+          squeeze={!vertical ? 2 : 0}
         />
       )
     },
