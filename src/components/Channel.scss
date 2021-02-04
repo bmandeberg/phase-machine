@@ -65,9 +65,15 @@
     }
   }
   .key {
-    margin-top: 16px;
+    margin-top: 1px;
     margin-right: 32px;
     margin-left: 41px;
+  }
+  .arrow-clock {
+    position: absolute;
+    top: 27px;
+    left: 186px;
+    width: 119px;
   }
 }
 

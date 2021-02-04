@@ -78,6 +78,14 @@
         opacity: 0.1;
       }
     }
+    &.axis-knob-large {
+      .key {
+        z-index: 0;
+      }
+      &::before, .knob-label {
+        display: none;
+      }
+    }
   }
   &.inline-knob {
     margin-top: 8px;

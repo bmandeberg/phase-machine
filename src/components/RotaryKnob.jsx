@@ -18,6 +18,7 @@ export default function RotaryKnob({
   setGrabbing,
   className,
   axisKnob,
+  axisKnobLarge,
   musicalKey,
   setKey,
   playingPitchClass,
@@ -66,26 +67,36 @@ export default function RotaryKnob({
   }, [setGrabbing])
 
   const knobSize = useMemo(() => {
+    if (axisKnobLarge) {
+      return {
+        width: '60px',
+        height: '60px',
+        position: 'absolute',
+        top: 84,
+        left: 123,
+      }
+    }
     if (axisKnob) {
       return {
         width: '42px',
         height: '42px',
       }
-    } else if (inline) {
+    }
+    if (inline) {
       return {
         width: '39px',
         height: '35px',
       }
-    } else {
-      return {}
     }
-  }, [axisKnob, inline])
+    return {}
+  }, [axisKnob, axisKnobLarge, inline])
 
   return (
     <div
       style={{ marginLeft: squeeze && -squeeze, marginRight: squeeze && 16 - squeeze }}
       className={classNames('knob-container', className, {
         'axis-knob': axisKnob,
+        'axis-knob-large': axisKnobLarge,
         'knob-active': turningAxisKnob,
         'inline-knob': inline,
       })}>
@@ -95,8 +106,8 @@ export default function RotaryKnob({
             xmlns="http://www.w3.org/2000/svg"
             style={{
               transform: `rotate(${value * 15}deg)`,
-              left: AXIS_LINE_SIZE / -2 + 21,
-              top: AXIS_LINE_SIZE / -2 + 21,
+              left: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 153 : 21),
+              top: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 114 : 21),
             }}
             className="axis-line"
             width={AXIS_LINE_SIZE}
@@ -117,15 +128,27 @@ export default function RotaryKnob({
             </defs>
             <rect x="0" y="0" width={AXIS_LINE_SIZE / 2} height={AXIS_LINE_SIZE} fill="transparent" mask="url(#mask)" />
           </svg>
-          <Key
-            musicalKey={musicalKey}
-            setKey={setKey}
-            playingPitchClass={playingPitchClass}
-            className="axis-knob-supplemental"
-            keyPreview={keyPreview}
-            showKeyPreview={showKeyPreview}
-          />
+          {!axisKnobLarge && (
+            <Key
+              musicalKey={musicalKey}
+              setKey={setKey}
+              playingPitchClass={playingPitchClass}
+              className="axis-knob-supplemental"
+              keyPreview={keyPreview}
+              showKeyPreview={showKeyPreview}
+            />
+          )}
         </div>
+      )}
+      {axisKnobLarge && (
+        <Key
+          musicalKey={musicalKey}
+          setKey={setKey}
+          playingPitchClass={playingPitchClass}
+          turningAxisKnob={turningAxisKnob}
+          keyPreview={keyPreview}
+          showKeyPreview={showKeyPreview}
+        />
       )}
       <Knob
         className={classNames('knob', { grabbing: grabbing })}
@@ -156,6 +179,7 @@ RotaryKnob.propTypes = {
   setGrabbing: PropTypes.func,
   className: PropTypes.string,
   axisKnob: PropTypes.bool,
+  axisKnobLarge: PropTypes.bool,
   musicalKey: PropTypes.array,
   setKey: PropTypes.func,
   playingPitchClass: PropTypes.number,

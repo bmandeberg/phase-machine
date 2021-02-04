@@ -20,6 +20,7 @@ import PianoRoll from './PianoRoll'
 import Sequencer from './Sequencer'
 import Instrument from './Instrument'
 import arrowSmall from '../assets/arrow-small.svg'
+import arrowClock from '../assets/arrow-clock.svg'
 import './Channel.scss'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
@@ -149,20 +150,6 @@ export default function Channel({
     )
   }, [key, keyPreview, playingPitchClass, showKeyPreview, turningAxisKnob])
 
-  const keyElClock = useMemo(() => {
-    return (
-      <Key
-        className="channel-module"
-        musicalKey={key}
-        setKey={setKey}
-        playingPitchClass={playingPitchClass}
-        turningAxisKnob={turningAxisKnob}
-        keyPreview={keyPreview}
-        showKeyPreview={showKeyPreview}
-      />
-    )
-  }, [key, keyPreview, playingPitchClass, showKeyPreview, turningAxisKnob])
-
   const muteSoloEl = useMemo(() => {
     return (
       <MuteSolo
@@ -212,6 +199,38 @@ export default function Channel({
         setValue={updateAxis}
         grabbing={grabbing}
         axisKnob
+        musicalKey={key}
+        setKey={setKey}
+        playingPitchClass={playingPitchClass}
+        turningAxisKnob={turningAxisKnob}
+        keyPreview={keyPreview}
+        showKeyPreview={showKeyPreview}
+        startChangingAxis={startChangingAxis}
+        stopChangingAxis={stopChangingAxis}
+      />
+    )
+  }, [
+    axis,
+    grabbing,
+    key,
+    keyPreview,
+    playingPitchClass,
+    showKeyPreview,
+    startChangingAxis,
+    stopChangingAxis,
+    turningAxisKnob,
+    updateAxis,
+  ])
+
+  const axisElClock = useMemo(() => {
+    return (
+      <RotaryKnob
+        className="axis-knob"
+        value={axis}
+        setValue={updateAxis}
+        grabbing={grabbing}
+        axisKnob
+        axisKnobLarge
         musicalKey={key}
         setKey={setKey}
         playingPitchClass={playingPitchClass}
@@ -476,7 +495,8 @@ export default function Channel({
           {shiftEl}
           {velocityEl}
         </div>
-        {keyElClock}
+        <img className="arrow-clock" src={arrowClock} alt="" />
+        {axisElClock}
         <div className="channel-vertical">
           {keyArpModeEl}
           {keyRateEl}

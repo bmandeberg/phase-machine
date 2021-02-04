@@ -9,7 +9,7 @@ export default function App() {
   const [tempo, setTempo] = useState(120)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(4)
-  const [view, setView] = useState(VIEWS[0])
+  const [view, setView] = useState(VIEWS[2])
   const [midiOut, setMidiOut] = useState(null)
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
