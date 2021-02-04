@@ -10,6 +10,7 @@ import {
   MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
 } from '../globals'
+import classNames from 'classnames'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
@@ -62,6 +63,7 @@ export default function Channel({
   const [noteLength, setNoteLength] = useState(KNOB_MAX / 2)
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
+  const [drawerOpen, setDrawerOpen] = useState(true)
 
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -487,21 +489,31 @@ export default function Channel({
     )
   } else if (view === 'clock') {
     return (
-      <div className="channel channel-clock">
-        {channelNumEl}
-        {muteSoloEl}
-        <div className="channel-vertical left-vertical">
-          {flipOppositeEl}
-          {shiftEl}
-          {velocityEl}
+      <div className={classNames('channel channel-clock', { 'drawer-closed': !drawerOpen })}>
+        <div className="channel-clock-top">
+          {channelNumEl}
+          {muteSoloEl}
+          <div className="channel-vertical left-vertical">
+            {flipOppositeEl}
+            {shiftEl}
+            {velocityEl}
+          </div>
+          <img className="arrow-clock" src={arrowClock} alt="" />
+          {axisElClock}
+          <div className="channel-vertical">
+            {keyArpModeEl}
+            {keyRateEl}
+            {keySwingElVertical}
+          </div>
+          <div
+            className={classNames('channel-drawer-control', { 'drawer-open': drawerOpen })}
+            onClick={() => {
+              setDrawerOpen((drawerOpen) => !drawerOpen)
+            }}>
+            <div className="arrow-down"></div>
+          </div>
         </div>
-        <img className="arrow-clock" src={arrowClock} alt="" />
-        {axisElClock}
-        <div className="channel-vertical">
-          {keyArpModeEl}
-          {keyRateEl}
-          {keySwingElVertical}
-        </div>
+        <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>{pianoRollEl}</div>
       </div>
     )
   }

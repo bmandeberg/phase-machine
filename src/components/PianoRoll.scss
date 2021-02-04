@@ -5,6 +5,8 @@
   vertical-align: top;
   box-sizing: border-box;
   position: relative;
+  white-space: nowrap;
+  overflow: visible;
   .piano-roll-note {
     height: 100%;
     width: 10px;
@@ -15,8 +17,10 @@
     border-color: #ffffff;
     border-top: 1px;
     position: absolute;
+    margin: 0;
     margin-left: -4px;
     display: inline-block;
+    vertical-align: top;
     box-sizing: border-box;
     &:first-of-type {
       border-left: none;

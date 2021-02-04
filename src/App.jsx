@@ -82,7 +82,7 @@ export default function App() {
   }, [view])
 
   return (
-    <div id="container" ref={container} className={classNames({ grabbing, resizing })}>
+    <div id="container" ref={container} className={classNames({ grabbing, resizing, clock: view === 'clock' })}>
       <Header
         tempo={tempo}
         setTempo={setTempo}

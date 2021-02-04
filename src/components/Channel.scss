@@ -48,9 +48,16 @@
 
 .channel-clock {
   display: inline-block;
+  vertical-align: top;
   padding-bottom: 16px;
-  border-bottom: 1px solid $lightMediumGray;
-  border-right: 1px solid $lightMediumGray;
+  border: 1px solid $lightMediumGray;
+  margin-top: -1px;
+  margin-left: -1px;
+  width: 758px;
+  transition: width $transitionTime;
+  &.drawer-closed {
+    width: 602px;
+  }
   .channel-number {
     padding-top: 23px;
   }
@@ -74,6 +81,51 @@
     top: 27px;
     left: 186px;
     width: 119px;
+  }
+  .piano-roll {
+    margin-top: 16px;
+    margin-left: 16px;
+  }
+  .channel-drawer-control {
+    $arrow-size: 8px;
+    width: 28px;
+    height: 14px;
+    background: $green;
+    position: absolute;
+    top: 231px;
+    left: 16px;
+    cursor: pointer;
+    .arrow-down {
+      width: 0;
+      height: 0;
+      border-right: $arrow-size solid transparent;
+      border-left: $arrow-size solid transparent;
+      border-top: $arrow-size - 3px solid $darkGray;
+      pointer-events: none;
+      margin: 0 auto;
+      margin-top: 5px;
+    }
+    background: $mediumGray;
+    &.drawer-open {
+      background: $green;
+      &:hover {
+        background: $greenHover;
+      }
+      .arrow-down {
+        border-top: $arrow-size - 3px solid #ffffff;
+      }
+    }
+  }
+  .channel-clock-top {
+    margin-bottom: -5px;
+  }
+  .channel-clock-bottom {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height $transitionTime;
+    &.drawer-open {
+      max-height: 300px;
+    }
   }
 }
 
