@@ -40,9 +40,6 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: auto;
-  &.clock {
-    min-width: 1520px;
-  }
 }
 
 .grabbing {

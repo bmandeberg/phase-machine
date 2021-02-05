@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
+import { CSSTransition } from 'react-transition-group'
 import {
   KNOB_MAX,
   BLANK_PITCH_CLASSES,
@@ -490,24 +491,26 @@ export default function Channel({
             <div className="arrow-down"></div>
           </div>
         </div>
-        <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>
-          <div className="piano-roll-container">{pianoRollEl}</div>
-          <Sequencer
-            className="channel-module"
-            seqSteps={seqSteps}
-            setSeqSteps={setSeqSteps}
-            seqLength={seqLength}
-            playingStep={playingStep}
-          />
-          <div className="sequencer-controls">
-            {seqLengthEl(false)}
-            {seqRateEl(false)}
-            {seqArpModeEl(false)}
-            {seqSwingEl(false)}
-            {noteLengthEl(false)}
-            {instrumentEl}
+        <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
+          <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>
+            <div className="piano-roll-container">{pianoRollEl}</div>
+            <Sequencer
+              className="channel-module"
+              seqSteps={seqSteps}
+              setSeqSteps={setSeqSteps}
+              seqLength={seqLength}
+              playingStep={playingStep}
+            />
+            <div className="sequencer-controls">
+              {seqLengthEl(false)}
+              {seqRateEl(false)}
+              {seqArpModeEl(false)}
+              {seqSwingEl(false)}
+              {noteLengthEl(false)}
+              {instrumentEl}
+            </div>
           </div>
-        </div>
+        </CSSTransition>
       </div>
     )
   }

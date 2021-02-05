@@ -82,7 +82,11 @@ export default function App() {
   }, [view])
 
   return (
-    <div id="container" ref={container} className={classNames({ grabbing, resizing, clock: view === 'clock' })}>
+    <div
+      id="container"
+      ref={container}
+      className={classNames({ grabbing, resizing })}
+      style={{ minWidth: view === 'clock' ? 760 * Math.max(Math.floor(window.innerWidth / 760), 2) : null }}>
       <Header
         tempo={tempo}
         setTempo={setTempo}
