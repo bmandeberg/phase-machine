@@ -1,13 +1,13 @@
 @import '../sass-globals.scss';
 
-.piano-roll {
+.piano {
   height: 97px;
   vertical-align: top;
   box-sizing: border-box;
   position: relative;
   white-space: nowrap;
   overflow: visible;
-  .piano-roll-note {
+  .piano-note {
     height: 100%;
     width: 10px;
     height: 57px;
@@ -50,7 +50,7 @@
       }
     }
   }
-  .piano-roll-range {
+  .piano-range {
     position: absolute;
     top: -2px;
     z-index: 1998;
@@ -61,7 +61,7 @@
       transition: filter 1.5s;
     }
   }
-  .piano-roll-range-glow {
+  .piano-range-glow {
     opacity: 0;
     pointer-events: none;
     transition: opacity $transitionTime / 2;

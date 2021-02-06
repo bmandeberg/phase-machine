@@ -18,7 +18,7 @@ import Dropdn from './Dropdn'
 import Key from './Key'
 import MuteSolo from './MuteSolo'
 import FlipOpposite from './FlipOpposite'
-import PianoRoll from './PianoRoll'
+import Piano from './Piano'
 import Sequencer from './Sequencer'
 import Instrument from './Instrument'
 import arrowSmall from '../assets/arrow-small.svg'
@@ -241,9 +241,9 @@ export default function Channel({
     )
   }, [doFlip, doOpposite, previewFlip, previewOpposite])
 
-  const pianoRollEl = useMemo(() => {
+  const pianoEl = useMemo(() => {
     return (
-      <PianoRoll
+      <Piano
         rangeStart={rangeStart}
         setRangeStart={setRangeStart}
         rangeEnd={rangeEnd}
@@ -406,7 +406,7 @@ export default function Channel({
         {axisEl(false)}
         <img className="arrow-small" src={arrowSmall} alt="" />
         {flipOppositeEl}
-        {pianoRollEl}
+        {pianoEl}
         {keyRateEl}
         {keyArpModeEl}
         {keySwingEl(false)}
@@ -442,7 +442,7 @@ export default function Channel({
         {axisEl(false)}
         <img className="arrow-small" src={arrowSmall} alt="" />
         {flipOppositeEl}
-        {pianoRollEl}
+        {pianoEl}
         {keyRateEl}
         {keyArpModeEl}
         {keySwingEl(false)}
@@ -493,7 +493,7 @@ export default function Channel({
         </div>
         <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
           <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>
-            <div className="piano-roll-container">{pianoRollEl}</div>
+            <div className="piano-container">{pianoEl}</div>
             <Sequencer
               className="channel-module"
               seqSteps={seqSteps}

@@ -3,14 +3,14 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { whiteKey, OCTAVES, constrain } from '../globals'
 import { useGesture } from 'react-use-gesture'
-import './PianoRoll.scss'
+import './Piano.scss'
 
 const CHANNEL_HEIGHT = 98
 const BLACK_KEY_HEIGHT = 58
 const BLACK_KEY_WIDTH = 8
 const WHITE_KEY_WIDTH = 13
 
-export default function PianoRoll({
+export default function Piano({
   playingNote,
   rangeStart,
   setRangeStart,
@@ -86,11 +86,11 @@ export default function PianoRoll({
   })
 
   return (
-    <div className="piano-roll channel-module">
+    <div className="piano channel-module">
       {[...Array(12 * OCTAVES)].map((d, i) => (
         <div
           key={i}
-          className={classNames('piano-roll-note', {
+          className={classNames('piano-note', {
             'white-key': whiteKey(i),
             'in-range': i >= rangeStart && i < rangeEnd,
             playing: playingNote === i,
@@ -98,7 +98,7 @@ export default function PianoRoll({
       ))}
       <svg
         style={{ left: pxStart.px - 2 }}
-        className="piano-roll-range"
+        className="piano-range"
         width={pxEnd.px - pxStart.px + 2}
         height="99"
         xmlns="http://www.w3.org/2000/svg">
@@ -126,7 +126,7 @@ export default function PianoRoll({
         className="range-resize"></div>
       <svg
         style={{ left: pxStart.px - 2 }}
-        className={classNames('piano-roll-range piano-roll-range-glow', {'show-range-glow': changingRange})}
+        className={classNames('piano-range piano-range-glow', { 'show-range-glow': changingRange })}
         width={pxEnd.px - pxStart.px + 2}
         height="99"
         xmlns="http://www.w3.org/2000/svg">
@@ -149,7 +149,7 @@ export default function PianoRoll({
     </div>
   )
 }
-PianoRoll.propTypes = {
+Piano.propTypes = {
   playingNote: PropTypes.number,
   rangeStart: PropTypes.number,
   setRangeStart: PropTypes.func,
