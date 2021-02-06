@@ -45,7 +45,7 @@ export default function App() {
             scrollEl = i
           }
         }
-        setScrollTo((scrollTo) => (SECTIONS[scrollEl] !== scrollTo ? SECTIONS[scrollEl] : scrollTo))
+        setScrollTo(SECTIONS[scrollEl])
       }
     }
     containerEl.addEventListener('scroll', handleScroll)
@@ -72,7 +72,6 @@ export default function App() {
         behavior: 'smooth',
       })
     }
-    setScrollTo(scrollEl)
   }, [])
 
   useEffect(() => {
