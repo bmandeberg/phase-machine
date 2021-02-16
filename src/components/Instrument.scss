@@ -13,6 +13,32 @@
     display: inline-block;
     vertical-align: middle;
   }
+  .mono-toggle {
+    width: 44px;
+    height: 28px;
+    box-sizing: border-box;
+    background-color: $lightGray;
+    text-transform: uppercase;
+    font-size: 19px;
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+    &:hover {
+      background-color: $lightGrayHover;
+    }
+    &:active {
+      background-color: $mediumGray;
+    }
+    &.toggle-on {
+      background-color: $green;
+      &:hover {
+        background-color: $greenHover;
+      }
+      &:active {
+        background-color: $greenActive;
+      }
+    }
+  }
   .switch-label {
     display: inline-block;
     vertical-align: bottom;

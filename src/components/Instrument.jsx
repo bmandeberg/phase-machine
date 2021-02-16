@@ -5,26 +5,45 @@ import Switch from 'react-switch'
 import SplitButton from './SplitButton'
 import './Instrument.scss'
 
-export default function Instrument({ className, instrumentOn, setInstrumentOn, instrumentType, setInstrumentType }) {
+export default function Instrument({
+  className,
+  instrumentOn,
+  setInstrumentOn,
+  instrumentType,
+  setInstrumentType,
+  small,
+}) {
   return (
     <div className={classNames('instrument', className)}>
       <div className="instrument-switch-container">
-        <p className="switch-label">Off</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setInstrumentOn}
-          checked={instrumentOn}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={'#e6e6e6'}
-          onColor={'#e6e6e6'}
-          offHandleColor={'#666666'}
-          onHandleColor={'#33ff00'}
-          width={48}
-          height={24}
-        />
-        <p className="switch-label">On</p>
-        <div className="instrument-label">Instrument</div>
+        {small ? (
+          <div
+            className={classNames('mono-toggle', { 'toggle-on': instrumentOn })}
+            onClick={() => {
+              setInstrumentOn((on) => !on)
+            }}>
+            {instrumentOn ? 'On' : 'Off'}
+          </div>
+        ) : (
+          <div>
+            <p className="switch-label">Off</p>
+            <Switch
+              className="instrument-switch"
+              onChange={setInstrumentOn}
+              checked={instrumentOn}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              offColor={'#e6e6e6'}
+              onColor={'#e6e6e6'}
+              offHandleColor={'#666666'}
+              onHandleColor={'#33ff00'}
+              width={48}
+              height={24}
+            />
+            <p className="switch-label">On</p>
+          </div>
+        )}
+        <div className="instrument-label">{small ? 'Instr' : 'Instrument'}</div>
       </div>
       <SplitButton content={instrumentType} />
     </div>
@@ -36,4 +55,5 @@ Instrument.propTypes = {
   instrumentType: PropTypes.string,
   setInstrumentType: PropTypes.func,
   className: PropTypes.string,
+  small: PropTypes.bool,
 }

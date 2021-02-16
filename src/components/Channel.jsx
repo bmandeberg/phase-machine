@@ -408,17 +408,21 @@ export default function Channel({
     [grabbing, noteLength, setGrabbing]
   )
 
-  const instrumentEl = useMemo(() => {
-    return (
-      <Instrument
-        className="channel-module"
-        instrumentOn={instrumentOn}
-        setInstrumentOn={setInstrumentOn}
-        instrumentType={instrumentType}
-        setInstrumentType={setInstrumentType}
-      />
-    )
-  }, [instrumentOn, instrumentType])
+  const instrumentEl = useCallback(
+    (small) => {
+      return (
+        <Instrument
+          className="channel-module"
+          instrumentOn={instrumentOn}
+          setInstrumentOn={setInstrumentOn}
+          instrumentType={instrumentType}
+          setInstrumentType={setInstrumentType}
+          small={small}
+        />
+      )
+    },
+    [instrumentOn, instrumentType]
+  )
 
   if (view === 'stacked') {
     return (
@@ -452,7 +456,7 @@ export default function Channel({
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
-          {instrumentEl}
+          {instrumentEl(false)}
         </div>
       </div>
     )
@@ -487,7 +491,7 @@ export default function Channel({
           </div>
         </Sequencer>
         <div className="channel-module border"></div>
-        {instrumentEl}
+        {instrumentEl(false)}
       </div>
     )
   } else if (view === 'clock') {
@@ -532,7 +536,7 @@ export default function Channel({
               {seqArpModeEl(false)}
               {seqSwingEl(false)}
               {noteLengthEl(false)}
-              {instrumentEl}
+              {instrumentEl(true)}
             </div>
           </div>
         </CSSTransition>
