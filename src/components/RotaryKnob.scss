@@ -9,6 +9,7 @@
   margin-top: 7px;
   .knob {
     margin: 0 auto;
+    margin-bottom: -1px;
     cursor: grab;
     &.grabbing {
       cursor: grabbing;
@@ -32,6 +33,9 @@
       background: #ffffff;
       opacity: 0;
       transition: opacity $transitionTime;
+    }
+    .knob {
+      margin-bottom: 0;
     }
     .knob-label {
       transition: opacity $transitionTime;

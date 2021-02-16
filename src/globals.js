@@ -1,4 +1,4 @@
-export const VIEWS = ['stacked', 'horizontal', 'clock']
+export const VIEWS = ['horizontal', 'stacked', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequencer']
 
@@ -78,3 +78,5 @@ export const CHANNEL_HEIGHT = 97
 export const MAX_SEQUENCE_LENGTH = 32
 
 export const DEFAULT_TIME_DIVISION = '4n'
+
+export const MAX_SWING_LENGTH = 6

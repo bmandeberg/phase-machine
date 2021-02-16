@@ -31,6 +31,7 @@ export default function App() {
         })
       }
     })
+    viewRef.current = VIEWS[0]
     const containerEl = container.current
     function handleScroll() {
       if (viewRef.current === 'horizontal') {

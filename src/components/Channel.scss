@@ -128,40 +128,30 @@
     overflow: hidden;
     &.drawer-open {
       max-height: 284px;
-      margin-bottom: -5px;
     }
     &.drawer-open-enter {
       max-height: 0;
-      margin-bottom: 0;
     }
     &.drawer-open-enter-active {
       transition: all $transitionTime ease-out;
       max-height: 284px;
-      margin-bottom: -5px;
     }
     &.drawer-open-enter-done {
       max-height: 284px;
-      margin-bottom: -5px;
       overflow: visible;
     }
     &.drawer-open-exit {
       max-height: 284px;
-      margin-bottom: -5px;
     }
     &.drawer-open-exit-active {
       transition: all $transitionTime ease-out;
       max-height: 0;
-      margin-bottom: 0;
     }
     &.drawer-open-exit-done {
       max-height: 0;
-      margin-bottom: 0;
     }
     .num-input {
       margin-top: 0;
-      .num-input-label {
-        margin-top: 13px;
-      }
     }
     .dropdown-container {
       margin-top: 0;
@@ -170,10 +160,15 @@
       }
     }
     .knob-container {
-      margin-top: -14px;
+      margin-top: -13px;
     }
     .channel-module {
       margin-right: 0;
+    }
+    .swing-module {
+      .num-input {
+        margin-left: 14px;
+      }
     }
     .instrument {
       margin-top: 0;
@@ -221,11 +216,17 @@
     margin-left: auto;
     width: 61px;
   }
-  .num-input {
+  .shift-input {
     display: block;
     margin-top: 19px;
     margin-right: auto;
     margin-left: auto;
+  }
+  .swing-module {
+    .num-input {
+      margin-top: 14px;
+      margin-left: 14px;
+    }
   }
   .knob-container {
     margin-top: 0;

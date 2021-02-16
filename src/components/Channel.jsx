@@ -10,6 +10,7 @@ import {
   CHANNEL_HEIGHT,
   MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
+  MAX_SWING_LENGTH,
 } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from './RotaryKnob'
@@ -43,6 +44,7 @@ export default function Channel({
   const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
   const [keyArpMode, setKeyArpMode] = useState(ARP_MODES[0])
   const [keySwing, setKeySwing] = useState(0)
+  const [keySwingLength, setKeySwingLength] = useState(2)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
   const [playingPitchClass, setPlayingPitchClass] = useState(null)
@@ -61,6 +63,7 @@ export default function Channel({
   const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
   const [seqArpMode, setSeqArpMode] = useState(ARP_MODES[0])
   const [seqSwing, setSeqSwing] = useState(0)
+  const [seqSwingLength, setSeqSwingLength] = useState(2)
   const [noteLength, setNoteLength] = useState(KNOB_MAX / 2)
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
@@ -285,18 +288,28 @@ export default function Channel({
   const keySwingEl = useCallback(
     (vertical) => {
       return (
-        <RotaryKnob
-          className="channel-module key-swing"
-          value={keySwing}
-          setValue={setKeySwing}
-          label="Swing"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          squeeze={!vertical ? 2 : 0}
-        />
+        <div className="swing-module channel-module">
+          <RotaryKnob
+            className="key-swing"
+            value={keySwing}
+            setValue={setKeySwing}
+            label="Swing"
+            setGrabbing={setGrabbing}
+            grabbing={grabbing}
+            squeeze={!vertical ? 2 : 0}
+          />
+          <NumInput
+            value={keySwingLength}
+            setValue={setKeySwingLength}
+            label="Length"
+            min={2}
+            max={MAX_SWING_LENGTH}
+            short={true}
+          />
+        </div>
       )
     },
-    [grabbing, keySwing, setGrabbing]
+    [grabbing, keySwing, keySwingLength, setGrabbing]
   )
 
   const seqLengthEl = useCallback(
@@ -306,10 +319,11 @@ export default function Channel({
           className="channel-module"
           value={seqLength}
           setValue={setSeqLength}
-          label="Length"
+          label="Steps"
           min={1}
           max={MAX_SEQUENCE_LENGTH}
           inline={inline}
+          short={!inline}
         />
       )
     },
@@ -352,18 +366,29 @@ export default function Channel({
   const seqSwingEl = useCallback(
     (inline) => {
       return (
-        <RotaryKnob
-          className="channel-module"
-          value={seqSwing}
-          setValue={setSeqSwing}
-          label="Swing"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          inline={inline}
-        />
+        <div className="swing-module channel-module">
+          <RotaryKnob
+            className="channel-module"
+            value={seqSwing}
+            setValue={setSeqSwing}
+            label="Swing"
+            setGrabbing={setGrabbing}
+            grabbing={grabbing}
+            inline={inline}
+          />
+          <NumInput
+            value={seqSwingLength}
+            setValue={setSeqSwingLength}
+            label="Length"
+            min={2}
+            max={MAX_SWING_LENGTH}
+            short={true}
+            inline={inline}
+          />
+        </div>
       )
     },
-    [grabbing, seqSwing, setGrabbing]
+    [grabbing, seqSwing, seqSwingLength, setGrabbing]
   )
 
   const noteLengthEl = useCallback(
@@ -373,7 +398,7 @@ export default function Channel({
           className="channel-module"
           value={noteLength}
           setValue={setNoteLength}
-          label="Note Length"
+          label="Sustain"
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           inline={inline}
