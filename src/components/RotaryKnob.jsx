@@ -93,7 +93,7 @@ export default function RotaryKnob({
 
   return (
     <div
-      style={{ marginLeft: squeeze && -squeeze, marginRight: squeeze && 16 - squeeze }}
+      style={{ marginLeft: squeeze && -squeeze }}
       className={classNames('knob-container', className, {
         'axis-knob': axisKnob,
         'axis-knob-large': axisKnobLarge,

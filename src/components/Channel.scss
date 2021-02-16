@@ -50,6 +50,11 @@
       padding-bottom: 6px;
     }
   }
+  .swing-module {
+    .knob-container {
+      margin-right: 10px;
+    }
+  }
 }
 
 .channel-clock {
@@ -173,13 +178,16 @@
     }
     .swing-module {
       .num-input {
-        margin-left: 14px;
+        margin-left: 10px;
       }
     }
     .instrument {
       margin-top: 0;
       .instrument-label {
         bottom: 4px;
+      }
+      .instrument-switch-container {
+        margin-right: 10px;
       }
     }
   }
@@ -231,7 +239,7 @@
   .swing-module {
     .num-input {
       margin-top: 14px;
-      margin-left: 14px;
+      margin-left: 10px;
     }
   }
   .knob-container {
