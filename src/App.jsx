@@ -57,6 +57,9 @@ export default function App() {
 
   const updateView = useCallback((view) => {
     viewRef.current = view
+    if (view === 'horizontal') {
+      setScrollTo(SECTIONS[0])
+    }
     setView(view)
   }, [])
 

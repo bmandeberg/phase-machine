@@ -44,6 +44,12 @@
     margin-top: 16px;
     width: 1254px;
   }
+  .split-button {
+    .split-button-action {
+      padding-top: 12px;
+      padding-bottom: 6px;
+    }
+  }
 }
 
 .channel-clock {
@@ -127,21 +133,21 @@
     margin-bottom: 0;
     overflow: hidden;
     &.drawer-open {
-      max-height: 284px;
+      max-height: 269px;
     }
     &.drawer-open-enter {
       max-height: 0;
     }
     &.drawer-open-enter-active {
       transition: all $transitionTime ease-out;
-      max-height: 284px;
+      max-height: 269px;
     }
     &.drawer-open-enter-done {
-      max-height: 284px;
+      max-height: 269px;
       overflow: visible;
     }
     &.drawer-open-exit {
-      max-height: 284px;
+      max-height: 269px;
     }
     &.drawer-open-exit-active {
       transition: all $transitionTime ease-out;
