@@ -138,21 +138,21 @@
     margin-bottom: 0;
     overflow: hidden;
     &.drawer-open {
-      max-height: 269px;
+      max-height: 284px;
     }
     &.drawer-open-enter {
       max-height: 0;
     }
     &.drawer-open-enter-active {
       transition: all $transitionTime ease-out;
-      max-height: 269px;
+      max-height: 284px;
     }
     &.drawer-open-enter-done {
-      max-height: 269px;
+      max-height: 284px;
       overflow: visible;
     }
     &.drawer-open-exit {
-      max-height: 269px;
+      max-height: 284px;
     }
     &.drawer-open-exit-active {
       transition: all $transitionTime ease-out;
