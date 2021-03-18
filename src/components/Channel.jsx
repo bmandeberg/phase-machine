@@ -247,6 +247,7 @@ export default function Channel({
   const pianoEl = useMemo(() => {
     return (
       <Piano
+        playingNote={playingNote}
         rangeStart={rangeStart}
         setRangeStart={setRangeStart}
         rangeEnd={rangeEnd}
@@ -258,7 +259,7 @@ export default function Channel({
         setResizing={setResizing}
       />
     )
-  }, [channelNum, grabbing, rangeEnd, rangeStart, resizing, setGrabbing, setResizing])
+  }, [channelNum, grabbing, playingNote, rangeEnd, rangeStart, resizing, setGrabbing, setResizing])
 
   const keyRateEl = useMemo(() => {
     return (
