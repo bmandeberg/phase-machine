@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { CSSTransition } from 'react-transition-group'
+// import * as Tone from '../Tone'
 import {
   KNOB_MAX,
   BLANK_PITCH_CLASSES,
@@ -12,6 +13,7 @@ import {
   DEFAULT_TIME_DIVISION,
   MAX_SWING_LENGTH,
 } from '../globals'
+import { flip, opposite, shiftWrapper, shift } from '../math'
 import classNames from 'classnames'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
@@ -68,6 +70,14 @@ export default function Channel({
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // event loops
+
+  useEffect(() => {
+    console.log(keySwing)
+  }, [keySwing])
+
+  // key manipulation functions
 
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -132,6 +142,8 @@ export default function Channel({
     setTurningAxisKnob(false)
     setShowKeyPreview(false)
   }, [setGrabbing])
+
+  // ui elements
 
   const channelNumEl = useMemo(() => {
     return (
@@ -425,6 +437,8 @@ export default function Channel({
     [instrumentOn, instrumentType]
   )
 
+  // return based on view
+
   if (view === 'stacked') {
     return (
       <div className="channel channel-horizontal">
@@ -556,52 +570,4 @@ Channel.propTypes = {
   view: PropTypes.string,
   numChannelsSoloed: PropTypes.number,
   setNumChannelsSoloed: PropTypes.func,
-}
-
-function pitchClassWrapper(n) {
-  return n < 0 ? 11 + ((n + 1) % 12) : n % 12
-}
-
-function flip(axis, key) {
-  const dedupAxis = (axis / 2) % 6
-  const keyCopy = key.slice()
-  key.forEach((pitchClass, i) => {
-    if (i % 6 !== dedupAxis) {
-      const flippedIndex = pitchClassWrapper(dedupAxis - (i - dedupAxis))
-      keyCopy[flippedIndex] = pitchClass
-    }
-  })
-  return keyCopy
-}
-
-function opposite(key) {
-  const keyCopy = key.slice()
-  key.forEach((pitchClass, i) => {
-    keyCopy[i] = !pitchClass
-  })
-  return keyCopy
-}
-
-function shiftWrapper(n, shiftDirectionForward) {
-  if (n < -11) {
-    n = 11
-  } else if (n > 11) {
-    n = -11
-  } else if (n === 0) {
-    n += shiftDirectionForward ? 1 : -1
-  } else {
-    n %= 12
-  }
-  return n
-}
-
-function shift(shiftAmt, key) {
-  const shiftedPitchClasses = BLANK_PITCH_CLASSES()
-  for (let i = 0; i < key.length; i++) {
-    if (key[i]) {
-      const shiftedIndex = pitchClassWrapper(i + shiftAmt)
-      shiftedPitchClasses[shiftedIndex] = true
-    }
-  }
-  return shiftedPitchClasses
 }
