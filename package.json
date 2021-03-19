@@ -17,7 +17,6 @@
     "react-switch": "^5.0.1",
     "react-transition-group": "^4.4.1",
     "react-use-gesture": "^8.0.1",
-    "tone": "^14.7.58",
     "web-vitals": "^0.2.4",
     "webmidi": "^2.5.1"
   },
