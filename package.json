@@ -1,30 +1,57 @@
 {
-  "name": "phase-web",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "classnames": "^2.2.6",
-    "node-sass": "4.14.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-dropdown": "^1.9.0",
-    "react-numeric-input": "^2.2.3",
-    "react-rotary-knob": "^1.1.8",
-    "react-scripts": "4.0.0",
-    "react-switch": "^5.0.1",
-    "react-transition-group": "^4.4.1",
-    "react-use-gesture": "^8.0.1",
-    "web-vitals": "^0.2.4",
-    "webmidi": "^2.5.1"
+  "name": "phase-machine",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "@babel/preset-react": "^7.12.13",
+    "@babel/runtime": "^7.13.10",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.1.3",
+    "eslint": "^7.22.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-standard": "^5.0.0",
+    "raw-loader": "^4.0.2",
+    "regenerator-runtime": "^0.13.7",
+    "sass": "^1.32.8",
+    "sass-loader": "^11.0.1",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.26.3",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "./node_modules/.bin/webpack serve --open --mode development",
+    "build": "./node_modules/.bin/webpack build"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-react",
+      "@babel/preset-env"
+    ]
+  },
+  "dependencies": {
+    "bezier-js": "^4.0.3",
+    "classnames": "^2.2.6",
+    "dat.gui": "^0.7.7",
+    "file-loader": "^6.2.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-dropdown": "^1.9.2",
+    "react-numeric-input": "^2.2.3",
+    "react-rotary-knob": "^1.1.8",
+    "react-scripts": "^4.0.3",
+    "react-switch": "^6.0.0",
+    "react-transition-group": "^4.4.1",
+    "react-use-gesture": "^9.1.3",
+    "url-loader": "^4.1.1",
+    "webmidi": "^2.5.2"
   },
   "eslintConfig": {
     "extends": [
@@ -62,8 +89,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "eslint-plugin-react-hooks": "^4.2.0"
   }
 }

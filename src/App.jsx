@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { VIEWS, SECTIONS } from './globals'

@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { CSSTransition } from 'react-transition-group'
-// import * as Tone from '../Tone'
+import regeneratorRuntime from 'regenerator-runtime'
+import * as Tone from '../Tone'
 import {
   KNOB_MAX,
   BLANK_PITCH_CLASSES,
@@ -70,12 +71,6 @@ export default function Channel({
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
   const [drawerOpen, setDrawerOpen] = useState(false)
-
-  // event loops
-
-  useEffect(() => {
-    console.log(keySwing)
-  }, [keySwing])
 
   // key manipulation functions
 
