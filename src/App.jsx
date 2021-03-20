@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import regeneratorRuntime from 'regenerator-runtime'
+import * as Tone from './tonejs/Tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { VIEWS, SECTIONS } from './globals'
@@ -83,6 +85,10 @@ export default function App() {
       left: 0,
     })
   }, [view])
+
+  useEffect(() => {
+    Tone.Transport.bpm.value = tempo
+  }, [tempo])
 
   return (
     <div

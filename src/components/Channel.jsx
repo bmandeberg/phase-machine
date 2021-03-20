@@ -78,8 +78,8 @@ export default function Channel({
   // key loop
   const keyCallback = useCallback((time) => {
     Tone.Transport.scheduleOnce(() => {
-      console.log('hey')
-    }, Tone.Transport.seconds + (time - Tone.immediate()))
+      console.log(time)
+    }, Tone.Transport.seconds)
     // synth.triggerAttackRelease('C5', 0.01, time)
   }, [])
   const keyLoop = useRef()
