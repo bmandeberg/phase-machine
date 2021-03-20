@@ -28,7 +28,10 @@
     }
   }
   &.playing {
-    background-color: $orange;
+    background-color: $darkGrayHover;
+    &.selected {
+      background-color: $orange;
+    }
     &:hover {
       background-color: $orangeHover;
     }

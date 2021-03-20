@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react'
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { CSSTransition } from 'react-transition-group'
 import regeneratorRuntime from 'regenerator-runtime'
-import * as Tone from '../Tone'
+import * as Tone from '../tonejs/Tone'
+import Loop from '../tonejs/Loop'
 import {
   KNOB_MAX,
   BLANK_PITCH_CLASSES,
@@ -71,6 +72,29 @@ export default function Channel({
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // event loops
+
+  // key loop
+  const keyCallback = useCallback((time) => {
+    Tone.Transport.scheduleOnce(() => {
+      console.log('hey')
+    }, Tone.Transport.seconds + (time - Tone.immediate()))
+    // synth.triggerAttackRelease('C5', 0.01, time)
+  }, [])
+  const keyLoop = useRef()
+  // init
+  useEffect(() => {
+    keyLoop.current = new Loop(keyCallback)
+  }, [keyCallback])
+  // change rate
+  useEffect(() => {
+    keyLoop.current.updateRate(keyRate)
+  }, [keyRate])
+  // change swing
+  useEffect(() => {
+    keyLoop.current.updateCurve(keySwing, keySwingLength)
+  }, [keySwing, keySwingLength])
 
   // key manipulation functions
 

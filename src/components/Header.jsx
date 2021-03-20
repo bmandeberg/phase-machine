@@ -1,5 +1,7 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
+import regeneratorRuntime from 'regenerator-runtime'
+import * as Tone from '../tonejs/Tone'
 import { VIEWS, SECTIONS, MAX_CHANNELS } from '../globals'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
@@ -28,9 +30,19 @@ export default function Header({
   channelSync,
   setChannelSync,
 }) {
-  const playStop = useCallback(() => {
+  const [initialized, setInitialized] = useState(false)
+  const playStop = useCallback(async () => {
+    if (!initialized) {
+      await Tone.start()
+      setInitialized(true)
+    }
+    if (!playing) {
+      Tone.Transport.start()
+    } else {
+      Tone.Transport.pause()
+    }
     setPlaying((playing) => !playing)
-  }, [setPlaying])
+  }, [initialized, playing, setPlaying])
 
   return (
     <div id="header">
