@@ -1,35 +1,39 @@
 import { Bezier } from 'bezier-js'
 import regeneratorRuntime from 'regenerator-runtime'
-import * as Tone from './Tone'
-import { lerp } from '../math'
+import * as Tone from 'tone'
+import { lerp, scaleToRange } from '../math'
 
 export default class Loop {
   constructor(callback) {
     this.rate = '4n'
-    this.swingAmt = 0
+    this.interval = Tone.Transport.toSeconds(this.rate)
+    this.swingAmt = 0.5
     this.swingPhraseLength = 2
+    this.swingEnable = false
     this.callback = callback
     this.swingSkew = 0
     this.swingIndex = 0
     this.swingCurve = new Bezier(
       0,
       0,
-      lerp(0, 1, this.swingAmt),
-      lerp(1 - this.swingSkew * 0.5, this.swingSkew * 0.5, this.swingAmt),
+      lerp(0, 1, 1 - this.swingAmt),
+      lerp(1 - this.swingSkew * 0.5, this.swingSkew * 0.5, 1 - this.swingAmt),
       1,
       1
     )
     this.loop = new Tone.Loop((time) => {
-      this.swingIndex = this.swingIndex === this.swingPhraseLength - 1 ? 0 : this.swingIndex + 1
-      // this.loop.offset = this.swingTime() ?? this.loop.offset
+      if (this.swingEnable) {
+        this.swingIndex = this.swingIndex >= this.swingPhraseLength - 1 ? 0 : this.swingIndex + 1
+        this.loop.stop()
+        this.loop.start(this.swingInterval())
+      }
       if (this.callback) this.callback(time)
-    }, this.rate).start(0)
+    }, this.interval).start(0)
   }
 
-  swingTime() {
-    const step = this.swingIndex / this.swingPhraseLength
-    const cy = this.curveY(step)
-    return Tone.Transport.toSeconds(this.rate) * this.swingPhraseLength * (step - cy)
+  swingInterval() {
+    const cy = this.curveY(this.swingIndex / this.swingPhraseLength)
+    return cy * this.interval * this.swingPhraseLength
   }
 
   curveY(x) {
@@ -40,17 +44,47 @@ export default class Loop {
     return this.swingCurve.get(intersect[0]).y
   }
 
-  updateCurve(swingAmt, swingPhraseLength) {
-    this.swingAmt = swingAmt
-    this.swingPhraseLength = swingPhraseLength
+  updateCurve() {
     this.swingCurve.points[1] = {
-      x: lerp(0, 1, this.swingAmt),
-      y: lerp(1 - this.swingSkew * 0.5, this.swingSkew * 0.5, this.swingAmt),
+      x: lerp(0, 1, 1 - this.swingAmt),
+      y: lerp(1 - this.swingSkew * 0.5, this.swingSkew * 0.5, 1 - this.swingAmt),
     }
+  }
+
+  updateSwingAmt(swingAmt) {
+    this.swingAmt = swingAmt
+    if (this.swingAmt === 0.5) {
+      this.swingEnable = false
+      this.loop.interval = this.interval
+      this.loop.stop()
+      this.loop.start(0)
+    } else {
+      this.swingEnable = true
+      this.loop.interval = this.interval * this.swingPhraseLength
+    }
+    this.updateCurve()
+  }
+
+  updateSwingPhraseLength(swingPhraseLength) {
+    this.swingPhraseLength = swingPhraseLength
+    this.swingSkew = this.swingPhraseLength === 2 ? 0 : scaleToRange(this.swingPhraseLength, 3, 6, 0.5, 1)
+    if (this.swingEnable) {
+      this.loop.interval = this.interval * this.swingPhraseLength
+    }
+    this.updateCurve()
   }
 
   updateRate(rate) {
     this.rate = rate
-    this.loop.interval = this.rate
+    this.interval = Tone.Transport.toSeconds(this.rate)
+    this.loop.interval = this.interval * this.swingPhraseLength
+  }
+
+  updateTempo(tempo) {
+    if (Tone.Transport.bpm.value !== tempo) {
+      Tone.Transport.bpm.value = tempo
+    }
+    this.interval = Tone.Transport.toSeconds(this.rate)
+    this.loop.interval = this.swingEnable ? this.interval * this.swingPhraseLength : this.interval
   }
 }

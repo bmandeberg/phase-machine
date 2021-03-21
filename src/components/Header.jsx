@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
-import * as Tone from '../tonejs/Tone'
+import * as Tone from 'tone'
 import { VIEWS, SECTIONS, MAX_CHANNELS } from '../globals'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import regeneratorRuntime from 'regenerator-runtime'
-import * as Tone from './tonejs/Tone'
+import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { VIEWS, SECTIONS } from './globals'
@@ -87,7 +87,9 @@ export default function App() {
   }, [view])
 
   useEffect(() => {
-    Tone.Transport.bpm.value = tempo
+    if (Tone.Transport.bpm.value !== tempo) {
+      Tone.Transport.bpm.value = tempo
+    }
   }, [tempo])
 
   return (
@@ -127,6 +129,7 @@ export default function App() {
             view={view}
             numChannelsSoloed={numChannelsSoloed}
             setNumChannelsSoloed={setNumChannelsSoloed}
+            tempo={tempo}
           />
         ))}
       </div>

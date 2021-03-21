@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { CSSTransition } from 'react-transition-group'
 import regeneratorRuntime from 'regenerator-runtime'
-import * as Tone from '../tonejs/Tone'
+import * as Tone from 'tone'
+import { CSSTransition } from 'react-transition-group'
 import Loop from '../tonejs/Loop'
 import {
   KNOB_MAX,
@@ -32,6 +32,12 @@ import './Channel.scss'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
+// const synth = new Tone.Synth().toDestination()
+// const synthB = new Tone.Synth().toDestination()
+// const loopB = new Tone.Loop((time) => {
+//   synthB.triggerAttackRelease('C4', '16n', time)
+// }, '4n').start(0)
+
 export default function Channel({
   numChannels,
   channelNum,
@@ -42,12 +48,13 @@ export default function Channel({
   view,
   numChannelsSoloed,
   setNumChannelsSoloed,
+  tempo,
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
   const [keyArpMode, setKeyArpMode] = useState(ARP_MODES[0])
-  const [keySwing, setKeySwing] = useState(0)
+  const [keySwing, setKeySwing] = useState(KNOB_MAX / 2)
   const [keySwingLength, setKeySwingLength] = useState(2)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
@@ -66,7 +73,7 @@ export default function Channel({
   const [playingStep, setPlayingStep] = useState(0)
   const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
   const [seqArpMode, setSeqArpMode] = useState(ARP_MODES[0])
-  const [seqSwing, setSeqSwing] = useState(0)
+  const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
   const [seqSwingLength, setSeqSwingLength] = useState(2)
   const [noteLength, setNoteLength] = useState(KNOB_MAX / 2)
   const [instrumentOn, setInstrumentOn] = useState(true)
@@ -77,9 +84,7 @@ export default function Channel({
 
   // key loop
   const keyCallback = useCallback((time) => {
-    Tone.Transport.scheduleOnce(() => {
-      console.log(time)
-    }, Tone.Transport.seconds)
+    console.log(time)
     // synth.triggerAttackRelease('C5', 0.01, time)
   }, [])
   const keyLoop = useRef()
@@ -91,10 +96,17 @@ export default function Channel({
   useEffect(() => {
     keyLoop.current.updateRate(keyRate)
   }, [keyRate])
+  // change tempo
+  useEffect(() => {
+    keyLoop.current.updateTempo(tempo)
+  }, [tempo])
   // change swing
   useEffect(() => {
-    keyLoop.current.updateCurve(keySwing, keySwingLength)
-  }, [keySwing, keySwingLength])
+    keyLoop.current.updateSwingAmt(keySwing)
+  }, [keySwing])
+  useEffect(() => {
+    keyLoop.current.updateSwingPhraseLength(keySwingLength)
+  }, [keySwingLength])
 
   // key manipulation functions
 
@@ -329,6 +341,7 @@ export default function Channel({
             setGrabbing={setGrabbing}
             grabbing={grabbing}
             squeeze={!vertical ? 2 : 0}
+            detent
           />
           <NumInput
             value={keySwingLength}
@@ -407,6 +420,7 @@ export default function Channel({
             setGrabbing={setGrabbing}
             grabbing={grabbing}
             inline={inline}
+            detent
           />
           <NumInput
             value={seqSwingLength}
@@ -589,4 +603,5 @@ Channel.propTypes = {
   view: PropTypes.string,
   numChannelsSoloed: PropTypes.number,
   setNumChannelsSoloed: PropTypes.func,
+  tempo: PropTypes.number,
 }

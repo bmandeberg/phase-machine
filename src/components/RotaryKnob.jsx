@@ -29,6 +29,7 @@ export default function RotaryKnob({
   stopChangingAxis,
   squeeze,
   inline,
+  detent,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -51,11 +52,15 @@ export default function RotaryKnob({
           }
           return
         } else {
-          setValue(val)
+          if (detent && val > maxVal / 2 - maxVal * 0.05 && val < maxVal / 2 + maxVal * 0.05) {
+            setValue(maxVal / 2)
+          } else {
+            setValue(val)
+          }
         }
       }
     },
-    [axisKnob, maxVal, minVal, value, setValue]
+    [axisKnob, value, setValue, maxVal, minVal, detent]
   )
 
   const startTurningKnob = useCallback(() => {
@@ -190,6 +195,7 @@ RotaryKnob.propTypes = {
   stopChangingAxis: PropTypes.func,
   squeeze: PropTypes.number,
   inline: PropTypes.bool,
+  detent: PropTypes.bool,
 }
 
 const skin = {
