@@ -67,7 +67,7 @@ export default class Loop {
 
   updateSwingPhraseLength(swingPhraseLength) {
     this.swingPhraseLength = swingPhraseLength
-    this.swingSkew = this.swingPhraseLength === 2 ? 0 : scaleToRange(this.swingPhraseLength, 3, 6, 0.5, 1)
+    this.swingSkew = this.swingPhraseLength === 2 ? 0 : scaleToRange(this.swingPhraseLength, 3, 6, 0.25, 1)
     if (this.swingEnable) {
       this.loop.interval = this.interval * this.swingPhraseLength
     }

@@ -4,6 +4,7 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import { CSSTransition } from 'react-transition-group'
 import Loop from '../tonejs/Loop'
+import useLoop from '../tonejs/useLoop'
 import {
   KNOB_MAX,
   BLANK_PITCH_CLASSES,
@@ -32,11 +33,11 @@ import './Channel.scss'
 
 const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
-// const synth = new Tone.Synth().toDestination()
-// const synthB = new Tone.Synth().toDestination()
-// const loopB = new Tone.Loop((time) => {
-//   synthB.triggerAttackRelease('C4', '16n', time)
-// }, '4n').start(0)
+const synth = new Tone.Synth().toDestination()
+const synthB = new Tone.Synth().toDestination()
+const loopB = new Tone.Loop((time) => {
+  synthB.triggerAttackRelease('C4', '16n', time)
+}, '4n').start(0)
 
 export default function Channel({
   numChannels,
@@ -85,28 +86,9 @@ export default function Channel({
   // key loop
   const keyCallback = useCallback((time) => {
     console.log(time)
-    // synth.triggerAttackRelease('C5', 0.01, time)
+    synth.triggerAttackRelease('C5', 0.01, time)
   }, [])
-  const keyLoop = useRef()
-  // init
-  useEffect(() => {
-    keyLoop.current = new Loop(keyCallback)
-  }, [keyCallback])
-  // change rate
-  useEffect(() => {
-    keyLoop.current.updateRate(keyRate)
-  }, [keyRate])
-  // change tempo
-  useEffect(() => {
-    keyLoop.current.updateTempo(tempo)
-  }, [tempo])
-  // change swing
-  useEffect(() => {
-    keyLoop.current.updateSwingAmt(keySwing)
-  }, [keySwing])
-  useEffect(() => {
-    keyLoop.current.updateSwingPhraseLength(keySwingLength)
-  }, [keySwingLength])
+  useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
 
   // key manipulation functions
 
