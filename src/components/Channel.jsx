@@ -80,14 +80,18 @@ export default function Channel({
   const [instrumentType, setInstrumentType] = useState('saw')
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  // event loops
-
   // key loop
   const keyCallback = useCallback((time) => {
-    console.log(time)
+    console.log('KEY', time)
     synth.triggerAttackRelease('C5', 0.01, time)
   }, [])
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
+
+  // sequence loop
+  const seqCallback = useCallback((time) => {
+    console.log('SEQ', time)
+  }, [])
+  useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
   // key manipulation functions
 
