@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import { CSSTransition } from 'react-transition-group'
-import Loop from '../tonejs/Loop'
 import useLoop from '../tonejs/useLoop'
 import {
   KNOB_MAX,
