@@ -25,6 +25,7 @@ import MuteSolo from './MuteSolo'
 import FlipOpposite from './FlipOpposite'
 import Piano from './Piano'
 import Sequencer from './Sequencer'
+import Switch from 'react-switch'
 import Instrument from './Instrument'
 import arrowSmall from '../assets/arrow-small.svg'
 import arrowClock from '../assets/arrow-clock.svg'
@@ -77,6 +78,7 @@ export default function Channel({
   const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
   const [seqSwingLength, setSeqSwingLength] = useState(2)
   const [seqSustain, setSeqSustain] = useState(KNOB_MAX / 2)
+  const [retrigger, setRetrigger] = useState(true)
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -315,19 +317,22 @@ export default function Channel({
     )
   }, [keyArpMode])
 
-  const keySustainEl = useCallback((vertical) => {
-    return (
-      <RotaryKnob
-        className="channel-module key-sustain"
-        value={keySustain}
-        setValue={setKeySustain}
-        label="Sustain"
-        setGrabbing={setGrabbing}
-        grabbing={grabbing}
-        squeeze={!vertical && 6}
-      />
-    )
-  }, [grabbing, keySustain, setGrabbing])
+  const keySustainEl = useCallback(
+    (vertical) => {
+      return (
+        <RotaryKnob
+          className="channel-module key-sustain"
+          value={keySustain}
+          setValue={setKeySustain}
+          label="Sustain"
+          setGrabbing={setGrabbing}
+          grabbing={grabbing}
+          squeeze={!vertical && 6}
+        />
+      )
+    },
+    [grabbing, keySustain, setGrabbing]
+  )
 
   const keySwingEl = useCallback(
     (vertical) => {
@@ -454,6 +459,30 @@ export default function Channel({
     [grabbing, seqSustain, setGrabbing]
   )
 
+  const retriggerEl = useCallback(
+    (inline) => {
+      return (
+        <div className={classNames('switch-container channel-module', { inline })}>
+          <Switch
+            className="switch"
+            onChange={setRetrigger}
+            checked={retrigger}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            offColor={'#e6e6e6'}
+            onColor={'#e6e6e6'}
+            offHandleColor={'#666666'}
+            onHandleColor={'#33ff00'}
+            width={48}
+            height={24}
+          />
+          <p className="switch-label">{inline ? 'Retrigger' : 'Retrig'}</p>
+        </div>
+      )
+    },
+    [retrigger]
+  )
+
   const instrumentEl = useCallback(
     (small) => {
       return (
@@ -502,6 +531,7 @@ export default function Channel({
               {seqArpModeEl(true)}
               {seqSwingEl(true)}
               {seqSustainEl(true)}
+              {retriggerEl(true)}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
@@ -538,6 +568,7 @@ export default function Channel({
             {seqArpModeEl(true)}
             {seqSwingEl(true)}
             {seqSustainEl(true)}
+            {retriggerEl(true)}
           </div>
         </Sequencer>
         <div className="channel-module border"></div>
@@ -589,6 +620,7 @@ export default function Channel({
               {seqArpModeEl(false)}
               {seqSwingEl(false)}
               {seqSustainEl(false)}
+              {retriggerEl(false)}
               {instrumentEl(true)}
             </div>
           </div>

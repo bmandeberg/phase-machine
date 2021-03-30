@@ -187,7 +187,10 @@
         bottom: 4px;
       }
       .instrument-switch-container {
-        margin-right: 10px;
+        margin-right: 0;
+      }
+      .button {
+        margin-top: 8px;
       }
     }
   }
@@ -278,4 +281,27 @@
 .border {
   height: 100%;
   border-right: 1px solid $lightMediumGray;
+}
+
+.switch-container {
+  text-align: center;
+  .switch-label {
+    font-size: 24px;
+    height: 24px;
+    margin-top: 9px;
+    line-height: 32px;
+    text-transform: uppercase;
+  }
+  &.inline {
+    margin-top: 15px;
+    .switch,
+    .switch-label {
+      margin-top: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .switch-label {
+      margin-left: 8px;
+    }
+  }
 }

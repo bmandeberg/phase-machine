@@ -31,9 +31,9 @@
     background-color: $mediumGray;
     &.selected {
       background-color: $orange;
-    }
-    &:hover {
-      background-color: $orangeHover;
+      &:hover {
+        background-color: $orangeHover;
+      }
     }
   }
 }

@@ -40,9 +40,9 @@ export default function Instrument({
           />
           {!small && <p className="switch-label">On</p>}
         </div>
-        <div className="instrument-label">{small ? 'Instr' : 'Instrument'}</div>
+        {!small && <div className="instrument-label">Instrument</div>}
       </div>
-      <SplitButton content={instrumentType} />
+      {small ? <div className="button">Instr</div> : <SplitButton content={instrumentType} />}
     </div>
   )
 }
