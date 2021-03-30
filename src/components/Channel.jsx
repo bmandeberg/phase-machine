@@ -327,7 +327,7 @@ export default function Channel({
           label="Sustain"
           setGrabbing={setGrabbing}
           grabbing={grabbing}
-          squeeze={!vertical && 6}
+          squeeze={!vertical ? 6 : 0}
         />
       )
     },
