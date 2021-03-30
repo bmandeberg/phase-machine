@@ -249,10 +249,16 @@
     margin-top: 16px;
   }
   .key-arp-mode {
-    margin-bottom: 32px;
+    margin-bottom: 16px;
   }
   .key-rate {
+    display: inline-block;
     margin-bottom: 21px;
+    margin-right: 10px;
+    min-width: 76px;
+  }
+  .key-sustain {
+    display: inline-block;
   }
   .key-swing {
     .knob {

@@ -31,7 +31,9 @@ module.exports = {
     publicPath: '/',
     filename: 'build.js',
   },
+  target: 'web',
   devServer: {
     contentBase: './dist',
+    hot: true,
   },
 }

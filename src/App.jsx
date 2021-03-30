@@ -7,6 +7,8 @@ import { VIEWS, SECTIONS } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 
+const CLOCK_WIDTH = 658
+
 export default function App() {
   const [tempo, setTempo] = useState(120)
   const [playing, setPlaying] = useState(false)
@@ -97,7 +99,9 @@ export default function App() {
       id="container"
       ref={container}
       className={classNames({ grabbing, resizing })}
-      style={{ minWidth: view === 'clock' ? 760 * Math.max(Math.floor(window.innerWidth / 760), 2) : null }}>
+      style={{
+        minWidth: view === 'clock' ? CLOCK_WIDTH * Math.max(Math.floor(window.innerWidth / CLOCK_WIDTH), 2) : null,
+      }}>
       <Header
         tempo={tempo}
         setTempo={setTempo}

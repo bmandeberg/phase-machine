@@ -54,6 +54,7 @@ export default function Channel({
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
   const [keyArpMode, setKeyArpMode] = useState(ARP_MODES[0])
+  const [keySustain, setKeySustain] = useState(KNOB_MAX / 2)
   const [keySwing, setKeySwing] = useState(KNOB_MAX / 2)
   const [keySwingLength, setKeySwingLength] = useState(2)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
@@ -75,7 +76,7 @@ export default function Channel({
   const [seqArpMode, setSeqArpMode] = useState(ARP_MODES[0])
   const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
   const [seqSwingLength, setSeqSwingLength] = useState(2)
-  const [noteLength, setNoteLength] = useState(KNOB_MAX / 2)
+  const [seqSustain, setSeqSustain] = useState(KNOB_MAX / 2)
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -314,6 +315,20 @@ export default function Channel({
     )
   }, [keyArpMode])
 
+  const keySustainEl = useCallback((vertical) => {
+    return (
+      <RotaryKnob
+        className="channel-module key-sustain"
+        value={keySustain}
+        setValue={setKeySustain}
+        label="Sustain"
+        setGrabbing={setGrabbing}
+        grabbing={grabbing}
+        squeeze={!vertical && 6}
+      />
+    )
+  }, [grabbing, keySustain, setGrabbing])
+
   const keySwingEl = useCallback(
     (vertical) => {
       return (
@@ -422,13 +437,13 @@ export default function Channel({
     [grabbing, seqSwing, seqSwingLength, setGrabbing]
   )
 
-  const noteLengthEl = useCallback(
+  const seqSustainEl = useCallback(
     (inline) => {
       return (
         <RotaryKnob
           className="channel-module"
-          value={noteLength}
-          setValue={setNoteLength}
+          value={seqSustain}
+          setValue={setSeqSustain}
           label="Sustain"
           setGrabbing={setGrabbing}
           grabbing={grabbing}
@@ -436,7 +451,7 @@ export default function Channel({
         />
       )
     },
-    [grabbing, noteLength, setGrabbing]
+    [grabbing, seqSustain, setGrabbing]
   )
 
   const instrumentEl = useCallback(
@@ -471,6 +486,7 @@ export default function Channel({
         {pianoEl}
         {keyRateEl}
         {keyArpModeEl}
+        {keySustainEl(false)}
         {keySwingEl(false)}
         <div style={{ top: numChannels * CHANNEL_HEIGHT }} className="channel channel-horizontal stacked-auxiliary">
           {channelNumEl}
@@ -485,7 +501,7 @@ export default function Channel({
               {seqRateEl(true)}
               {seqArpModeEl(true)}
               {seqSwingEl(true)}
-              {noteLengthEl(true)}
+              {seqSustainEl(true)}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
@@ -507,6 +523,7 @@ export default function Channel({
         {pianoEl}
         {keyRateEl}
         {keyArpModeEl}
+        {keySustainEl(false)}
         {keySwingEl(false)}
         <div className="channel-module border"></div>
         <Sequencer
@@ -520,7 +537,7 @@ export default function Channel({
             {seqRateEl(true)}
             {seqArpModeEl(true)}
             {seqSwingEl(true)}
-            {noteLengthEl(true)}
+            {seqSustainEl(true)}
           </div>
         </Sequencer>
         <div className="channel-module border"></div>
@@ -542,7 +559,10 @@ export default function Channel({
           {axisEl(true)}
           <div className="channel-vertical">
             {keyArpModeEl}
-            {keyRateEl}
+            <div>
+              {keyRateEl}
+              {keySustainEl(true)}
+            </div>
             {keySwingEl(true)}
           </div>
           <div
@@ -568,7 +588,7 @@ export default function Channel({
               {seqRateEl(false)}
               {seqArpModeEl(false)}
               {seqSwingEl(false)}
-              {noteLengthEl(false)}
+              {seqSustainEl(false)}
               {instrumentEl(true)}
             </div>
           </div>
