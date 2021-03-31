@@ -529,8 +529,8 @@ export default function Channel({
               {seqLengthEl(true)}
               {seqRateEl(true)}
               {seqArpModeEl(true)}
-              {seqSwingEl(true)}
               {seqSustainEl(true)}
+              {seqSwingEl(true)}
               {retriggerEl(true)}
             </div>
           </Sequencer>
@@ -566,8 +566,8 @@ export default function Channel({
             {seqLengthEl(true)}
             {seqRateEl(true)}
             {seqArpModeEl(true)}
-            {seqSwingEl(true)}
             {seqSustainEl(true)}
+            {seqSwingEl(true)}
             {retriggerEl(true)}
           </div>
         </Sequencer>
@@ -618,8 +618,8 @@ export default function Channel({
               {seqLengthEl(false)}
               {seqRateEl(false)}
               {seqArpModeEl(false)}
-              {seqSwingEl(false)}
               {seqSustainEl(false)}
+              {seqSwingEl(false)}
               {retriggerEl(false)}
               {instrumentEl(true)}
             </div>
