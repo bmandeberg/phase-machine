@@ -139,13 +139,16 @@
     overflow: hidden;
     &.drawer-open {
       max-height: 284px;
+      overflow: visible;
     }
     &.drawer-open-enter {
       max-height: 0;
+      overflow: hidden;
     }
     &.drawer-open-enter-active {
       transition: all $transitionTime ease-out;
       max-height: 284px;
+      overflow: hidden;
     }
     &.drawer-open-enter-done {
       max-height: 284px;
@@ -153,13 +156,16 @@
     }
     &.drawer-open-exit {
       max-height: 284px;
+      overflow: hidden;
     }
     &.drawer-open-exit-active {
       transition: all $transitionTime ease-out;
       max-height: 0;
+      overflow: hidden;
     }
     &.drawer-open-exit-done {
       max-height: 0;
+      overflow: hidden;
     }
     .num-input {
       margin-top: 0;
