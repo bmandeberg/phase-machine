@@ -20,6 +20,7 @@ export default function Piano({
   setGrabbing,
   resizing,
   setResizing,
+  noteOn,
 }) {
   const [changingRange, setChangingRange] = useState(false)
   const [rangeStartReference, setRangeStartReference] = useState(rangeStart)
@@ -93,7 +94,7 @@ export default function Piano({
           className={classNames('piano-note', {
             'white-key': whiteKey(i),
             'in-range': i >= rangeStart && i < rangeEnd,
-            playing: playingNote === i,
+            playing: noteOn && playingNote === i,
           })}></div>
       ))}
       <svg
@@ -159,6 +160,7 @@ Piano.propTypes = {
   setGrabbing: PropTypes.func,
   resizing: PropTypes.bool,
   setResizing: PropTypes.func,
+  noteOn: PropTypes.bool,
 }
 
 function noteLeftBoundary(i, x, height) {

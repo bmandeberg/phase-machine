@@ -49,6 +49,9 @@
         width: 11px;
       }
     }
+    &.playing {
+      background-color: $orange !important;
+    }
   }
   .piano-range {
     position: absolute;

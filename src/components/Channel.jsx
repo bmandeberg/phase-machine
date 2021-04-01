@@ -60,8 +60,6 @@ export default function Channel({
   const [keySwingLength, setKeySwingLength] = useState(2)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
-  const [playingPitchClass, setPlayingPitchClass] = useState(null)
-  const [playingNote, setPlayingNote] = useState(null)
   const [mute, setMute] = useState(false)
   const [solo, setSolo] = useState(false)
   const [shiftAmt, setShiftAmt] = useState(1)
@@ -70,6 +68,14 @@ export default function Channel({
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
   const [rangeStart, setRangeStart] = useState(MIDDLE_C)
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
+  const [playingPitchClass, setPlayingPitchClass] = useState(key.indexOf(true))
+  const [playingNote, setPlayingNote] = useState(() => {
+    const firstPitchClass =
+      rangeStart +
+      ((playingPitchClass >= rangeStart % 12 ? playingPitchClass : playingPitchClass + 12) - (rangeStart % 12))
+    return firstPitchClass < rangeEnd ? firstPitchClass : null
+  })
+  const [noteOn, setNoteOn] = useState(false)
   const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
   const [playingStep, setPlayingStep] = useState(0)
@@ -179,13 +185,14 @@ export default function Channel({
         musicalKey={key}
         setKey={setKey}
         playingPitchClass={playingPitchClass}
+        noteOn={noteOn}
         pianoKeys
         turningAxisKnob={turningAxisKnob}
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
       />
     )
-  }, [key, keyPreview, playingPitchClass, showKeyPreview, turningAxisKnob])
+  }, [key, keyPreview, noteOn, playingPitchClass, showKeyPreview, turningAxisKnob])
 
   const muteSoloEl = useMemo(() => {
     return (
@@ -279,6 +286,7 @@ export default function Channel({
     return (
       <Piano
         playingNote={playingNote}
+        noteOn={noteOn}
         rangeStart={rangeStart}
         setRangeStart={setRangeStart}
         rangeEnd={rangeEnd}
@@ -290,7 +298,7 @@ export default function Channel({
         setResizing={setResizing}
       />
     )
-  }, [channelNum, grabbing, playingNote, rangeEnd, rangeStart, resizing, setGrabbing, setResizing])
+  }, [channelNum, grabbing, noteOn, playingNote, rangeEnd, rangeStart, resizing, setGrabbing, setResizing])
 
   const keyRateEl = useMemo(() => {
     return (
