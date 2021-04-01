@@ -1,7 +1,7 @@
-import { BLANK_PITCH_CLASSES } from './globals'
+import { BLANK_PITCH_CLASSES, OCTAVES } from './globals'
 
-export function pitchClassWrapper(n) {
-  return n < 0 ? 11 + ((n + 1) % 12) : n % 12
+export function rangeWrapper(n, range = 12) {
+  return n < 0 ? range - 1 + ((n + 1) % range) : n % range
 }
 
 export function flip(axis, key) {
@@ -9,7 +9,7 @@ export function flip(axis, key) {
   const keyCopy = key.slice()
   key.forEach((pitchClass, i) => {
     if (i % 6 !== dedupAxis) {
-      const flippedIndex = pitchClassWrapper(dedupAxis - (i - dedupAxis))
+      const flippedIndex = rangeWrapper(dedupAxis - (i - dedupAxis))
       keyCopy[flippedIndex] = pitchClass
     }
   })
@@ -41,11 +41,25 @@ export function shift(shiftAmt, key) {
   const shiftedPitchClasses = BLANK_PITCH_CLASSES()
   for (let i = 0; i < key.length; i++) {
     if (key[i]) {
-      const shiftedIndex = pitchClassWrapper(i + shiftAmt)
+      const shiftedIndex = rangeWrapper(i + shiftAmt)
       shiftedPitchClasses[shiftedIndex] = true
     }
   }
   return shiftedPitchClasses
+}
+
+export function pitchesInRange(rangeStart, rangeEnd, key) {
+  const pitchIndexes = []
+  key.forEach((pitchClass, i) => {
+    if (pitchClass) {
+      pitchIndexes.push(i)
+    }
+  })
+  const allPitches = []
+  for (let i = 0; i < OCTAVES; i++) {
+    allPitches.push(...pitchIndexes.map((pi) => pi + 12 * i))
+  }
+  return allPitches.filter((pitch) => pitch >= rangeStart && pitch < rangeEnd)
 }
 
 export function lerp(n1, n2, t) {

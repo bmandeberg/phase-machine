@@ -27,7 +27,7 @@ export default class Loop {
         this.loop.stop()
         this.loop.start(this.swingInterval())
       }
-      if (this.callback) this.callback(time)
+      if (this.callback) this.callback(time, this.interval)
     }, this.interval).start(0)
   }
 

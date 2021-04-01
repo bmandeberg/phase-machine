@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
@@ -15,7 +15,7 @@ import {
   DEFAULT_TIME_DIVISION,
   MAX_SWING_LENGTH,
 } from '../globals'
-import { flip, opposite, shiftWrapper, shift } from '../math'
+import { flip, opposite, shiftWrapper, shift, pitchesInRange } from '../math'
 import classNames from 'classnames'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
@@ -54,7 +54,8 @@ export default function Channel({
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
-  const [keyArpMode, setKeyArpMode] = useState(ARP_MODES[0])
+  const [keyArpMode, setKeyArpMode] = useState(Object.keys(ARP_MODES)[0])
+  const keyArpUtil = useRef(false)
   const [keySustain, setKeySustain] = useState(KNOB_MAX / 2)
   const [keySwing, setKeySwing] = useState(KNOB_MAX / 2)
   const [keySwingLength, setKeySwingLength] = useState(2)
@@ -69,18 +70,14 @@ export default function Channel({
   const [rangeStart, setRangeStart] = useState(MIDDLE_C)
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
   const [playingPitchClass, setPlayingPitchClass] = useState(key.indexOf(true))
-  const [playingNote, setPlayingNote] = useState(() => {
-    const firstPitchClass =
-      rangeStart +
-      ((playingPitchClass >= rangeStart % 12 ? playingPitchClass : playingPitchClass + 12) - (rangeStart % 12))
-    return firstPitchClass < rangeEnd ? firstPitchClass : null
-  })
+  const [playingNote, setPlayingNote] = useState(pitchesInRange(rangeStart, rangeEnd, key)[0])
   const [noteOn, setNoteOn] = useState(false)
   const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
   const [playingStep, setPlayingStep] = useState(0)
   const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
-  const [seqArpMode, setSeqArpMode] = useState(ARP_MODES[0])
+  const [seqArpMode, setSeqArpMode] = useState(Object.keys(ARP_MODES)[0])
+  const seqArpUtil = useRef(false)
   const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
   const [seqSwingLength, setSeqSwingLength] = useState(2)
   const [seqSustain, setSeqSustain] = useState(KNOB_MAX / 2)
@@ -90,14 +87,15 @@ export default function Channel({
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   // key loop
-  const keyCallback = useCallback((time) => {
+  const keyCallback = useCallback((time, interval) => {
     console.log('KEY', time)
+
     synth.triggerAttackRelease('C5', 0.01, time)
   }, [])
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
 
   // sequence loop
-  const seqCallback = useCallback((time) => {
+  const seqCallback = useCallback((time, interval) => {
     console.log('SEQ', time)
   }, [])
   useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
@@ -318,7 +316,7 @@ export default function Channel({
       <Dropdn
         className="channel-module key-arp-mode"
         label="Arp Mode"
-        options={ARP_MODES}
+        options={Object.keys(ARP_MODES)}
         setValue={setKeyArpMode}
         value={keyArpMode}
       />
@@ -411,7 +409,7 @@ export default function Channel({
         <Dropdn
           className="channel-module"
           label="Arp Mode"
-          options={ARP_MODES}
+          options={Object.keys(ARP_MODES)}
           setValue={setSeqArpMode}
           value={seqArpMode}
           inline={inline}

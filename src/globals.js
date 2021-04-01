@@ -1,3 +1,5 @@
+import { rangeWrapper } from './math'
+
 export const VIEWS = ['horizontal', 'stacked', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequencer']
@@ -33,7 +35,24 @@ export const RATES = [
   '0',
 ]
 
-export const ARP_MODES = ['up', 'up/down', 'down', '+/-', 'random']
+export const ARP_MODES = {
+  up: (length, i) => (i < length - 1 ? i + 1 : 0),
+  'up/down': (length, i, descending) => {
+    if ((i === 0 && descending.current) || (i === length - 1 && !descending.current)) {
+      descending.current = !descending.current
+    }
+    return i + (descending.current ? -1 : 1)
+  },
+  down: (length, i) => (i > 0 ? i - 1 : length - 1),
+  '+/-': (length, i, plus, minus, doMinus) => {
+    if (doMinus) {
+      return rangeWrapper(i - minus, length)
+    } else {
+      return rangeWrapper(i + plus, length)
+    }
+  },
+  random: (length) => Math.floor(Math.random() * length),
+}
 
 export const KNOB_MAX = 1
 
