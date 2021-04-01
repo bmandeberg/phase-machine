@@ -7,6 +7,8 @@ export default function useLoop(callback, rate, tempo, swing, swingLength) {
   useEffect(() => {
     if (!loop.current) {
       loop.current = new Loop(callback)
+    } else {
+      loop.current.callback = callback
     }
   }, [callback])
   // change rate

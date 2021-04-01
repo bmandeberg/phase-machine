@@ -14,6 +14,7 @@ import {
   MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
   MAX_SWING_LENGTH,
+  handleArpMode,
 } from '../globals'
 import { flip, opposite, shiftWrapper, shift, pitchesInRange } from '../math'
 import classNames from 'classnames'
@@ -71,7 +72,7 @@ export default function Channel({
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
   const [playingPitchClass, setPlayingPitchClass] = useState(key.indexOf(true))
   const [playingNote, setPlayingNote] = useState(pitchesInRange(rangeStart, rangeEnd, key)[0])
-  const [noteOn, setNoteOn] = useState(false)
+  const [noteOn, setNoteOn] = useState(true)
   const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
   const [playingStep, setPlayingStep] = useState(0)
@@ -87,11 +88,23 @@ export default function Channel({
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   // key loop
-  const keyCallback = useCallback((time, interval) => {
-    console.log('KEY', time)
-
-    synth.triggerAttackRelease('C5', 0.01, time)
-  }, [])
+  const keyCallback = useCallback(
+    (time, interval) => {
+      console.log('KEY', time)
+      const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
+      let currentPitchIndex = pitchRange.indexOf(playingNote)
+      if (currentPitchIndex === -1) {
+        currentPitchIndex = pitchRange.indexOf(
+          pitchRange.reduce((acc, curr) => (Math.abs(playingNote - curr) < Math.abs(playingNote - acc) ? curr : acc))
+        )
+      }
+      const nextPitchIndex = handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)
+      setPlayingNote(pitchRange[nextPitchIndex])
+      setPlayingPitchClass(pitchRange[nextPitchIndex] % 12)
+      synth.triggerAttackRelease('C5', 0.01, time)
+    },
+    [key, keyArpMode, playingNote, rangeEnd, rangeStart]
+  )
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
 
   // sequence loop

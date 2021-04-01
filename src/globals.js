@@ -45,13 +45,35 @@ export const ARP_MODES = {
   },
   down: (length, i) => (i > 0 ? i - 1 : length - 1),
   '+/-': (length, i, plus, minus, doMinus) => {
-    if (doMinus) {
-      return rangeWrapper(i - minus, length)
-    } else {
-      return rangeWrapper(i + plus, length)
-    }
+    const index = rangeWrapper(i + (doMinus.current ? minus : plus), length)
+    doMinus.current = !doMinus.current
+    return index
   },
   random: (length) => Math.floor(Math.random() * length),
+}
+
+export function handleArpMode(mode, length, i, util, plus, minus) {
+  let nextPitchIndex
+  switch (mode) {
+    case 'up':
+      nextPitchIndex = ARP_MODES['up'](length, i)
+      break
+    case 'up/down':
+      nextPitchIndex = ARP_MODES['up/down'](length, i, util)
+      break
+    case 'down':
+      nextPitchIndex = ARP_MODES['down'](length, i)
+      break
+    case '+/-':
+      nextPitchIndex = ARP_MODES['+/-'](length, i, plus, minus, util)
+      break
+    case 'random':
+      nextPitchIndex = ARP_MODES['random'](length)
+      break
+    default:
+      console.log('UNRECOGNIZED ARP MODE')
+  }
+  return nextPitchIndex
 }
 
 export const KNOB_MAX = 1
