@@ -32,18 +32,6 @@
           background-color: $lightGrayHover;
         }
       }
-      &.selected {
-        background-color: $green;
-        &:hover {
-          background-color: $greenHover;
-        }
-      }
-      &.playing {
-        background-color: $orange;
-        &:hover {
-          background-color: $orangeHover;
-        }
-      }
       &:first-of-type {
         border-right: none;
       }
@@ -95,9 +83,15 @@
     border-width: 0;
     transition: border-width $transitionTime / 4, background-color $transitionTime / 4;
     &.selected {
-      background-color: $green;
+      background-color: $green !important;
       &:hover {
-        background-color: $greenHover;
+        background-color: $greenHover !important;
+      }
+    }
+    &.playing {
+      background-color: $orange !important;
+      &:hover {
+        background-color: $orangeHover !important;
       }
     }
     &.previewed {

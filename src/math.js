@@ -69,3 +69,7 @@ export function lerp(n1, n2, t) {
 export function scaleToRange(num, inMin, inMax, outMin, outMax) {
   return ((num - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
 }
+
+export function constrain(n, min, max) {
+  return Math.min(Math.max(n, min), max)
+}

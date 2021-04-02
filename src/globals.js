@@ -44,15 +44,15 @@ export const ARP_MODES = {
     return i + (descending.current ? -1 : 1)
   },
   down: (length, i) => (i > 0 ? i - 1 : length - 1),
-  '+/-': (length, i, plus, minus, doMinus) => {
-    const index = rangeWrapper(i + (doMinus.current ? minus : plus), length)
-    doMinus.current = !doMinus.current
+  '+/-': (length, i, inc1, inc2, doInc2) => {
+    const index = rangeWrapper(i + (doInc2.current ? inc2 : inc1), length)
+    doInc2.current = !doInc2.current
     return index
   },
   random: (length) => Math.floor(Math.random() * length),
 }
 
-export function handleArpMode(mode, length, i, util, plus, minus) {
+export function handleArpMode(mode, length, i, util, inc1, inc2) {
   let nextPitchIndex
   switch (mode) {
     case 'up':
@@ -65,7 +65,7 @@ export function handleArpMode(mode, length, i, util, plus, minus) {
       nextPitchIndex = ARP_MODES['down'](length, i)
       break
     case '+/-':
-      nextPitchIndex = ARP_MODES['+/-'](length, i, plus, minus, util)
+      nextPitchIndex = ARP_MODES['+/-'](length, i, inc1, inc2, util)
       break
     case 'random':
       nextPitchIndex = ARP_MODES['random'](length)

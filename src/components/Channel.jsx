@@ -16,7 +16,7 @@ import {
   MAX_SWING_LENGTH,
   handleArpMode,
 } from '../globals'
-import { flip, opposite, shiftWrapper, shift, pitchesInRange } from '../math'
+import { flip, opposite, shiftWrapper, shift, pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
 import RotaryKnob from './RotaryKnob'
 import NumInput from './NumInput'
@@ -108,9 +108,15 @@ export default function Channel({
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
 
   // sequence loop
-  const seqCallback = useCallback((time, interval) => {
-    console.log('SEQ', time)
-  }, [])
+  const seqCallback = useCallback(
+    (time, interval) => {
+      console.log('SEQ', time)
+      const thisStep = playingStep
+      const nextStep = handleArpMode(seqArpMode, seqLength, constrain(playingStep, 0, seqLength - 1), seqArpUtil, 2, -1)
+      setPlayingStep(nextStep)
+    },
+    [playingStep, seqArpMode, seqLength]
+  )
   useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
   // key manipulation functions
@@ -264,6 +270,7 @@ export default function Channel({
           showKeyPreview={showKeyPreview}
           startChangingAxis={startChangingAxis}
           stopChangingAxis={stopChangingAxis}
+          noteOn={noteOn}
         />
       )
     },
@@ -272,6 +279,7 @@ export default function Channel({
       grabbing,
       key,
       keyPreview,
+      noteOn,
       playingPitchClass,
       showKeyPreview,
       startChangingAxis,

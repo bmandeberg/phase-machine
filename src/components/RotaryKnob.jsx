@@ -30,6 +30,7 @@ export default function RotaryKnob({
   squeeze,
   inline,
   detent,
+  noteOn,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -141,6 +142,7 @@ export default function RotaryKnob({
               className="axis-knob-supplemental"
               keyPreview={keyPreview}
               showKeyPreview={showKeyPreview}
+              noteOn={noteOn}
             />
           )}
         </div>
@@ -153,6 +155,7 @@ export default function RotaryKnob({
           turningAxisKnob={turningAxisKnob}
           keyPreview={keyPreview}
           showKeyPreview={showKeyPreview}
+          noteOn={noteOn}
         />
       )}
       <Knob
@@ -196,6 +199,7 @@ RotaryKnob.propTypes = {
   squeeze: PropTypes.number,
   inline: PropTypes.bool,
   detent: PropTypes.bool,
+  noteOne: PropTypes.bool,
 }
 
 const skin = {
