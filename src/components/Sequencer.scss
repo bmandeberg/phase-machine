@@ -29,6 +29,9 @@
   }
   &.playing {
     background-color: $darkerLightOrange;
+    &:hover {
+      background-color: $darkLightOrange;
+    }
     &.selected {
       background-color: $orange;
       &:hover {
