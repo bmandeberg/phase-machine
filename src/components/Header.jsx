@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
@@ -13,82 +13,99 @@ import play from '../assets/play.svg'
 import stop from '../assets/stop.svg'
 import './Header.scss'
 
-export default function Header({
-  tempo,
-  setTempo,
-  playing,
-  setPlaying,
-  midiOutputs,
-  midiOut,
-  setMidiOut,
-  numChannels,
-  setNumChannels,
-  view,
-  setView,
-  scrollTo,
-  setScrollTo,
-  channelSync,
-  setChannelSync,
-}) {
-  const [initialized, setInitialized] = useState(false)
-  const playStop = useCallback(async () => {
-    if (!initialized) {
+export default class Header extends React.Component {
+  constructor(props) {
+    super(props)
+    this.initialized = false
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown.bind(this))
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown.bind(this))
+  }
+
+  async playStop() {
+    if (!this.initialized) {
       await Tone.start()
-      setInitialized(true)
+      this.initialized = true
     }
-    if (!playing) {
+    if (!this.props.playing) {
       Tone.Transport.start()
     } else {
       Tone.Transport.pause()
     }
-    setPlaying((playing) => !playing)
-  }, [initialized, playing, setPlaying])
+    this.props.setPlaying((playing) => !playing)
+  }
 
-  return (
-    <div id="header">
-      <img id="logo" src={logo} alt="Phase Machine" />
-      <img id="play-stop" className="header-item" src={playing ? stop : play} alt="PLAY" onClick={playStop} />
-      <NumInput
-        className="header-item small-input"
-        value={tempo}
-        setValue={setTempo}
-        label="Tempo"
-        min={0}
-        max={200}
-        small
-      />
-      <NumInput
-        className="header-item small-input"
-        value={numChannels}
-        setValue={setNumChannels}
-        label="Channels"
-        min={1}
-        max={MAX_CHANNELS}
-        small
-      />
-      <SplitButton className="header-item" label="Preset" small />
-      <Dropdn className="header-item" label="View" options={VIEWS} setValue={setView} value={view} small />
-      <Dropdn
-        className="header-item"
-        label="MIDI Out"
-        options={midiOutputs}
-        setValue={setMidiOut}
-        value={midiOut}
-        placeholder="No MIDI Out"
-        small
-      />
-      {view === 'horizontal' && (
-        <RadioButtons
+  handleKeyDown(e) {
+    if (e.key === ' ') {
+      this.playStop()
+    }
+  }
+
+  render() {
+    return (
+      <div id="header">
+        <img id="logo" src={logo} alt="Phase Machine" />
+        <img
+          id="play-stop"
           className="header-item"
-          label="Scroll To"
-          options={SECTIONS}
-          selected={scrollTo}
-          setSelected={setScrollTo}
+          src={this.props.playing ? stop : play}
+          alt="PLAY"
+          onClick={this.playStop.bind(this)}
         />
-      )}
-      <Checkbox checked={channelSync} setChecked={setChannelSync} label="Channel Sync" />
-    </div>
-  )
+        <NumInput
+          className="header-item small-input"
+          value={this.props.tempo}
+          setValue={this.props.setTempo}
+          label="Tempo"
+          min={0}
+          max={200}
+          small
+        />
+        <NumInput
+          className="header-item small-input"
+          value={this.props.numChannels}
+          setValue={this.props.setNumChannels}
+          label="Channels"
+          min={1}
+          max={MAX_CHANNELS}
+          small
+        />
+        <SplitButton className="header-item" label="Preset" small />
+        <Dropdn
+          className="header-item"
+          label="View"
+          options={VIEWS}
+          setValue={this.props.setView}
+          value={this.props.view}
+          small
+        />
+        <Dropdn
+          className="header-item"
+          label="MIDI Out"
+          options={this.props.midiOutputs}
+          setValue={this.props.setMidiOut}
+          value={this.props.midiOut}
+          placeholder="No MIDI Out"
+          small
+        />
+        {this.props.view === 'horizontal' && (
+          <RadioButtons
+            className="header-item"
+            label="Scroll To"
+            options={SECTIONS}
+            selected={this.props.scrollTo}
+            setSelected={this.props.setScrollTo}
+          />
+        )}
+        <Checkbox checked={this.props.channelSync} setChecked={this.props.setChannelSync} label="Channel Sync" />
+      </div>
+    )
+  }
 }
 Header.propTypes = {
   tempo: PropTypes.number,
