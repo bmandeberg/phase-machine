@@ -54,7 +54,7 @@
       }
     }
     &.playing {
-      background-color: $orange;
+      background-color: darken($orange, 2%);
       &.white-key.in-range {
         border-right: none;
         border-bottom: none;
