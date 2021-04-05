@@ -42,6 +42,7 @@ export default class Header extends React.Component {
 
   handleKeyDown(e) {
     if (e.key === ' ') {
+      e.preventDefault()
       this.playStop()
     }
   }

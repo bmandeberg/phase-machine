@@ -93,6 +93,7 @@ export default function Piano({
           key={i}
           className={classNames('piano-note', {
             'white-key': whiteKey(i),
+            'skip-black-key': whiteKey(i + 1),
             'in-range': i >= rangeStart && i < rangeEnd,
             playing: noteOn && playingNote === i,
           })}></div>

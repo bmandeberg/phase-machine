@@ -101,7 +101,7 @@ export default function Channel({
       const nextPitchIndex = handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)
       setPlayingNote(pitchRange[nextPitchIndex])
       setPlayingPitchClass(pitchRange[nextPitchIndex] % 12)
-      synth.triggerAttackRelease('C5', 0.01, time)
+      // synth.triggerAttackRelease('C5', 0.01, time)
     },
     [key, keyArpMode, playingNote, rangeEnd, rangeStart]
   )
