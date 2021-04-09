@@ -77,14 +77,18 @@ export default class Loop {
   updateRate(rate) {
     this.rate = rate
     this.interval = Tone.Transport.toSeconds(this.rate)
-    this.loop.interval = this.interval * this.swingPhraseLength
+    this.updateInterval()
   }
 
   updateTempo(tempo) {
     if (Tone.Transport.bpm.value !== tempo) {
       Tone.Transport.bpm.value = tempo
     }
+    this.updateInterval()
+  }
+
+  updateInterval() {
     this.interval = Tone.Transport.toSeconds(this.rate)
-    this.loop.interval = this.swingEnable ? this.interval * this.swingPhraseLength : this.interval
+    this.loop.interval = this.interval * (this.swingEnable ? this.swingPhraseLength : 1)
   }
 }
