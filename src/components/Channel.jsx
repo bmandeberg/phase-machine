@@ -119,6 +119,7 @@ export default function Channel({
         }
         instrument.current.triggerAttack(noteString(noteIndex.current), time)
         setNoteOn(true)
+        setPlayingNote(noteIndex.current)
         if (retrigger || !seqSteps[nextStep.current]) {
           clearTimeout(noteOffTimeout.current)
           noteOffTimeout.current = setTimeout(() => {
@@ -163,20 +164,21 @@ export default function Channel({
     (time, interval) => {
       // console.log('KEY', time)
       const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
-      let currentPitchIndex = pitchRange.indexOf(playingNote)
+      let currentPitchIndex = pitchRange.indexOf(noteIndex.current)
       if (currentPitchIndex === -1) {
         currentPitchIndex = pitchRange.indexOf(
-          pitchRange.reduce((acc, curr) => (Math.abs(playingNote - curr) < Math.abs(playingNote - acc) ? curr : acc))
+          pitchRange.reduce((acc, curr) =>
+            Math.abs(noteIndex.current - curr) < Math.abs(noteIndex.current - acc) ? curr : acc
+          )
         )
       }
       noteIndex.current = pitchRange[handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)]
-      setPlayingNote(noteIndex.current)
       setPlayingPitchClass(noteIndex.current % 12)
       if (seqSteps[currentStep.current]) {
         playNote(time, interval)
       }
     },
-    [key, keyArpMode, playNote, playingNote, rangeEnd, rangeStart, seqSteps]
+    [key, keyArpMode, playNote, rangeEnd, rangeStart, seqSteps]
   )
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
 
