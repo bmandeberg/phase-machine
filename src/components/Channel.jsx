@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react'
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import { CSSTransition } from 'react-transition-group'
 import useLoop from '../tonejs/useLoop'
 import {
+  CHANNEL_COLORS,
   KNOB_MAX,
   BLANK_PITCH_CLASSES,
   MIDDLE_C,
@@ -15,6 +16,7 @@ import {
   DEFAULT_TIME_DIVISION,
   MAX_SWING_LENGTH,
   handleArpMode,
+  noteString,
 } from '../globals'
 import { flip, opposite, shiftWrapper, shift, pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
@@ -32,13 +34,10 @@ import arrowSmall from '../assets/arrow-small.svg'
 import arrowClock from '../assets/arrow-clock.svg'
 import './Channel.scss'
 
-const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
-
-const synth = new Tone.Synth().toDestination()
-const synthB = new Tone.Synth().toDestination()
-const loopB = new Tone.Loop((time) => {
-  synthB.triggerAttackRelease('C4', '16n', time)
-}, '4n').start(0)
+// const synthB = new Tone.Synth().toDestination()
+// const loopB = new Tone.Loop((time) => {
+//   synthB.triggerAttackRelease('C4', '16n', time)
+// }, '4n').start(0)
 
 export default function Channel({
   numChannels,
@@ -72,10 +71,15 @@ export default function Channel({
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
   const [playingPitchClass, setPlayingPitchClass] = useState(key.indexOf(true))
   const [playingNote, setPlayingNote] = useState(pitchesInRange(rangeStart, rangeEnd, key)[0])
-  const [noteOn, setNoteOn] = useState(true)
+  const noteIndex = useRef()
+  const [noteOn, setNoteOn] = useState(false)
+  const noteOffTimeout = useRef()
   const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
   const [playingStep, setPlayingStep] = useState(0)
+  const currentStep = useRef()
+  const nextStep = useRef()
+  const playNoteDebounce = useRef()
   const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
   const [seqArpMode, setSeqArpMode] = useState(Object.keys(ARP_MODES)[0])
   const seqArpUtil = useRef(false)
@@ -85,12 +89,79 @@ export default function Channel({
   const [retrigger, setRetrigger] = useState(true)
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState('saw')
+  const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    instrument.current = new Tone.MonoSynth({
+      oscillator: {
+        type: 'sawtooth',
+      },
+      envelope: {
+        attack: 0.05,
+      },
+      filterEnvelope: {
+        attack: 0,
+        baseFrequency: 3000,
+      },
+    }).toDestination()
+    return () => {
+      instrument.current.dispose()
+    }
+  }, [])
+
+  // play note
+  const playNote = useCallback(
+    (time, interval) => {
+      if (!playNoteDebounce.current) {
+        if (noteOn) {
+          noteOff()
+        }
+        instrument.current.triggerAttack(noteString(noteIndex.current), time)
+        setNoteOn(true)
+        if (retrigger || !seqSteps[nextStep.current]) {
+          clearTimeout(noteOffTimeout.current)
+          noteOffTimeout.current = setTimeout(() => {
+            noteOff()
+          }, time - Tone.immediate() + keySustain * interval * 1000)
+        }
+        playNoteDebounce.current = setTimeout(() => {
+          playNoteDebounce.current = null
+        }, 20)
+      }
+      function noteOff() {
+        instrument.current.triggerRelease()
+        setNoteOn(false)
+      }
+    },
+    [keySustain, noteOn, retrigger, seqSteps]
+  )
+
+  // sequence loop
+  const seqCallback = useCallback(
+    (time, interval) => {
+      // console.log('SEQ', time)
+      currentStep.current =
+        nextStep.current ??
+        handleArpMode(seqArpMode, seqLength, constrain(playingStep, 0, seqLength - 1), seqArpUtil, 2, -1)
+      setPlayingStep(currentStep.current)
+      nextStep.current = handleArpMode(
+        seqArpMode,
+        seqLength,
+        constrain(currentStep.current, 0, seqLength - 1),
+        seqArpUtil,
+        2,
+        -1
+      )
+    },
+    [playingStep, seqArpMode, seqLength]
+  )
+  useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
   // key loop
   const keyCallback = useCallback(
     (time, interval) => {
-      console.log('KEY', time)
+      // console.log('KEY', time)
       const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
       let currentPitchIndex = pitchRange.indexOf(playingNote)
       if (currentPitchIndex === -1) {
@@ -98,26 +169,16 @@ export default function Channel({
           pitchRange.reduce((acc, curr) => (Math.abs(playingNote - curr) < Math.abs(playingNote - acc) ? curr : acc))
         )
       }
-      const nextPitchIndex = handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)
-      setPlayingNote(pitchRange[nextPitchIndex])
-      setPlayingPitchClass(pitchRange[nextPitchIndex] % 12)
-      // synth.triggerAttackRelease('C5', 0.01, time)
+      noteIndex.current = pitchRange[handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)]
+      setPlayingNote(noteIndex.current)
+      setPlayingPitchClass(noteIndex.current % 12)
+      if (seqSteps[currentStep.current]) {
+        playNote(time, interval)
+      }
     },
-    [key, keyArpMode, playingNote, rangeEnd, rangeStart]
+    [key, keyArpMode, playNote, playingNote, rangeEnd, rangeStart, seqSteps]
   )
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
-
-  // sequence loop
-  const seqCallback = useCallback(
-    (time, interval) => {
-      console.log('SEQ', time)
-      const thisStep = playingStep
-      const nextStep = handleArpMode(seqArpMode, seqLength, constrain(playingStep, 0, seqLength - 1), seqArpUtil, 2, -1)
-      setPlayingStep(nextStep)
-    },
-    [playingStep, seqArpMode, seqLength]
-  )
-  useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
   // key manipulation functions
 
@@ -202,14 +263,13 @@ export default function Channel({
         musicalKey={key}
         setKey={setKey}
         playingPitchClass={playingPitchClass}
-        noteOn={noteOn}
         pianoKeys
         turningAxisKnob={turningAxisKnob}
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
       />
     )
-  }, [key, keyPreview, noteOn, playingPitchClass, showKeyPreview, turningAxisKnob])
+  }, [key, keyPreview, playingPitchClass, showKeyPreview, turningAxisKnob])
 
   const muteSoloEl = useMemo(() => {
     return (
@@ -270,7 +330,6 @@ export default function Channel({
           showKeyPreview={showKeyPreview}
           startChangingAxis={startChangingAxis}
           stopChangingAxis={stopChangingAxis}
-          noteOn={noteOn}
         />
       )
     },
@@ -279,7 +338,6 @@ export default function Channel({
       grabbing,
       key,
       keyPreview,
-      noteOn,
       playingPitchClass,
       showKeyPreview,
       startChangingAxis,

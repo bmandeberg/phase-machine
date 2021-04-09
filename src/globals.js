@@ -4,6 +4,8 @@ export const VIEWS = ['horizontal', 'stacked', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequencer']
 
+export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
+
 export const RATES = [
   '1m',
   '1n',
@@ -53,7 +55,7 @@ export const ARP_MODES = {
 }
 
 export function handleArpMode(mode, length, i, util, inc1, inc2) {
-  let nextPitchIndex
+  let nextPitchIndex = 0
   switch (mode) {
     case 'up':
       nextPitchIndex = ARP_MODES['up'](length, i)
@@ -121,3 +123,8 @@ export const MAX_SEQUENCE_LENGTH = 32
 export const DEFAULT_TIME_DIVISION = '4n'
 
 export const MAX_SWING_LENGTH = 6
+
+export function noteString(playingNote) {
+  const notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+  return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
+}

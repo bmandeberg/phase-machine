@@ -14,7 +14,6 @@ export default function Key({
   turningAxisKnob,
   keyPreview,
   showKeyPreview,
-  noteOn,
 }) {
   const togglePitchClass = useCallback(
     (i) => {
@@ -42,7 +41,7 @@ export default function Key({
             'white-key': whiteKey(i),
             selected: musicalKey[i],
             previewed: !pianoKeys && showKeyPreview && keyPreview[i],
-            playing: noteOn && playingPitchClass === i,
+            playing: playingPitchClass === i,
           })}
           style={{
             transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : null,
@@ -65,7 +64,6 @@ Key.propTypes = {
   turningAxisKnob: PropTypes.bool,
   keyPreview: PropTypes.array,
   showKeyPreview: PropTypes.bool,
-  noteOn: PropTypes.bool,
 }
 
 function SelectedKey({ left, type, visible }) {
