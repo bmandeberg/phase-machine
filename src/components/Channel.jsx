@@ -129,7 +129,9 @@ export default function Channel({
           if (notePlaying.current) {
             noteOff()
           }
-          instrument.current.triggerAttack(noteString(noteIndex.current), time)
+          if (instrumentOn) {
+            instrument.current.triggerAttack(noteString(noteIndex.current), time)
+          }
           setNoteOn(true)
           notePlaying.current = true
           setPlayingNote(noteIndex.current)
@@ -151,7 +153,7 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [keySustain, playingNote, retrigger, seqSteps]
+    [instrumentOn, keySustain, playingNote, retrigger, seqSteps]
   )
 
   // sequence loop
