@@ -50,6 +50,7 @@ export default function Channel({
   numChannelsSoloed,
   setNumChannelsSoloed,
   tempo,
+  playing,
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
@@ -73,6 +74,7 @@ export default function Channel({
   const [playingNote, setPlayingNote] = useState()
   const noteIndex = useRef()
   const [noteOn, setNoteOn] = useState(false)
+  const notePlaying = useRef(false)
   const noteOffTimeout = useRef()
   const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
@@ -110,17 +112,26 @@ export default function Channel({
     }
   }, [])
 
+  useEffect(() => {
+    if (!playing && notePlaying.current) {
+      instrument.current.triggerRelease()
+      setNoteOn(false)
+      notePlaying.current = false
+    }
+  }, [playing])
+
   // play note
   const playNote = useCallback(
     (time, interval) => {
       if (!playNoteDebounce.current) {
         // play note if retriggering or no note is playing or if this note isn't already playing
-        if (retrigger || !noteOn || (noteOn && playingNote !== noteIndex.current)) {
-          if (noteOn) {
+        if (retrigger || !notePlaying.current || (notePlaying.current && playingNote !== noteIndex.current)) {
+          if (notePlaying.current) {
             noteOff()
           }
           instrument.current.triggerAttack(noteString(noteIndex.current), time)
           setNoteOn(true)
+          notePlaying.current = true
           setPlayingNote(noteIndex.current)
         }
         // schedule note-off if we are retriggering or if the next step is off
@@ -137,16 +148,17 @@ export default function Channel({
       function noteOff() {
         instrument.current.triggerRelease()
         setNoteOn(false)
+        notePlaying.current = false
       }
     },
-    [keySustain, noteOn, playingNote, retrigger, seqSteps]
+    [keySustain, playingNote, retrigger, seqSteps]
   )
 
   // sequence loop
   const seqCallback = useCallback(
     (time, interval) => {
       // console.log('SEQ', time)
-      if (nextStep.current) {
+      if (nextStep.current !== undefined) {
         currentStep.current = nextStep.current
       }
       setPlayingStep(currentStep.current)
@@ -737,4 +749,5 @@ Channel.propTypes = {
   numChannelsSoloed: PropTypes.number,
   setNumChannelsSoloed: PropTypes.func,
   tempo: PropTypes.number,
+  playing: PropTypes.bool,
 }

@@ -134,6 +134,7 @@ export default function App() {
             numChannelsSoloed={numChannelsSoloed}
             setNumChannelsSoloed={setNumChannelsSoloed}
             tempo={tempo}
+            playing={playing}
           />
         ))}
       </div>
