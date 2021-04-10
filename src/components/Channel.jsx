@@ -69,15 +69,15 @@ export default function Channel({
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
   const [rangeStart, setRangeStart] = useState(MIDDLE_C)
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
-  const [playingPitchClass, setPlayingPitchClass] = useState(key.indexOf(true))
-  const [playingNote, setPlayingNote] = useState(pitchesInRange(rangeStart, rangeEnd, key)[0])
+  const [playingPitchClass, setPlayingPitchClass] = useState()
+  const [playingNote, setPlayingNote] = useState()
   const noteIndex = useRef()
   const [noteOn, setNoteOn] = useState(false)
   const noteOffTimeout = useRef()
   const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
-  const [playingStep, setPlayingStep] = useState(0)
-  const currentStep = useRef()
+  const [playingStep, setPlayingStep] = useState()
+  const currentStep = useRef(0)
   const nextStep = useRef()
   const playNoteDebounce = useRef()
   const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
@@ -146,9 +146,9 @@ export default function Channel({
   const seqCallback = useCallback(
     (time, interval) => {
       // console.log('SEQ', time)
-      currentStep.current =
-        nextStep.current ??
-        handleArpMode(seqArpMode, seqLength, constrain(playingStep, 0, seqLength - 1), seqArpUtil, 2, -1)
+      if (nextStep.current) {
+        currentStep.current = nextStep.current
+      }
       setPlayingStep(currentStep.current)
       nextStep.current = handleArpMode(
         seqArpMode,
@@ -159,7 +159,7 @@ export default function Channel({
         -1
       )
     },
-    [playingStep, seqArpMode, seqLength]
+    [seqArpMode, seqLength]
   )
   useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
@@ -168,15 +168,20 @@ export default function Channel({
     (time, interval) => {
       // console.log('KEY', time)
       const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
-      let currentPitchIndex = pitchRange.indexOf(noteIndex.current)
-      if (currentPitchIndex === -1) {
-        currentPitchIndex = pitchRange.indexOf(
-          pitchRange.reduce((acc, curr) =>
-            Math.abs(noteIndex.current - curr) < Math.abs(noteIndex.current - acc) ? curr : acc
+      if (noteIndex.current !== undefined) {
+        let currentPitchIndex = pitchRange.indexOf(noteIndex.current)
+        if (currentPitchIndex === -1) {
+          currentPitchIndex = pitchRange.indexOf(
+            pitchRange.reduce((acc, curr) =>
+              Math.abs(noteIndex.current - curr) < Math.abs(noteIndex.current - acc) ? curr : acc
+            )
           )
-        )
+        }
+        noteIndex.current =
+          pitchRange[handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)]
+      } else {
+        noteIndex.current = pitchRange[0]
       }
-      noteIndex.current = pitchRange[handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)]
       setPlayingPitchClass(noteIndex.current % 12)
       if (seqSteps[currentStep.current]) {
         playNote(time, interval)
