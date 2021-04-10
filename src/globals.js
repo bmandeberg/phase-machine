@@ -1,6 +1,6 @@
 import { rangeWrapper } from './math'
 
-export const VIEWS = ['horizontal', 'stacked', 'clock']
+export const VIEWS = ['stacked', 'horizontal', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequencer']
 

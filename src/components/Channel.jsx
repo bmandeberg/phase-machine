@@ -114,12 +114,16 @@ export default function Channel({
   const playNote = useCallback(
     (time, interval) => {
       if (!playNoteDebounce.current) {
-        if (noteOn) {
-          noteOff()
+        // play note if retriggering or no note is playing or if this note isn't already playing
+        if (retrigger || !noteOn || (noteOn && playingNote !== noteIndex.current)) {
+          if (noteOn) {
+            noteOff()
+          }
+          instrument.current.triggerAttack(noteString(noteIndex.current), time)
+          setNoteOn(true)
+          setPlayingNote(noteIndex.current)
         }
-        instrument.current.triggerAttack(noteString(noteIndex.current), time)
-        setNoteOn(true)
-        setPlayingNote(noteIndex.current)
+        // schedule note-off if we are retriggering or if the next step is off
         if (retrigger || !seqSteps[nextStep.current]) {
           clearTimeout(noteOffTimeout.current)
           noteOffTimeout.current = setTimeout(() => {
@@ -135,7 +139,7 @@ export default function Channel({
         setNoteOn(false)
       }
     },
-    [keySustain, noteOn, retrigger, seqSteps]
+    [keySustain, noteOn, playingNote, retrigger, seqSteps]
   )
 
   // sequence loop
