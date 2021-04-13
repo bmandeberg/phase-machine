@@ -79,6 +79,7 @@ export default function Channel({
   const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
   const [playingStep, setPlayingStep] = useState()
+  const prevStep = useRef()
   const currentStep = useRef(0)
   const nextStep = useRef()
   const playNoteDebounce = useRef()
@@ -120,11 +121,14 @@ export default function Channel({
     }
   }, [playing])
 
+  // loop events
+
   // play note
   const playNote = useCallback(
     (time, interval) => {
-      if (!playNoteDebounce.current) {
+      if (!playNoteDebounce.current && noteIndex.current) {
         // play note if retriggering or no note is playing or if this note isn't already playing
+        // console.log('note', noteIndex.current)
         if (retrigger || !notePlaying.current || (notePlaying.current && playingNote !== noteIndex.current)) {
           if (notePlaying.current) {
             noteOff()
@@ -158,8 +162,9 @@ export default function Channel({
 
   // sequence loop
   const seqCallback = useCallback(
-    (time, interval) => {
+    (time) => {
       // console.log('SEQ', time)
+      prevStep.current = currentStep.current
       if (nextStep.current !== undefined) {
         currentStep.current = nextStep.current
       }
@@ -197,13 +202,34 @@ export default function Channel({
         noteIndex.current = pitchRange[0]
       }
       setPlayingPitchClass(noteIndex.current % 12)
+    },
+    [key, keyArpMode, rangeEnd, rangeStart]
+  )
+  useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
+
+  // sequence playNote loop
+  const seqNoteCallback = useCallback(
+    (time, interval) => {
+      // console.log('SNT', time)
+      if (seqSteps[currentStep.current] && (retrigger || (!prevStep.current && currentStep.current))) {
+        playNote(time, interval)
+      }
+    },
+    [playNote, retrigger, seqSteps]
+  )
+  useLoop(seqNoteCallback, seqRate, tempo, seqSwing, seqSwingLength)
+
+  // key playNote loop
+  const keyNoteCallback = useCallback(
+    (time, interval) => {
+      // console.log('KNT', time)
       if (seqSteps[currentStep.current]) {
         playNote(time, interval)
       }
     },
-    [key, keyArpMode, playNote, rangeEnd, rangeStart, seqSteps]
+    [playNote, seqSteps]
   )
-  useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
+  useLoop(keyNoteCallback, keyRate, tempo, keySwing, keySwingLength)
 
   // key manipulation functions
 
