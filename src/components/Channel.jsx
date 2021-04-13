@@ -51,6 +51,7 @@ export default function Channel({
   setNumChannelsSoloed,
   tempo,
   playing,
+  settings,
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
@@ -660,7 +661,8 @@ export default function Channel({
             seqSteps={seqSteps}
             setSeqSteps={setSeqSteps}
             seqLength={seqLength}
-            playingStep={playingStep}>
+            playingStep={playingStep}
+            showStepNumbers={settings.showStepNumbers}>
             <div className="sequencer-controls">
               {seqLengthEl(true)}
               {seqRateEl(true)}
@@ -698,6 +700,7 @@ export default function Channel({
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
           playingStep={playingStep}>
+          showStepNumbers={settings.showStepNumbers}
           <div className="sequencer-controls">
             {seqLengthEl(true)}
             {seqRateEl(true)}
@@ -749,6 +752,7 @@ export default function Channel({
               setSeqSteps={setSeqSteps}
               seqLength={seqLength}
               playingStep={playingStep}
+              showStepNumbers={settings.showStepNumbers}
             />
             <div className="sequencer-controls">
               {seqLengthEl(false)}
@@ -778,4 +782,5 @@ Channel.propTypes = {
   setNumChannelsSoloed: PropTypes.func,
   tempo: PropTypes.number,
   playing: PropTypes.bool,
+  settings: PropTypes.object,
 }

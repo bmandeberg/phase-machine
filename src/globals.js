@@ -6,6 +6,10 @@ export const SECTIONS = ['key', 'piano', 'sequencer']
 
 export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
 
+export const DEFAULT_SETTINGS = {
+  showStepNumbers: false,
+}
+
 export const RATES = [
   '1m',
   '1n',

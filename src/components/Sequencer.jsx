@@ -5,7 +5,15 @@ import { MAX_SEQUENCE_LENGTH } from '../globals'
 
 import './Sequencer.scss'
 
-export default function Sequencer({ className, seqSteps, setSeqSteps, seqLength, playingStep, children }) {
+export default function Sequencer({
+  className,
+  seqSteps,
+  setSeqSteps,
+  seqLength,
+  playingStep,
+  children,
+  showStepNumbers,
+}) {
   const updateSeq = useCallback(
     (i) => {
       setSeqSteps((seq) => {
@@ -28,8 +36,9 @@ export default function Sequencer({ className, seqSteps, setSeqSteps, seqLength,
               hidden: i >= seqLength,
             })}
             onClick={() => updateSeq(i)}
-            key={i}
-          ></div>
+            key={i}>
+            {showStepNumbers && i + 1}
+          </div>
         ))}
       </div>
       {children}
@@ -43,4 +52,5 @@ Sequencer.propTypes = {
   seqLength: PropTypes.number,
   playingStep: PropTypes.number,
   children: PropTypes.object,
+  showStepNumbers: PropTypes.bool,
 }

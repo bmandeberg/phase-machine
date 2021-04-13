@@ -3,7 +3,7 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
-import { VIEWS, SECTIONS } from './globals'
+import { VIEWS, SECTIONS, DEFAULT_SETTINGS } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 
@@ -18,6 +18,7 @@ export default function App() {
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
   const [numChannelsSoloed, setNumChannelsSoloed] = useState(0)
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
 
   const [grabbing, setGrabbing] = useState(false)
   const [resizing, setResizing] = useState(false)
@@ -135,6 +136,7 @@ export default function App() {
             setNumChannelsSoloed={setNumChannelsSoloed}
             tempo={tempo}
             playing={playing}
+            settings={settings}
           />
         ))}
       </div>

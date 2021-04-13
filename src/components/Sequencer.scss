@@ -18,22 +18,30 @@
   border-radius: 24px;
   background-color: $darkGray;
   cursor: pointer;
+  color: $mediumGray;
+  font-weight: bold;
+  text-align: center;
+  line-height: 26px;
   &:hover {
     background-color: $darkGrayHover;
   }
   &.selected {
     background-color: $green;
+    color: #00ad00;
     &:hover {
       background-color: $greenHover;
     }
   }
   &.playing {
     background-color: $darkerLightOrange;
+    color: #e85e00;
     &:hover {
       background-color: $darkLightOrange;
     }
     &.selected {
       background-color: $orange;
+      // color: #a84400;
+      color: #ffedd9;
       &:hover {
         background-color: $orangeHover;
       }
