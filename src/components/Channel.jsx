@@ -15,6 +15,7 @@ import {
   MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
   MAX_SWING_LENGTH,
+  INSTRUMENT_TYPES,
   handleArpMode,
   noteString,
 } from '../globals'
@@ -96,14 +97,17 @@ export default function Channel({
   const [seqSustain, setSeqSustain] = useState(KNOB_MAX / 2)
   const [retrigger, setRetrigger] = useState(true)
   const [instrumentOn, setInstrumentOn] = useState(true)
-  const [instrumentType, setInstrumentType] = useState('saw')
+  const [instrumentType, setInstrumentType] = useState(INSTRUMENT_TYPES.find((i) => i.value === 'sawtooth'))
+  const initInstrumentType = useRef(instrumentType.value)
   const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // instrument
 
   useEffect(() => {
     instrument.current = new Tone.MonoSynth({
       oscillator: {
-        type: 'sawtooth',
+        type: initInstrumentType.current,
       },
       envelope: {
         attack: 0.05,
@@ -117,6 +121,10 @@ export default function Channel({
       instrument.current.dispose()
     }
   }, [])
+
+  useEffect(() => {
+    instrument.current.oscillator.type = instrumentType.value
+  }, [instrumentType])
 
   useEffect(() => {
     if (!playing && notePlaying.current) {

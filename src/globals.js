@@ -41,6 +41,81 @@ export const RATES = [
   '0',
 ]
 
+export const INSTRUMENT_TYPES = [
+  {
+    name: 'sine',
+    value: 'sine',
+  },
+  {
+    name: 'square',
+    value: 'square',
+  },
+  {
+    name: 'tri',
+    value: 'triangle',
+  },
+  {
+    name: 'saw',
+    value: 'sawtooth',
+  },
+  {
+    name: 'pwm',
+    value: 'pwm',
+  },
+  {
+    name: 'pulse',
+    value: 'pulse',
+  },
+  {
+    name: 'fm-sine',
+    value: 'fmsine',
+  },
+  {
+    name: 'fm-square',
+    value: 'fmsquare',
+  },
+  {
+    name: 'fm-tri',
+    value: 'fmtriangle',
+  },
+  {
+    name: 'fm-saw',
+    value: 'fmsawtooth',
+  },
+  {
+    name: 'am-sine',
+    value: 'amsine',
+  },
+  {
+    name: 'am-square',
+    value: 'amsquare',
+  },
+  {
+    name: 'am-tri',
+    value: 'amtriangle',
+  },
+  {
+    name: 'am-saw',
+    value: 'amsawtooth',
+  },
+  {
+    name: 'fat-sine',
+    value: 'fatsine',
+  },
+  {
+    name: 'fat-square',
+    value: 'fatsquare',
+  },
+  {
+    name: 'fat-tri',
+    value: 'fattriangle',
+  },
+  {
+    name: 'fat-saw',
+    value: 'fatsawtooth',
+  },
+]
+
 export const ARP_MODES = {
   up: (length, i) => (i < length - 1 ? i + 1 : 0),
   'up/down': (length, i, descending) => {
