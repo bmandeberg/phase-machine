@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Dropdown from 'react-dropdown'
+import NumInput from './NumInput'
 import './Dropdn.scss'
 
 function longestText(options) {
@@ -20,6 +21,8 @@ export default function Dropdn(props) {
         'small-dropdown': props.small,
         'no-text-transform': props.noTextTransform,
         'inline-dropdown': props.inline,
+        'dropdown-num-inputs-container': props.setNum1,
+        'show-dropdown-num-inputs': props.showNumInputs,
       })}>
       <div className="dropdown">
         <Dropdown
@@ -31,6 +34,14 @@ export default function Dropdn(props) {
         <div className="dropdown-min-width">{longestText(props.options)}</div>
       </div>
       <p className="dropdown-label no-select">{props.label}</p>
+      {props.setNum1 && (
+        <div className="dropdown-num-inputs-wrapper">
+          <div className="dropdown-num-inputs">
+            <NumInput value={props.num1} setValue={props.setNum1} />
+            <NumInput value={props.num2} setValue={props.setNum2} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -44,4 +55,9 @@ Dropdn.propTypes = {
   small: PropTypes.bool,
   noTextTransform: PropTypes.bool,
   inline: PropTypes.bool,
+  num1: PropTypes.number,
+  setNum1: PropTypes.func,
+  num2: PropTypes.number,
+  setNum2: PropTypes.func,
+  showNumInputs: PropTypes.bool,
 }

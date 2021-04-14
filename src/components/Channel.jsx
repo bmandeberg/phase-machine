@@ -57,6 +57,8 @@ export default function Channel({
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
   const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
   const [keyArpMode, setKeyArpMode] = useState(Object.keys(ARP_MODES)[0])
+  const [keyArpInc1, setKeyArpInc1] = useState(2)
+  const [keyArpInc2, setKeyArpInc2] = useState(-1)
   const keyArpUtil = useRef(false)
   const [keySustain, setKeySustain] = useState(KNOB_MAX / 2)
   const [keySwing, setKeySwing] = useState(KNOB_MAX / 2)
@@ -86,6 +88,8 @@ export default function Channel({
   const playNoteDebounce = useRef()
   const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
   const [seqArpMode, setSeqArpMode] = useState(Object.keys(ARP_MODES)[0])
+  const [seqArpInc1, setSeqArpInc1] = useState(2)
+  const [seqArpInc2, setSeqArpInc2] = useState(-1)
   const seqArpUtil = useRef(false)
   const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
   const [seqSwingLength, setSeqSwingLength] = useState(2)
@@ -175,11 +179,11 @@ export default function Channel({
         seqLength,
         constrain(currentStep.current, 0, seqLength - 1),
         seqArpUtil,
-        2,
-        -1
+        seqArpInc1,
+        seqArpInc2
       )
     },
-    [seqArpMode, seqLength]
+    [seqArpInc1, seqArpInc2, seqArpMode, seqLength]
   )
   useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
@@ -198,13 +202,15 @@ export default function Channel({
           )
         }
         noteIndex.current =
-          pitchRange[handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, 2, -1)]
+          pitchRange[
+            handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, keyArpInc1, keyArpInc2)
+          ]
       } else {
         noteIndex.current = pitchRange[0]
       }
       setPlayingPitchClass(noteIndex.current % 12)
     },
-    [key, keyArpMode, rangeEnd, rangeStart]
+    [key, keyArpInc1, keyArpInc2, keyArpMode, rangeEnd, rangeStart]
   )
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
 
@@ -450,9 +456,14 @@ export default function Channel({
         options={Object.keys(ARP_MODES)}
         setValue={setKeyArpMode}
         value={keyArpMode}
+        showNumInputs={keyArpMode === '+/-'}
+        num1={keyArpInc1}
+        setNum1={setKeyArpInc1}
+        num2={keyArpInc2}
+        setNum2={setKeyArpInc2}
       />
     )
-  }, [keyArpMode])
+  }, [keyArpInc1, keyArpInc2, keyArpMode])
 
   const keySustainEl = useCallback(
     (vertical) => {
@@ -544,10 +555,15 @@ export default function Channel({
           setValue={setSeqArpMode}
           value={seqArpMode}
           inline={inline}
+          showNumInputs={seqArpMode === '+/-'}
+          num1={seqArpInc1}
+          setNum1={setSeqArpInc1}
+          num2={seqArpInc2}
+          setNum2={setSeqArpInc2}
         />
       )
     },
-    [seqArpMode]
+    [seqArpInc1, seqArpInc2, seqArpMode]
   )
 
   const seqSwingEl = useCallback(
