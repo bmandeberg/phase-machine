@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
+import WebMidi from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
 import useLoop from '../tonejs/useLoop'
 import {
@@ -53,6 +54,7 @@ export default function Channel({
   tempo,
   playing,
   settings,
+  midiOut,
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
@@ -139,6 +141,8 @@ export default function Channel({
   // play note
   const playNote = useCallback(
     (time, interval) => {
+      const note = noteString(noteIndex.current)
+      const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
       if (!playNoteDebounce.current && noteIndex.current) {
         // play note if retriggering or no note is playing or if this note isn't already playing
         // console.log('note', noteIndex.current)
@@ -147,10 +151,14 @@ export default function Channel({
             noteOff()
           }
           if (instrumentOn) {
-            instrument.current.triggerAttack(noteString(noteIndex.current), time)
+            instrument.current.triggerAttack(note, time)
           }
           setNoteOn(true)
           notePlaying.current = true
+          if (midiOut) {
+            const clockOffset = WebMidi.time - Tone.immediate() * 1000
+            midiOut.playNote(note, channel, { time: time * 1000 + clockOffset })
+          }
           setPlayingNote(noteIndex.current)
         }
         // schedule note-off if we are retriggering or if the next step is off
@@ -166,11 +174,14 @@ export default function Channel({
       }
       function noteOff() {
         instrument.current.triggerRelease()
+        if (midiOut) {
+          midiOut.stopNote(note, channel)
+        }
         setNoteOn(false)
         notePlaying.current = false
       }
     },
-    [instrumentOn, keySustain, playingNote, retrigger, seqSteps]
+    [channelNum, instrumentOn, keySustain, midiOut, playingNote, retrigger, seqSteps, settings.separateMIDIChannels]
   )
 
   // sequence loop
@@ -723,8 +734,8 @@ export default function Channel({
           seqSteps={seqSteps}
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
-          playingStep={playingStep}>
-          showStepNumbers={settings.showStepNumbers}
+          playingStep={playingStep}
+          showStepNumbers={settings.showStepNumbers}>
           <div className="sequencer-controls">
             {seqLengthEl(true)}
             {seqRateEl(true)}
@@ -807,4 +818,5 @@ Channel.propTypes = {
   tempo: PropTypes.number,
   playing: PropTypes.bool,
   settings: PropTypes.object,
+  midiOut: PropTypes.object,
 }

@@ -137,6 +137,7 @@ export default function App() {
             tempo={tempo}
             playing={playing}
             settings={settings}
+            midiOut={midiOut}
           />
         ))}
       </div>
