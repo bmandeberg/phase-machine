@@ -41,7 +41,7 @@ export default function SplitButton(props) {
 }
 SplitButton.propTypes = {
   className: PropTypes.string,
-  content: PropTypes.string,
+  content: PropTypes.node,
   label: PropTypes.string,
   leftAction: PropTypes.func,
   rightAction: PropTypes.func,

@@ -21,7 +21,6 @@
     }
   }
   .split-button-content {
-    padding: 10px;
     padding-bottom: 4px;
     min-width: 43px;
   }
@@ -50,14 +49,14 @@
       &::before {
         border-color: transparent $darkGray transparent transparent;
         border-width: 6px 5px 6px 0;
-        left: 7px;
+        left: 15px;
       }
     }
     &.split-button-arrow-right {
       &::before {
         border-color: transparent transparent transparent $darkGray;
         border-width: 6px 0 6px 5px;
-        right: 8px;
+        right: 15px;
       }
     }
   }

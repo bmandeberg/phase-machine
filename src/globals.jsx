@@ -1,3 +1,10 @@
+import React from 'react'
+import sine from './assets/sine_wave.svg'
+import square from './assets/square_wave.svg'
+import triangle from './assets/triangle_wave.svg'
+import sawtooth from './assets/sawtooth_wave.svg'
+import pulse from './assets/pulse_wave.svg'
+
 import { rangeWrapper } from './math'
 
 export const VIEWS = ['stacked', 'horizontal', 'clock']
@@ -44,75 +51,139 @@ export const RATES = [
 
 export const INSTRUMENT_TYPES = [
   {
-    name: 'sine',
+    name: <img className="wave-icon" src={sine} alt="" />,
     value: 'sine',
   },
   {
-    name: 'square',
+    name: <img className="wave-icon" src={square} alt="" />,
     value: 'square',
   },
   {
-    name: 'tri',
+    name: <img className="wave-icon" src={triangle} alt="" />,
     value: 'triangle',
   },
   {
-    name: 'saw',
+    name: <img className="wave-icon" src={sawtooth} alt="" />,
     value: 'sawtooth',
   },
   {
-    name: 'pwm',
-    value: 'pwm',
-  },
-  {
-    name: 'pulse',
+    name: <img className="wave-icon" src={pulse} alt="" />,
     value: 'pulse',
   },
   {
-    name: 'fm-sine',
+    name: (
+      <span className="wave-title" style={{ marginTop: 2, marginRight: 0 }}>
+        pwm
+      </span>
+    ),
+    value: 'pwm',
+  },
+  {
+    name: (
+      <div>
+        <span className="wave-title">fm</span>
+        <img className="wave-icon" src={sine} alt="" />
+      </div>
+    ),
     value: 'fmsine',
   },
   {
-    name: 'fm-square',
+    name: (
+      <div>
+        <span className="wave-title">fm</span>
+        <img className="wave-icon" src={square} alt="" />
+      </div>
+    ),
     value: 'fmsquare',
   },
   {
-    name: 'fm-tri',
+    name: (
+      <div>
+        <span className="wave-title">fm</span>
+        <img className="wave-icon" src={triangle} alt="" />
+      </div>
+    ),
     value: 'fmtriangle',
   },
   {
-    name: 'fm-saw',
+    name: (
+      <div>
+        <span className="wave-title">fm</span>
+        <img className="wave-icon" src={sawtooth} alt="" />
+      </div>
+    ),
     value: 'fmsawtooth',
   },
   {
-    name: 'am-sine',
+    name: (
+      <div>
+        <span className="wave-title">am</span>
+        <img className="wave-icon" src={sine} alt="" />
+      </div>
+    ),
     value: 'amsine',
   },
   {
-    name: 'am-square',
+    name: (
+      <div>
+        <span className="wave-title">am</span>
+        <img className="wave-icon" src={square} alt="" />
+      </div>
+    ),
     value: 'amsquare',
   },
   {
-    name: 'am-tri',
+    name: (
+      <div>
+        <span className="wave-title">am</span>
+        <img className="wave-icon" src={triangle} alt="" />
+      </div>
+    ),
     value: 'amtriangle',
   },
   {
-    name: 'am-saw',
+    name: (
+      <div>
+        <span className="wave-title">am</span>
+        <img className="wave-icon" src={sawtooth} alt="" />
+      </div>
+    ),
     value: 'amsawtooth',
   },
   {
-    name: 'fat-sine',
+    name: (
+      <div>
+        <span className="wave-title">fat</span>
+        <img className="wave-icon" src={sine} alt="" />
+      </div>
+    ),
     value: 'fatsine',
   },
   {
-    name: 'fat-square',
+    name: (
+      <div>
+        <span className="wave-title">fat</span>
+        <img className="wave-icon" src={square} alt="" />
+      </div>
+    ),
     value: 'fatsquare',
   },
   {
-    name: 'fat-tri',
+    name: (
+      <div>
+        <span className="wave-title">fat</span>
+        <img className="wave-icon" src={triangle} alt="" />
+      </div>
+    ),
     value: 'fattriangle',
   },
   {
-    name: 'fat-saw',
+    name: (
+      <div>
+        <span className="wave-title">fat</span>
+        <img className="wave-icon" src={sawtooth} alt="" />
+      </div>
+    ),
     value: 'fatsawtooth',
   },
 ]
