@@ -259,6 +259,45 @@ export const whiteKey = (i) => {
   }
 }
 
+export const nextBlackKey = {
+  near: (i) => {
+    i = i % 12
+    return i === 0 || i === 5
+  },
+  middle: (i) => {
+    i = i % 12
+    return i === 7
+  },
+  far: (i) => {
+    i = i % 12
+    return i === 2 || i === 9
+  }
+}
+export const prevBlackKey = {
+  near: (i) => {
+    i = i % 12
+    return i === 4 || i === 11
+  },
+  middle: (i) => {
+    i = i % 12
+    return i === 9
+  },
+  far: (i) => {
+    i = i % 12
+    return i === 2 || i === 7
+  }
+}
+
+export const blackKeyLeft = (i) => {
+  i = i % 12
+  return i === 1 || i === 6
+}
+
+export const blackKeyRight = (i) => {
+  i = i % 12
+  return i === 3 || i === 10
+}
+
 export const MIDDLE_C = 36
 
 export const OCTAVES = 8

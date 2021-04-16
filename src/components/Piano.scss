@@ -25,6 +25,12 @@
     &:first-of-type {
       border-left: none;
     }
+    &.black-key-left {
+      margin-left: -5px;
+    }
+    &.black-key-right {
+      margin-left: -3px;
+    }
     &.in-range {
       background-color: $darkGray;
       border-color: transparent;
@@ -32,6 +38,12 @@
       height: 55px;
       margin-left: -2px;
       transform: translate(-0.5px, 0);
+      &.black-key-left {
+        margin-left: -3px;
+      }
+      &.black-key-right {
+        margin-left: -1px;
+      }
     }
     &.white-key {
       width: 13px;
@@ -62,28 +74,96 @@
         border-color: $lightOrange;
         // background-color: lighten($orange, 5%);
         background-color: $orange;
-        &::before {
-          content: '';
-          position: absolute;
-          height: 55px;
-          width: 5px;
-          border: 2px solid #ffffff;
-          border-right: none;
-          border-top: none;
-          right: -3px;
+        // &.next-black-key-near {
+        //   &::after {
+        //     content: 'hey';
+        //     position: absolute;
+        //     height: 55px;
+        //     width: 5px;
+        //     border: 2px solid #ffffff;
+        //     border-left: none;
+        //     border-top: none;
+        //     left: -3px;
+        //     transform: translate(-0.5px);
+        //   }
+        // }
+        &.next-black-key-near {
+          &::before {
+            content: '';
+            position: absolute;
+            height: 55px;
+            width: 6px;
+            border: 2px solid #ffffff;
+            border-right: none;
+            border-top: none;
+            right: -2px;
+            transform: translate(0.5px);
+          }
         }
-        &.skip-black-key::before {
-          display: none;
+        &.next-black-key-middle {
+          &::after {
+            content: '';
+            position: absolute;
+            height: 55px;
+            width: 6px;
+            border: 2px solid #ffffff;
+            border-right: none;
+            border-top: none;
+            right: -3px;
+            transform: translate(0.5px);
+          }
         }
-        &::after {
-          content: '';
-          position: absolute;
-          height: 55px;
-          width: 5px;
-          border: 2px solid #ffffff;
-          border-left: none;
-          border-top: none;
-          left: -3px;
+        &.next-black-key-far {
+          &::after {
+            content: '';
+            position: absolute;
+            height: 55px;
+            width: 6px;
+            border: 2px solid #ffffff;
+            border-right: none;
+            border-top: none;
+            right: -4px;
+            transform: translate(0.5px);
+          }
+        }
+        &.prev-black-key-near {
+          &::before {
+            content: '';
+            position: absolute;
+            height: 55px;
+            width: 6px;
+            border: 2px solid #ffffff;
+            border-left: none;
+            border-top: none;
+            left: -2px;
+            transform: translate(-0.5px);
+          }
+        }
+        &.prev-black-key-middle {
+          &::before {
+            content: '';
+            position: absolute;
+            height: 55px;
+            width: 6px;
+            border: 2px solid #ffffff;
+            border-left: none;
+            border-top: none;
+            left: -3px;
+            transform: translate(-0.5px);
+          }
+        }
+        &.prev-black-key-far {
+          &::before {
+            content: '';
+            position: absolute;
+            height: 55px;
+            width: 5px;
+            border: 2px solid #ffffff;
+            border-left: none;
+            border-top: none;
+            left: -3px;
+            transform: translate(-0.5px);
+          }
         }
         & + .piano-note.in-range {
           &::after {
@@ -95,7 +175,7 @@
             border-right: none;
             border-left: none;
             border-top: none;
-            left: -3.5px;
+            left: -2px;
           }
           & + .white-key.in-range {
             border-color: $lightOrange;

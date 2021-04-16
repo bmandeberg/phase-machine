@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { whiteKey, OCTAVES, constrain } from '../globals'
+import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain } from '../globals'
 import { useGesture } from 'react-use-gesture'
 import './Piano.scss'
 
@@ -93,7 +93,14 @@ export default function Piano({
           key={i}
           className={classNames('piano-note', {
             'white-key': whiteKey(i),
-            'skip-black-key': whiteKey(i + 1),
+            'next-black-key-near': nextBlackKey.near(i),
+            'next-black-key-middle': nextBlackKey.middle(i),
+            'next-black-key-far': nextBlackKey.far(i),
+            'prev-black-key-near': prevBlackKey.near(i),
+            'prev-black-key-middle': prevBlackKey.middle(i),
+            'prev-black-key-far': prevBlackKey.far(i),
+            'black-key-left': blackKeyLeft(i),
+            'black-key-right': blackKeyRight(i),
             'in-range': i >= rangeStart && i < rangeEnd,
             playing: noteOn && playingNote === i,
           })}></div>

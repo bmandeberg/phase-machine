@@ -131,7 +131,7 @@ export default function Channel({
   useEffect(() => {
     if (!playing && notePlaying.current) {
       instrument.current.triggerRelease()
-      setNoteOn(false)
+      // setNoteOn(false)
       notePlaying.current = false
     }
   }, [playing])
@@ -177,7 +177,7 @@ export default function Channel({
         if (midiOut) {
           midiOut.stopNote(note, channel)
         }
-        setNoteOn(false)
+        // setNoteOn(false)
         notePlaying.current = false
       }
     },
