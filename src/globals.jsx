@@ -271,7 +271,7 @@ export const nextBlackKey = {
   far: (i) => {
     i = i % 12
     return i === 2 || i === 9
-  }
+  },
 }
 export const prevBlackKey = {
   near: (i) => {
@@ -285,7 +285,7 @@ export const prevBlackKey = {
   far: (i) => {
     i = i % 12
     return i === 2 || i === 7
-  }
+  },
 }
 
 export const blackKeyLeft = (i) => {
