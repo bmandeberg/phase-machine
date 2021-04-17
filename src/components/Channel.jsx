@@ -151,13 +151,13 @@ export default function Channel({
             noteOff()
           }
           if (instrumentOn) {
-            instrument.current.triggerAttack(note, time)
+            instrument.current.triggerAttack(note, time, velocity)
           }
           setNoteOn(true)
           notePlaying.current = true
           if (midiOut) {
             const clockOffset = WebMidi.time - Tone.immediate() * 1000
-            midiOut.playNote(note, channel, { time: time * 1000 + clockOffset })
+            midiOut.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
           }
           setPlayingNote(noteIndex.current)
         }
@@ -181,7 +181,17 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [channelNum, instrumentOn, keySustain, midiOut, playingNote, retrigger, seqSteps, settings.separateMIDIChannels]
+    [
+      channelNum,
+      instrumentOn,
+      keySustain,
+      midiOut,
+      playingNote,
+      retrigger,
+      seqSteps,
+      settings.separateMIDIChannels,
+      velocity,
+    ]
   )
 
   // sequence loop
