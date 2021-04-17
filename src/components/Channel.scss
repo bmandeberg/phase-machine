@@ -40,6 +40,9 @@
   .flip-opposite {
     margin-left: 11px;
   }
+  .key-arp-mode, .seq-arp-mode .dropdown {
+    min-width: 136px;
+  }
   .sequencer {
     margin-top: 16px;
     width: 1254px;

@@ -578,7 +578,7 @@ export default function Channel({
     (inline) => {
       return (
         <Dropdn
-          className="channel-module"
+          className="channel-module seq-arp-mode"
           label="Arp Mode"
           options={Object.keys(ARP_MODES)}
           setValue={setSeqArpMode}
