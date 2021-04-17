@@ -32,6 +32,7 @@ import Piano from './Piano'
 import Sequencer from './Sequencer'
 import Switch from 'react-switch'
 import Instrument from './Instrument'
+import useKeyManipulation from '../hooks/useKeyManipulation'
 import arrowSmall from '../assets/arrow-small.svg'
 import arrowClock from '../assets/arrow-clock.svg'
 import './Channel.scss'
@@ -269,69 +270,30 @@ export default function Channel({
 
   // key manipulation functions
 
-  const previewShift = useCallback(
-    (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
-      newShift = shiftWrapper(newShift, forward)
-      setKeyPreview(shift(newShift, previewKey))
-      setShowKeyPreview(true)
-    },
-    [key, shiftAmt, shiftDirectionForward]
+  const {
+    previewShift,
+    updateShift,
+    doShift,
+    doOpposite,
+    previewOpposite,
+    updateAxis,
+    doFlip,
+    previewFlip,
+    startChangingAxis,
+    stopChangingAxis,
+  } = useKeyManipulation(
+    key,
+    shiftAmt,
+    shiftDirectionForward,
+    setKeyPreview,
+    setShowKeyPreview,
+    setShiftAmt,
+    setKey,
+    setAxis,
+    axis,
+    setGrabbing,
+    setTurningAxisKnob
   )
-
-  const updateShift = useCallback(
-    (newShift) => {
-      newShift = shiftWrapper(newShift, shiftDirectionForward)
-      setShiftAmt(newShift)
-      previewShift(shiftDirectionForward, newShift)
-    },
-    [previewShift, shiftDirectionForward]
-  )
-
-  const doShift = useCallback(() => {
-    const shiftedKey = shift(shiftAmt, key)
-    setKey(shiftedKey)
-    previewShift(shiftDirectionForward, shiftAmt, shiftedKey)
-  }, [key, previewShift, shiftAmt, shiftDirectionForward])
-
-  const doOpposite = useCallback(() => {
-    setKey((key) => opposite(key))
-    setKeyPreview(key)
-  }, [key])
-
-  const previewOpposite = useCallback(() => {
-    setKeyPreview(opposite(key))
-    setShowKeyPreview(true)
-  }, [key])
-
-  const updateAxis = useCallback(
-    (a) => {
-      setAxis(a)
-      setKeyPreview(flip(a, key))
-    },
-    [key]
-  )
-
-  const doFlip = useCallback(() => {
-    setKey((key) => flip(axis, key))
-    setKeyPreview(key)
-  }, [axis, key])
-
-  const previewFlip = useCallback(() => {
-    setKeyPreview(flip(axis, key))
-    setShowKeyPreview(true)
-  }, [axis, key])
-
-  const startChangingAxis = useCallback(() => {
-    setGrabbing(true)
-    setTurningAxisKnob(true)
-    previewFlip()
-  }, [previewFlip, setGrabbing])
-
-  const stopChangingAxis = useCallback(() => {
-    setGrabbing(false)
-    setTurningAxisKnob(false)
-    setShowKeyPreview(false)
-  }, [setGrabbing])
 
   // ui elements
 
