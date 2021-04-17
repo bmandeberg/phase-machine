@@ -101,7 +101,10 @@ export default function App() {
       ref={container}
       className={classNames({ grabbing, resizing })}
       style={{
-        minWidth: view === 'clock' ? CLOCK_WIDTH * Math.max(Math.floor(window.innerWidth / CLOCK_WIDTH), 2) : null,
+        minWidth:
+          view === 'clock' && numChannels > 0
+            ? CLOCK_WIDTH * Math.max(Math.floor(window.innerWidth / CLOCK_WIDTH), 2)
+            : null,
       }}>
       <Header
         tempo={tempo}
