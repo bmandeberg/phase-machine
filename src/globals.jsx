@@ -11,7 +11,7 @@ export const VIEWS = ['stacked', 'horizontal', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequencer']
 
-export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff']
+export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9700', '#a825f4']
 
 export const DEFAULT_SETTINGS = {
   showStepNumbers: false,

@@ -28,6 +28,16 @@
   white-space: nowrap;
   display: inline-block;
   border-right: 1px solid $lightMediumGray;
+  .channel-number {
+    position: sticky;
+    left: 0;
+    z-index: 1999;
+    height: 100%;
+    box-sizing: border-box;
+    background: linear-gradient(to right, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0));
+    pointer-events: none;
+    text-shadow: 0 0 5px #ffffff;
+  }
   .mute-solo {
     height: 66px;
   }
@@ -40,7 +50,8 @@
   .flip-opposite {
     margin-left: 11px;
   }
-  .key-arp-mode, .seq-arp-mode .dropdown {
+  .key-arp-mode,
+  .seq-arp-mode .dropdown {
     min-width: 136px;
   }
   .sequencer {

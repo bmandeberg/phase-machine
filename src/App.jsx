@@ -42,8 +42,8 @@ export default function App() {
       if (viewRef.current === 'horizontal') {
         const scrollPositions = [
           0,
-          document.querySelector('.piano').offsetLeft,
-          document.querySelector('.sequencer').offsetLeft - 16,
+          document.querySelector('.piano').offsetLeft - 43,
+          document.querySelector('.sequencer').offsetLeft - 59,
         ]
         let scrollEl = 0
         for (let i = 0; i < SECTIONS.length; i++) {
@@ -71,8 +71,8 @@ export default function App() {
   const doScroll = useCallback((scrollEl) => {
     const scrollPositions = [
       0,
-      document.querySelector('.piano').offsetLeft,
-      document.querySelector('.sequencer').offsetLeft - 16,
+      document.querySelector('.piano').offsetLeft - 43,
+      document.querySelector('.sequencer').offsetLeft - 59,
     ]
     const scrollElIndex = SECTIONS.indexOf(scrollEl)
     if (scrollElIndex !== -1) {
