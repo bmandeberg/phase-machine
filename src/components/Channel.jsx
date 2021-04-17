@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
@@ -93,6 +93,10 @@ export default function Channel({
   const initInstrumentType = useRef(instrumentType.value)
   const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  const emptyKey = useMemo(() => {
+    return !key.some((p) => p)
+  }, [key])
 
   // instrument
 
@@ -211,23 +215,25 @@ export default function Channel({
     (time, interval) => {
       // console.log('KEY', time)
       const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
-      if (noteIndex.current !== undefined) {
-        let currentPitchIndex = pitchRange.indexOf(noteIndex.current)
-        if (currentPitchIndex === -1) {
-          currentPitchIndex = pitchRange.indexOf(
-            pitchRange.reduce((acc, curr) =>
-              Math.abs(noteIndex.current - curr) < Math.abs(noteIndex.current - acc) ? curr : acc
+      if (pitchRange.length) {
+        if (noteIndex.current !== undefined) {
+          let currentPitchIndex = pitchRange.indexOf(noteIndex.current)
+          if (currentPitchIndex === -1) {
+            currentPitchIndex = pitchRange.indexOf(
+              pitchRange.reduce((acc, curr) =>
+                Math.abs(noteIndex.current - curr) < Math.abs(noteIndex.current - acc) ? curr : acc
+              )
             )
-          )
+          }
+          noteIndex.current =
+            pitchRange[
+              handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, keyArpInc1, keyArpInc2)
+            ]
+        } else {
+          noteIndex.current = pitchRange[0]
         }
-        noteIndex.current =
-          pitchRange[
-            handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, keyArpInc1, keyArpInc2)
-          ]
-      } else {
-        noteIndex.current = pitchRange[0]
+        setPlayingPitchClass(noteIndex.current % 12)
       }
-      setPlayingPitchClass(noteIndex.current % 12)
     },
     [key, keyArpInc1, keyArpInc2, keyArpMode, rangeEnd, rangeStart]
   )
@@ -237,11 +243,11 @@ export default function Channel({
   const seqNoteCallback = useCallback(
     (time, interval) => {
       // console.log('SNT', time)
-      if (seqSteps[currentStep.current] && (retrigger || (!prevStep.current && currentStep.current))) {
+      if (!emptyKey && seqSteps[currentStep.current] && (retrigger || (!prevStep.current && currentStep.current))) {
         playNote(time, interval)
       }
     },
-    [playNote, retrigger, seqSteps]
+    [emptyKey, playNote, retrigger, seqSteps]
   )
   useLoop(seqNoteCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
@@ -249,11 +255,11 @@ export default function Channel({
   const keyNoteCallback = useCallback(
     (time, interval) => {
       // console.log('KNT', time)
-      if (seqSteps[currentStep.current]) {
+      if (!emptyKey && seqSteps[currentStep.current]) {
         playNote(time, interval)
       }
     },
-    [playNote, seqSteps]
+    [emptyKey, playNote, seqSteps]
   )
   useLoop(keyNoteCallback, keyRate, tempo, keySwing, keySwingLength)
 
@@ -311,6 +317,7 @@ export default function Channel({
     key,
     setKey,
     playingPitchClass,
+    setPlayingPitchClass,
     turningAxisKnob,
     keyPreview,
     showKeyPreview,

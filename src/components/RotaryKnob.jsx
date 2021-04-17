@@ -22,6 +22,7 @@ export default function RotaryKnob({
   musicalKey,
   setKey,
   playingPitchClass,
+  setPlayingPitchClass,
   turningAxisKnob,
   keyPreview,
   showKeyPreview,
@@ -138,6 +139,7 @@ export default function RotaryKnob({
               musicalKey={musicalKey}
               setKey={setKey}
               playingPitchClass={playingPitchClass}
+              setPlayingPitchClass={setPlayingPitchClass}
               className="axis-knob-supplemental"
               keyPreview={keyPreview}
               showKeyPreview={showKeyPreview}
@@ -188,6 +190,7 @@ RotaryKnob.propTypes = {
   musicalKey: PropTypes.array,
   setKey: PropTypes.func,
   playingPitchClass: PropTypes.number,
+  setPlayingPitchClass: PropTypes.func,
   turningAxisKnob: PropTypes.bool,
   keyPreview: PropTypes.array,
   showKeyPreview: PropTypes.bool,

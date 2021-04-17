@@ -9,6 +9,7 @@ export default function Key({
   musicalKey,
   setKey,
   playingPitchClass,
+  setPlayingPitchClass,
   className,
   pianoKeys,
   turningAxisKnob,
@@ -17,13 +18,16 @@ export default function Key({
 }) {
   const togglePitchClass = useCallback(
     (i) => {
+      if (musicalKey[i] && playingPitchClass === i) {
+        setPlayingPitchClass(null)
+      }
       setKey((key) => {
         const keyCopy = key.slice()
         keyCopy[i] = !keyCopy[i]
         return keyCopy
       })
     },
-    [setKey]
+    [musicalKey, playingPitchClass, setKey, setPlayingPitchClass]
   )
 
   return (
@@ -61,6 +65,7 @@ Key.propTypes = {
   musicalKey: PropTypes.array,
   setKey: PropTypes.func,
   playingPitchClass: PropTypes.number,
+  setPlayingPitchClass: PropTypes.func,
   pianoKeys: PropTypes.bool,
   className: PropTypes.string,
   turningAxisKnob: PropTypes.bool,

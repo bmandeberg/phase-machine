@@ -18,6 +18,7 @@ export default function useUI(
   key,
   setKey,
   playingPitchClass,
+  setPlayingPitchClass,
   turningAxisKnob,
   keyPreview,
   showKeyPreview,
@@ -104,13 +105,14 @@ export default function useUI(
         musicalKey={key}
         setKey={setKey}
         playingPitchClass={playingPitchClass}
+        setPlayingPitchClass={setPlayingPitchClass}
         pianoKeys
         turningAxisKnob={turningAxisKnob}
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
       />
     )
-  }, [key, keyPreview, playingPitchClass, setKey, showKeyPreview, turningAxisKnob])
+  }, [key, keyPreview, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, turningAxisKnob])
 
   const muteSoloEl = useMemo(() => {
     return (
@@ -166,6 +168,7 @@ export default function useUI(
           musicalKey={key}
           setKey={setKey}
           playingPitchClass={playingPitchClass}
+          setPlayingPitchClass={setPlayingPitchClass}
           turningAxisKnob={turningAxisKnob}
           keyPreview={keyPreview}
           showKeyPreview={showKeyPreview}
@@ -181,6 +184,7 @@ export default function useUI(
       keyPreview,
       playingPitchClass,
       setKey,
+      setPlayingPitchClass,
       showKeyPreview,
       startChangingAxis,
       stopChangingAxis,
