@@ -72,7 +72,7 @@ export default class Header extends React.Component {
           value={this.props.numChannels}
           setValue={this.props.setNumChannels}
           label="Channels"
-          min={1}
+          min={0}
           max={MAX_CHANNELS}
           small
         />

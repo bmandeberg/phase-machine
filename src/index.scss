@@ -61,6 +61,15 @@ body {
   overflow-y: visible;
   margin-top: 62px;
   flex-grow: 1;
+  &.empty {
+    text-align: center;
+    .no-channels {
+      text-transform: uppercase;
+      color: $mediumGray;
+      margin-top: 40px;
+      font-size: 24px;
+    }
+  }
 }
 
 .button {

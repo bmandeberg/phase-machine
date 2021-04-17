@@ -3,6 +3,14 @@ import Loop from '../tonejs/Loop'
 
 export default function useLoop(callback, rate, tempo, swing, swingLength) {
   const loop = useRef()
+  // cleanup
+  useEffect(() => {
+    return () => {
+      if (loop.current) {
+        loop.current.dispose()
+      }
+    }
+  }, [])
   // init
   useEffect(() => {
     if (!loop.current) {

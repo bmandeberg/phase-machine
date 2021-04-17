@@ -121,7 +121,7 @@ export default function App() {
         setChannelSync={setChannelSync}
       />
       <div id="header-border"></div>
-      <div id="channels">
+      <div id="channels" className={classNames({ empty: numChannels === 0 })}>
         {[...Array(numChannels)].map((d, i) => (
           <Channel
             numChannels={numChannels}
@@ -140,6 +140,12 @@ export default function App() {
             midiOut={midiOut}
           />
         ))}
+        {numChannels === 0 && (
+          <div className="no-channels">
+            <p>😴</p>
+            <p>no channels</p>
+          </div>
+        )}
       </div>
     </div>
   )

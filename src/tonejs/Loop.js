@@ -91,4 +91,8 @@ export default class Loop {
     this.interval = Tone.Transport.toSeconds(this.rate)
     this.loop.interval = this.interval * (this.swingEnable ? this.swingPhraseLength : 1)
   }
+
+  dispose() {
+    this.loop.dispose()
+  }
 }
