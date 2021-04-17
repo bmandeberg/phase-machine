@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import Loop from './Loop'
+import Loop from '../tonejs/Loop'
 
 export default function useLoop(callback, rate, tempo, swing, swingLength) {
   const loop = useRef()
