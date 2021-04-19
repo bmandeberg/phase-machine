@@ -134,7 +134,7 @@ export default function Channel({
 
   // play note
   const playNote = useCallback(
-    (time, interval) => {
+    (time, interval, sustain) => {
       const note = noteString(noteIndex.current)
       const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
       if (!playNoteDebounce.current && noteIndex.current) {
@@ -160,7 +160,7 @@ export default function Channel({
           clearTimeout(noteOffTimeout.current)
           noteOffTimeout.current = setTimeout(() => {
             noteOff()
-          }, time - Tone.immediate() + keySustain * interval * 1000)
+          }, time - Tone.immediate() + sustain * interval * 1000)
         }
         playNoteDebounce.current = setTimeout(() => {
           playNoteDebounce.current = null
@@ -175,17 +175,7 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [
-      channelNum,
-      instrumentOn,
-      keySustain,
-      midiOut,
-      playingNote,
-      retrigger,
-      seqSteps,
-      settings.separateMIDIChannels,
-      velocity,
-    ]
+    [channelNum, instrumentOn, midiOut, playingNote, retrigger, seqSteps, settings.separateMIDIChannels, velocity]
   )
 
   // sequence loop
@@ -244,10 +234,10 @@ export default function Channel({
     (time, interval) => {
       // console.log('SNT', time)
       if (!emptyKey && seqSteps[currentStep.current] && (retrigger || (!prevStep.current && currentStep.current))) {
-        playNote(time, interval)
+        playNote(time, interval, seqSustain)
       }
     },
-    [emptyKey, playNote, retrigger, seqSteps]
+    [emptyKey, playNote, retrigger, seqSteps, seqSustain]
   )
   useLoop(seqNoteCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
@@ -256,10 +246,10 @@ export default function Channel({
     (time, interval) => {
       // console.log('KNT', time)
       if (!emptyKey && seqSteps[currentStep.current]) {
-        playNote(time, interval)
+        playNote(time, interval, keySustain)
       }
     },
-    [emptyKey, playNote, seqSteps]
+    [emptyKey, keySustain, playNote, seqSteps]
   )
   useLoop(keyNoteCallback, keyRate, tempo, keySwing, keySwingLength)
 

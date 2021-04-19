@@ -350,7 +350,7 @@ export default function useUI(
       return (
         <Dropdn
           className="channel-module seq-arp-mode"
-          label="Arp Mode"
+          label="Seq Mode"
           options={Object.keys(ARP_MODES)}
           setValue={setSeqArpMode}
           value={seqArpMode}

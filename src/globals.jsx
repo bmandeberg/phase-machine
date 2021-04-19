@@ -15,7 +15,7 @@ export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9
 
 export const DEFAULT_SETTINGS = {
   showStepNumbers: false,
-  separateMIDIChannels: false,
+  separateMIDIChannels: true,
 }
 
 export const RATES = [
