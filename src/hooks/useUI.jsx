@@ -83,8 +83,8 @@ export default function useUI(
   setSeqSwingLength,
   seqSustain,
   setSeqSustain,
-  setRetrigger,
-  retrigger,
+  setLegato,
+  legato,
   instrumentOn,
   setInstrumentOn,
   instrumentType,
@@ -412,14 +412,14 @@ export default function useUI(
     [grabbing, seqSustain, setGrabbing, setSeqSustain]
   )
 
-  const retriggerEl = useCallback(
+  const legatoEl = useCallback(
     (inline) => {
       return (
         <div className={classNames('switch-container channel-module', { inline })}>
           <Switch
             className="switch"
-            onChange={setRetrigger}
-            checked={retrigger}
+            onChange={setLegato}
+            checked={legato}
             uncheckedIcon={false}
             checkedIcon={false}
             offColor={'#e6e6e6'}
@@ -429,11 +429,11 @@ export default function useUI(
             width={48}
             height={24}
           />
-          <p className="switch-label">{inline ? 'Retrigger' : 'Retrig'}</p>
+          <p className="switch-label">Legato</p>
         </div>
       )
     },
-    [retrigger, setRetrigger]
+    [legato, setLegato]
   )
 
   const instrumentEl = useCallback(
@@ -470,7 +470,7 @@ export default function useUI(
     seqArpModeEl,
     seqSwingEl,
     seqSustainEl,
-    retriggerEl,
+    legatoEl,
     instrumentEl,
   }
 }

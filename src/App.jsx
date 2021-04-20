@@ -32,7 +32,8 @@ export default function App() {
         alert('Unable to enable Web MIDI 😢')
       } else {
         WebMidi.addListener('connected', () => {
-          setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0])
+          // setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0])
+          console.log(WebMidi.outputs)
         })
       }
     })

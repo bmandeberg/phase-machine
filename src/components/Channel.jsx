@@ -87,7 +87,7 @@ export default function Channel({
   const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
   const [seqSwingLength, setSeqSwingLength] = useState(2)
   const [seqSustain, setSeqSustain] = useState(KNOB_MAX / 2)
-  const [retrigger, setRetrigger] = useState(true)
+  const [legato, setLegato] = useState(false)
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState(INSTRUMENT_TYPES.find((i) => i.value === 'sawtooth'))
   const initInstrumentType = useRef(instrumentType.value)
@@ -138,9 +138,9 @@ export default function Channel({
       const note = noteString(noteIndex.current)
       const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
       if (!playNoteDebounce.current && noteIndex.current) {
-        // play note if retriggering or no note is playing or if this note isn't already playing
+        // play note if not legato or no note is playing or if this note isn't already playing
         // console.log('note', noteIndex.current)
-        if (retrigger || !notePlaying.current || (notePlaying.current && playingNote !== noteIndex.current)) {
+        if (!legato || !notePlaying.current || (notePlaying.current && playingNote !== noteIndex.current)) {
           if (notePlaying.current) {
             noteOff()
           }
@@ -155,8 +155,8 @@ export default function Channel({
           }
           setPlayingNote(noteIndex.current)
         }
-        // schedule note-off if we are retriggering or if the next step is off
-        if (retrigger || !seqSteps[nextStep.current]) {
+        // schedule note-off if we are not legato or if the next step is off
+        if (!legato || !seqSteps[nextStep.current]) {
           clearTimeout(noteOffTimeout.current)
           noteOffTimeout.current = setTimeout(() => {
             noteOff()
@@ -175,7 +175,7 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [channelNum, instrumentOn, midiOut, playingNote, retrigger, seqSteps, settings.separateMIDIChannels, velocity]
+    [channelNum, instrumentOn, midiOut, playingNote, legato, seqSteps, settings.separateMIDIChannels, velocity]
   )
 
   // sequence loop
@@ -233,11 +233,11 @@ export default function Channel({
   const seqNoteCallback = useCallback(
     (time, interval) => {
       // console.log('SNT', time)
-      if (!emptyKey && seqSteps[currentStep.current] && (retrigger || (!prevStep.current && currentStep.current))) {
+      if (!emptyKey && seqSteps[currentStep.current] && (!legato || (!prevStep.current && currentStep.current))) {
         playNote(time, interval, seqSustain)
       }
     },
-    [emptyKey, playNote, retrigger, seqSteps, seqSustain]
+    [emptyKey, playNote, legato, seqSteps, seqSustain]
   )
   useLoop(seqNoteCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
@@ -300,7 +300,7 @@ export default function Channel({
     seqArpModeEl,
     seqSwingEl,
     seqSustainEl,
-    retriggerEl,
+    legatoEl,
     instrumentEl,
   } = useUI(
     channelNum,
@@ -372,8 +372,8 @@ export default function Channel({
     setSeqSwingLength,
     seqSustain,
     setSeqSustain,
-    setRetrigger,
-    retrigger,
+    setLegato,
+    legato,
     instrumentOn,
     setInstrumentOn,
     instrumentType,
@@ -413,7 +413,7 @@ export default function Channel({
               {seqArpModeEl(true)}
               {seqSustainEl(true)}
               {seqSwingEl(true)}
-              {retriggerEl(true)}
+              {legatoEl(true)}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
@@ -451,7 +451,7 @@ export default function Channel({
             {seqArpModeEl(true)}
             {seqSustainEl(true)}
             {seqSwingEl(true)}
-            {retriggerEl(true)}
+            {legatoEl(true)}
           </div>
         </Sequencer>
         <div className="channel-module border"></div>
@@ -504,7 +504,7 @@ export default function Channel({
               {seqArpModeEl(false)}
               {seqSustainEl(false)}
               {seqSwingEl(false)}
-              {retriggerEl(false)}
+              {legatoEl(false)}
               {instrumentEl(true)}
             </div>
           </div>
