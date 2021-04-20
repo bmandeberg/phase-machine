@@ -15,6 +15,7 @@ export default function App() {
   const [numChannels, setNumChannels] = useState(1)
   const [view, setView] = useState(VIEWS[0])
   const [midiOut, setMidiOut] = useState(null)
+  const [midiOuts, setMidiOuts] = useState([])
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
   const [numChannelsSoloed, setNumChannelsSoloed] = useState(0)
@@ -27,14 +28,24 @@ export default function App() {
   const viewRef = useRef()
 
   useEffect(() => {
-    function updateMidiOut() {
+    function connectMidi() {
+      setMidiOuts(WebMidi.outputs.map((o) => o.name))
       setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0].name)
+    }
+    function disconnectMidi(e) {
+      setMidiOuts(WebMidi.outputs.map((o) => o.name))
+      setMidiOut((midiOut) => {
+        if (e.port.name === midiOut) {
+          return WebMidi.outputs[0] ? WebMidi.outputs[0].name : null
+        } else return midiOut
+      })
     }
     WebMidi.enable((err) => {
       if (err) {
         alert('Unable to enable Web MIDI 😢')
       } else {
-        WebMidi.addListener('connected', updateMidiOut)
+        WebMidi.addListener('connected', connectMidi)
+        WebMidi.addListener('disconnected', disconnectMidi)
       }
     })
     viewRef.current = VIEWS[0]
@@ -58,7 +69,8 @@ export default function App() {
     containerEl.addEventListener('scroll', handleScroll)
     return () => {
       containerEl.removeEventListener('scroll', handleScroll)
-      WebMidi.removeListener('connected', updateMidiOut)
+      WebMidi.removeListener('connected', connectMidi)
+      WebMidi.removeListener('disconnected', disconnectMidi)
     }
   }, [])
 
@@ -113,7 +125,7 @@ export default function App() {
         setTempo={setTempo}
         playing={playing}
         setPlaying={setPlaying}
-        midiOutputs={WebMidi.outputs.map((o) => o.name)}
+        midiOuts={midiOuts}
         midiOut={midiOut}
         setMidiOut={setMidiOut}
         numChannels={numChannels}

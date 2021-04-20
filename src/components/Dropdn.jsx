@@ -8,7 +8,7 @@ import './Dropdn.scss'
 function longestText(options) {
   if (options.length) {
     return options.reduce((a, b) => {
-      return a.length > b.length ? a : b
+      return a.trim().length > b.trim().length ? a : b
     })
   }
   return null

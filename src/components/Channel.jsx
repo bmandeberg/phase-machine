@@ -528,5 +528,5 @@ Channel.propTypes = {
   tempo: PropTypes.number,
   playing: PropTypes.bool,
   settings: PropTypes.object,
-  midiOut: PropTypes.object,
+  midiOut: PropTypes.string,
 }

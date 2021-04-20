@@ -88,7 +88,7 @@ export default class Header extends React.Component {
         <Dropdn
           className="header-item"
           label="MIDI Out"
-          options={this.props.midiOutputs}
+          options={this.props.midiOuts}
           setValue={this.props.setMidiOut}
           value={this.props.midiOut}
           placeholder="No MIDI Out"
@@ -113,7 +113,7 @@ Header.propTypes = {
   setTempo: PropTypes.func,
   playing: PropTypes.bool,
   setPlaying: PropTypes.func,
-  midiOutputs: PropTypes.array,
+  midiOuts: PropTypes.array,
   midiOut: PropTypes.string,
   setMidiOut: PropTypes.func,
   numChannels: PropTypes.number,
