@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { CHANNEL_COLORS, RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH } from '../globals'
+import { CHANNEL_COLORS, RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
@@ -269,6 +269,7 @@ export default function useUI(
     (vertical) => {
       return (
         <RotaryKnob
+          min={SUSTAIN_MIN}
           className="channel-module key-sustain"
           value={keySustain}
           setValue={setKeySustain}
@@ -399,6 +400,7 @@ export default function useUI(
     (inline) => {
       return (
         <RotaryKnob
+          min={SUSTAIN_MIN}
           className="channel-module"
           value={seqSustain}
           setValue={setSeqSustain}

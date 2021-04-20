@@ -231,6 +231,8 @@ export function handleArpMode(mode, length, i, util, inc1, inc2) {
 
 export const KNOB_MAX = 1
 
+export const SUSTAIN_MIN = 0.2
+
 export const MAX_CHANNELS = 8
 
 export const BLANK_PITCH_CLASSES = () => [
@@ -315,6 +317,9 @@ export const DEFAULT_TIME_DIVISION = '4n'
 export const MAX_SWING_LENGTH = 6
 
 export function noteString(playingNote) {
+  if (!playingNote) {
+    return null
+  }
   const notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
   return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
 }

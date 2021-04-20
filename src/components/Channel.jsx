@@ -6,6 +6,7 @@ import WebMidi from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
 import {
   KNOB_MAX,
+  SUSTAIN_MIN,
   BLANK_PITCH_CLASSES,
   MIDDLE_C,
   ARP_MODES,
@@ -53,7 +54,7 @@ export default function Channel({
   const [keyArpInc1, setKeyArpInc1] = useState(2)
   const [keyArpInc2, setKeyArpInc2] = useState(-1)
   const keyArpUtil = useRef(false)
-  const [keySustain, setKeySustain] = useState(KNOB_MAX / 2)
+  const [keySustain, setKeySustain] = useState((KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN)
   const [keySwing, setKeySwing] = useState(KNOB_MAX / 2)
   const [keySwingLength, setKeySwingLength] = useState(2)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
@@ -69,6 +70,7 @@ export default function Channel({
   const [playingPitchClass, setPlayingPitchClass] = useState()
   const [playingNote, setPlayingNote] = useState()
   const noteIndex = useRef()
+  const prevNoteIndex = useRef()
   const [noteOn, setNoteOn] = useState(false)
   const notePlaying = useRef(false)
   const noteOffTimeout = useRef()
@@ -86,7 +88,7 @@ export default function Channel({
   const seqArpUtil = useRef(false)
   const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
   const [seqSwingLength, setSeqSwingLength] = useState(2)
-  const [seqSustain, setSeqSustain] = useState(KNOB_MAX / 2)
+  const [seqSustain, setSeqSustain] = useState((KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN)
   const [legato, setLegato] = useState(false)
   const [instrumentOn, setInstrumentOn] = useState(true)
   const [instrumentType, setInstrumentType] = useState(INSTRUMENT_TYPES.find((i) => i.value === 'sawtooth'))
@@ -123,27 +125,37 @@ export default function Channel({
   }, [instrumentType])
 
   useEffect(() => {
-    if (!playing && notePlaying.current) {
+    if (!playing && notePlaying.current && noteIndex.current !== undefined) {
+      const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
+      const note = noteString(noteIndex.current)
       instrument.current.triggerRelease()
       setNoteOn(false)
+      if (midiOut) {
+        WebMidi.getOutputByName(midiOut).stopNote(note, channel)
+      }
       notePlaying.current = false
     }
-  }, [playing])
+  }, [channelNum, midiOut, playing, settings.separateMIDIChannels])
 
   // loop events
 
   // play note
   const playNote = useCallback(
     (time, interval, sustain) => {
+      const prevNote = noteString(prevNoteIndex.current)
       const note = noteString(noteIndex.current)
       const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
-      if (!playNoteDebounce.current && noteIndex.current) {
+      const clockOffset = WebMidi.time - Tone.immediate() * 1000
+      if (!playNoteDebounce.current && note) {
         // play note if not legato or no note is playing or if this note isn't already playing
         // console.log('note', noteIndex.current)
         if (!legato || !notePlaying.current || (notePlaying.current && playingNote !== noteIndex.current)) {
           if (notePlaying.current) {
-            noteOff()
+            clearTimeout(noteOffTimeout.current)
+            if (prevNoteIndex.current !== undefined) {
+              noteOff(prevNote, time * 1000 + clockOffset)
+            }
           }
           if (instrumentOn) {
             instrument.current.triggerAttack(note, time, velocity)
@@ -151,26 +163,30 @@ export default function Channel({
           setNoteOn(true)
           notePlaying.current = true
           if (midiOutObj) {
-            const clockOffset = WebMidi.time - Tone.immediate() * 1000
             midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
           }
           setPlayingNote(noteIndex.current)
         }
         // schedule note-off if we are not legato or if the next step is off
         if (!legato || !seqSteps[nextStep.current]) {
+          const sustainTime = Math.max(sustain * interval * 1000, 80)
           clearTimeout(noteOffTimeout.current)
           noteOffTimeout.current = setTimeout(() => {
-            noteOff()
-          }, time - Tone.immediate() + sustain * interval * 1000)
+            noteOff(note)
+          }, time - Tone.immediate() + sustainTime)
         }
         playNoteDebounce.current = setTimeout(() => {
           playNoteDebounce.current = null
         }, 20)
       }
-      function noteOff() {
+      function noteOff(offNote, offTime) {
         instrument.current.triggerRelease()
         if (midiOutObj) {
-          midiOutObj.stopNote(note, channel)
+          const params = {}
+          if (offTime) {
+            params.time = offTime
+          }
+          midiOutObj.stopNote(offNote, channel, params)
         }
         setNoteOn(false)
         notePlaying.current = false
@@ -207,6 +223,7 @@ export default function Channel({
       // console.log('KEY', time)
       const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
       if (pitchRange.length) {
+        prevNoteIndex.current = noteIndex.current
         if (noteIndex.current !== undefined) {
           let currentPitchIndex = pitchRange.indexOf(noteIndex.current)
           if (currentPitchIndex === -1) {

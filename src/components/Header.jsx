@@ -64,7 +64,7 @@ export default class Header extends React.Component {
           setValue={this.props.setTempo}
           label="Tempo"
           min={0}
-          max={200}
+          max={300}
           small
         />
         <NumInput
