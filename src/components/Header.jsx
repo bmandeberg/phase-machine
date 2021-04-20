@@ -103,7 +103,7 @@ export default class Header extends React.Component {
             setSelected={this.props.setScrollTo}
           />
         )}
-        <Checkbox checked={this.props.channelSync} setChecked={this.props.setChannelSync} label="Channel Sync" />
+        {/* <Checkbox checked={this.props.channelSync} setChecked={this.props.setChannelSync} label="Channel Sync" /> */}
       </div>
     )
   }
