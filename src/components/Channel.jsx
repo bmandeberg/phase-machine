@@ -69,6 +69,7 @@ export default function Channel({
   const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
   const [playingPitchClass, setPlayingPitchClass] = useState()
   const [playingNote, setPlayingNote] = useState()
+  const playingNoteRef = useRef()
   const noteIndex = useRef()
   const prevNoteIndex = useRef()
   const [noteOn, setNoteOn] = useState(false)
@@ -150,7 +151,7 @@ export default function Channel({
       if (!playNoteDebounce.current && note) {
         // play note if not legato or no note is playing or if this note isn't already playing
         // console.log('note', noteIndex.current)
-        if (!legato || !notePlaying.current || (notePlaying.current && playingNote !== noteIndex.current)) {
+        if (!legato || !notePlaying.current || (notePlaying.current && playingNoteRef.current !== noteIndex.current)) {
           if (notePlaying.current) {
             clearTimeout(noteOffTimeout.current)
             if (prevNoteIndex.current !== undefined) {
@@ -166,6 +167,7 @@ export default function Channel({
             midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
           }
           setPlayingNote(noteIndex.current)
+          playingNoteRef.current = noteIndex.current
         }
         // schedule note-off if we are not legato or if the next step is off
         if (!legato || !seqSteps[nextStep.current]) {
@@ -192,7 +194,7 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [channelNum, instrumentOn, midiOut, playingNote, legato, seqSteps, settings.separateMIDIChannels, velocity]
+    [channelNum, instrumentOn, midiOut, legato, seqSteps, settings.separateMIDIChannels, velocity]
   )
 
   // sequence loop
