@@ -137,6 +137,7 @@ export default function Channel({
     (time, interval, sustain) => {
       const note = noteString(noteIndex.current)
       const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
+      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       if (!playNoteDebounce.current && noteIndex.current) {
         // play note if not legato or no note is playing or if this note isn't already playing
         // console.log('note', noteIndex.current)
@@ -149,9 +150,9 @@ export default function Channel({
           }
           setNoteOn(true)
           notePlaying.current = true
-          if (midiOut) {
+          if (midiOutObj) {
             const clockOffset = WebMidi.time - Tone.immediate() * 1000
-            midiOut.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
+            midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
           }
           setPlayingNote(noteIndex.current)
         }
@@ -168,8 +169,8 @@ export default function Channel({
       }
       function noteOff() {
         instrument.current.triggerRelease()
-        if (midiOut) {
-          midiOut.stopNote(note, channel)
+        if (midiOutObj) {
+          midiOutObj.stopNote(note, channel)
         }
         setNoteOn(false)
         notePlaying.current = false

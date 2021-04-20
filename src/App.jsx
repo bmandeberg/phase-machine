@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
@@ -27,14 +27,14 @@ export default function App() {
   const viewRef = useRef()
 
   useEffect(() => {
+    function updateMidiOut() {
+      setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0].name)
+    }
     WebMidi.enable((err) => {
       if (err) {
         alert('Unable to enable Web MIDI 😢')
       } else {
-        WebMidi.addListener('connected', () => {
-          // setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0])
-          console.log(WebMidi.outputs)
-        })
+        WebMidi.addListener('connected', updateMidiOut)
       }
     })
     viewRef.current = VIEWS[0]
@@ -58,6 +58,7 @@ export default function App() {
     containerEl.addEventListener('scroll', handleScroll)
     return () => {
       containerEl.removeEventListener('scroll', handleScroll)
+      WebMidi.removeListener('connected', updateMidiOut)
     }
   }, [])
 
@@ -112,7 +113,7 @@ export default function App() {
         setTempo={setTempo}
         playing={playing}
         setPlaying={setPlaying}
-        midiOutputs={WebMidi.outputs}
+        midiOutputs={WebMidi.outputs.map((o) => o.name)}
         midiOut={midiOut}
         setMidiOut={setMidiOut}
         numChannels={numChannels}
