@@ -12,15 +12,6 @@ export default function Presets(props) {
   return (
     <div className={classNames('presets-container', props.className)}>
       <div className="presets">
-        <div className="preset-action preset-new">
-          <img src={addIcon} alt="New" />
-        </div>
-        <div className="preset-action preset-delete">
-          <img src={removeIcon} alt="Delete" />
-        </div>
-        <div className="preset-action preset-save">
-          <img src={saveIcon} alt="Save" />
-        </div>
         <input type="text" value={props.presetName} onChange={props.setPresetName} />
         <Dropdn
           options={['Preset']}
@@ -29,6 +20,16 @@ export default function Presets(props) {
           setValue={props.setPreset}
           small
         />
+        <div className="preset-dummy"></div>
+        <div className="preset-action preset-save">
+          <img src={saveIcon} alt="Save" />
+        </div>
+        <div className="preset-action preset-delete">
+          <img src={removeIcon} alt="Delete" />
+        </div>
+        <div className="preset-action preset-new">
+          <img src={addIcon} alt="New" />
+        </div>
       </div>
       <p className="presets-label no-select">Preset</p>
     </div>

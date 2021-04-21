@@ -10,6 +10,11 @@
   height: 21px;
   box-sizing: border-box;
   text-align: center;
+  .preset-dummy {
+    display: inline-block;
+    height: 100%;
+    width: 94px;
+  }
   .preset-action {
     position: relative;
     box-sizing: border-box;
@@ -25,6 +30,7 @@
     &.preset-new img {
       width: 60%;
       margin-top: 3px;
+      transform: translate(0, -0.5px);
     }
     &.preset-delete img {
       width: 56%;
@@ -57,16 +63,21 @@
     padding-left: 4px;
     padding-top: 5px;
     font-size: 15px;
+    margin-right: 22px;
+    position: absolute;
+    left: 1;
+    top: 1;
+    z-index: 10;
     &:focus {
       outline: none;
     }
   }
   .dropdown-container {
     position: absolute;
-    right: -21px;
+    // right: 64px;
+    left: 0;
     top: 0;
-    z-index: -1;
-    width: 75px;
+    width: 95px;
   }
 }
 
@@ -74,10 +85,12 @@
   position: relative;
   text-transform: uppercase;
   display: inline-block;
-  margin-right: 34px !important;
   .presets-label {
     height: 14px;
     position: absolute;
     bottom: -2px;
+  }
+  .Dropdown-menu {
+    text-transform: none;
   }
 }

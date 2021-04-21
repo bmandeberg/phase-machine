@@ -79,7 +79,7 @@
   padding: 8px 10px;
   color: $lightTextGray;
   font-weight: bold;
-  text-transform: capitalize;
+  text-transform: uppercase;
 }
 
 .Dropdown-option {
@@ -91,6 +91,7 @@
   padding: 5px;
   line-height: 21px;
   height: 17px;
+  white-space: nowrap;
 }
 
 .Dropdown-option:hover,

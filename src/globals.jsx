@@ -323,3 +323,43 @@ export function noteString(playingNote) {
   const notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
   return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
 }
+
+export const BLANK_PRESET = {
+  name: 'blank',
+  tempo: 120,
+  numChannels: 1,
+  view: 'stacked',
+  channelSync: false,
+  numChannelsSoloed: 0,
+  channels: [
+    {
+      velocity: KNOB_MAX,
+      key: [false, true, false, false, true, false, true, false, false, true, false, false],
+      keyRate: DEFAULT_TIME_DIVISION,
+      keyArpMode: Object.keys(ARP_MODES)[0],
+      keyArpInc1: 2,
+      keyArpInc2: -1,
+      keySustain: (KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN,
+      keySwing: KNOB_MAX / 2,
+      keySwingLength: 2,
+      mute: false,
+      solo: false,
+      shiftAmt: 1,
+      axis: 0,
+      rangeStart: MIDDLE_C,
+      rangeEnd: MIDDLE_C + 12,
+      seqSteps: [...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.35),
+      seqLength: MAX_SEQUENCE_LENGTH,
+      seqRate: DEFAULT_TIME_DIVISION,
+      seqArpMode: Object.keys(ARP_MODES)[0],
+      seqArpInc1: 2,
+      seqArpInc2: -1,
+      seqSwing: KNOB_MAX / 2,
+      seqSwingLength: 2,
+      seqSustain: (KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN,
+      legato: false,
+      instrumentOn: true,
+      instrumentType: INSTRUMENT_TYPES.find((i) => i.value === 'sawtooth'),
+    },
+  ],
+}

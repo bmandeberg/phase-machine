@@ -3,13 +3,17 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
-import { VIEWS, SECTIONS, DEFAULT_SETTINGS } from './globals'
+import { VIEWS, SECTIONS, DEFAULT_SETTINGS, BLANK_PRESET } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 
 const CLOCK_WIDTH = 658
 
 export default function App() {
+  const [presets, setPresets] = useState([BLANK_PRESET])
+  const [currentPreset, setCurrentPreset] = useState(BLANK_PRESET)
+  const [uiState, setUIState] = useState(BLANK_PRESET)
+
   const [tempo, setTempo] = useState(120)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(1)
@@ -109,6 +113,29 @@ export default function App() {
     }
   }, [tempo])
 
+  const channels = useMemo(
+    () =>
+      [...Array(numChannels)].map((d, i) => (
+        <Channel
+          numChannels={numChannels}
+          key={i}
+          channelNum={i}
+          setGrabbing={setGrabbing}
+          grabbing={grabbing}
+          resizing={resizing}
+          setResizing={setResizing}
+          view={view}
+          numChannelsSoloed={numChannelsSoloed}
+          setNumChannelsSoloed={setNumChannelsSoloed}
+          tempo={tempo}
+          playing={playing}
+          settings={settings}
+          midiOut={midiOut}
+        />
+      )),
+    [grabbing, midiOut, numChannels, numChannelsSoloed, playing, resizing, settings, tempo, view]
+  )
+
   return (
     <div
       id="container"
@@ -139,24 +166,7 @@ export default function App() {
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>
-        {[...Array(numChannels)].map((d, i) => (
-          <Channel
-            numChannels={numChannels}
-            key={i}
-            channelNum={i}
-            setGrabbing={setGrabbing}
-            grabbing={grabbing}
-            resizing={resizing}
-            setResizing={setResizing}
-            view={view}
-            numChannelsSoloed={numChannelsSoloed}
-            setNumChannelsSoloed={setNumChannelsSoloed}
-            tempo={tempo}
-            playing={playing}
-            settings={settings}
-            midiOut={midiOut}
-          />
-        ))}
+        {channels}
         {numChannels === 0 && (
           <div className="no-channels">
             <p>😴</p>
