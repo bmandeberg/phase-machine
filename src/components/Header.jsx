@@ -76,7 +76,7 @@ export default class Header extends React.Component {
           max={MAX_CHANNELS}
           small
         />
-        <Presets className="header-item" presetName="Preset" />
+        <Presets className="header-item" presetName="New Preset" />
         <Dropdn
           className="header-item"
           label="View"

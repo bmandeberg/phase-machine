@@ -14,7 +14,7 @@ export default function Presets(props) {
       <div className="presets">
         <input type="text" value={props.presetName} onChange={props.setPresetName} />
         <Dropdn
-          options={['Preset']}
+          options={['New Preset']}
           value={props.presetName}
           placeholder="New Preset"
           setValue={props.setPreset}
