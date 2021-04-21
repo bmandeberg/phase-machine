@@ -5,7 +5,7 @@ import * as Tone from 'tone'
 import { VIEWS, SECTIONS, MAX_CHANNELS } from '../globals'
 import NumInput from './NumInput'
 import Dropdn from './Dropdn'
-import SplitButton from './SplitButton'
+import Presets from './Presets'
 import RadioButtons from './RadioButtons'
 import Checkbox from './Checkbox'
 import logo from '../assets/logo.svg'
@@ -76,7 +76,7 @@ export default class Header extends React.Component {
           max={MAX_CHANNELS}
           small
         />
-        <SplitButton className="header-item" label="Preset" small />
+        <Presets className="header-item" presetName="Preset" />
         <Dropdn
           className="header-item"
           label="View"

@@ -1,0 +1,83 @@
+@import '../sass-globals.scss';
+
+.presets {
+  height: 21px;
+  border: 1px solid $orange;
+  background-color: $lightOrange;
+  color: $orange;
+  font-size: 15px;
+  line-height: 18px;
+  height: 21px;
+  box-sizing: border-box;
+  text-align: center;
+  .preset-action {
+    position: relative;
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+    width: 21px;
+    border-right: 1px solid $orange;
+    cursor: pointer;
+    img {
+      transform: translate(0, 0.5px);
+    }
+    &.preset-new img {
+      width: 60%;
+      margin-top: 3px;
+    }
+    &.preset-delete img {
+      width: 56%;
+      margin-top: 4px;
+    }
+    &.preset-save img {
+      width: 60%;
+      margin-top: 3px;
+    }
+    &:last-of-type {
+      border-right: none;
+    }
+    &:hover {
+      background-color: $darkLightOrange;
+    }
+    &:active {
+      background-color: $darkerLightOrange;
+    }
+  }
+  input {
+    box-sizing: border-box;
+    display: inline-block;
+    font-family: 'DIN Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+      'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    color: $lightTextGray;
+    box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.05);
+    height: 19px;
+    width: 72px;
+    border: none;
+    padding-left: 4px;
+    padding-top: 5px;
+    font-size: 15px;
+    &:focus {
+      outline: none;
+    }
+  }
+  .dropdown-container {
+    position: absolute;
+    right: -21px;
+    top: 0;
+    z-index: -1;
+    width: 75px;
+  }
+}
+
+.presets-container {
+  position: relative;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-right: 34px !important;
+  .presets-label {
+    height: 14px;
+    position: absolute;
+    bottom: -2px;
+  }
+}

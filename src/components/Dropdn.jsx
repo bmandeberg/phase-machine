@@ -33,7 +33,7 @@ export default function Dropdn(props) {
         />
         <div className="dropdown-min-width">{longestText(props.options)}</div>
       </div>
-      <p className="dropdown-label no-select">{props.label}</p>
+      {props.label && <p className="dropdown-label no-select">{props.label}</p>}
       {props.setNum1 && (
         <div className="dropdown-num-inputs-wrapper">
           <div className="dropdown-num-inputs">
