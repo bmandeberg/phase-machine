@@ -78,7 +78,10 @@ export default class Header extends React.Component {
         />
         <Presets
           className="header-item"
-          presetName="New Preset"
+          presetName={this.props.presetName}
+          presetNames={this.props.presetNames}
+          setPresetName={this.props.setPresetName}
+          setPreset={this.props.setPreset}
           presetDirty={this.props.presetDirty}
           presetHotkey={this.props.presetHotkey}
         />
@@ -131,6 +134,10 @@ Header.propTypes = {
   setScrollTo: PropTypes.func,
   channelSync: PropTypes.bool,
   setChannelSync: PropTypes.func,
+  presetNames: PropTypes.array,
+  presetName: PropTypes.string,
+  setPresetName: PropTypes.func,
+  setPreset: PropTypes.func,
   presetDirty: PropTypes.bool,
   presetHotkey: PropTypes.number,
 }

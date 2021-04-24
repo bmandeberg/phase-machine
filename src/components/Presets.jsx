@@ -39,7 +39,7 @@ export default function Presets(props) {
           )}
         </div>
         <Dropdn
-          options={['New Preset']}
+          options={props.presetNames}
           value={props.presetName}
           placeholder="New Preset"
           setValue={props.setPreset}

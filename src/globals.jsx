@@ -325,12 +325,11 @@ export function noteString(playingNote) {
 }
 
 export const BLANK_PRESET = {
-  name: 'blank',
+  name: 'New Preset',
   hotkey: null,
   placeholder: false,
   tempo: 120,
   numChannels: 1,
-  view: 'stacked',
   channelSync: false,
   numChannelsSoloed: 0,
   channels: [

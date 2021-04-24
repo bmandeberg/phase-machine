@@ -136,13 +136,22 @@ export default function App() {
       const uiStateCopy = Object.assign({}, uiState, {
         tempo,
         numChannels,
-        view,
         channelSync,
         numChannelsSoloed,
       })
       return uiStateCopy
     })
-  }, [channelSync, numChannels, numChannelsSoloed, tempo, view])
+  }, [channelSync, numChannels, numChannelsSoloed, tempo])
+
+  const setPreset = useCallback((presetName) => {
+    console.log(presetName)
+  }, [])
+
+  const setPresetName = useCallback((presetName) => {
+    setUIState((uiState) => {
+      return Object.assign({}, uiState, { name: presetName.target.value })
+    })
+  }, [])
 
   const presetDirty = useMemo(() => {
     for (const param in uiState) {
@@ -242,6 +251,10 @@ export default function App() {
         setScrollTo={doScroll}
         channelSync={channelSync}
         setChannelSync={setChannelSync}
+        presetName={uiState.name}
+        setPresetName={setPresetName}
+        presetNames={presets.map((p) => p.name)}
+        setPreset={setPreset}
         presetDirty={presetDirty}
         presetHotkey={currentPreset.hotkey}
       />
