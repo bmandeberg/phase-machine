@@ -327,6 +327,7 @@ export function noteString(playingNote) {
 export const BLANK_PRESET = {
   name: 'blank',
   hotkey: null,
+  placeholder: false,
   tempo: 120,
   numChannels: 1,
   view: 'stacked',

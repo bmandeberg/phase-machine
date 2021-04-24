@@ -144,9 +144,52 @@ export default function App() {
     })
   }, [channelSync, numChannels, numChannelsSoloed, tempo, view])
 
+  const presetDirty = useMemo(() => {
+    for (const param in uiState) {
+      if (uiState.hasOwnProperty(param)) {
+        // check global preset params
+        if (param !== 'channels') {
+          if (uiState[param] !== currentPreset[param]) {
+            return true
+          }
+        } else {
+          // check channels
+          for (let i = 0; i < uiState[param].length; i++) {
+            if (!currentPreset[param][i]) return true
+            const channel = uiState[param][i]
+            const presetChannel = currentPreset[param][i]
+            for (const channelParam in channel) {
+              if (channel.hasOwnProperty(channelParam)) {
+                // compare arrays
+                if (['key', 'seqSteps'].some((s) => s === channelParam)) {
+                  for (let j = 0; j < channel[channelParam].length; j++) {
+                    if (channel[channelParam][j] !== presetChannel[channelParam][j]) {
+                      return true
+                    }
+                  }
+                } else if (channelParam === 'instrumentType') {
+                  // compare special cases
+                  if (channel[channelParam].value !== presetChannel[channelParam].value) {
+                    return true
+                  }
+                } else {
+                  // compare everything else
+                  if (channel[channelParam] !== presetChannel[channelParam]) {
+                    return true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return false
+  }, [currentPreset, uiState])
+
   // useEffect(() => {
-  //   console.log(uiState)
-  // }, [uiState])
+  //   console.log(presetDirty)
+  // }, [presetDirty])
 
   const channels = useMemo(
     () =>
