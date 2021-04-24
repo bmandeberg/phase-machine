@@ -38,7 +38,7 @@ export default function RotaryKnob({
   const updateValue = useCallback(
     (val) => {
       if (axisKnob) {
-        const roundedVal = Math.round(val)
+        const roundedVal = Math.round(val) % 24
         if (roundedVal !== value) {
           setValue(roundedVal)
         }
