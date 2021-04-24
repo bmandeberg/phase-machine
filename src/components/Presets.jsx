@@ -4,8 +4,9 @@ import classNames from 'classnames'
 import Dropdn from './Dropdn'
 import addIcon from '../assets/add-icon.svg'
 import removeIcon from '../assets/remove-icon.svg'
-import trashIcon from '../assets/trash-icon.svg'
+import removeIconDisabled from '../assets/remove-icon-disabled.svg'
 import saveIcon from '../assets/save-icon.svg'
+import saveIconDisabled from '../assets/save-icon-disabled.svg'
 import edited from '../assets/edit-tag.svg'
 import './Presets.scss'
 
@@ -46,11 +47,11 @@ export default function Presets(props) {
           small
         />
         <div className="preset-dummy"></div>
-        <div className="preset-action preset-save">
-          <img src={saveIcon} alt="Save" />
+        <div className={classNames('preset-action preset-save', { disabled: !props.presetDirty })}>
+          <img src={props.presetDirty ? saveIcon : saveIconDisabled} alt="Save" />
         </div>
-        <div className="preset-action preset-delete">
-          <img src={removeIcon} alt="Delete" />
+        <div className={classNames('preset-action preset-delete', { disabled: props.presetDirty })}>
+          <img src={!props.presetDirty ? removeIcon : removeIconDisabled} alt="Delete" />
         </div>
         <div className="preset-action preset-new">
           <img src={addIcon} alt="New" />

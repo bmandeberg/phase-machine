@@ -11,7 +11,7 @@ const CLOCK_WIDTH = 658
 
 export default function App() {
   const [presets, setPresets] = useState([BLANK_PRESET])
-  const [currentPreset, setCurrentPreset] = useState(BLANK_PRESET)
+  const [currentPreset, setCurrentPreset] = useState(presets[0])
   const [uiState, setUIState] = useState(BLANK_PRESET)
 
   const [tempo, setTempo] = useState(120)

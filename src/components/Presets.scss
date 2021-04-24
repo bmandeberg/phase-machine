@@ -49,6 +49,10 @@
     &:active {
       background-color: $darkerLightOrange;
     }
+    &.disabled {
+      pointer-events: none;
+      background-color: $darkLightOrange;
+    }
   }
   input {
     box-sizing: border-box;
