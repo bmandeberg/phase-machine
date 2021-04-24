@@ -242,6 +242,8 @@ export default function App() {
         setScrollTo={doScroll}
         channelSync={channelSync}
         setChannelSync={setChannelSync}
+        presetDirty={presetDirty}
+        presetHotkey={currentPreset.hotkey}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>

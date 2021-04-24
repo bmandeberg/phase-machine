@@ -13,7 +13,7 @@
   .preset-dummy {
     display: inline-block;
     height: 100%;
-    width: 96px;
+    width: 116px;
   }
   .preset-action {
     position: relative;
@@ -58,7 +58,7 @@
     color: $lightTextGray;
     box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.05);
     height: 19px;
-    width: 74px;
+    width: 94px;
     border: none;
     padding-left: 4px;
     padding-top: 5px;
@@ -76,7 +76,35 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 97px;
+    width: 117px;
+  }
+  .preset-tags {
+    position: absolute;
+    right: 88px;
+    top: 3px;
+    height: 15px;
+    z-index: 11;
+  }
+  .preset-edited {
+    height: 15px;
+    float: right;
+    margin-left: 2px;
+  }
+  .preset-hotkey {
+    width: 15px;
+    height: 15px;
+    background-color: $blue;
+    font-size: 12px;
+    text-align: center;
+    line-height: 15px;
+    border-radius: 7.5px;
+    float: right;
+    color: #ffffff;
+    padding-top: 1px;
+    box-sizing: border-box;
+    p {
+      transform: translate(0, 0.5px);
+    }
   }
 }
 

@@ -41,7 +41,7 @@ export default class Header extends React.Component {
   }
 
   handleKeyDown(e) {
-    if (e.key === ' ') {
+    if (e.key === ' ' && document.activeElement.getAttribute('type') !== 'text') {
       e.preventDefault()
       this.playStop()
     }
@@ -76,7 +76,12 @@ export default class Header extends React.Component {
           max={MAX_CHANNELS}
           small
         />
-        <Presets className="header-item" presetName="New Preset" />
+        <Presets
+          className="header-item"
+          presetName="New Preset"
+          presetDirty={this.props.presetDirty}
+          presetHotkey={this.props.presetHotkey}
+        />
         <Dropdn
           className="header-item"
           label="View"
@@ -126,4 +131,6 @@ Header.propTypes = {
   setScrollTo: PropTypes.func,
   channelSync: PropTypes.bool,
   setChannelSync: PropTypes.func,
+  presetDirty: PropTypes.bool,
+  presetHotkey: PropTypes.number,
 }
