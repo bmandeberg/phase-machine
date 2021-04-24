@@ -46,6 +46,7 @@ export default function Channel({
   playing,
   settings,
   midiOut,
+  setChannelState,
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
@@ -400,6 +401,71 @@ export default function Channel({
     setInstrumentType
   )
 
+  // watch and update state
+
+  useEffect(() => {
+    const state = {
+      velocity,
+      key,
+      keyRate,
+      keyArpMode,
+      keyArpInc1,
+      keyArpInc2,
+      keySustain,
+      keySwing,
+      keySwingLength,
+      mute,
+      solo,
+      shiftAmt,
+      axis,
+      rangeStart,
+      rangeEnd,
+      seqSteps,
+      seqLength,
+      seqRate,
+      seqArpMode,
+      seqArpInc1,
+      seqArpInc2,
+      seqSwing,
+      seqSwingLength,
+      seqSustain,
+      legato,
+      instrumentOn,
+      instrumentType,
+    }
+    setChannelState(channelNum, state)
+  }, [
+    axis,
+    channelNum,
+    instrumentOn,
+    instrumentType,
+    key,
+    keyArpInc1,
+    keyArpInc2,
+    keyArpMode,
+    keyRate,
+    keySustain,
+    keySwing,
+    keySwingLength,
+    legato,
+    mute,
+    rangeEnd,
+    rangeStart,
+    seqArpInc1,
+    seqArpInc2,
+    seqArpMode,
+    seqLength,
+    seqRate,
+    seqSteps,
+    seqSustain,
+    seqSwing,
+    seqSwingLength,
+    setChannelState,
+    shiftAmt,
+    solo,
+    velocity,
+  ])
+
   // return based on view
 
   if (view === 'stacked') {
@@ -548,4 +614,5 @@ Channel.propTypes = {
   playing: PropTypes.bool,
   settings: PropTypes.object,
   midiOut: PropTypes.string,
+  setChannelState: PropTypes.func,
 }

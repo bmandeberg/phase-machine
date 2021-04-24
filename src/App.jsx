@@ -113,6 +113,41 @@ export default function App() {
     }
   }, [tempo])
 
+  // state management for presets
+
+  const setChannelState = useCallback((channelNum, state) => {
+    setUIState((uiState) => {
+      const uiStateCopy = Object.assign({}, uiState)
+      uiStateCopy.channels[channelNum] = state
+      return uiStateCopy
+    })
+  }, [])
+
+  useEffect(() => {
+    setUIState((uiState) => {
+      const uiStateCopy = Object.assign({}, uiState)
+      uiStateCopy.channels = uiStateCopy.channels.slice(0, numChannels)
+      return uiStateCopy
+    })
+  }, [numChannels])
+
+  useEffect(() => {
+    setUIState((uiState) => {
+      const uiStateCopy = Object.assign({}, uiState, {
+        tempo,
+        numChannels,
+        view,
+        channelSync,
+        numChannelsSoloed,
+      })
+      return uiStateCopy
+    })
+  }, [channelSync, numChannels, numChannelsSoloed, tempo, view])
+
+  // useEffect(() => {
+  //   console.log(uiState)
+  // }, [uiState])
+
   const channels = useMemo(
     () =>
       [...Array(numChannels)].map((d, i) => (
@@ -131,9 +166,10 @@ export default function App() {
           playing={playing}
           settings={settings}
           midiOut={midiOut}
+          setChannelState={setChannelState}
         />
       )),
-    [grabbing, midiOut, numChannels, numChannelsSoloed, playing, resizing, settings, tempo, view]
+    [grabbing, midiOut, numChannels, numChannelsSoloed, playing, resizing, setChannelState, settings, tempo, view]
   )
 
   return (
