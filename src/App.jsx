@@ -3,6 +3,7 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
+import { v4 as uuid } from 'uuid'
 import { VIEWS, SECTIONS, DEFAULT_SETTINGS, BLANK_PRESET } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
@@ -199,21 +200,61 @@ export default function App() {
   // preset actions
 
   const savePreset = useCallback(() => {
-    uiState.placeholder = false
-    setCurrentPreset(uiState)
+    const uiStateCopy = Object.assign({}, deepStateCopy(uiState), { placeholder: false })
+    setCurrentPreset(uiStateCopy)
     setPresets((presets) => {
       const presetsCopy = presets.slice()
-      const i = presetsCopy.findIndex((p) => p.id === uiState.id)
+      const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
       if (i !== -1) {
-        presetsCopy[i] = uiState
+        presetsCopy[i] = uiStateCopy
       }
       return presetsCopy
     })
   }, [uiState])
 
+  const dedupName = useCallback(
+    (name) => {
+      const sameNamePreset = presets.find((p) => p.name === name)
+      if (sameNamePreset) {
+        const digitMatch = /\s\((\d+)\)$/
+        const baseName = name.replace(digitMatch, '')
+        const incRegex = new RegExp(baseName + '\\s\\((\\d+)\\)$')
+        const nameIncrements = presets.reduce(
+          (acc, curr) => {
+            const match = curr.name.match(incRegex)
+            if (match) {
+              acc.push(+match[1])
+            }
+            return acc
+          },
+          [1]
+        )
+        const maxInc = Math.max(...nameIncrements)
+        return `${baseName} (${maxInc + 1})`
+      } else return name
+    },
+    [presets]
+  )
+
+  const newPreset = useCallback(() => {
+    const uiStateCopy = Object.assign({}, uiState, {
+      name: dedupName(uiState.name),
+      placeholder: false,
+      id: uuid(),
+      hotkey: null,
+    })
+    // sync state and presets
+    setUIState(uiStateCopy)
+    setCurrentPreset(deepStateCopy(uiStateCopy))
+    setPresets((presets) => {
+      const presetsCopy = presets.slice()
+      presetsCopy.push(uiStateCopy)
+      return presetsCopy
+    })
+  }, [dedupName, uiState])
+
   // useEffect(() => {
   //   console.log(currentPreset)
-  //   console.log(presets)
   // }, [currentPreset, presets])
 
   // render UI
@@ -276,6 +317,7 @@ export default function App() {
         presetDirty={presetDirty}
         presetHotkey={currentPreset.hotkey}
         savePreset={savePreset}
+        newPreset={newPreset}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>
@@ -289,4 +331,10 @@ export default function App() {
       </div>
     </div>
   )
+}
+
+function deepStateCopy(state) {
+  return Object.assign({}, state, {
+    channels: state.channels.map((c) => Object.assign({}, c, { key: c.key.slice(), seqSteps: c.seqSteps.slice() })),
+  })
 }
