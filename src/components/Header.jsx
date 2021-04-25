@@ -84,6 +84,7 @@ export default class Header extends React.Component {
           setPreset={this.props.setPreset}
           presetDirty={this.props.presetDirty}
           presetHotkey={this.props.presetHotkey}
+          savePreset={this.props.savePreset}
         />
         <Dropdn
           className="header-item"
@@ -140,4 +141,5 @@ Header.propTypes = {
   setPreset: PropTypes.func,
   presetDirty: PropTypes.bool,
   presetHotkey: PropTypes.number,
+  savePreset: PropTypes.func,
 }

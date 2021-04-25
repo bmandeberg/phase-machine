@@ -47,7 +47,9 @@ export default function Presets(props) {
           small
         />
         <div className="preset-dummy"></div>
-        <div className={classNames('preset-action preset-save', { disabled: !props.presetDirty })}>
+        <div
+          className={classNames('preset-action preset-save', { disabled: !props.presetDirty })}
+          onClick={props.savePreset}>
           <img src={props.presetDirty ? saveIcon : saveIconDisabled} alt="Save" />
         </div>
         <div className={classNames('preset-action preset-delete', { disabled: props.presetDirty })}>
@@ -70,4 +72,5 @@ Presets.propTypes = {
   presetDirty: PropTypes.bool,
   hotkey: PropTypes.number,
   presetHotkey: PropTypes.number,
+  savePreset: PropTypes.func,
 }

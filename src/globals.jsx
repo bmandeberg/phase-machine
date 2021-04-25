@@ -1,4 +1,5 @@
 import React from 'react'
+import { v4 as uuid } from 'uuid'
 import sine from './assets/sine_wave.svg'
 import square from './assets/square_wave.svg'
 import triangle from './assets/triangle_wave.svg'
@@ -326,6 +327,7 @@ export function noteString(playingNote) {
 
 export const BLANK_PRESET = {
   name: 'New Preset',
+  id: uuid(),
   hotkey: null,
   placeholder: false,
   tempo: 120,

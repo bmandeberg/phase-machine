@@ -196,9 +196,27 @@ export default function App() {
     return false
   }, [currentPreset, uiState])
 
+  // preset actions
+
+  const savePreset = useCallback(() => {
+    uiState.placeholder = false
+    setCurrentPreset(uiState)
+    setPresets((presets) => {
+      const presetsCopy = presets.slice()
+      const i = presetsCopy.findIndex((p) => p.id === uiState.id)
+      if (i !== -1) {
+        presetsCopy[i] = uiState
+      }
+      return presetsCopy
+    })
+  }, [uiState])
+
   // useEffect(() => {
-  //   console.log(presetDirty)
-  // }, [presetDirty])
+  //   console.log(currentPreset)
+  //   console.log(presets)
+  // }, [currentPreset, presets])
+
+  // render UI
 
   const channels = useMemo(
     () =>
@@ -257,6 +275,7 @@ export default function App() {
         setPreset={setPreset}
         presetDirty={presetDirty}
         presetHotkey={currentPreset.hotkey}
+        savePreset={savePreset}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>
