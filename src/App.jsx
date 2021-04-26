@@ -209,7 +209,7 @@ export default function App() {
         const nameIncrements = presets.reduce(
           (acc, curr) => {
             const match = curr.name.match(incRegex)
-            if (match) {
+            if (match && !(id && curr.id === id)) {
               acc.push(+match[1])
             }
             return acc
@@ -260,6 +260,18 @@ export default function App() {
       presetsCopy.push(uiStateCopy)
       return presetsCopy
     })
+  }, [dedupName, uiState])
+
+  const deletePreset = useCallback(() => {
+    const uiStateCopy = Object.assign({}, uiState, {
+      name: dedupName('New Preset', uiState.id),
+      id: uuid(),
+      hotkey: null,
+      placeholder: true,
+    })
+    setPresets((presets) => presets.filter((p) => p.id !== uiState.id))
+    setUIState(deepStateCopy(uiStateCopy))
+    setCurrentPreset(uiStateCopy)
   }, [dedupName, uiState])
 
   // useEffect(() => {
@@ -327,6 +339,7 @@ export default function App() {
         presetHotkey={currentPreset.hotkey}
         savePreset={savePreset}
         newPreset={newPreset}
+        deletePreset={deletePreset}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>

@@ -54,7 +54,9 @@ export default function Presets(props) {
           onClick={props.savePreset}>
           <img src={props.presetDirty || props.preset.placeholder ? saveIcon : saveIconDisabled} alt="Save" />
         </div>
-        <div className={classNames('preset-action preset-delete', { disabled: props.preset.placeholder })}>
+        <div
+          className={classNames('preset-action preset-delete', { disabled: props.preset.placeholder })}
+          onClick={props.deletePreset}>
           <img src={props.preset.placeholder ? removeIconDisabled : removeIcon} alt="Delete" />
         </div>
         <div className="preset-action preset-new" onClick={props.newPreset}>
@@ -76,4 +78,5 @@ Presets.propTypes = {
   presetHotkey: PropTypes.number,
   savePreset: PropTypes.func,
   newPreset: PropTypes.func,
+  deletePreset: PropTypes.func,
 }
