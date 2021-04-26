@@ -28,7 +28,7 @@ export default function App() {
 
   const [grabbing, setGrabbing] = useState(false)
   const [resizing, setResizing] = useState(false)
-  const keydownTimer = useRef()
+  const keydownTimer = useRef(null)
 
   const container = useRef()
   const viewRef = useRef()
@@ -298,12 +298,9 @@ export default function App() {
   useEffect(() => {
     function keydown(e) {
       if (!isNaN(+e.key)) {
-        if (!keydownTimer.current) {
+        if (keydownTimer.current === null) {
           keydownTimer.current = window.performance.now()
-        } else if (
-          window.performance.now() - keydownTimer.current > PRESET_HOLD_TIME &&
-          +e.key !== currentPreset.hotkey
-        ) {
+        } else if (keydownTimer.current && window.performance.now() - keydownTimer.current > PRESET_HOLD_TIME) {
           setPresets((presets) => {
             const presetsCopy = presets.slice()
             presetsCopy.forEach((p) => {
@@ -314,14 +311,17 @@ export default function App() {
             return presetsCopy
           })
           savePreset(null, +e.key)
+          keydownTimer.current = false
         }
       }
     }
     function keyup(e) {
       if (!isNaN(+e.key)) {
-        if (window.performance.now() - keydownTimer.current < PRESET_HOLD_TIME) {
+        if (keydownTimer.current && window.performance.now() - keydownTimer.current < PRESET_HOLD_TIME) {
           const preset = presets.find((p) => p.hotkey === +e.key)
-          setPreset(preset.id)
+          if (preset) {
+            setPreset(preset.id)
+          }
         }
         keydownTimer.current = null
       }
