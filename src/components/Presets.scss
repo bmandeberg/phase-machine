@@ -16,6 +16,7 @@
     width: 116px;
   }
   .preset-action {
+    @extend .no-select;
     position: relative;
     box-sizing: border-box;
     display: inline-block;

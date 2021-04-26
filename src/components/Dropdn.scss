@@ -1,12 +1,5 @@
 @import '../sass-globals.scss';
 
-.no-select {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
 .Dropdown-root {
   position: relative;
   &.is-open .Dropdown-arrow {

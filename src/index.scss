@@ -50,13 +50,6 @@ body {
   cursor: ew-resize !important;
 }
 
-.no-select {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
 #channels {
   overflow-y: visible;
   margin-top: 62px;
