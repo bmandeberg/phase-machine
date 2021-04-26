@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain } from '../globals'
@@ -27,6 +27,13 @@ export default function Piano({
   const [rangeEndReference, setRangeEndReference] = useState(rangeEnd)
   const pxStart = useMemo(() => noteToPx(rangeStart, false), [rangeStart])
   const pxEnd = useMemo(() => noteToPx(rangeEnd - 1, true), [rangeEnd])
+
+  useEffect(() => {
+    if (!changingRange) {
+      setRangeStartReference(rangeStart)
+      setRangeEndReference(rangeEnd)
+    }
+  }, [rangeStart, rangeEnd, changingRange])
 
   const dragRangeLeft = useGesture({
     onDrag: ({ movement: [mx, my] }) => {

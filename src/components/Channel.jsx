@@ -47,6 +47,7 @@ export default function Channel({
   settings,
   midiOut,
   setChannelState,
+  channelPreset,
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
   const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
@@ -101,6 +102,38 @@ export default function Channel({
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
   }, [key])
+
+  useEffect(() => {
+    if (channelPreset) {
+      setVelocity(channelPreset.velocity)
+      setKey(channelPreset.key.slice())
+      setKeyRate(channelPreset.keyRate)
+      setKeyArpMode(channelPreset.keyArpMode)
+      setKeyArpInc1(channelPreset.keyArpInc1)
+      setKeyArpInc2(channelPreset.keyArpInc2)
+      setKeySustain(channelPreset.keySustain)
+      setKeySwing(channelPreset.keySwing)
+      setKeySwingLength(channelPreset.keySwingLength)
+      setMute(channelPreset.mute)
+      setSolo(channelPreset.solo)
+      setShiftAmt(channelPreset.shiftAmt)
+      setAxis(channelPreset.axis)
+      setRangeStart(channelPreset.rangeStart)
+      setRangeEnd(channelPreset.rangeEnd)
+      setSeqSteps(channelPreset.seqSteps.slice())
+      setSeqLength(channelPreset.seqLength)
+      setSeqRate(channelPreset.seqRate)
+      setSeqArpMode(channelPreset.seqArpMode)
+      setSeqArpInc1(channelPreset.seqArpInc1)
+      setSeqArpInc2(channelPreset.seqArpInc2)
+      setSeqSwing(channelPreset.seqSwing)
+      setSeqSwingLength(channelPreset.seqSwingLength)
+      setSeqSustain(channelPreset.seqSustain)
+      setLegato(channelPreset.legato)
+      setInstrumentOn(channelPreset.instrumentOn)
+      setInstrumentType(channelPreset.instrumentType)
+    }
+  }, [channelPreset])
 
   // instrument
 
@@ -615,4 +648,5 @@ Channel.propTypes = {
   settings: PropTypes.object,
   midiOut: PropTypes.string,
   setChannelState: PropTypes.func,
+  channelPreset: PropTypes.object,
 }

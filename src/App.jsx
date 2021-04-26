@@ -144,9 +144,18 @@ export default function App() {
     })
   }, [channelSync, numChannels, numChannelsSoloed, tempo])
 
-  const setPreset = useCallback((presetName) => {
-    console.log(presetName)
-  }, [])
+  const setPreset = useCallback(
+    (presetID) => {
+      const preset = presets.find((p) => p.id === presetID)
+      setCurrentPreset(deepStateCopy(preset))
+      setUIState(deepStateCopy(preset))
+      setTempo(preset.tempo)
+      setNumChannels(preset.numChannels)
+      setChannelSync(preset.channelSync)
+      setNumChannelsSoloed(preset.numChannelsSoloed)
+    },
+    [presets]
+  )
 
   const setPresetName = useCallback((presetName) => {
     setUIState((uiState) => {
@@ -299,9 +308,22 @@ export default function App() {
           settings={settings}
           midiOut={midiOut}
           setChannelState={setChannelState}
+          channelPreset={currentPreset.channels[i]}
         />
       )),
-    [grabbing, midiOut, numChannels, numChannelsSoloed, playing, resizing, setChannelState, settings, tempo, view]
+    [
+      currentPreset,
+      grabbing,
+      midiOut,
+      numChannels,
+      numChannelsSoloed,
+      playing,
+      resizing,
+      setChannelState,
+      settings,
+      tempo,
+      view,
+    ]
   )
 
   return (
