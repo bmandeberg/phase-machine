@@ -32,7 +32,7 @@ export default function Presets(props) {
           style={{ paddingRight: inputPadding }}
         />
         <div className="preset-tags">
-          {props.presetDirty && <img className="preset-edited" src={edited} alt="" />}
+          {(props.presetDirty || props.preset.placeholder) && <img className="preset-edited" src={edited} alt="" />}
           {props.presetHotkey !== null && (
             <div className="preset-hotkey">
               <p>{props.presetHotkey}</p>
@@ -48,9 +48,11 @@ export default function Presets(props) {
         />
         <div className="preset-dummy"></div>
         <div
-          className={classNames('preset-action preset-save', { disabled: !props.presetDirty })}
+          className={classNames('preset-action preset-save', {
+            disabled: !props.presetDirty && !props.preset.placeholder,
+          })}
           onClick={props.savePreset}>
-          <img src={props.presetDirty ? saveIcon : saveIconDisabled} alt="Save" />
+          <img src={props.presetDirty || props.preset.placeholder ? saveIcon : saveIconDisabled} alt="Save" />
         </div>
         <div className="preset-action preset-delete">
           <img src={removeIcon} alt="Delete" />

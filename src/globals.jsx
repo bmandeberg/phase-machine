@@ -329,7 +329,7 @@ export const BLANK_PRESET = {
   name: 'New Preset',
   id: uuid(),
   hotkey: null,
-  placeholder: false,
+  placeholder: true,
   tempo: 120,
   numChannels: 1,
   channelSync: false,

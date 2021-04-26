@@ -231,13 +231,15 @@ export default function App() {
         break
       }
     }
-    setUIState(uiStateCopy)
-    setCurrentPreset(deepStateCopy(uiStateCopy))
+    setUIState(deepStateCopy(uiStateCopy))
+    setCurrentPreset(uiStateCopy)
     setPresets((presets) => {
       const presetsCopy = presets.slice()
       const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
       if (i !== -1) {
         presetsCopy[i] = uiStateCopy
+      } else {
+        presetsCopy.push(uiStateCopy)
       }
       return presetsCopy
     })
@@ -251,8 +253,8 @@ export default function App() {
       hotkey: null,
     })
     // sync state and presets
-    setUIState(uiStateCopy)
-    setCurrentPreset(deepStateCopy(uiStateCopy))
+    setUIState(deepStateCopy(uiStateCopy))
+    setCurrentPreset(uiStateCopy)
     setPresets((presets) => {
       const presetsCopy = presets.slice()
       presetsCopy.push(uiStateCopy)
