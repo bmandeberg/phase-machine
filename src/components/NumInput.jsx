@@ -18,7 +18,7 @@ export default function NumInput({
   setDirectionForward,
   buttonText,
   buttonAction,
-  short
+  short,
 }) {
   const input = useRef()
 
@@ -44,8 +44,10 @@ export default function NumInput({
 
   useEffect(() => {
     setTimeout(() => {
-      const inputEl = input.current.querySelector('input')
-      inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
+      if (input.current) {
+        const inputEl = input.current.querySelector('input')
+        inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
+      }
     }, 500)
   }, [value])
 
@@ -73,7 +75,9 @@ export default function NumInput({
   }, [hidePreview, preview, setShowKeyPreview, showPreview, showPreviewBack, showPreviewForward])
 
   return (
-    <div ref={input} className={classNames('num-input', className, { 'small-input': small, 'inline-input': inline, short })}>
+    <div
+      ref={input}
+      className={classNames('num-input', className, { 'small-input': small, 'inline-input': inline, short })}>
       {/* eslint-disable-next-line */}
       <NumericInput min={min} max={max} value={value} onChange={setValue} style={false} strict />
       {buttonText && buttonAction ? (

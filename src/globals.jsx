@@ -317,6 +317,8 @@ export const DEFAULT_TIME_DIVISION = '4n'
 
 export const MAX_SWING_LENGTH = 6
 
+export const PRESET_HOLD_TIME = 1000
+
 export function noteString(playingNote) {
   if (!playingNote) {
     return null

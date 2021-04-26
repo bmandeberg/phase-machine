@@ -4,7 +4,7 @@ import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { v4 as uuid } from 'uuid'
-import { VIEWS, SECTIONS, DEFAULT_SETTINGS, BLANK_PRESET } from './globals'
+import { VIEWS, SECTIONS, DEFAULT_SETTINGS, BLANK_PRESET, PRESET_HOLD_TIME } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 
@@ -28,6 +28,7 @@ export default function App() {
 
   const [grabbing, setGrabbing] = useState(false)
   const [resizing, setResizing] = useState(false)
+  const keydownTimer = useRef()
 
   const container = useRef()
   const viewRef = useRef()
@@ -144,19 +145,6 @@ export default function App() {
     })
   }, [channelSync, numChannels, numChannelsSoloed, tempo])
 
-  const setPreset = useCallback(
-    (presetID) => {
-      const preset = presets.find((p) => p.id === presetID)
-      setCurrentPreset(deepStateCopy(preset))
-      setUIState(deepStateCopy(preset))
-      setTempo(preset.tempo)
-      setNumChannels(preset.numChannels)
-      setChannelSync(preset.channelSync)
-      setNumChannelsSoloed(preset.numChannelsSoloed)
-    },
-    [presets]
-  )
-
   const setPresetName = useCallback((presetName) => {
     setUIState((uiState) => {
       return Object.assign({}, uiState, { name: presetName.target.value })
@@ -208,6 +196,19 @@ export default function App() {
 
   // preset actions
 
+  const setPreset = useCallback(
+    (presetID) => {
+      const preset = presets.find((p) => p.id === presetID)
+      setCurrentPreset(deepStateCopy(preset))
+      setUIState(deepStateCopy(preset))
+      setTempo(preset.tempo)
+      setNumChannels(preset.numChannels)
+      setChannelSync(preset.channelSync)
+      setNumChannelsSoloed(preset.numChannelsSoloed)
+    },
+    [presets]
+  )
+
   const dedupName = useCallback(
     (name, id) => {
       const sameNamePreset = presets.find((p) => p.name === name)
@@ -232,44 +233,53 @@ export default function App() {
     [presets]
   )
 
-  const savePreset = useCallback(() => {
-    const uiStateCopy = Object.assign({}, uiState, { placeholder: false })
-    for (let i = 0; i < presets.length; i++) {
-      if (presets[i].name === uiStateCopy.name && presets[i].id !== uiStateCopy.id) {
-        uiStateCopy.name = dedupName(uiStateCopy.name, uiStateCopy.id)
-        break
+  const savePreset = useCallback(
+    (e, hotkey = null) => {
+      const uiStateCopy = Object.assign({}, uiState, {
+        placeholder: false,
+        hotkey: hotkey !== null ? hotkey : uiState.hotkey,
+      })
+      for (let i = 0; i < presets.length; i++) {
+        if (presets[i].name === uiStateCopy.name && presets[i].id !== uiStateCopy.id) {
+          uiStateCopy.name = dedupName(uiStateCopy.name, uiStateCopy.id)
+          break
+        }
       }
-    }
-    setUIState(deepStateCopy(uiStateCopy))
-    setCurrentPreset(uiStateCopy)
-    setPresets((presets) => {
-      const presetsCopy = presets.slice()
-      const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
-      if (i !== -1) {
-        presetsCopy[i] = uiStateCopy
-      } else {
-        presetsCopy.push(uiStateCopy)
-      }
-      return presetsCopy
-    })
-  }, [dedupName, presets, uiState])
+      setUIState(deepStateCopy(uiStateCopy))
+      setCurrentPreset(uiStateCopy)
+      setPresets((presets) => {
+        const presetsCopy = presets.slice()
+        const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
+        if (i !== -1) {
+          presetsCopy[i] = uiStateCopy
+        } else {
+          presetsCopy.push(uiStateCopy)
+        }
+        return presetsCopy
+      })
+    },
+    [dedupName, presets, uiState]
+  )
 
-  const newPreset = useCallback(() => {
-    const uiStateCopy = Object.assign({}, uiState, {
-      name: dedupName(uiState.name),
-      placeholder: false,
-      id: uuid(),
-      hotkey: null,
-    })
-    // sync state and presets
-    setUIState(deepStateCopy(uiStateCopy))
-    setCurrentPreset(uiStateCopy)
-    setPresets((presets) => {
-      const presetsCopy = presets.slice()
-      presetsCopy.push(uiStateCopy)
-      return presetsCopy
-    })
-  }, [dedupName, uiState])
+  const newPreset = useCallback(
+    (e, hotkey = null) => {
+      const uiStateCopy = Object.assign({}, uiState, {
+        name: dedupName(uiState.name),
+        placeholder: false,
+        id: uuid(),
+        hotkey,
+      })
+      // sync state and presets
+      setUIState(deepStateCopy(uiStateCopy))
+      setCurrentPreset(uiStateCopy)
+      setPresets((presets) => {
+        const presetsCopy = presets.slice()
+        presetsCopy.push(uiStateCopy)
+        return presetsCopy
+      })
+    },
+    [dedupName, uiState]
+  )
 
   const deletePreset = useCallback(() => {
     const uiStateCopy = Object.assign({}, uiState, {
@@ -283,9 +293,46 @@ export default function App() {
     setCurrentPreset(uiStateCopy)
   }, [dedupName, uiState])
 
-  // useEffect(() => {
-  //   console.log(currentPreset)
-  // }, [currentPreset, presets])
+  // handle preset keypresses
+
+  useEffect(() => {
+    function keydown(e) {
+      if (!isNaN(+e.key)) {
+        if (!keydownTimer.current) {
+          keydownTimer.current = window.performance.now()
+        } else if (
+          window.performance.now() - keydownTimer.current > PRESET_HOLD_TIME &&
+          +e.key !== currentPreset.hotkey
+        ) {
+          setPresets((presets) => {
+            const presetsCopy = presets.slice()
+            presetsCopy.forEach((p) => {
+              if (p.hotkey === +e.key) {
+                p.hotkey = null
+              }
+            })
+            return presetsCopy
+          })
+          savePreset(null, +e.key)
+        }
+      }
+    }
+    function keyup(e) {
+      if (!isNaN(+e.key)) {
+        if (window.performance.now() - keydownTimer.current < PRESET_HOLD_TIME) {
+          const preset = presets.find((p) => p.hotkey === +e.key)
+          setPreset(preset.id)
+        }
+        keydownTimer.current = null
+      }
+    }
+    window.addEventListener('keydown', keydown)
+    window.addEventListener('keyup', keyup)
+    return () => {
+      window.removeEventListener('keydown', keydown)
+      window.removeEventListener('keyup', keyup)
+    }
+  }, [currentPreset.hotkey, presets, savePreset, setPreset])
 
   // render UI
 
