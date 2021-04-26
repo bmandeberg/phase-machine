@@ -27,7 +27,7 @@ export default function Presets(props) {
       <div className="presets">
         <input
           type="text"
-          value={props.presetName}
+          value={props.preset.name}
           onChange={props.setPresetName}
           style={{ paddingRight: inputPadding }}
         />
@@ -40,8 +40,8 @@ export default function Presets(props) {
           )}
         </div>
         <Dropdn
-          options={props.presetNames}
-          value={props.presetName}
+          options={props.presetOptions}
+          value={props.preset.id}
           placeholder="New Preset"
           setValue={props.setPreset}
           small
@@ -65,8 +65,8 @@ export default function Presets(props) {
 }
 Presets.propTypes = {
   className: PropTypes.string,
-  presetName: PropTypes.string,
-  presetNames: PropTypes.array,
+  preset: PropTypes.object,
+  presetOptions: PropTypes.array,
   setPresetName: PropTypes.func,
   setPreset: PropTypes.func,
   presetDirty: PropTypes.bool,

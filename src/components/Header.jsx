@@ -78,8 +78,8 @@ export default class Header extends React.Component {
         />
         <Presets
           className="header-item"
-          presetName={this.props.presetName}
-          presetNames={this.props.presetNames}
+          preset={this.props.preset}
+          presetOptions={this.props.presetOptions}
           setPresetName={this.props.setPresetName}
           setPreset={this.props.setPreset}
           presetDirty={this.props.presetDirty}
@@ -136,8 +136,8 @@ Header.propTypes = {
   setScrollTo: PropTypes.func,
   channelSync: PropTypes.bool,
   setChannelSync: PropTypes.func,
-  presetNames: PropTypes.array,
-  presetName: PropTypes.string,
+  presetOptions: PropTypes.array,
+  preset: PropTypes.object,
   setPresetName: PropTypes.func,
   setPreset: PropTypes.func,
   presetDirty: PropTypes.bool,

@@ -7,9 +7,14 @@ import './Dropdn.scss'
 
 function longestText(options) {
   if (options.length) {
-    return options.reduce((a, b) => {
-      return a.trim().length > b.trim().length ? a : b
-    })
+    let longestOption = ''
+    for (let i = 0; i < options.length; i++) {
+      const option = typeof options[i] === 'object' ? options[i].label.trim() : options[i].trim()
+      if (option.length > longestOption.length) {
+        longestOption = option
+      }
+    }
+    return longestOption
   }
   return null
 }

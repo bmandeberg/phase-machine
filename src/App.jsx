@@ -199,23 +199,10 @@ export default function App() {
 
   // preset actions
 
-  const savePreset = useCallback(() => {
-    const uiStateCopy = Object.assign({}, deepStateCopy(uiState), { placeholder: false })
-    setCurrentPreset(uiStateCopy)
-    setPresets((presets) => {
-      const presetsCopy = presets.slice()
-      const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
-      if (i !== -1) {
-        presetsCopy[i] = uiStateCopy
-      }
-      return presetsCopy
-    })
-  }, [uiState])
-
   const dedupName = useCallback(
-    (name) => {
+    (name, id) => {
       const sameNamePreset = presets.find((p) => p.name === name)
-      if (sameNamePreset) {
+      if (sameNamePreset && !(id && sameNamePreset.id === id)) {
         const digitMatch = /\s\((\d+)\)$/
         const baseName = name.replace(digitMatch, '')
         const incRegex = new RegExp(baseName + '\\s\\((\\d+)\\)$')
@@ -235,6 +222,26 @@ export default function App() {
     },
     [presets]
   )
+
+  const savePreset = useCallback(() => {
+    const uiStateCopy = Object.assign({}, uiState, { placeholder: false })
+    for (let i = 0; i < presets.length; i++) {
+      if (presets[i].name === uiStateCopy.name && presets[i].id !== uiStateCopy.id) {
+        uiStateCopy.name = dedupName(uiStateCopy.name, uiStateCopy.id)
+        break
+      }
+    }
+    setUIState(uiStateCopy)
+    setCurrentPreset(deepStateCopy(uiStateCopy))
+    setPresets((presets) => {
+      const presetsCopy = presets.slice()
+      const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
+      if (i !== -1) {
+        presetsCopy[i] = uiStateCopy
+      }
+      return presetsCopy
+    })
+  }, [dedupName, presets, uiState])
 
   const newPreset = useCallback(() => {
     const uiStateCopy = Object.assign({}, uiState, {
@@ -310,9 +317,9 @@ export default function App() {
         setScrollTo={doScroll}
         channelSync={channelSync}
         setChannelSync={setChannelSync}
-        presetName={uiState.name}
+        preset={uiState}
         setPresetName={setPresetName}
-        presetNames={presets.map((p) => p.name)}
+        presetOptions={presets.map((p) => ({ label: p.name, value: p.id }))}
         setPreset={setPreset}
         presetDirty={presetDirty}
         presetHotkey={currentPreset.hotkey}
