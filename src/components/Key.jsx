@@ -15,6 +15,7 @@ export default function Key({
   turningAxisKnob,
   keyPreview,
   showKeyPreview,
+  mute,
 }) {
   const togglePitchClass = useCallback(
     (i) => {
@@ -58,6 +59,7 @@ export default function Key({
         [...Array(12)].map((d, i) => (
           <SelectedKey key={i} visible={showKeyPreview && keyPreview[i]} {...SELECTED_KEYS[i]} />
         ))}
+      {pianoKeys && mute && <div className="key-border"></div>}
     </div>
   )
 }
@@ -71,6 +73,7 @@ Key.propTypes = {
   turningAxisKnob: PropTypes.bool,
   keyPreview: PropTypes.array,
   showKeyPreview: PropTypes.bool,
+  mute: PropTypes.bool,
 }
 
 function SelectedKey({ left, type, visible }) {

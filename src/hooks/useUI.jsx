@@ -110,9 +110,10 @@ export default function useUI(
         turningAxisKnob={turningAxisKnob}
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
+        mute={mute}
       />
     )
-  }, [key, keyPreview, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, turningAxisKnob])
+  }, [key, keyPreview, mute, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, turningAxisKnob])
 
   const muteSoloEl = useMemo(() => {
     return (
@@ -135,9 +136,10 @@ export default function useUI(
         label="Velocity"
         setGrabbing={setGrabbing}
         grabbing={grabbing}
+        mute={mute}
       />
     )
-  }, [grabbing, setGrabbing, setVelocity, velocity])
+  }, [grabbing, mute, setGrabbing, setVelocity, velocity])
 
   const shiftEl = useMemo(() => {
     return (
@@ -174,6 +176,7 @@ export default function useUI(
           showKeyPreview={showKeyPreview}
           startChangingAxis={startChangingAxis}
           stopChangingAxis={stopChangingAxis}
+          mute={mute}
         />
       )
     },
@@ -182,6 +185,7 @@ export default function useUI(
       grabbing,
       key,
       keyPreview,
+      mute,
       playingPitchClass,
       setKey,
       setPlayingPitchClass,
@@ -219,11 +223,13 @@ export default function useUI(
         setGrabbing={setGrabbing}
         resizing={resizing}
         setResizing={setResizing}
+        mute={mute}
       />
     )
   }, [
     channelNum,
     grabbing,
+    mute,
     noteOn,
     playingNote,
     rangeEnd,
@@ -277,10 +283,11 @@ export default function useUI(
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           squeeze={!vertical ? 6 : 0}
+          mute={mute}
         />
       )
     },
-    [grabbing, keySustain, setGrabbing, setKeySustain]
+    [grabbing, keySustain, mute, setGrabbing, setKeySustain]
   )
 
   const keySwingEl = useCallback(
@@ -296,6 +303,7 @@ export default function useUI(
             grabbing={grabbing}
             squeeze={!vertical ? 2 : 0}
             detent
+            mute={mute}
           />
           <NumInput
             value={keySwingLength}
@@ -308,7 +316,7 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, keySwing, keySwingLength, setGrabbing, setKeySwing, setKeySwingLength]
+    [grabbing, keySwing, keySwingLength, mute, setGrabbing, setKeySwing, setKeySwingLength]
   )
 
   const seqLengthEl = useCallback(
@@ -380,6 +388,7 @@ export default function useUI(
             grabbing={grabbing}
             inline={inline}
             detent
+            mute={mute}
           />
           <NumInput
             value={seqSwingLength}
@@ -393,7 +402,7 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength]
+    [grabbing, mute, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength]
   )
 
   const seqSustainEl = useCallback(
@@ -408,10 +417,11 @@ export default function useUI(
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           inline={inline}
+          mute={mute}
         />
       )
     },
-    [grabbing, seqSustain, setGrabbing, setSeqSustain]
+    [grabbing, mute, seqSustain, setGrabbing, setSeqSustain]
   )
 
   const legatoEl = useCallback(

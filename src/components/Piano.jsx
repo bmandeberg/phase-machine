@@ -21,6 +21,7 @@ export default function Piano({
   resizing,
   setResizing,
   noteOn,
+  mute,
 }) {
   const [changingRange, setChangingRange] = useState(false)
   const [rangeStartReference, setRangeStartReference] = useState(rangeStart)
@@ -108,7 +109,7 @@ export default function Piano({
             'prev-black-key-far': prevBlackKey.far(i),
             'black-key-left': blackKeyLeft(i),
             'black-key-right': blackKeyRight(i),
-            'in-range': i >= rangeStart && i < rangeEnd,
+            'in-range': !mute && i >= rangeStart && i < rangeEnd,
             playing: noteOn && playingNote === i,
           })}></div>
       ))}
@@ -162,6 +163,7 @@ export default function Piano({
           )}`}
         />
       </svg>
+      {mute && <div className="piano-border"></div>}
     </div>
   )
 }
@@ -176,6 +178,7 @@ Piano.propTypes = {
   resizing: PropTypes.bool,
   setResizing: PropTypes.func,
   noteOn: PropTypes.bool,
+  mute: PropTypes.bool,
 }
 
 function noteLeftBoundary(boundaryType, x, height) {

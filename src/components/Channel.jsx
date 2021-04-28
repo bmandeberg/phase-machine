@@ -13,7 +13,6 @@ import {
   CHANNEL_HEIGHT,
   MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
-  INSTRUMENT_TYPES,
   handleArpMode,
   noteString,
 } from '../globals'
@@ -498,7 +497,7 @@ export default function Channel({
 
   if (view === 'stacked') {
     return (
-      <div className="channel channel-horizontal">
+      <div className={classNames('channel channel-horizontal', { mute })}>
         {channelNumEl}
         {keyEl}
         {muteSoloEl}
@@ -512,7 +511,9 @@ export default function Channel({
         {keyArpModeEl}
         {keySustainEl(false)}
         {keySwingEl(false)}
-        <div style={{ top: numChannels * CHANNEL_HEIGHT }} className="channel channel-horizontal stacked-auxiliary">
+        <div
+          style={{ top: numChannels * CHANNEL_HEIGHT }}
+          className={classNames('channel channel-horizontal stacked-auxiliary', { mute })}>
           {channelNumEl}
           <Sequencer
             className="channel-module"
@@ -537,7 +538,7 @@ export default function Channel({
     )
   } else if (view === 'horizontal') {
     return (
-      <div className="channel channel-horizontal">
+      <div className={classNames('channel channel-horizontal', { mute })}>
         {channelNumEl}
         {keyEl}
         {muteSoloEl}
@@ -574,7 +575,7 @@ export default function Channel({
     )
   } else if (view === 'clock') {
     return (
-      <div className="channel channel-clock">
+      <div className={classNames('channel channel-clock', { mute })}>
         <div className="channel-clock-top">
           {channelNumEl}
           {muteSoloEl}

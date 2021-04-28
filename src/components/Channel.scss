@@ -327,3 +327,74 @@
     }
   }
 }
+
+.mute {
+  $muteGray: #d8d8d8;
+  $muteGrayHover: lighten($muteGray, 3%);
+  $muteBorder: #bbbbbb;
+  background-color: #f2f2f2;
+  .button {
+    background-color: $muteGray;
+    &:hover {
+      background-color: $muteGrayHover;
+    }
+  }
+  .react-numeric-input {
+    b {
+      background-color: $muteGray;
+      border-color: $muteBorder;
+    }
+    input {
+      border-color: $muteBorder;
+    }
+  }
+  .Dropdown-control,
+  .Dropdown-arrow-wrapper {
+    border-color: $muteBorder;
+    background-color: $muteGray;
+    &:hover {
+      background-color: $muteGrayHover;
+    }
+  }
+  .react-switch-bg {
+    background-color: $muteGray !important;
+  }
+  .key .white-key {
+    background-color: $muteGray !important;
+    &:hover {
+      background-color: $muteGrayHover !important;
+    }
+    &.selected {
+      background-color: $green !important;
+      &:hover {
+        background-color: $greenHover !important;
+      }
+    }
+    &.playing {
+      background-color: $orange !important;
+      &:hover {
+        background-color: $orangeHover !important;
+      }
+    }
+  }
+  .split-button {
+    background-color: $muteGray;
+    &:hover {
+      background-color: $muteGrayHover;
+    }
+    .split-button-action {
+      &:hover {
+        background-color: $lightGrayHover;
+      }
+      &:active {
+        background-color: $mediumGray;
+      }
+    }
+    .split-button-arrow {
+      background-color: #c6c6c6;
+      &.split-button-arrow-left {
+        border-right: 1px solid #888888;
+      }
+    }
+  }
+}
