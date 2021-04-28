@@ -16,15 +16,16 @@ export default function Instrument({
 }) {
   const incrementInstrument = useCallback(
     (next) => {
-      const instrumentIndex = INSTRUMENT_TYPES.indexOf(instrumentType)
+      const instrumentTypes = Object.keys(INSTRUMENT_TYPES)
+      const instrumentIndex = instrumentTypes.indexOf(instrumentType)
       if (instrumentIndex !== -1) {
         let nextIndex = instrumentIndex + (next ? 1 : -1)
         if (nextIndex < 0) {
-          nextIndex = INSTRUMENT_TYPES.length - 1
-        } else if (nextIndex > INSTRUMENT_TYPES.length - 1) {
+          nextIndex = instrumentTypes.length - 1
+        } else if (nextIndex > instrumentTypes.length - 1) {
           nextIndex = 0
         }
-        setInstrumentType(INSTRUMENT_TYPES[nextIndex])
+        setInstrumentType(instrumentTypes[nextIndex])
       }
     },
     [instrumentType, setInstrumentType]
@@ -56,7 +57,7 @@ export default function Instrument({
         <div className="button">Instr</div>
       ) : (
         <SplitButton
-          content={instrumentType.name}
+          content={INSTRUMENT_TYPES[instrumentType]}
           rightAction={() => incrementInstrument(true)}
           leftAction={() => incrementInstrument(false)}
         />

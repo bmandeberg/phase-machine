@@ -27,11 +27,6 @@ import arrowSmall from '../assets/arrow-small.svg'
 import arrowClock from '../assets/arrow-clock.svg'
 import './Channel.scss'
 
-// const synthB = new Tone.Synth().toDestination()
-// const loopB = new Tone.Loop((time) => {
-//   synthB.triggerAttackRelease('C4', '16n', time)
-// }, '4n').start(0)
-
 export default function Channel({
   numChannels,
   channelNum,
@@ -94,8 +89,8 @@ export default function Channel({
   const [seqSustain, setSeqSustain] = useState((KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN)
   const [legato, setLegato] = useState(false)
   const [instrumentOn, setInstrumentOn] = useState(true)
-  const [instrumentType, setInstrumentType] = useState(INSTRUMENT_TYPES.find((i) => i.value === 'sawtooth'))
-  const initInstrumentType = useRef(instrumentType.value)
+  const [instrumentType, setInstrumentType] = useState('triangle')
+  const initInstrumentType = useRef(instrumentType)
   const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -156,7 +151,7 @@ export default function Channel({
   }, [])
 
   useEffect(() => {
-    instrument.current.oscillator.type = instrumentType.value
+    instrument.current.oscillator.type = instrumentType
   }, [instrumentType])
 
   useEffect(() => {

@@ -50,144 +50,90 @@ export const RATES = [
   '0',
 ]
 
-export const INSTRUMENT_TYPES = [
-  {
-    name: <img className="wave-icon" src={sine} alt="" />,
-    value: 'sine',
-  },
-  {
-    name: <img className="wave-icon" src={square} alt="" />,
-    value: 'square',
-  },
-  {
-    name: <img className="wave-icon" src={triangle} alt="" />,
-    value: 'triangle',
-  },
-  {
-    name: <img className="wave-icon" src={sawtooth} alt="" />,
-    value: 'sawtooth',
-  },
-  {
-    name: <img className="wave-icon" src={pulse} alt="" />,
-    value: 'pulse',
-  },
-  {
-    name: (
-      <span className="wave-title" style={{ marginTop: 2, marginRight: 0 }}>
-        pwm
-      </span>
-    ),
-    value: 'pwm',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fm</span>
-        <img className="wave-icon" src={sine} alt="" />
-      </div>
-    ),
-    value: 'fmsine',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fm</span>
-        <img className="wave-icon" src={square} alt="" />
-      </div>
-    ),
-    value: 'fmsquare',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fm</span>
-        <img className="wave-icon" src={triangle} alt="" />
-      </div>
-    ),
-    value: 'fmtriangle',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fm</span>
-        <img className="wave-icon" src={sawtooth} alt="" />
-      </div>
-    ),
-    value: 'fmsawtooth',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">am</span>
-        <img className="wave-icon" src={sine} alt="" />
-      </div>
-    ),
-    value: 'amsine',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">am</span>
-        <img className="wave-icon" src={square} alt="" />
-      </div>
-    ),
-    value: 'amsquare',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">am</span>
-        <img className="wave-icon" src={triangle} alt="" />
-      </div>
-    ),
-    value: 'amtriangle',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">am</span>
-        <img className="wave-icon" src={sawtooth} alt="" />
-      </div>
-    ),
-    value: 'amsawtooth',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fat</span>
-        <img className="wave-icon" src={sine} alt="" />
-      </div>
-    ),
-    value: 'fatsine',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fat</span>
-        <img className="wave-icon" src={square} alt="" />
-      </div>
-    ),
-    value: 'fatsquare',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fat</span>
-        <img className="wave-icon" src={triangle} alt="" />
-      </div>
-    ),
-    value: 'fattriangle',
-  },
-  {
-    name: (
-      <div>
-        <span className="wave-title">fat</span>
-        <img className="wave-icon" src={sawtooth} alt="" />
-      </div>
-    ),
-    value: 'fatsawtooth',
-  },
-]
+export const INSTRUMENT_TYPES = {
+  sine: <img className="wave-icon" src={sine} alt="" />,
+  square: <img className="wave-icon" src={square} alt="" />,
+  triangle: <img className="wave-icon" src={triangle} alt="" />,
+  sawtooth: <img className="wave-icon" src={sawtooth} alt="" />,
+  pulse: <img className="wave-icon" src={pulse} alt="" />,
+  pwm: (
+    <span className="wave-title" style={{ marginTop: 2, marginRight: 0 }}>
+      pwm
+    </span>
+  ),
+  fmsine: (
+    <div>
+      <span className="wave-title">fm</span>
+      <img className="wave-icon" src={sine} alt="" />
+    </div>
+  ),
+  fmsquare: (
+    <div>
+      <span className="wave-title">fm</span>
+      <img className="wave-icon" src={square} alt="" />
+    </div>
+  ),
+  fmtriangle: (
+    <div>
+      <span className="wave-title">fm</span>
+      <img className="wave-icon" src={triangle} alt="" />
+    </div>
+  ),
+  fmsawtooth: (
+    <div>
+      <span className="wave-title">fm</span>
+      <img className="wave-icon" src={sawtooth} alt="" />
+    </div>
+  ),
+  amsine: (
+    <div>
+      <span className="wave-title">am</span>
+      <img className="wave-icon" src={sine} alt="" />
+    </div>
+  ),
+  amsquare: (
+    <div>
+      <span className="wave-title">am</span>
+      <img className="wave-icon" src={square} alt="" />
+    </div>
+  ),
+  amtriangle: (
+    <div>
+      <span className="wave-title">am</span>
+      <img className="wave-icon" src={triangle} alt="" />
+    </div>
+  ),
+  amsawtooth: (
+    <div>
+      <span className="wave-title">am</span>
+      <img className="wave-icon" src={sawtooth} alt="" />
+    </div>
+  ),
+  fatsine: (
+    <div>
+      <span className="wave-title">fat</span>
+      <img className="wave-icon" src={sine} alt="" />
+    </div>
+  ),
+  fatsquare: (
+    <div>
+      <span className="wave-title">fat</span>
+      <img className="wave-icon" src={square} alt="" />
+    </div>
+  ),
+  fattriangle: (
+    <div>
+      <span className="wave-title">fat</span>
+      <img className="wave-icon" src={triangle} alt="" />
+    </div>
+  ),
+  fatsawtooth: (
+    <div>
+      <span className="wave-title">fat</span>
+      <img className="wave-icon" src={sawtooth} alt="" />
+    </div>
+  ),
+}
 
 export const ARP_MODES = {
   up: (length, i) => (i < length - 1 ? i + 1 : 0),
@@ -364,7 +310,7 @@ export const BLANK_PRESET = {
       seqSustain: (KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN,
       legato: false,
       instrumentOn: true,
-      instrumentType: INSTRUMENT_TYPES.find((i) => i.value === 'sawtooth'),
+      instrumentType: 'triangle',
     },
   ],
 }
