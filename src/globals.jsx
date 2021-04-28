@@ -273,7 +273,7 @@ export function noteString(playingNote) {
   return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
 }
 
-export const BLANK_PRESET = {
+export const DEFAULT_PRESET = {
   name: 'New Preset',
   id: uuid(),
   hotkey: null,

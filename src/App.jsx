@@ -4,16 +4,26 @@ import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { v4 as uuid } from 'uuid'
-import { VIEWS, SECTIONS, DEFAULT_SETTINGS, BLANK_PRESET, PRESET_HOLD_TIME } from './globals'
+import { VIEWS, SECTIONS, DEFAULT_SETTINGS, DEFAULT_PRESET, PRESET_HOLD_TIME } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 
 const CLOCK_WIDTH = 658
 
+// load/set presets
+if (!window.localStorage.getItem('presets')) {
+  window.localStorage.setItem('presets', JSON.stringify([DEFAULT_PRESET]))
+  window.localStorage.setItem('activePreset', DEFAULT_PRESET.id)
+}
+
 export default function App() {
-  const [presets, setPresets] = useState([BLANK_PRESET])
-  const [currentPreset, setCurrentPreset] = useState(presets[0])
-  const [uiState, setUIState] = useState(BLANK_PRESET)
+  const [presets, setPresets] = useState(JSON.parse(window.localStorage.getItem('presets')))
+  const [currentPreset, setCurrentPreset] = useState(
+    window.localStorage.getItem('activePreset')
+      ? presets.find((p) => p.id === window.localStorage.getItem('activePreset'))
+      : presets[presets.length - 1] || DEFAULT_PRESET
+  )
+  const [uiState, setUIState] = useState(deepStateCopy(currentPreset))
 
   const [tempo, setTempo] = useState(120)
   const [playing, setPlaying] = useState(false)
@@ -205,6 +215,8 @@ export default function App() {
       setNumChannels(preset.numChannels)
       setChannelSync(preset.channelSync)
       setNumChannelsSoloed(preset.numChannelsSoloed)
+      // save in localStorage
+      window.localStorage.setItem('activePreset', presetID)
     },
     [presets]
   )
@@ -257,6 +269,8 @@ export default function App() {
         }
         return presetsCopy
       })
+      // save in localStorage
+      window.localStorage.setItem('activePreset', uiStateCopy.id)
     },
     [dedupName, presets, uiState]
   )
@@ -277,6 +291,8 @@ export default function App() {
         presetsCopy.push(uiStateCopy)
         return presetsCopy
       })
+      // save in localStorage
+      window.localStorage.setItem('activePreset', uiStateCopy.id)
     },
     [dedupName, uiState]
   )
@@ -291,7 +307,13 @@ export default function App() {
     setPresets((presets) => presets.filter((p) => p.id !== uiState.id))
     setUIState(deepStateCopy(uiStateCopy))
     setCurrentPreset(uiStateCopy)
+    // save in localStorage
+    window.localStorage.removeItem('activePreset')
   }, [dedupName, uiState])
+
+  useEffect(() => {
+    window.localStorage.setItem('presets', JSON.stringify(presets))
+  }, [presets])
 
   // handle preset keypresses
 
