@@ -3,9 +3,11 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
-import { VIEWS, SECTIONS, DEFAULT_SETTINGS, DEFAULT_PRESET } from './globals'
+import { CSSTransition } from 'react-transition-group'
+import { VIEWS, SECTIONS, DEFAULT_PRESET } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
+import Modal from './components/Modal'
 import usePresets from './hooks/usePresets'
 
 const CLOCK_WIDTH = 658
@@ -33,7 +35,8 @@ export default function App() {
   const [midiOuts, setMidiOuts] = useState([])
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
+
+  const [modalType, setModalType] = useState('')
 
   const [grabbing, setGrabbing] = useState(false)
   const [resizing, setResizing] = useState(false)
@@ -41,6 +44,24 @@ export default function App() {
 
   const container = useRef()
   const viewRef = useRef()
+
+  // settings
+  const [showStepNumbers, setShowStepNumbers] = useState(
+    JSON.parse(window.localStorage.getItem('showStepNumbers')) || false
+  )
+  const [separateMIDIChannels, setSeparateMIDIChannels] = useState(
+    JSON.parse(window.localStorage.getItem('separateMIDIChannels')) || true
+  )
+
+  useEffect(() => {
+    window.localStorage.setItem('showStepNumbers', showStepNumbers)
+  }, [showStepNumbers])
+
+  useEffect(() => {
+    window.localStorage.setItem('separateMIDIChannels', separateMIDIChannels)
+  }, [separateMIDIChannels])
+
+  // init MIDI
 
   useEffect(() => {
     function connectMidi() {
@@ -162,7 +183,8 @@ export default function App() {
           numChannelsSoloed={numChannelsSoloed}
           tempo={tempo}
           playing={playing}
-          settings={settings}
+          showStepNumbers={showStepNumbers}
+          separateMIDIChannels={separateMIDIChannels}
           midiOut={midiOut}
           setChannelState={setChannelState}
           channelPreset={currentPreset.channels[i]}
@@ -176,8 +198,9 @@ export default function App() {
       numChannelsSoloed,
       playing,
       resizing,
+      separateMIDIChannels,
       setChannelState,
-      settings,
+      showStepNumbers,
       tempo,
       view,
     ]
@@ -219,6 +242,7 @@ export default function App() {
         savePreset={savePreset}
         newPreset={newPreset}
         deletePreset={deletePreset}
+        setModalType={setModalType}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>
@@ -230,6 +254,16 @@ export default function App() {
           </div>
         )}
       </div>
+      <CSSTransition in={!!modalType} timeout={300} classNames="show">
+        <Modal
+          modalType={modalType}
+          setModalType={setModalType}
+          showStepNumbers={showStepNumbers}
+          setShowStepNumbers={setShowStepNumbers}
+          separateMIDIChannels={separateMIDIChannels}
+          setSeparateMIDIChannels={setSeparateMIDIChannels}
+        />
+      </CSSTransition>
     </div>
   )
 }

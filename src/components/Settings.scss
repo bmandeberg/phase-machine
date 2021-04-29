@@ -1,0 +1,18 @@
+.settings {
+  width: 220px;
+  .settings-item {
+    margin-top: 10px;
+    .settings-label, .instrument-switch {
+      display: inline-block;
+      vertical-align: middle;
+      height: 24px;
+    }
+    .instrument-switch {
+      float: right;
+      margin-top: -2px;
+    }
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+}

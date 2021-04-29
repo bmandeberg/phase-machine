@@ -51,6 +51,6 @@ Sequencer.propTypes = {
   setSeqSteps: PropTypes.func,
   seqLength: PropTypes.number,
   playingStep: PropTypes.number,
-  children: PropTypes.object,
+  children: PropTypes.node,
   showStepNumbers: PropTypes.bool,
 }

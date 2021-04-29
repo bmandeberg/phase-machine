@@ -37,7 +37,8 @@ export default function Channel({
   numChannelsSoloed,
   tempo,
   playing,
-  settings,
+  showStepNumbers,
+  separateMIDIChannels,
   midiOut,
   setChannelState,
   channelPreset,
@@ -156,7 +157,7 @@ export default function Channel({
 
   useEffect(() => {
     if (!playing && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
+      const channel = separateMIDIChannels ? channelNum + 1 : 1
       const note = noteString(noteIndex.current)
       instrument.current.triggerRelease()
       setNoteOn(false)
@@ -165,7 +166,7 @@ export default function Channel({
       }
       notePlaying.current = false
     }
-  }, [channelNum, midiOut, playing, settings.separateMIDIChannels])
+  }, [channelNum, midiOut, playing, separateMIDIChannels])
 
   // loop events
 
@@ -174,7 +175,7 @@ export default function Channel({
     (time, interval, sustain) => {
       const prevNote = noteString(prevNoteIndex.current)
       const note = noteString(noteIndex.current)
-      const channel = settings.separateMIDIChannels ? channelNum + 1 : 1
+      const channel = separateMIDIChannels ? channelNum + 1 : 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
       if (!playNoteDebounce.current && note) {
@@ -225,7 +226,7 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [settings.separateMIDIChannels, channelNum, midiOut, legato, seqSteps, muted, instrumentOn, velocity]
+    [separateMIDIChannels, channelNum, midiOut, legato, seqSteps, muted, instrumentOn, velocity]
   )
 
   // sequence loop
@@ -502,8 +503,8 @@ export default function Channel({
     return (
       <div className={classNames('channel channel-horizontal', { mute: muted })}>
         {channelNumEl}
-        {keyEl}
         {muteSoloEl}
+        {keyEl}
         {velocityEl}
         {shiftEl}
         {axisEl(false)}
@@ -524,7 +525,7 @@ export default function Channel({
             setSeqSteps={setSeqSteps}
             seqLength={seqLength}
             playingStep={playingStep}
-            showStepNumbers={settings.showStepNumbers}>
+            showStepNumbers={showStepNumbers}>
             <div className="sequencer-controls">
               {seqLengthEl(true)}
               {seqRateEl(true)}
@@ -562,7 +563,7 @@ export default function Channel({
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
           playingStep={playingStep}
-          showStepNumbers={settings.showStepNumbers}>
+          showStepNumbers={showStepNumbers}>
           <div className="sequencer-controls">
             {seqLengthEl(true)}
             {seqRateEl(true)}
@@ -614,7 +615,7 @@ export default function Channel({
               setSeqSteps={setSeqSteps}
               seqLength={seqLength}
               playingStep={playingStep}
-              showStepNumbers={settings.showStepNumbers}
+              showStepNumbers={showStepNumbers}
             />
             <div className="sequencer-controls">
               {seqLengthEl(false)}
@@ -643,7 +644,8 @@ Channel.propTypes = {
   numChannelsSoloed: PropTypes.number,
   tempo: PropTypes.number,
   playing: PropTypes.bool,
-  settings: PropTypes.object,
+  separateMIDIChannels: PropTypes.bool,
+  showStepNumbers: PropTypes.bool,
   midiOut: PropTypes.string,
   setChannelState: PropTypes.func,
   channelPreset: PropTypes.object,

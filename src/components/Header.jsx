@@ -115,6 +115,13 @@ export default class Header extends React.Component {
           />
         )}
         {/* <Checkbox checked={this.props.channelSync} setChecked={this.props.setChannelSync} label="Channel Sync" /> */}
+        <div className="header-aux">
+          <div
+            className="aux-item header-settings"
+            onClick={() => {
+              this.props.setModalType('settings')
+            }}></div>
+        </div>
       </div>
     )
   }
@@ -146,4 +153,5 @@ Header.propTypes = {
   savePreset: PropTypes.func,
   newPreset: PropTypes.func,
   deletePreset: PropTypes.func,
+  setModalType: PropTypes.func,
 }

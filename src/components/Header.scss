@@ -19,6 +19,27 @@ $margin: 12px;
     height: 40px;
     cursor: pointer;
   }
+  .header-aux {
+    position: fixed;
+    top: 19px;
+    right: 19px;
+    .aux-item {
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .header-settings {
+      background: url('../assets/gear.png');
+      background-size: 22px;
+      &:hover {
+        background: url('../assets/gear-hover.png');
+        background-size: 22px;
+      }
+    }
+  }
 }
 
 #logo {
