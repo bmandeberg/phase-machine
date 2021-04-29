@@ -281,7 +281,6 @@ export const DEFAULT_PRESET = {
   tempo: 120,
   numChannels: 1,
   channelSync: false,
-  numChannelsSoloed: 0,
   channels: [
     {
       velocity: KNOB_MAX,

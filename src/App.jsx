@@ -33,7 +33,6 @@ export default function App() {
   const [midiOuts, setMidiOuts] = useState([])
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(false)
-  const [numChannelsSoloed, setNumChannelsSoloed] = useState(0)
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
 
   const [grabbing, setGrabbing] = useState(false)
@@ -125,12 +124,15 @@ export default function App() {
     }
   }, [tempo])
 
+  const numChannelsSoloed = useMemo(() => uiState.channels.reduce((acc, curr) => acc + (curr.solo ? 1 : 0), 0), [
+    uiState,
+  ])
+
   const { setChannelState, setPresetName, presetDirty, setPreset, savePreset, newPreset, deletePreset } = usePresets(
     setUIState,
     numChannels,
     tempo,
     channelSync,
-    numChannelsSoloed,
     uiState,
     currentPreset,
     presets,
@@ -139,7 +141,6 @@ export default function App() {
     setTempo,
     setNumChannels,
     setChannelSync,
-    setNumChannelsSoloed,
     setPresets,
     keydownTimer
   )
@@ -159,7 +160,6 @@ export default function App() {
           setResizing={setResizing}
           view={view}
           numChannelsSoloed={numChannelsSoloed}
-          setNumChannelsSoloed={setNumChannelsSoloed}
           tempo={tempo}
           playing={playing}
           settings={settings}

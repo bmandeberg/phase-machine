@@ -7,7 +7,6 @@ export default function usePresets(
   numChannels,
   tempo,
   channelSync,
-  numChannelsSoloed,
   uiState,
   currentPreset,
   presets,
@@ -16,7 +15,6 @@ export default function usePresets(
   setTempo,
   setNumChannels,
   setChannelSync,
-  setNumChannelsSoloed,
   setPresets,
   keydownTimer
 ) {
@@ -47,11 +45,10 @@ export default function usePresets(
         tempo,
         numChannels,
         channelSync,
-        numChannelsSoloed,
       })
       return uiStateCopy
     })
-  }, [channelSync, numChannels, numChannelsSoloed, setUIState, tempo])
+  }, [channelSync, numChannels, setUIState, tempo])
 
   const setPresetName = useCallback(
     (presetName) => {
@@ -115,20 +112,10 @@ export default function usePresets(
       setTempo(preset.tempo)
       setNumChannels(preset.numChannels)
       setChannelSync(preset.channelSync)
-      setNumChannelsSoloed(preset.numChannelsSoloed)
       // save in localStorage
       window.localStorage.setItem('activePreset', presetID)
     },
-    [
-      deepStateCopy,
-      presets,
-      setChannelSync,
-      setCurrentPreset,
-      setNumChannels,
-      setNumChannelsSoloed,
-      setTempo,
-      setUIState,
-    ]
+    [deepStateCopy, presets, setChannelSync, setCurrentPreset, setNumChannels, setTempo, setUIState]
   )
 
   const dedupName = useCallback(
@@ -275,5 +262,4 @@ export default function usePresets(
     newPreset,
     deletePreset,
   }
-  
 }

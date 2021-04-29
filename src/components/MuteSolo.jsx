@@ -3,16 +3,14 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './MuteSolo.scss'
 
-export default function MuteSolo({ mute, setMute, solo, setSolo, setNumChannelsSoloed }) {
+export default function MuteSolo({ mute, setMute, solo, setSolo }) {
   const toggleMute = useCallback(() => {
     setMute((mute) => !mute)
   }, [setMute])
 
   const toggleSolo = useCallback(() => {
-    const increment = solo ? -1 : 1
-    setNumChannelsSoloed((numChannelsSoloed) => numChannelsSoloed + increment)
     setSolo((solo) => !solo)
-  }, [solo, setSolo, setNumChannelsSoloed])
+  }, [setSolo])
 
   return (
     <div className="mute-solo channel-module">
@@ -30,5 +28,4 @@ MuteSolo.propTypes = {
   setMute: PropTypes.func,
   solo: PropTypes.bool,
   setSolo: PropTypes.func,
-  setNumChannelsSoloed: PropTypes.func,
 }

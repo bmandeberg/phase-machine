@@ -20,6 +20,7 @@
 
 .channel {
   position: relative;
+  transition: background-color $transitionTime;
 }
 
 .channel-horizontal {
@@ -329,12 +330,14 @@
 }
 
 .mute {
+  $muteTransitionTime: $transitionTime / 2;
   $muteGray: #d8d8d8;
   $muteGrayHover: lighten($muteGray, 3%);
   $muteBorder: #bbbbbb;
   background-color: #f2f2f2;
   .button {
     background-color: $muteGray;
+    transition: background-color $muteTransitionTime;
     &:hover {
       background-color: $muteGrayHover;
     }
@@ -342,6 +345,7 @@
   .react-numeric-input {
     b {
       background-color: $muteGray;
+      transition: background-color $muteTransitionTime;
       border-color: $muteBorder;
     }
     input {
@@ -352,6 +356,7 @@
   .Dropdown-arrow-wrapper {
     border-color: $muteBorder;
     background-color: $muteGray;
+    transition: background-color $muteTransitionTime;
     &:hover {
       background-color: $muteGrayHover;
     }
@@ -379,6 +384,7 @@
   }
   .split-button {
     background-color: $muteGray;
+    transition: background-color $muteTransitionTime;
     &:hover {
       background-color: $muteGrayHover;
     }
@@ -392,6 +398,7 @@
     }
     .split-button-arrow {
       background-color: #c6c6c6;
+      transition: background-color $muteTransitionTime;
       &.split-button-arrow-left {
         border-right: 1px solid #888888;
       }

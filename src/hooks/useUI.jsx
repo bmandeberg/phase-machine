@@ -23,10 +23,10 @@ export default function useUI(
   keyPreview,
   showKeyPreview,
   mute,
+  muted,
   setMute,
   solo,
   setSolo,
-  setNumChannelsSoloed,
   velocity,
   setVelocity,
   setGrabbing,
@@ -110,22 +110,14 @@ export default function useUI(
         turningAxisKnob={turningAxisKnob}
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
-        mute={mute}
+        mute={muted}
       />
     )
-  }, [key, keyPreview, mute, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, turningAxisKnob])
+  }, [key, keyPreview, muted, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, turningAxisKnob])
 
   const muteSoloEl = useMemo(() => {
-    return (
-      <MuteSolo
-        mute={mute}
-        setMute={setMute}
-        solo={solo}
-        setSolo={setSolo}
-        setNumChannelsSoloed={setNumChannelsSoloed}
-      />
-    )
-  }, [mute, setMute, setNumChannelsSoloed, setSolo, solo])
+    return <MuteSolo mute={mute} setMute={setMute} solo={solo} setSolo={setSolo} />
+  }, [mute, setMute, setSolo, solo])
 
   const velocityEl = useMemo(() => {
     return (
@@ -136,10 +128,10 @@ export default function useUI(
         label="Velocity"
         setGrabbing={setGrabbing}
         grabbing={grabbing}
-        mute={mute}
+        mute={muted}
       />
     )
-  }, [grabbing, mute, setGrabbing, setVelocity, velocity])
+  }, [grabbing, muted, setGrabbing, setVelocity, velocity])
 
   const shiftEl = useMemo(() => {
     return (
@@ -176,7 +168,7 @@ export default function useUI(
           showKeyPreview={showKeyPreview}
           startChangingAxis={startChangingAxis}
           stopChangingAxis={stopChangingAxis}
-          mute={mute}
+          mute={muted}
         />
       )
     },
@@ -185,7 +177,7 @@ export default function useUI(
       grabbing,
       key,
       keyPreview,
-      mute,
+      muted,
       playingPitchClass,
       setKey,
       setPlayingPitchClass,
@@ -223,13 +215,13 @@ export default function useUI(
         setGrabbing={setGrabbing}
         resizing={resizing}
         setResizing={setResizing}
-        mute={mute}
+        mute={muted}
       />
     )
   }, [
     channelNum,
     grabbing,
-    mute,
+    muted,
     noteOn,
     playingNote,
     rangeEnd,
@@ -283,11 +275,11 @@ export default function useUI(
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           squeeze={!vertical ? 6 : 0}
-          mute={mute}
+          mute={muted}
         />
       )
     },
-    [grabbing, keySustain, mute, setGrabbing, setKeySustain]
+    [grabbing, keySustain, muted, setGrabbing, setKeySustain]
   )
 
   const keySwingEl = useCallback(

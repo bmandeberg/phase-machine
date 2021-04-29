@@ -35,7 +35,6 @@ export default function Channel({
   setResizing,
   view,
   numChannelsSoloed,
-  setNumChannelsSoloed,
   tempo,
   playing,
   settings,
@@ -129,6 +128,8 @@ export default function Channel({
     }
   }, [channelPreset])
 
+  const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
+
   // instrument
 
   useEffect(() => {
@@ -186,13 +187,15 @@ export default function Channel({
               noteOff(prevNote, time * 1000 + clockOffset)
             }
           }
-          if (instrumentOn) {
-            instrument.current.triggerAttack(note, time, velocity)
-          }
-          setNoteOn(true)
-          notePlaying.current = true
-          if (midiOutObj) {
-            midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
+          if (!muted) {
+            if (instrumentOn) {
+              instrument.current.triggerAttack(note, time, velocity)
+            }
+            setNoteOn(true)
+            notePlaying.current = true
+            if (midiOutObj) {
+              midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
+            }
           }
           setPlayingNote(noteIndex.current)
           playingNoteRef.current = noteIndex.current
@@ -222,7 +225,7 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [channelNum, instrumentOn, midiOut, legato, seqSteps, settings.separateMIDIChannels, velocity]
+    [settings.separateMIDIChannels, channelNum, midiOut, legato, seqSteps, muted, instrumentOn, velocity]
   )
 
   // sequence loop
@@ -360,10 +363,10 @@ export default function Channel({
     keyPreview,
     showKeyPreview,
     mute,
+    muted,
     setMute,
     solo,
     setSolo,
-    setNumChannelsSoloed,
     velocity,
     setVelocity,
     setGrabbing,
@@ -497,7 +500,7 @@ export default function Channel({
 
   if (view === 'stacked') {
     return (
-      <div className={classNames('channel channel-horizontal', { mute })}>
+      <div className={classNames('channel channel-horizontal', { mute: muted })}>
         {channelNumEl}
         {keyEl}
         {muteSoloEl}
@@ -513,7 +516,7 @@ export default function Channel({
         {keySwingEl(false)}
         <div
           style={{ top: numChannels * CHANNEL_HEIGHT }}
-          className={classNames('channel channel-horizontal stacked-auxiliary', { mute })}>
+          className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
           {channelNumEl}
           <Sequencer
             className="channel-module"
@@ -538,7 +541,7 @@ export default function Channel({
     )
   } else if (view === 'horizontal') {
     return (
-      <div className={classNames('channel channel-horizontal', { mute })}>
+      <div className={classNames('channel channel-horizontal', { mute: muted })}>
         {channelNumEl}
         {keyEl}
         {muteSoloEl}
@@ -575,7 +578,7 @@ export default function Channel({
     )
   } else if (view === 'clock') {
     return (
-      <div className={classNames('channel channel-clock', { mute })}>
+      <div className={classNames('channel channel-clock', { mute: muted })}>
         <div className="channel-clock-top">
           {channelNumEl}
           {muteSoloEl}
@@ -638,7 +641,6 @@ Channel.propTypes = {
   setResizing: PropTypes.func,
   view: PropTypes.string,
   numChannelsSoloed: PropTypes.number,
-  setNumChannelsSoloed: PropTypes.func,
   tempo: PropTypes.number,
   playing: PropTypes.bool,
   settings: PropTypes.object,

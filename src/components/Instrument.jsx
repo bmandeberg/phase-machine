@@ -68,7 +68,7 @@ export default function Instrument({
 Instrument.propTypes = {
   instrumentOn: PropTypes.bool,
   setInstrumentOn: PropTypes.func,
-  instrumentType: PropTypes.object,
+  instrumentType: PropTypes.string,
   setInstrumentType: PropTypes.func,
   className: PropTypes.string,
   small: PropTypes.bool,
