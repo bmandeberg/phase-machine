@@ -44,7 +44,7 @@ export default function Channel({
   channelPreset,
 }) {
   const [velocity, setVelocity] = useState(KNOB_MAX)
-  const [key, setKey] = useState([false, true, false, false, true, false, true, false, false, true, false, false])
+  const [key, setKey] = useState([...Array(12)].map(() => false))
   const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
   const [keyArpMode, setKeyArpMode] = useState(Object.keys(ARP_MODES)[0])
   const [keyArpInc1, setKeyArpInc1] = useState(2)
@@ -71,7 +71,7 @@ export default function Channel({
   const [noteOn, setNoteOn] = useState(false)
   const notePlaying = useRef(false)
   const noteOffTimeout = useRef()
-  const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.65))
+  const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => false))
   const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
   const [playingStep, setPlayingStep] = useState()
   const prevStep = useRef()

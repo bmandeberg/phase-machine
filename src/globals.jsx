@@ -279,7 +279,7 @@ export const DEFAULT_PRESET = {
   channels: [
     {
       velocity: KNOB_MAX,
-      key: [false, true, false, false, true, false, true, false, false, true, false, false],
+      key: [...Array(12)].map(() => false),
       keyRate: DEFAULT_TIME_DIVISION,
       keyArpMode: Object.keys(ARP_MODES)[0],
       keyArpInc1: 2,
@@ -293,7 +293,7 @@ export const DEFAULT_PRESET = {
       axis: 0,
       rangeStart: MIDDLE_C,
       rangeEnd: MIDDLE_C + 12,
-      seqSteps: [...Array(MAX_SEQUENCE_LENGTH)].map(() => Math.random() > 0.35),
+      seqSteps: [...Array(MAX_SEQUENCE_LENGTH)].map(() => false),
       seqLength: MAX_SEQUENCE_LENGTH,
       seqRate: DEFAULT_TIME_DIVISION,
       seqArpMode: Object.keys(ARP_MODES)[0],
