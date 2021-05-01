@@ -5,11 +5,12 @@ import { useGesture } from 'react-use-gesture'
 import { constrain } from '../math'
 import faderSlot from '../assets/fader-slot.svg'
 import faderKnob from '../assets/fader-knob.svg'
+import faderKnobMute from '../assets/fader-knob-mute.svg'
 import './Fader.scss'
 
 const FADER_HEIGHT = 41
 
-export default function Fader({ label, grabbing, setGrabbing, value, setValue }) {
+export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute }) {
   const faderClick = useCallback(
     (e) => {
       var bounding = e.target.getBoundingClientRect()
@@ -40,7 +41,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue })
     <div className="fader channel-module" onClick={faderClick}>
       <img src={faderSlot} alt="" className="fader-slot" />
       <img
-        src={faderKnob}
+        src={mute ? faderKnobMute : faderKnob}
         alt=""
         style={{ top: FADER_HEIGHT * (1 - value) - 1 }}
         {...drag()}
@@ -57,4 +58,5 @@ Fader.propTypes = {
   grabbing: PropTypes.bool,
   setGrabbing: PropTypes.func,
   label: PropTypes.string,
+  mute: PropTypes.bool,
 }
