@@ -38,10 +38,7 @@ export default function Piano({
 
   const dragRangeLeft = useGesture({
     onDrag: ({ movement: [mx, my] }) => {
-      const newRangeStart = constrain(rangeStartReference + keyOffset(mx), 0, rangeEnd - 1)
-      if (newRangeStart !== rangeStart) {
-        setRangeStart(newRangeStart)
-      }
+      setRangeStart(constrain(rangeStartReference + keyOffset(mx), 0, rangeEnd - 1))
     },
     onDragStart: () => {
       setResizing(true)
@@ -56,10 +53,7 @@ export default function Piano({
 
   const dragRangeRight = useGesture({
     onDrag: ({ movement: [mx, my] }) => {
-      const newRangeEnd = constrain(rangeEndReference + keyOffset(mx), rangeStart + 1, OCTAVES * 12)
-      if (newRangeEnd !== rangeEnd) {
-        setRangeEnd(newRangeEnd)
-      }
+      setRangeEnd(constrain(rangeEndReference + keyOffset(mx), rangeStart + 1, OCTAVES * 12))
     },
     onDragStart: () => {
       setResizing(true)
