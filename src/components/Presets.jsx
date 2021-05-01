@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import Dropdn from './Dropdn'
 import addIcon from '../assets/add-icon.svg'
 import trashIcon from '../assets/trash-icon.svg'
-import removeIconDisabled from '../assets/remove-icon-disabled.svg'
+import trashIconDisabled from '../assets/trash-icon-disabled.svg'
 import saveIcon from '../assets/save-icon.svg'
 import saveIconDisabled from '../assets/save-icon-disabled.svg'
 import edited from '../assets/edit-tag.svg'
@@ -57,7 +57,7 @@ export default function Presets(props) {
         <div
           className={classNames('preset-action preset-delete', { disabled: props.preset.placeholder })}
           onClick={props.deletePreset}>
-          <img src={props.preset.placeholder ? removeIconDisabled : trashIcon} alt="Delete" />
+          <img src={props.preset.placeholder ? trashIconDisabled : trashIcon} alt="Delete" />
         </div>
         <div className="preset-action preset-new" onClick={props.newPreset}>
           <img src={addIcon} alt="New" />
