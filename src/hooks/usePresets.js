@@ -175,7 +175,7 @@ export default function usePresets(
   const newPreset = useCallback(
     (e, hotkey = null) => {
       const uiStateCopy = Object.assign({}, uiState, {
-        name: dedupName(uiState.name),
+        name: dedupName('New Preset'),
         placeholder: false,
         id: uuid(),
         hotkey,
