@@ -9,6 +9,7 @@ import MuteSolo from '../components/MuteSolo'
 import FlipOpposite from '../components/FlipOpposite'
 import Piano from '../components/Piano'
 import Instrument from '../components/Instrument'
+import Fader from '../components/Fader'
 import Switch from 'react-switch'
 
 // ui elements
@@ -121,11 +122,11 @@ export default function useUI(
 
   const velocityEl = useMemo(() => {
     return (
-      <RotaryKnob
+      <Fader
         className="channel-module"
         value={velocity}
         setValue={setVelocity}
-        label="Velocity"
+        label="Vel"
         setGrabbing={setGrabbing}
         grabbing={grabbing}
         mute={muted}

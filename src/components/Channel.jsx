@@ -504,11 +504,11 @@ export default function Channel({
       <div className={classNames('channel channel-horizontal', { mute: muted })}>
         {channelNumEl}
         {muteSoloEl}
-        {keyEl}
         {velocityEl}
+        {keyEl}
         {shiftEl}
         {axisEl(false)}
-        <img className="arrow-small" src={arrowSmall} alt="" />
+        <img className="arrow-small" src={arrowSmall} alt="" draggable="false" />
         {flipOppositeEl}
         {pianoEl}
         {keyRateEl}
@@ -544,12 +544,12 @@ export default function Channel({
     return (
       <div className={classNames('channel channel-horizontal', { mute: muted })}>
         {channelNumEl}
-        {keyEl}
         {muteSoloEl}
         {velocityEl}
+        {keyEl}
         {shiftEl}
         {axisEl(false)}
-        <img className="arrow-small" src={arrowSmall} alt="" />
+        <img className="arrow-small" src={arrowSmall} alt="" draggable="false" />
         {flipOppositeEl}
         {pianoEl}
         {keyRateEl}

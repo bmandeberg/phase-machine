@@ -265,7 +265,7 @@ export default function RotaryKnob({
         />
       )}
       <Knob
-        className={classNames('knob', { grabbing: grabbing })}
+        className={classNames('knob', { grabbing })}
         min={minVal}
         max={maxVal}
         value={value}
