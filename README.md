@@ -6,7 +6,7 @@ yarn start
 ```
 the website URL will be http://localhost:8080/
 
-CTRL C will stop the server
+CTRL-C will stop the server
 
 also you should:
 ```

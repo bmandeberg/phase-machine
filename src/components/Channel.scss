@@ -364,24 +364,6 @@
   .react-switch-bg {
     background-color: $muteGray !important;
   }
-  .key .white-key {
-    background-color: $muteGray !important;
-    &:hover {
-      background-color: $muteGrayHover !important;
-    }
-    &.selected {
-      background-color: $green !important;
-      &:hover {
-        background-color: $greenHover !important;
-      }
-    }
-    &.playing {
-      background-color: $orange !important;
-      &:hover {
-        background-color: $orangeHover !important;
-      }
-    }
-  }
   .split-button {
     background-color: $muteGray;
     transition: background-color $muteTransitionTime;
@@ -402,6 +384,42 @@
       &.split-button-arrow-left {
         border-right: 1px solid #888888;
       }
+    }
+  }
+  &.channel-horizontal {
+    .key .white-key {
+      background-color: $muteGray !important;
+      &:hover {
+        background-color: $muteGrayHover !important;
+      }
+      &.selected {
+        background-color: $green !important;
+        &:hover {
+          background-color: $greenHover !important;
+        }
+      }
+      &.playing {
+        background-color: $orange !important;
+        &:hover {
+          background-color: $orangeHover !important;
+        }
+      }
+    }
+  }
+  &.channel-clock {
+    .piano-border {
+      display: none;
+    }
+    .channel-clock-bottom::after {
+      content: '';
+      position: absolute;
+      top: 259px;
+      left: 14px;
+      width: 624px;
+      height: 95px;
+      border: 2px solid #ffffff;
+      z-index: 2;
+      pointer-events: none;
     }
   }
 }
