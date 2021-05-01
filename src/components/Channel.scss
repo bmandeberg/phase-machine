@@ -386,23 +386,21 @@
       }
     }
   }
-  &.channel-horizontal {
-    .key .white-key {
-      background-color: $muteGray !important;
+  .piano-keys .white-key {
+    background-color: $muteGray !important;
+    &:hover {
+      background-color: $muteGrayHover !important;
+    }
+    &.selected {
+      background-color: $green !important;
       &:hover {
-        background-color: $muteGrayHover !important;
+        background-color: $greenHover !important;
       }
-      &.selected {
-        background-color: $green !important;
-        &:hover {
-          background-color: $greenHover !important;
-        }
-      }
-      &.playing {
-        background-color: $orange !important;
-        &:hover {
-          background-color: $orangeHover !important;
-        }
+    }
+    &.playing {
+      background-color: $orange !important;
+      &:hover {
+        background-color: $orangeHover !important;
       }
     }
   }
