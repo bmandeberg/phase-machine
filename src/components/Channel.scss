@@ -82,29 +82,19 @@
   margin-top: -1px;
   margin-left: -1px;
   width: 656px;
-  .channel-number {
-    padding-top: 23px;
-  }
-  .mute-solo {
-    margin-right: 8px;
-    .button {
-      display: inline-block;
-    }
-    .mute {
-      margin-bottom: 0;
-      margin-right: 8px;
-    }
-  }
+  // .channel-number {
+  //   padding-top: 23px;
+  // }
   .key {
     margin-top: 1px;
     margin-right: 32px;
-    margin-left: 41px;
+    margin-left: 37px;
   }
   .arrow-clock {
     position: absolute;
     top: 27px;
-    left: 186px;
-    width: 119px;
+    left: 192px;
+    width: 113px;
   }
   .piano-container {
     width: 624px;
@@ -243,7 +233,7 @@
 
 .channel-vertical {
   &.left-vertical {
-    margin-left: -4px;
+    margin-left: 2px;
   }
   display: inline-block;
   vertical-align: top;

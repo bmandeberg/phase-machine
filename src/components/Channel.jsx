@@ -583,10 +583,10 @@ export default function Channel({
         <div className="channel-clock-top">
           {channelNumEl}
           {muteSoloEl}
+          {velocityEl}
           <div className="channel-vertical left-vertical">
             {flipOppositeEl}
             {shiftEl}
-            {velocityEl}
           </div>
           <img className="arrow-clock" src={arrowClock} alt="" />
           {axisEl(true)}

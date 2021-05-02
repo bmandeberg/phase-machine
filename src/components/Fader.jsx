@@ -15,8 +15,14 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     (e) => {
       var bounding = e.target.getBoundingClientRect()
       const y = e.clientY - bounding.top
-      if (y >= 0 && y <= FADER_HEIGHT + 9) {
-        setValue(1 - constrain(y / FADER_HEIGHT, 0, 1))
+      if (y >= -2 && y <= FADER_HEIGHT + 9) {
+        if (y < FADER_HEIGHT * 0.1) {
+          setValue(1)
+        } else if (y > FADER_HEIGHT * 0.9) {
+          setValue(0)
+        } else {
+          setValue(1 - constrain(y / FADER_HEIGHT, 0, 1))
+        }
       }
     },
     [setValue]

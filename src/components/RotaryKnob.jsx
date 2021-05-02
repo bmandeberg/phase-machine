@@ -80,7 +80,7 @@ export default function RotaryKnob({
         height: '60px',
         position: 'absolute',
         top: 84,
-        left: 123,
+        left: 119,
       }
     }
     if (axisKnob) {
@@ -219,7 +219,7 @@ export default function RotaryKnob({
             xmlns="http://www.w3.org/2000/svg"
             style={{
               transform: `rotate(${value * 15}deg)`,
-              left: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 153 : 21),
+              left: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 149 : 21),
               top: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 114 : 21),
             }}
             className="axis-line"
