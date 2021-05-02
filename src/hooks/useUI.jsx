@@ -1,5 +1,13 @@
 import React, { useCallback, useMemo } from 'react'
-import { CHANNEL_COLORS, RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN } from '../globals'
+import {
+  CHANNEL_COLORS,
+  RATES,
+  ARP_MODES,
+  MAX_SEQUENCE_LENGTH,
+  MAX_SWING_LENGTH,
+  SUSTAIN_MIN,
+  KEY_VIEW_TYPES,
+} from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
@@ -89,7 +97,9 @@ export default function useUI(
   instrumentOn,
   setInstrumentOn,
   instrumentType,
-  setInstrumentType
+  setInstrumentType,
+  keyViewType,
+  setKeyViewType
 ) {
   const channelNumEl = useMemo(() => {
     return (
@@ -233,6 +243,21 @@ export default function useUI(
     setRangeStart,
     setResizing,
   ])
+
+  const keyViewTypeEl = useMemo(() => {
+    return (
+      <NumInput
+        className="channel-module key-view-type"
+        value={keyViewType}
+        setValue={setKeyViewType}
+        label="Interval"
+        min={1}
+        max={11}
+        short={true}
+        disabled
+      />
+    )
+  }, [keyViewType, setKeyViewType])
 
   const keyRateEl = useMemo(() => {
     return (
@@ -477,5 +502,6 @@ export default function useUI(
     seqSustainEl,
     legatoEl,
     instrumentEl,
+    keyViewTypeEl,
   }
 }

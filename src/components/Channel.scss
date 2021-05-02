@@ -82,9 +82,6 @@
   margin-top: -1px;
   margin-left: -1px;
   width: 656px;
-  // .channel-number {
-  //   padding-top: 23px;
-  // }
   .key {
     margin-top: 1px;
     margin-right: 32px;
@@ -95,6 +92,14 @@
     top: 27px;
     left: 192px;
     width: 113px;
+  }
+  .key-view-type {
+    margin-top: 22px;
+    .num-input-label {
+      position: absolute;
+      top: 28px;
+      font-size: 21px;
+    }
   }
   .piano-container {
     width: 624px;
@@ -233,6 +238,7 @@
 
 .channel-vertical {
   &.left-vertical {
+    position: relative;
     margin-left: 2px;
   }
   display: inline-block;
@@ -248,7 +254,7 @@
   }
   .shift-input {
     display: block;
-    margin-top: 19px;
+    margin-top: 21px;
     margin-right: auto;
     margin-left: auto;
   }

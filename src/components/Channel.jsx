@@ -13,6 +13,7 @@ import {
   CHANNEL_HEIGHT,
   MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
+  KEY_VIEW_TYPES,
   handleArpMode,
   noteString,
 } from '../globals'
@@ -92,6 +93,7 @@ export default function Channel({
   const initInstrumentType = useRef(instrumentType)
   const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [keyViewType, setKeyViewType] = useState(1)
 
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
@@ -354,6 +356,7 @@ export default function Channel({
     seqSustainEl,
     legatoEl,
     instrumentEl,
+    keyViewTypeEl,
   } = useUI(
     channelNum,
     key,
@@ -429,7 +432,9 @@ export default function Channel({
     instrumentOn,
     setInstrumentOn,
     instrumentType,
-    setInstrumentType
+    setInstrumentType,
+    keyViewType,
+    setKeyViewType
   )
 
   // watch and update state
@@ -587,6 +592,11 @@ export default function Channel({
           <div className="channel-vertical left-vertical">
             {flipOppositeEl}
             {shiftEl}
+            {/* <div className="view-fifths">
+              <div className={classNames('button chromatic', { selected: !viewFifths })}>Chromatic</div>
+              <div className={classNames('button', { selected: viewFifths })} onClick={() => {alert('not yet 😢')}}>5ths</div>
+            </div> */}
+            {keyViewTypeEl}
           </div>
           <img className="arrow-clock" src={arrowClock} alt="" />
           {axisEl(true)}

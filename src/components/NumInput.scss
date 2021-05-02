@@ -90,6 +90,12 @@
       margin-top: 13px;
     }
   }
+  &.disabled {
+    .react-numeric-input, .num-input-label {
+      pointer-events: none;
+    }
+    cursor: url('../assets/not-allowed.png') 10 10, pointer !important;
+  }
 }
 
 .num-input.small-input {
