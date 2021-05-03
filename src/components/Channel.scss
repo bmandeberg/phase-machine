@@ -211,6 +211,9 @@
         margin-top: 8px;
       }
     }
+    .piano-drawer-border {
+      display: none;
+    }
   }
   .sequencer {
     margin-top: 17px;
@@ -404,7 +407,8 @@
     .piano-border {
       display: none;
     }
-    .channel-clock-bottom::after {
+    .channel-clock-bottom.drawer-open .piano-drawer-border {
+      display: block;
       content: '';
       position: absolute;
       top: 259px;

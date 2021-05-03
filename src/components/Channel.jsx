@@ -619,6 +619,7 @@ export default function Channel({
         <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
           <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>
             <div className="piano-container">{pianoEl}</div>
+            <div className="piano-drawer-border"></div>
             <Sequencer
               className="channel-module"
               seqSteps={seqSteps}
