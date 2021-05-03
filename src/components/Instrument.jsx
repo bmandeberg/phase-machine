@@ -54,7 +54,7 @@ export default function Instrument({
         {!small && <div className="instrument-label">Instrument</div>}
       </div>
       {small ? (
-        <div className="button">Instr</div>
+        <div className="button disabled">Instr</div>
       ) : (
         <SplitButton
           content={INSTRUMENT_TYPES[instrumentType]}

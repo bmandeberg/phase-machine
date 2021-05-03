@@ -84,6 +84,9 @@ body {
   &:first-of-type {
     margin-bottom: 8px;
   }
+  &.disabled {
+    cursor: url('./assets/not-allowed.png') 10 10, not-allowed !important;
+  }
 }
 
 #header-border {
