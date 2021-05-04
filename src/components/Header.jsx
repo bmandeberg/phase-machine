@@ -17,14 +17,15 @@ export default class Header extends React.Component {
   constructor(props) {
     super(props)
     this.initialized = false
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown.bind(this))
+    window.addEventListener('keydown', this.handleKeyDown)
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown.bind(this))
+    window.removeEventListener('keydown', this.handleKeyDown)
   }
 
   async playStop() {
