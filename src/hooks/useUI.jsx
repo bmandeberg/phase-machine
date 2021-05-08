@@ -6,7 +6,6 @@ import {
   MAX_SEQUENCE_LENGTH,
   MAX_SWING_LENGTH,
   SUSTAIN_MIN,
-  KEY_VIEW_TYPES,
 } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'

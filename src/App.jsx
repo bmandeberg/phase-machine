@@ -27,14 +27,14 @@ export default function App() {
   )
   const [uiState, setUIState] = useState(deepStateCopy(currentPreset))
 
-  const [tempo, setTempo] = useState(120)
+  const [tempo, setTempo] = useState(currentPreset.tempo)
   const [playing, setPlaying] = useState(false)
-  const [numChannels, setNumChannels] = useState(1)
+  const [numChannels, setNumChannels] = useState(currentPreset.numChannels)
   const [view, setView] = useState(VIEWS[0])
   const [midiOut, setMidiOut] = useState(null)
   const [midiOuts, setMidiOuts] = useState([])
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
-  const [channelSync, setChannelSync] = useState(false)
+  const [channelSync, setChannelSync] = useState(currentPreset.channelSync)
 
   const [modalType, setModalType] = useState('')
 
@@ -170,7 +170,7 @@ export default function App() {
 
   const channels = useMemo(
     () =>
-      [...Array(numChannels)].map((d, i) => (
+      uiState.channels.map((d, i) => (
         <Channel
           numChannels={numChannels}
           key={i}
@@ -202,6 +202,7 @@ export default function App() {
       setChannelState,
       showStepNumbers,
       tempo,
+      uiState.channels,
       view,
     ]
   )

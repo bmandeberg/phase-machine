@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useMemo } from 'react'
 import { v4 as uuid } from 'uuid'
-import { PRESET_HOLD_TIME } from '../globals'
+import { PRESET_HOLD_TIME, BLANK_CHANNEL } from '../globals'
 
 export default function usePresets(
   setUIState,
@@ -33,8 +33,14 @@ export default function usePresets(
 
   useEffect(() => {
     setUIState((uiState) => {
-      const uiStateCopy = Object.assign({}, uiState)
-      uiStateCopy.channels = uiStateCopy.channels.slice(0, numChannels)
+      const uiStateCopy = Object.assign({}, uiState, { numChannels })
+      if (numChannels > uiStateCopy.channels.length) {
+        for (let i = 0; i < numChannels - uiStateCopy.channels.length; i++) {
+          uiStateCopy.channels.push(BLANK_CHANNEL())
+        }
+      } else {
+        uiStateCopy.channels = uiStateCopy.channels.slice(0, numChannels)
+      }
       return uiStateCopy
     })
   }, [numChannels, setUIState])
@@ -43,12 +49,11 @@ export default function usePresets(
     setUIState((uiState) => {
       const uiStateCopy = Object.assign({}, uiState, {
         tempo,
-        numChannels,
         channelSync,
       })
       return uiStateCopy
     })
-  }, [channelSync, numChannels, setUIState, tempo])
+  }, [channelSync, setUIState, tempo])
 
   const setPresetName = useCallback(
     (presetName) => {

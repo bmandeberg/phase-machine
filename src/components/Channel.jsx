@@ -13,7 +13,6 @@ import {
   CHANNEL_HEIGHT,
   MAX_SEQUENCE_LENGTH,
   DEFAULT_TIME_DIVISION,
-  KEY_VIEW_TYPES,
   handleArpMode,
   noteString,
 } from '../globals'
