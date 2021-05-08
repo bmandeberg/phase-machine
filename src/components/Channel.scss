@@ -421,3 +421,44 @@
     }
   }
 }
+
+.duplicate-delete {
+  position: absolute;
+  left: 15px;
+  top: 43px;
+  text-align: center;
+  z-index: 2000;
+  div {
+    cursor: pointer;
+    background-color: transparent;
+  }
+  .duplicate {
+    width: 13px;
+    height: 13px;
+    background-image: url('../assets/plus-icon-gray.png');
+    background-size: 13px;
+    &.mute {
+      background-image: url('../assets/plus-icon-dark-gray.png');
+      background-size: 13px;
+    }
+    &:hover {
+      background-image: url('../assets/plus-icon-green.png');
+      background-size: 13px;
+    }
+  }
+  .delete {
+    width: 13px;
+    height: 14px;
+    margin-top: 10px;
+    background-image: url('../assets/trash-icon-gray.png');
+    background-size: 13px 14px;
+    &.mute {
+      background-image: url('../assets/trash-icon-dark-gray.png');
+      background-size: 13px 14px;
+    }
+    &:hover {
+      background-image: url('../assets/trash-icon-red.png');
+      background-size: 13px 14px;
+    }
+  }
+}

@@ -109,6 +109,15 @@ export default function useUI(
     )
   }, [channelNum])
 
+  const duplicateDeleteEl = useMemo(() => {
+    return (
+      <div className="duplicate-delete">
+        <div className={classNames('duplicate', { mute })} title="Duplicate channel"></div>
+        <div className={classNames('delete', { mute })} title="Delete channel"></div>
+      </div>
+    )
+  }, [mute])
+
   const keyEl = useMemo(() => {
     return (
       <Key
@@ -484,6 +493,7 @@ export default function useUI(
 
   return {
     channelNumEl,
+    duplicateDeleteEl,
     keyEl,
     muteSoloEl,
     velocityEl,

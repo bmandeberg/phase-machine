@@ -338,6 +338,7 @@ export default function Channel({
 
   const {
     channelNumEl,
+    duplicateDeleteEl,
     keyEl,
     muteSoloEl,
     velocityEl,
@@ -508,6 +509,7 @@ export default function Channel({
     return (
       <div className={classNames('channel channel-horizontal', { mute: muted })}>
         {channelNumEl}
+        {duplicateDeleteEl}
         {muteSoloEl}
         {velocityEl}
         {keyEl}
@@ -549,6 +551,7 @@ export default function Channel({
     return (
       <div className={classNames('channel channel-horizontal', { mute: muted })}>
         {channelNumEl}
+        {duplicateDeleteEl}
         {muteSoloEl}
         {velocityEl}
         {keyEl}
@@ -587,6 +590,7 @@ export default function Channel({
       <div className={classNames('channel channel-clock', { mute: muted })}>
         <div className="channel-clock-top">
           {channelNumEl}
+          {duplicateDeleteEl}
           {muteSoloEl}
           {velocityEl}
           <div className="channel-vertical left-vertical">
