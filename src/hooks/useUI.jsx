@@ -1,12 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import {
-  CHANNEL_COLORS,
-  RATES,
-  ARP_MODES,
-  MAX_SEQUENCE_LENGTH,
-  MAX_SWING_LENGTH,
-  SUSTAIN_MIN,
-} from '../globals'
+import { CHANNEL_COLORS, RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
@@ -22,6 +15,7 @@ import Switch from 'react-switch'
 // ui elements
 
 export default function useUI(
+  id,
   channelNum,
   key,
   setKey,
@@ -98,7 +92,8 @@ export default function useUI(
   instrumentType,
   setInstrumentType,
   keyViewType,
-  setKeyViewType
+  setKeyViewType,
+  duplicateChannel
 ) {
   const channelNumEl = useMemo(() => {
     return (
@@ -111,11 +106,14 @@ export default function useUI(
   const duplicateDeleteEl = useMemo(() => {
     return (
       <div className="duplicate-delete">
-        <div className={classNames('duplicate', { mute })} title="Duplicate channel"></div>
+        <div
+          className={classNames('duplicate', { mute })}
+          onClick={() => duplicateChannel(id)}
+          title="Duplicate channel"></div>
         <div className={classNames('delete', { mute })} title="Delete channel"></div>
       </div>
     )
-  }, [mute])
+  }, [duplicateChannel, id, mute])
 
   const keyEl = useMemo(() => {
     return (

@@ -269,6 +269,7 @@ export function noteString(playingNote) {
 }
 
 export const BLANK_CHANNEL = () => ({
+  id: uuid(),
   velocity: KNOB_MAX,
   key: [...Array(12)].map(() => false),
   keyRate: DEFAULT_TIME_DIVISION,

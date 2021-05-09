@@ -4,18 +4,7 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
-import {
-  KNOB_MAX,
-  SUSTAIN_MIN,
-  BLANK_PITCH_CLASSES,
-  MIDDLE_C,
-  ARP_MODES,
-  CHANNEL_HEIGHT,
-  MAX_SEQUENCE_LENGTH,
-  DEFAULT_TIME_DIVISION,
-  handleArpMode,
-  noteString,
-} from '../globals'
+import { BLANK_PITCH_CLASSES, CHANNEL_HEIGHT, handleArpMode, noteString } from '../globals'
 import { pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
 import Sequencer from './Sequencer'
@@ -42,27 +31,30 @@ export default function Channel({
   midiOut,
   setChannelState,
   channelPreset,
+  duplicateChannel,
+  initState,
 }) {
-  const [velocity, setVelocity] = useState(KNOB_MAX)
-  const [key, setKey] = useState([...Array(12)].map(() => false))
-  const [keyRate, setKeyRate] = useState(DEFAULT_TIME_DIVISION)
-  const [keyArpMode, setKeyArpMode] = useState(Object.keys(ARP_MODES)[0])
-  const [keyArpInc1, setKeyArpInc1] = useState(2)
-  const [keyArpInc2, setKeyArpInc2] = useState(-1)
+  const id = useRef(initState.id)
+  const [velocity, setVelocity] = useState(initState.velocity)
+  const [key, setKey] = useState(initState.key)
+  const [keyRate, setKeyRate] = useState(initState.keyRate)
+  const [keyArpMode, setKeyArpMode] = useState(initState.keyArpMode)
+  const [keyArpInc1, setKeyArpInc1] = useState(initState.keyArpInc1)
+  const [keyArpInc2, setKeyArpInc2] = useState(initState.keyArpInc2)
   const keyArpUtil = useRef(false)
-  const [keySustain, setKeySustain] = useState((KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN)
-  const [keySwing, setKeySwing] = useState(KNOB_MAX / 2)
-  const [keySwingLength, setKeySwingLength] = useState(2)
+  const [keySustain, setKeySustain] = useState(initState.keySustain)
+  const [keySwing, setKeySwing] = useState(initState.keySwing)
+  const [keySwingLength, setKeySwingLength] = useState(initState.keySwingLength)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
   const [showKeyPreview, setShowKeyPreview] = useState(false)
-  const [mute, setMute] = useState(false)
-  const [solo, setSolo] = useState(false)
-  const [shiftAmt, setShiftAmt] = useState(1)
+  const [mute, setMute] = useState(initState.mute)
+  const [solo, setSolo] = useState(initState.solo)
+  const [shiftAmt, setShiftAmt] = useState(initState.shiftAmt)
   const [shiftDirectionForward, setShiftDirectionForward] = useState(true)
-  const [axis, setAxis] = useState(0)
+  const [axis, setAxis] = useState(initState.axis)
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
-  const [rangeStart, setRangeStart] = useState(MIDDLE_C)
-  const [rangeEnd, setRangeEnd] = useState(MIDDLE_C + 12) // non-inclusive
+  const [rangeStart, setRangeStart] = useState(initState.rangeStart)
+  const [rangeEnd, setRangeEnd] = useState(initState.rangeEnd) // non-inclusive
   const [playingPitchClass, setPlayingPitchClass] = useState()
   const [playingNote, setPlayingNote] = useState()
   const playingNoteRef = useRef()
@@ -71,24 +63,24 @@ export default function Channel({
   const [noteOn, setNoteOn] = useState(false)
   const notePlaying = useRef(false)
   const noteOffTimeout = useRef()
-  const [seqSteps, setSeqSteps] = useState([...Array(MAX_SEQUENCE_LENGTH)].map(() => false))
-  const [seqLength, setSeqLength] = useState(MAX_SEQUENCE_LENGTH)
+  const [seqSteps, setSeqSteps] = useState(initState.seqSteps)
+  const [seqLength, setSeqLength] = useState(initState.seqLength)
   const [playingStep, setPlayingStep] = useState()
   const prevStep = useRef()
   const currentStep = useRef(0)
   const nextStep = useRef()
   const playNoteDebounce = useRef()
-  const [seqRate, setSeqRate] = useState(DEFAULT_TIME_DIVISION)
-  const [seqArpMode, setSeqArpMode] = useState(Object.keys(ARP_MODES)[0])
-  const [seqArpInc1, setSeqArpInc1] = useState(2)
-  const [seqArpInc2, setSeqArpInc2] = useState(-1)
+  const [seqRate, setSeqRate] = useState(initState.seqRate)
+  const [seqArpMode, setSeqArpMode] = useState(initState.seqArpMode)
+  const [seqArpInc1, setSeqArpInc1] = useState(initState.seqArpInc1)
+  const [seqArpInc2, setSeqArpInc2] = useState(initState.seqArpInc2)
   const seqArpUtil = useRef(false)
-  const [seqSwing, setSeqSwing] = useState(KNOB_MAX / 2)
-  const [seqSwingLength, setSeqSwingLength] = useState(2)
-  const [seqSustain, setSeqSustain] = useState((KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN)
-  const [legato, setLegato] = useState(false)
-  const [instrumentOn, setInstrumentOn] = useState(true)
-  const [instrumentType, setInstrumentType] = useState('triangle')
+  const [seqSwing, setSeqSwing] = useState(initState.seqSwing)
+  const [seqSwingLength, setSeqSwingLength] = useState(initState.seqSwingLength)
+  const [seqSustain, setSeqSustain] = useState(initState.seqSustain)
+  const [legato, setLegato] = useState(initState.legato)
+  const [instrumentOn, setInstrumentOn] = useState(initState.instrumentOn)
+  const [instrumentType, setInstrumentType] = useState(initState.instrumentType)
   const initInstrumentType = useRef(instrumentType)
   const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -358,6 +350,7 @@ export default function Channel({
     instrumentEl,
     keyViewTypeEl,
   } = useUI(
+    id.current,
     channelNum,
     key,
     setKey,
@@ -434,13 +427,15 @@ export default function Channel({
     instrumentType,
     setInstrumentType,
     keyViewType,
-    setKeyViewType
+    setKeyViewType,
+    duplicateChannel
   )
 
   // watch and update state
 
   useEffect(() => {
     const state = {
+      id: id.current,
       velocity,
       key,
       keyRate,
@@ -469,10 +464,9 @@ export default function Channel({
       instrumentOn,
       instrumentType,
     }
-    setChannelState(channelNum, state)
+    setChannelState(id.current, state)
   }, [
     axis,
-    channelNum,
     instrumentOn,
     instrumentType,
     key,
@@ -663,4 +657,6 @@ Channel.propTypes = {
   midiOut: PropTypes.string,
   setChannelState: PropTypes.func,
   channelPreset: PropTypes.object,
+  duplicateChannel: PropTypes.func,
+  initState: PropTypes.object,
 }

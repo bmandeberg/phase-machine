@@ -4,6 +4,7 @@ import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
+import { v4 as uuid } from 'uuid'
 import { VIEWS, SECTIONS, DEFAULT_PRESET } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
@@ -166,6 +167,21 @@ export default function App() {
     keydownTimer
   )
 
+  // channel management functions
+
+  const duplicateChannel = useCallback((id) => {
+    setUIState((uiState) => {
+      const uiStateCopy = deepStateCopy(uiState)
+      const channelIndex = uiStateCopy.channels.findIndex((c) => c.id === id)
+      if (channelIndex !== -1) {
+        const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelIndex]), { id: uuid() })
+        uiStateCopy.channels.push(duplicatedChannel)
+      }
+      return uiStateCopy
+    })
+    setNumChannels((numChannels) => numChannels + 1)
+  }, [])
+
   // render UI
 
   const channels = useMemo(
@@ -173,7 +189,7 @@ export default function App() {
       uiState.channels.map((d, i) => (
         <Channel
           numChannels={numChannels}
-          key={i}
+          key={d.id}
           channelNum={i}
           setGrabbing={setGrabbing}
           grabbing={grabbing}
@@ -188,10 +204,13 @@ export default function App() {
           midiOut={midiOut}
           setChannelState={setChannelState}
           channelPreset={currentPreset.channels[i]}
+          duplicateChannel={duplicateChannel}
+          initState={d}
         />
       )),
     [
       currentPreset.channels,
+      duplicateChannel,
       grabbing,
       midiOut,
       numChannels,
@@ -269,8 +288,12 @@ export default function App() {
   )
 }
 
+function channelCopy(c) {
+  return Object.assign({}, c, { key: c.key.slice(), seqSteps: c.seqSteps.slice() })
+}
+
 function deepStateCopy(state) {
   return Object.assign({}, state, {
-    channels: state.channels.map((c) => Object.assign({}, c, { key: c.key.slice(), seqSteps: c.seqSteps.slice() })),
+    channels: state.channels.map((c) => channelCopy(c)),
   })
 }

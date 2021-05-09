@@ -21,14 +21,17 @@ export default function usePresets(
   // state management for presets
 
   const setChannelState = useCallback(
-    (channelNum, state) => {
+    (id, state) => {
       setUIState((uiState) => {
-        const uiStateCopy = Object.assign({}, uiState)
-        uiStateCopy.channels[channelNum] = state
+        const uiStateCopy = deepStateCopy(uiState)
+        const channelIndex = uiStateCopy.channels.findIndex((c) => c.id === id)
+        if (channelIndex !== -1) {
+          uiStateCopy.channels[channelIndex] = state
+        }
         return uiStateCopy
       })
     },
-    [setUIState]
+    [deepStateCopy, setUIState]
   )
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export default function usePresets(
             const channel = uiState[param][i]
             const presetChannel = currentPreset[param][i]
             for (const channelParam in channel) {
-              if (channel.hasOwnProperty(channelParam)) {
+              if (channel.hasOwnProperty(channelParam) && channelParam !== 'id') {
                 // compare arrays
                 if (['key', 'seqSteps'].some((s) => s === channelParam)) {
                   for (let j = 0; j < channel[channelParam].length; j++) {
