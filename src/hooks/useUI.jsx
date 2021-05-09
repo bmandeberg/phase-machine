@@ -93,7 +93,8 @@ export default function useUI(
   setInstrumentType,
   keyViewType,
   setKeyViewType,
-  duplicateChannel
+  duplicateChannel,
+  deleteChannel
 ) {
   const channelNumEl = useMemo(() => {
     return (
@@ -110,10 +111,10 @@ export default function useUI(
           className={classNames('duplicate', { mute })}
           onClick={() => duplicateChannel(id)}
           title="Duplicate channel"></div>
-        <div className={classNames('delete', { mute })} title="Delete channel"></div>
+        <div className={classNames('delete', { mute })} onClick={() => deleteChannel(id)} title="Delete channel"></div>
       </div>
     )
-  }, [duplicateChannel, id, mute])
+  }, [deleteChannel, duplicateChannel, id, mute])
 
   const keyEl = useMemo(() => {
     return (

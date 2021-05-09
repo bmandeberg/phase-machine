@@ -182,6 +182,18 @@ export default function App() {
     setNumChannels((numChannels) => numChannels + 1)
   }, [])
 
+  const deleteChannel = useCallback((id) => {
+    setUIState((uiState) => {
+      const uiStateCopy = deepStateCopy(uiState)
+      const channelIndex = uiStateCopy.channels.findIndex((c) => c.id === id)
+      if (channelIndex !== -1) {
+        uiStateCopy.channels.splice(channelIndex, 1)
+      }
+      return uiStateCopy
+    })
+    setNumChannels((numChannels) => numChannels - 1)
+  }, [])
+
   // render UI
 
   const channels = useMemo(
@@ -205,11 +217,13 @@ export default function App() {
           setChannelState={setChannelState}
           channelPreset={currentPreset.channels[i]}
           duplicateChannel={duplicateChannel}
+          deleteChannel={deleteChannel}
           initState={d}
         />
       )),
     [
       currentPreset.channels,
+      deleteChannel,
       duplicateChannel,
       grabbing,
       midiOut,

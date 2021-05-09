@@ -32,6 +32,7 @@ export default function Channel({
   setChannelState,
   channelPreset,
   duplicateChannel,
+  deleteChannel,
   initState,
 }) {
   const id = useRef(initState.id)
@@ -428,7 +429,8 @@ export default function Channel({
     setInstrumentType,
     keyViewType,
     setKeyViewType,
-    duplicateChannel
+    duplicateChannel,
+    deleteChannel
   )
 
   // watch and update state
@@ -658,5 +660,6 @@ Channel.propTypes = {
   setChannelState: PropTypes.func,
   channelPreset: PropTypes.object,
   duplicateChannel: PropTypes.func,
+  deleteChannel: PropTypes.func,
   initState: PropTypes.object,
 }
