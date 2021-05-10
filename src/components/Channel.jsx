@@ -149,18 +149,27 @@ export default function Channel({
     instrument.current.oscillator.type = instrumentType
   }, [instrumentType])
 
+  const noteOff = useCallback((channel, note, midiOutObj, offTime) => {
+    instrument.current.triggerRelease()
+    if (midiOutObj) {
+      const params = {}
+      if (offTime) {
+        params.time = offTime
+      }
+      midiOutObj.stopNote(note, channel, params)
+    }
+    setNoteOn(false)
+    notePlaying.current = false
+  }, [])
+
   useEffect(() => {
     if (!playing && notePlaying.current && noteIndex.current !== undefined) {
       const channel = separateMIDIChannels ? channelNum + 1 : 1
       const note = noteString(noteIndex.current)
-      instrument.current.triggerRelease()
-      setNoteOn(false)
-      if (midiOut) {
-        WebMidi.getOutputByName(midiOut).stopNote(note, channel)
-      }
-      notePlaying.current = false
+      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+      noteOff(channel, note, midiOutObj, null)
     }
-  }, [channelNum, midiOut, playing, separateMIDIChannels])
+  }, [channelNum, midiOut, noteOff, playing, separateMIDIChannels])
 
   // loop events
 
@@ -179,7 +188,7 @@ export default function Channel({
           if (notePlaying.current) {
             clearTimeout(noteOffTimeout.current)
             if (prevNoteIndex.current !== undefined) {
-              noteOff(prevNote, time * 1000 + clockOffset)
+              noteOff(channel, prevNote, midiOutObj, time * 1000 + clockOffset)
             }
           }
           if (!muted) {
@@ -200,33 +209,21 @@ export default function Channel({
           const sustainTime = Math.max(sustain * interval * 1000, 80)
           clearTimeout(noteOffTimeout.current)
           noteOffTimeout.current = setTimeout(() => {
-            noteOff(note)
+            noteOff(channel, note, midiOutObj, null)
           }, time - Tone.immediate() + sustainTime)
         }
         playNoteDebounce.current = setTimeout(() => {
           playNoteDebounce.current = null
         }, 20)
       }
-      function noteOff(offNote, offTime) {
-        instrument.current.triggerRelease()
-        if (midiOutObj) {
-          const params = {}
-          if (offTime) {
-            params.time = offTime
-          }
-          midiOutObj.stopNote(offNote, channel, params)
-        }
-        setNoteOn(false)
-        notePlaying.current = false
-      }
     },
-    [separateMIDIChannels, channelNum, midiOut, legato, seqSteps, muted, instrumentOn, velocity]
+    [separateMIDIChannels, channelNum, midiOut, legato, seqSteps, muted, noteOff, instrumentOn, velocity]
   )
 
   // sequence loop
   const seqCallback = useCallback(
     (time) => {
-      // console.log('SEQ', time)
+      console.log('SEQ', time)
       prevStep.current = currentStep.current
       if (nextStep.current !== undefined) {
         currentStep.current = nextStep.current
@@ -248,7 +245,7 @@ export default function Channel({
   // key loop
   const keyCallback = useCallback(
     (time, interval) => {
-      // console.log('KEY', time)
+      console.log('KEY', time)
       const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
       if (pitchRange.length) {
         prevNoteIndex.current = noteIndex.current
@@ -278,7 +275,7 @@ export default function Channel({
   // sequence playNote loop
   const seqNoteCallback = useCallback(
     (time, interval) => {
-      // console.log('SNT', time)
+      console.log('SNT', time)
       if (!emptyKey && seqSteps[currentStep.current] && (!legato || (!prevStep.current && currentStep.current))) {
         playNote(time, interval, seqSustain)
       }
@@ -290,7 +287,7 @@ export default function Channel({
   // key playNote loop
   const keyNoteCallback = useCallback(
     (time, interval) => {
-      // console.log('KNT', time)
+      console.log('KNT', time)
       if (!emptyKey && seqSteps[currentStep.current]) {
         playNote(time, interval, keySustain)
       }

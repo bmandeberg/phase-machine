@@ -76,7 +76,6 @@ export default class Loop {
 
   updateRate(rate) {
     this.rate = rate
-    this.interval = Tone.Transport.toSeconds(this.rate)
     this.updateInterval()
   }
 
