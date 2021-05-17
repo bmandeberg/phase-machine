@@ -183,6 +183,16 @@ export default function Channel({
     }
   }, [channelNum, midiOut, muted, noteOff, separateMIDIChannels])
 
+  // note off when key is emptied
+  useEffect(() => {
+    if (emptyKey && notePlaying.current && noteIndex.current !== undefined) {
+      const channel = separateMIDIChannels ? channelNum + 1 : 1
+      const note = noteString(noteIndex.current)
+      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+      noteOff(channel, note, midiOutObj, null)
+    }
+  }, [channelNum, emptyKey, midiOut, noteOff, separateMIDIChannels])
+
   // loop events
 
   // play note
@@ -193,7 +203,7 @@ export default function Channel({
       const channel = separateMIDIChannels ? channelNum + 1 : 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
-      console.log(note)
+      // console.log(note)
       if (notePlaying.current) {
         clearTimeout(noteOffTimeout.current)
         if (prevNoteIndex.current !== undefined) {
@@ -222,37 +232,41 @@ export default function Channel({
     [separateMIDIChannels, channelNum, midiOut, legato, seqSteps, noteOff, instrumentOn, velocity]
   )
 
+  const clearPlayNoteBuffer = useCallback(() => {
+    // play note
+    let notePlayed = false
+    if (!muted && !emptyKey && seqSteps[currentStep.current]) {
+      if (playNoteBuffer.current.seq && (!legato || !seqSteps[prevStep.current] || !notePlaying.current)) {
+        notePlayed = true
+        playNote(
+          playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME / 1000,
+          playNoteBuffer.current.seq.interval,
+          seqSustain
+        )
+      }
+      if (
+        !notePlayed &&
+        playNoteBuffer.current.key &&
+        (!notePlaying.current || !(legato && prevNoteIndex.current === noteIndex.current))
+      ) {
+        playNote(
+          playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME / 1000,
+          playNoteBuffer.current.key.interval,
+          keySustain
+        )
+      }
+    }
+    playNoteBuffer.current = { seq: null, key: null }
+  }, [emptyKey, keySustain, legato, muted, playNote, seqSteps, seqSustain])
+
   const loadPlayNoteBuffer = useCallback(
     (type, time, interval) => {
       if (!playNoteBuffer.current.seq && !playNoteBuffer.current.key) {
-        setTimeout(() => {
-          // play note
-          let notePlayed = false
-          if (seqSteps[currentStep.current]) {
-            if (playNoteBuffer.current.seq) {
-              if (!legato || !seqSteps[prevStep.current]) {
-                notePlayed = true
-                playNote(
-                  playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME / 1000,
-                  playNoteBuffer.current.seq.interval,
-                  seqSustain
-                )
-              }
-            }
-            if (!notePlayed && playNoteBuffer.current.key) {
-              playNote(
-                playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME / 1000,
-                playNoteBuffer.current.key.interval,
-                keySustain
-              )
-            }
-          }
-          playNoteBuffer.current = { seq: null, key: null }
-        }, PLAY_NOTE_BUFFER_TIME)
+        setTimeout(clearPlayNoteBuffer, PLAY_NOTE_BUFFER_TIME)
       }
       playNoteBuffer.current[type] = { time, interval }
     },
-    [keySustain, legato, playNote, seqSteps, seqSustain]
+    [clearPlayNoteBuffer]
   )
 
   // sequence loop
