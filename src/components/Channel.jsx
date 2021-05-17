@@ -183,16 +183,6 @@ export default function Channel({
     }
   }, [channelNum, midiOut, muted, noteOff, separateMIDIChannels])
 
-  // note off when key is emptied
-  useEffect(() => {
-    if (emptyKey && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = separateMIDIChannels ? channelNum + 1 : 1
-      const note = noteString(noteIndex.current)
-      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
-      noteOff(channel, note, midiOutObj, null)
-    }
-  }, [channelNum, emptyKey, midiOut, noteOff, separateMIDIChannels])
-
   // loop events
 
   // play note
