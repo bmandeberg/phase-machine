@@ -70,7 +70,6 @@ export default function Channel({
   const prevStep = useRef()
   const currentStep = useRef(0)
   const nextStep = useRef()
-  const playNoteDebounce = useRef()
   const [seqRate, setSeqRate] = useState(initState.seqRate)
   const [seqArpMode, setSeqArpMode] = useState(initState.seqArpMode)
   const [seqArpInc1, setSeqArpInc1] = useState(initState.seqArpInc1)
@@ -164,6 +163,7 @@ export default function Channel({
     notePlaying.current = false
   }, [])
 
+  // note off when stop playing
   useEffect(() => {
     if (!playing && notePlaying.current && noteIndex.current !== undefined) {
       const channel = separateMIDIChannels ? channelNum + 1 : 1
@@ -172,6 +172,16 @@ export default function Channel({
       noteOff(channel, note, midiOutObj, null)
     }
   }, [channelNum, midiOut, noteOff, playing, separateMIDIChannels])
+
+  // note off when muting
+  useEffect(() => {
+    if (muted && notePlaying.current && noteIndex.current !== undefined) {
+      const channel = separateMIDIChannels ? channelNum + 1 : 1
+      const note = noteString(noteIndex.current)
+      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+      noteOff(channel, note, midiOutObj, null)
+    }
+  }, [channelNum, midiOut, muted, noteOff, separateMIDIChannels])
 
   // loop events
 
