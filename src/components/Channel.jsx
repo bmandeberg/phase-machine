@@ -4,7 +4,7 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
-import { BLANK_PITCH_CLASSES, CHANNEL_HEIGHT, handleArpMode, noteString } from '../globals'
+import { BLANK_PITCH_CLASSES, CHANNEL_HEIGHT, PLAY_NOTE_BUFFER_TIME, handleArpMode, noteString } from '../globals'
 import { pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
 import Sequencer from './Sequencer'
@@ -86,6 +86,8 @@ export default function Channel({
   const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [keyViewType, setKeyViewType] = useState(1)
+
+  const playNoteBuffer = useRef({ seq: null, key: null })
 
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
@@ -181,49 +183,72 @@ export default function Channel({
       const channel = separateMIDIChannels ? channelNum + 1 : 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
-      if (!playNoteDebounce.current && note) {
-        // play note if not legato or no note is playing or if this note isn't already playing
-        // console.log('note', noteIndex.current)
-        if (!legato || !notePlaying.current || (notePlaying.current && playingNoteRef.current !== noteIndex.current)) {
-          if (notePlaying.current) {
-            clearTimeout(noteOffTimeout.current)
-            if (prevNoteIndex.current !== undefined) {
-              noteOff(channel, prevNote, midiOutObj, time * 1000 + clockOffset)
-            }
-          }
-          if (!muted) {
-            if (instrumentOn) {
-              instrument.current.triggerAttack(note, time, velocity)
-            }
-            setNoteOn(true)
-            notePlaying.current = true
-            if (midiOutObj) {
-              midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
-            }
-          }
-          setPlayingNote(noteIndex.current)
-          playingNoteRef.current = noteIndex.current
+      console.log(note)
+      if (notePlaying.current) {
+        clearTimeout(noteOffTimeout.current)
+        if (prevNoteIndex.current !== undefined) {
+          noteOff(channel, prevNote, midiOutObj, time * 1000 + clockOffset)
         }
-        // schedule note-off if we are not legato or if the next step is off
-        if (!legato || !seqSteps[nextStep.current]) {
-          const sustainTime = Math.max(sustain * interval * 1000, 80)
-          clearTimeout(noteOffTimeout.current)
-          noteOffTimeout.current = setTimeout(() => {
-            noteOff(channel, note, midiOutObj, null)
-          }, time - Tone.immediate() + sustainTime)
-        }
-        playNoteDebounce.current = setTimeout(() => {
-          playNoteDebounce.current = null
-        }, 20)
+      }
+      if (instrumentOn) {
+        instrument.current.triggerAttack(note, time, velocity)
+      }
+      setNoteOn(true)
+      notePlaying.current = true
+      if (midiOutObj) {
+        midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
+      }
+      setPlayingNote(noteIndex.current)
+      playingNoteRef.current = noteIndex.current
+      // schedule note-off if we are not legato or if the next step is off
+      if (!legato || !seqSteps[nextStep.current]) {
+        const sustainTime = Math.max(sustain * interval * 1000, 80)
+        clearTimeout(noteOffTimeout.current)
+        noteOffTimeout.current = setTimeout(() => {
+          noteOff(channel, note, midiOutObj, null)
+        }, time - Tone.immediate() + sustainTime)
       }
     },
-    [separateMIDIChannels, channelNum, midiOut, legato, seqSteps, muted, noteOff, instrumentOn, velocity]
+    [separateMIDIChannels, channelNum, midiOut, legato, seqSteps, noteOff, instrumentOn, velocity]
+  )
+
+  const loadPlayNoteBuffer = useCallback(
+    (type, time, interval) => {
+      if (!playNoteBuffer.current.seq && !playNoteBuffer.current.key) {
+        setTimeout(() => {
+          // play note
+          let notePlayed = false
+          if (seqSteps[currentStep.current]) {
+            if (playNoteBuffer.current.seq) {
+              if (!legato || !seqSteps[prevStep.current]) {
+                notePlayed = true
+                playNote(
+                  playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME / 1000,
+                  playNoteBuffer.current.seq.interval,
+                  seqSustain
+                )
+              }
+            }
+            if (!notePlayed && playNoteBuffer.current.key) {
+              playNote(
+                playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME / 1000,
+                playNoteBuffer.current.key.interval,
+                keySustain
+              )
+            }
+          }
+          playNoteBuffer.current = { seq: null, key: null }
+        }, PLAY_NOTE_BUFFER_TIME)
+      }
+      playNoteBuffer.current[type] = { time, interval }
+    },
+    [keySustain, legato, playNote, seqSteps, seqSustain]
   )
 
   // sequence loop
   const seqCallback = useCallback(
-    (time) => {
-      console.log('SEQ', time)
+    (time, interval) => {
+      // console.log('SEQ', time, Tone.immediate())
       prevStep.current = currentStep.current
       if (nextStep.current !== undefined) {
         currentStep.current = nextStep.current
@@ -237,15 +262,18 @@ export default function Channel({
         seqArpInc1,
         seqArpInc2
       )
+      if (!emptyKey && !muted) {
+        loadPlayNoteBuffer('seq', time, interval)
+      }
     },
-    [seqArpInc1, seqArpInc2, seqArpMode, seqLength]
+    [emptyKey, loadPlayNoteBuffer, muted, seqArpInc1, seqArpInc2, seqArpMode, seqLength]
   )
   useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
   // key loop
   const keyCallback = useCallback(
     (time, interval) => {
-      console.log('KEY', time)
+      // console.log('KEY', time, Tone.immediate())
       const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
       if (pitchRange.length) {
         prevNoteIndex.current = noteIndex.current
@@ -266,35 +294,14 @@ export default function Channel({
           noteIndex.current = pitchRange[0]
         }
         setPlayingPitchClass(noteIndex.current % 12)
+        if (!emptyKey && !muted) {
+          loadPlayNoteBuffer('key', time, interval)
+        }
       }
     },
-    [key, keyArpInc1, keyArpInc2, keyArpMode, rangeEnd, rangeStart]
+    [emptyKey, key, keyArpInc1, keyArpInc2, keyArpMode, loadPlayNoteBuffer, muted, rangeEnd, rangeStart]
   )
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
-
-  // sequence playNote loop
-  const seqNoteCallback = useCallback(
-    (time, interval) => {
-      console.log('SNT', time)
-      if (!emptyKey && seqSteps[currentStep.current] && (!legato || (!prevStep.current && currentStep.current))) {
-        playNote(time, interval, seqSustain)
-      }
-    },
-    [emptyKey, playNote, legato, seqSteps, seqSustain]
-  )
-  useLoop(seqNoteCallback, seqRate, tempo, seqSwing, seqSwingLength)
-
-  // key playNote loop
-  const keyNoteCallback = useCallback(
-    (time, interval) => {
-      console.log('KNT', time)
-      if (!emptyKey && seqSteps[currentStep.current]) {
-        playNote(time, interval, keySustain)
-      }
-    },
-    [emptyKey, keySustain, playNote, seqSteps]
-  )
-  useLoop(keyNoteCallback, keyRate, tempo, keySwing, keySwingLength)
 
   // key manipulation functions
 
