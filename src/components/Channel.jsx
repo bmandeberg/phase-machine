@@ -87,6 +87,7 @@ export default function Channel({
   const [keyViewType, setKeyViewType] = useState(1)
 
   const playNoteBuffer = useRef({ seq: null, key: null })
+  const presetInitialized = useRef(false)
 
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
@@ -94,33 +95,37 @@ export default function Channel({
 
   useEffect(() => {
     if (channelPreset) {
-      setVelocity(channelPreset.velocity)
-      setKey(channelPreset.key.slice())
-      setKeyRate(channelPreset.keyRate)
-      setKeyArpMode(channelPreset.keyArpMode)
-      setKeyArpInc1(channelPreset.keyArpInc1)
-      setKeyArpInc2(channelPreset.keyArpInc2)
-      setKeySustain(channelPreset.keySustain)
-      setKeySwing(channelPreset.keySwing)
-      setKeySwingLength(channelPreset.keySwingLength)
-      setMute(channelPreset.mute)
-      setSolo(channelPreset.solo)
-      setShiftAmt(channelPreset.shiftAmt)
-      setAxis(channelPreset.axis)
-      setRangeStart(channelPreset.rangeStart)
-      setRangeEnd(channelPreset.rangeEnd)
-      setSeqSteps(channelPreset.seqSteps.slice())
-      setSeqLength(channelPreset.seqLength)
-      setSeqRate(channelPreset.seqRate)
-      setSeqArpMode(channelPreset.seqArpMode)
-      setSeqArpInc1(channelPreset.seqArpInc1)
-      setSeqArpInc2(channelPreset.seqArpInc2)
-      setSeqSwing(channelPreset.seqSwing)
-      setSeqSwingLength(channelPreset.seqSwingLength)
-      setSeqSustain(channelPreset.seqSustain)
-      setLegato(channelPreset.legato)
-      setInstrumentOn(channelPreset.instrumentOn)
-      setInstrumentType(channelPreset.instrumentType)
+      if (!presetInitialized.current) {
+        presetInitialized.current = true
+      } else {
+        setVelocity(channelPreset.velocity)
+        setKey(channelPreset.key.slice())
+        setKeyRate(channelPreset.keyRate)
+        setKeyArpMode(channelPreset.keyArpMode)
+        setKeyArpInc1(channelPreset.keyArpInc1)
+        setKeyArpInc2(channelPreset.keyArpInc2)
+        setKeySustain(channelPreset.keySustain)
+        setKeySwing(channelPreset.keySwing)
+        setKeySwingLength(channelPreset.keySwingLength)
+        setMute(channelPreset.mute)
+        setSolo(channelPreset.solo)
+        setShiftAmt(channelPreset.shiftAmt)
+        setAxis(channelPreset.axis)
+        setRangeStart(channelPreset.rangeStart)
+        setRangeEnd(channelPreset.rangeEnd)
+        setSeqSteps(channelPreset.seqSteps.slice())
+        setSeqLength(channelPreset.seqLength)
+        setSeqRate(channelPreset.seqRate)
+        setSeqArpMode(channelPreset.seqArpMode)
+        setSeqArpInc1(channelPreset.seqArpInc1)
+        setSeqArpInc2(channelPreset.seqArpInc2)
+        setSeqSwing(channelPreset.seqSwing)
+        setSeqSwingLength(channelPreset.seqSwingLength)
+        setSeqSustain(channelPreset.seqSustain)
+        setLegato(channelPreset.legato)
+        setInstrumentOn(channelPreset.instrumentOn)
+        setInstrumentType(channelPreset.instrumentType)
+      }
     }
   }, [channelPreset])
 
