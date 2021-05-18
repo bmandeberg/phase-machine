@@ -5,7 +5,7 @@ import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
 import { v4 as uuid } from 'uuid'
-import { VIEWS, SECTIONS, DEFAULT_PRESET } from './globals'
+import { VIEWS, SECTIONS, DEFAULT_PRESET, BLANK_CHANNEL } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
@@ -167,16 +167,38 @@ export default function App() {
     keydownTimer
   )
 
-  // channel management functions
+  // channel management
+
+  useEffect(() => {
+    setUIState((uiState) => {
+      const uiStateCopy = Object.assign({}, uiState, { numChannels })
+      const currentChannelsLength = uiStateCopy.channels.length
+      if (numChannels > currentChannelsLength) {
+        for (let i = 0; i < numChannels - currentChannelsLength; i++) {
+          uiStateCopy.channels.push(BLANK_CHANNEL(uiStateCopy.channels.length))
+        }
+      } else {
+        uiStateCopy.channels = uiStateCopy.channels.slice(0, numChannels)
+        uiStateCopy.channels.forEach((channel, i) => {
+          channel.channelNum = i
+        })
+      }
+      return uiStateCopy
+    })
+  }, [numChannels, setUIState])
 
   const duplicateChannel = useCallback((id) => {
     setUIState((uiState) => {
       const uiStateCopy = deepStateCopy(uiState)
-      const channelIndex = uiStateCopy.channels.findIndex((c) => c.id === id)
-      if (channelIndex !== -1) {
-        const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelIndex]), { id: uuid() })
-        uiStateCopy.channels.push(duplicatedChannel)
-      }
+      const channelNum = uiStateCopy.channels.find((c) => c.id === id).channelNum
+      const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelNum]), {
+        id: uuid(),
+        channelNum: channelNum + 1,
+      })
+      uiStateCopy.channels.splice(channelNum + 1, 0, duplicatedChannel)
+      uiStateCopy.channels.forEach((channel, i) => {
+        channel.channelNum = i
+      })
       return uiStateCopy
     })
     setNumChannels((numChannels) => numChannels + 1)
@@ -185,10 +207,11 @@ export default function App() {
   const deleteChannel = useCallback((id) => {
     setUIState((uiState) => {
       const uiStateCopy = deepStateCopy(uiState)
-      const channelIndex = uiStateCopy.channels.findIndex((c) => c.id === id)
-      if (channelIndex !== -1) {
-        uiStateCopy.channels.splice(channelIndex, 1)
-      }
+      const channelNum = uiStateCopy.channels.find((c) => c.id === id).channelNum
+      uiStateCopy.channels.splice(channelNum, 1)
+      uiStateCopy.channels.forEach((channel, i) => {
+        channel.channelNum = i
+      })
       return uiStateCopy
     })
     setNumChannels((numChannels) => numChannels - 1)
@@ -202,7 +225,7 @@ export default function App() {
         <Channel
           numChannels={numChannels}
           key={d.id}
-          channelNum={i}
+          channelNum={d.channelNum}
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           resizing={resizing}

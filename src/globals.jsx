@@ -270,8 +270,9 @@ export function noteString(playingNote) {
   return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
 }
 
-export const BLANK_CHANNEL = () => ({
+export const BLANK_CHANNEL = (channelNum) => ({
   id: uuid(),
+  channelNum,
   velocity: KNOB_MAX,
   key: [...Array(12)].map(() => false),
   keyRate: DEFAULT_TIME_DIVISION,
@@ -309,5 +310,5 @@ export const DEFAULT_PRESET = {
   tempo: 120,
   numChannels: 1,
   channelSync: false,
-  channels: [BLANK_CHANNEL()],
+  channels: [BLANK_CHANNEL(0)],
 }

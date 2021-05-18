@@ -461,6 +461,7 @@ export default function Channel({
   useEffect(() => {
     const state = {
       id: id.current,
+      channelNum,
       velocity,
       key,
       keyRate,
@@ -492,6 +493,7 @@ export default function Channel({
     setChannelState(id.current, state)
   }, [
     axis,
+    channelNum,
     instrumentOn,
     instrumentType,
     key,
