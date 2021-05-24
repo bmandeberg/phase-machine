@@ -88,7 +88,6 @@
   .channel-drag-target {
     position: absolute;
     width: 100%;
-    left: 0;
     margin-top: -2px;
     height: 2px;
     background-color: $pink;
@@ -259,6 +258,16 @@
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
+  }
+  .channel-drag-target {
+    position: absolute;
+    width: 2px;
+    height: 262px;
+    background-color: $pink;
+    z-index: 2000;
+    &.shift-left {
+      margin-left: -1px;
+    }
   }
 }
 

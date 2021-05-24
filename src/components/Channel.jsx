@@ -16,6 +16,9 @@ import arrowSmall from '../assets/arrow-small.svg'
 import arrowClock from '../assets/arrow-clock.svg'
 import './Channel.scss'
 
+const CLOCK_CHANNEL_WIDTH = 657
+const CLOCK_CHANNEL_HEIGHT = 262
+
 export default function Channel({
   numChannels,
   channelNum,
@@ -91,6 +94,7 @@ export default function Channel({
 
   const [draggingChannel, setDraggingChannel] = useState(false)
   const [dragTarget, setDragTarget] = useState(channelNum)
+  const [dragRow, setDragRow] = useState(0)
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
@@ -147,19 +151,27 @@ export default function Channel({
   const dragAuxChannel = useRef(false)
   const drag = useGesture({
     onDrag: ({ event, xy: [x, y] }) => {
+      let hoveredChannel
       if (view === 'stacked' || view === 'horizontal') {
         const topOffset =
           62 +
           (event.target.classList.contains('auxiliary') ? numChannels * CHANNEL_HEIGHT : 0) -
           container.current.scrollTop
-        const hoveredChannel = constrain(Math.round((y - topOffset) / CHANNEL_HEIGHT), 0, numChannels)
+        hoveredChannel = constrain(Math.round((y - topOffset) / CHANNEL_HEIGHT), 0, numChannels)
         if (hoveredChannel !== dragChannel.current) {
           dragChannel.current = hoveredChannel
           setDragTarget(hoveredChannel > channelNum ? hoveredChannel - 1 : hoveredChannel)
         }
       } else if (view === 'clock') {
         const topOffset = 62 - container.current.scrollTop
-        console.log(x, y - topOffset)
+        const column = Math.round(x / CLOCK_CHANNEL_WIDTH)
+        const row = Math.floor((y - topOffset) / CLOCK_CHANNEL_HEIGHT)
+        setDragRow(row)
+        hoveredChannel = constrain(row * Math.floor(window.innerWidth / CLOCK_CHANNEL_WIDTH) + column, 0, numChannels)
+      }
+      if (hoveredChannel !== dragChannel.current) {
+        dragChannel.current = hoveredChannel
+        setDragTarget(hoveredChannel > channelNum ? hoveredChannel - 1 : hoveredChannel)
       }
     },
     onDragStart: ({ event }) => {
@@ -505,13 +517,36 @@ export default function Channel({
 
   const dragTargetUI = useCallback(
     (horizontal) => {
+      const numHorizontalChannels = Math.floor(window.innerWidth / CLOCK_CHANNEL_WIDTH)
       const top = horizontal
         ? (dragTarget - channelNum + (dragTarget > channelNum ? 1 : 0)) * CHANNEL_HEIGHT +
           (dragAuxChannel.current ? numChannels * CHANNEL_HEIGHT : 0)
-        : 0
-      return <div className="channel-drag-target" style={{ top }}></div>
+        : (dragRow - Math.floor(channelNum / numHorizontalChannels)) * CLOCK_CHANNEL_HEIGHT
+      let left
+      if (horizontal) {
+        left = 0
+      } else {
+        if (dragTarget < dragRow * numHorizontalChannels) {
+          left = 0
+        } else if (dragTarget > dragRow * numHorizontalChannels + numHorizontalChannels - 1) {
+          left = (numHorizontalChannels - (channelNum % numHorizontalChannels)) * CLOCK_CHANNEL_WIDTH
+        } else {
+          left =
+            ((dragTarget % numHorizontalChannels) -
+              (channelNum % numHorizontalChannels) +
+              (dragTarget > channelNum ? 1 : 0)) *
+            CLOCK_CHANNEL_WIDTH
+        }
+      }
+      return (
+        <div
+          className={classNames('channel-drag-target', {
+            'shift-left': !horizontal && dragTarget !== dragRow * numHorizontalChannels,
+          })}
+          style={{ top, left }}></div>
+      )
     },
-    [channelNum, dragTarget, numChannels]
+    [channelNum, dragRow, dragTarget, numChannels]
   )
 
   // watch and update state
@@ -719,6 +754,7 @@ export default function Channel({
             </div>
           </div>
         </CSSTransition>
+        {draggingChannel && dragTarget !== channelNum && dragTargetUI(false)}
       </div>
     )
   }
