@@ -32,7 +32,7 @@ export default function App() {
   const [tempo, setTempo] = useState(currentPreset.tempo)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(currentPreset.numChannels)
-  const [view, setView] = useState(VIEWS[0])
+  const [view, setView] = useState(VIEWS[2])
   const [midiOut, setMidiOut] = useState(null)
   const [midiOuts, setMidiOuts] = useState([])
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
@@ -279,16 +279,7 @@ export default function App() {
   )
 
   return (
-    <div
-      id="container"
-      ref={container}
-      className={classNames({ grabbing, resizing })}
-      style={{
-        minWidth:
-          view === 'clock' && numChannels > 0
-            ? CLOCK_WIDTH * Math.max(Math.floor(window.innerWidth / CLOCK_WIDTH), 2)
-            : null,
-      }}>
+    <div id="container" ref={container} className={classNames({ grabbing, resizing })}>
       <Header
         tempo={tempo}
         setTempo={setTempo}

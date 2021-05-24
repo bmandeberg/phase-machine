@@ -157,6 +157,9 @@ export default function Channel({
           dragChannel.current = hoveredChannel
           setDragTarget(hoveredChannel > channelNum ? hoveredChannel - 1 : hoveredChannel)
         }
+      } else if (view === 'clock') {
+        const topOffset = 62 - container.current.scrollTop
+        console.log(x, y - topOffset)
       }
     },
     onDragStart: ({ event }) => {
@@ -500,16 +503,14 @@ export default function Channel({
     draggingChannel
   )
 
-  const dragTargetUI = useMemo(
-    () => (
-      <div
-        className="channel-drag-target"
-        style={{
-          top:
-            (dragTarget - channelNum + (dragTarget > channelNum ? 1 : 0)) * CHANNEL_HEIGHT +
-            (dragAuxChannel.current ? numChannels * CHANNEL_HEIGHT : 0),
-        }}></div>
-    ),
+  const dragTargetUI = useCallback(
+    (horizontal) => {
+      const top = horizontal
+        ? (dragTarget - channelNum + (dragTarget > channelNum ? 1 : 0)) * CHANNEL_HEIGHT +
+          (dragAuxChannel.current ? numChannels * CHANNEL_HEIGHT : 0)
+        : 0
+      return <div className="channel-drag-target" style={{ top }}></div>
+    },
     [channelNum, dragTarget, numChannels]
   )
 
@@ -622,7 +623,7 @@ export default function Channel({
           <div className="channel-module border"></div>
           {instrumentEl(false)}
         </div>
-        {draggingChannel && dragTarget !== channelNum && dragTargetUI}
+        {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
       </div>
     )
   } else if (view === 'horizontal') {
@@ -661,7 +662,7 @@ export default function Channel({
         </Sequencer>
         <div className="channel-module border"></div>
         {instrumentEl(false)}
-        {draggingChannel && dragTarget !== channelNum && dragTargetUI}
+        {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
       </div>
     )
   } else if (view === 'clock') {
