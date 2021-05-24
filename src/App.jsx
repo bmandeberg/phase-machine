@@ -32,7 +32,7 @@ export default function App() {
   const [tempo, setTempo] = useState(currentPreset.tempo)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(currentPreset.numChannels)
-  const [view, setView] = useState(VIEWS[2])
+  const [view, setView] = useState(VIEWS[0])
   const [midiOut, setMidiOut] = useState(null)
   const [midiOuts, setMidiOuts] = useState([])
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
