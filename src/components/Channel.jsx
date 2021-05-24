@@ -4,6 +4,7 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
+import { useGesture } from 'react-use-gesture'
 import { BLANK_PITCH_CLASSES, CHANNEL_HEIGHT, PLAY_NOTE_BUFFER_TIME, handleArpMode, noteString } from '../globals'
 import { pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
@@ -34,6 +35,8 @@ export default function Channel({
   duplicateChannel,
   deleteChannel,
   initState,
+  container,
+  changeChannelOrder,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
@@ -86,12 +89,19 @@ export default function Channel({
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [keyViewType, setKeyViewType] = useState(1)
 
+  const [draggingChannel, setDraggingChannel] = useState(false)
+  const [dragTarget, setDragTarget] = useState(channelNum)
+
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
 
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
   }, [key])
+
+  useEffect(() => {
+    presetInitialized.current = false
+  }, [channelNum])
 
   useEffect(() => {
     if (channelPreset) {
@@ -130,6 +140,38 @@ export default function Channel({
   }, [channelPreset])
 
   const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
+
+  // channel dragging
+
+  const dragChannel = useRef(channelNum)
+  const dragAuxChannel = useRef(false)
+  const drag = useGesture({
+    onDrag: ({ event, xy: [x, y] }) => {
+      if (view === 'stacked' || view === 'horizontal') {
+        const topOffset =
+          62 +
+          (event.target.classList.contains('auxiliary') ? numChannels * CHANNEL_HEIGHT : 0) -
+          container.current.scrollTop
+        const hoveredChannel = constrain(Math.round((y - topOffset) / CHANNEL_HEIGHT), 0, numChannels)
+        if (hoveredChannel !== dragChannel.current) {
+          dragChannel.current = hoveredChannel
+          setDragTarget(hoveredChannel > channelNum ? hoveredChannel - 1 : hoveredChannel)
+        }
+      }
+    },
+    onDragStart: ({ event }) => {
+      dragChannel.current = channelNum
+      dragAuxChannel.current = event.target.classList.contains('auxiliary')
+      setDragTarget(channelNum)
+      setDraggingChannel(true)
+    },
+    onDragEnd: () => {
+      if (dragTarget !== channelNum) {
+        changeChannelOrder(channelNum, dragTarget)
+      }
+      setDraggingChannel(false)
+    },
+  })
 
   // instrument
 
@@ -453,7 +495,22 @@ export default function Channel({
     keyViewType,
     setKeyViewType,
     duplicateChannel,
-    deleteChannel
+    deleteChannel,
+    drag,
+    draggingChannel
+  )
+
+  const dragTargetUI = useMemo(
+    () => (
+      <div
+        className="channel-drag-target"
+        style={{
+          top:
+            (dragTarget - channelNum + (dragTarget > channelNum ? 1 : 0)) * CHANNEL_HEIGHT +
+            (dragAuxChannel.current ? numChannels * CHANNEL_HEIGHT : 0),
+        }}></div>
+    ),
+    [channelNum, dragTarget, numChannels]
   )
 
   // watch and update state
@@ -528,7 +585,7 @@ export default function Channel({
   if (view === 'stacked') {
     return (
       <div className={classNames('channel channel-horizontal', { mute: muted })}>
-        {channelNumEl}
+        {channelNumEl(false)}
         {duplicateDeleteEl}
         {muteSoloEl}
         {velocityEl}
@@ -545,7 +602,7 @@ export default function Channel({
         <div
           style={{ top: numChannels * CHANNEL_HEIGHT }}
           className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
-          {channelNumEl}
+          {channelNumEl(true)}
           <Sequencer
             className="channel-module"
             seqSteps={seqSteps}
@@ -565,12 +622,13 @@ export default function Channel({
           <div className="channel-module border"></div>
           {instrumentEl(false)}
         </div>
+        {draggingChannel && dragTarget !== channelNum && dragTargetUI}
       </div>
     )
   } else if (view === 'horizontal') {
     return (
       <div className={classNames('channel channel-horizontal', { mute: muted })}>
-        {channelNumEl}
+        {channelNumEl(false)}
         {duplicateDeleteEl}
         {muteSoloEl}
         {velocityEl}
@@ -603,23 +661,20 @@ export default function Channel({
         </Sequencer>
         <div className="channel-module border"></div>
         {instrumentEl(false)}
+        {draggingChannel && dragTarget !== channelNum && dragTargetUI}
       </div>
     )
   } else if (view === 'clock') {
     return (
       <div className={classNames('channel channel-clock', { mute: muted })}>
         <div className="channel-clock-top">
-          {channelNumEl}
+          {channelNumEl(false)}
           {duplicateDeleteEl}
           {muteSoloEl}
           {velocityEl}
           <div className="channel-vertical left-vertical">
             {flipOppositeEl}
             {shiftEl}
-            {/* <div className="view-fifths">
-              <div className={classNames('button chromatic', { selected: !viewFifths })}>Chromatic</div>
-              <div className={classNames('button', { selected: viewFifths })} onClick={() => {alert('not yet 😢')}}>5ths</div>
-            </div> */}
             {keyViewTypeEl}
           </div>
           <img className="arrow-clock" src={arrowClock} alt="" />
@@ -687,4 +742,6 @@ Channel.propTypes = {
   duplicateChannel: PropTypes.func,
   deleteChannel: PropTypes.func,
   initState: PropTypes.object,
+  container: PropTypes.element,
+  changeChannelOrder: PropTypes.func,
 }

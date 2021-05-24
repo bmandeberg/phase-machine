@@ -94,15 +94,30 @@ export default function useUI(
   keyViewType,
   setKeyViewType,
   duplicateChannel,
-  deleteChannel
+  deleteChannel,
+  drag,
+  draggingChannel
 ) {
-  const channelNumEl = useMemo(() => {
-    return (
-      <div style={{ color: CHANNEL_COLORS[channelNum % CHANNEL_COLORS.length] }} className="channel-number">
-        {channelNum + 1}
-      </div>
-    )
-  }, [channelNum])
+  const channelNumEl = useCallback(
+    (auxiliary) => {
+      return (
+        <div className="channel-number-container">
+          <div className="channel-number-background"></div>
+          <div
+            className={classNames('channel-number', { auxiliary })}
+            style={{
+              color: CHANNEL_COLORS[channelNum % CHANNEL_COLORS.length],
+              cursor: draggingChannel ? 'grabbing' : 'grab',
+            }}
+            {...drag()}
+            draggable="false">
+            {channelNum + 1}
+          </div>
+        </div>
+      )
+    },
+    [channelNum, drag, draggingChannel]
+  )
 
   const duplicateDeleteEl = useMemo(() => {
     return (

@@ -6,16 +6,25 @@
   margin-right: 16px;
 }
 
-.channel-number {
+.channel-number-container {
   display: inline-block;
   vertical-align: top;
   text-align: center;
-  font-family: 'Ultra Regular', 'Baskerville', 'serif';
-  font-size: 19px;
   line-height: 15px;
   padding-top: 16px;
   width: 43px;
   vertical-align: top;
+  position: relative;
+  pointer-events: none;
+  .channel-number {
+    @extend .no-select;
+    font-family: 'Ultra Regular', 'Baskerville', 'serif';
+    font-size: 19px;
+    width: 100%;
+    position: absolute;
+    top: 16px;
+    pointer-events: auto;
+  }
 }
 
 .channel {
@@ -29,15 +38,19 @@
   white-space: nowrap;
   display: inline-block;
   border-right: 1px solid $lightMediumGray;
-  .channel-number {
+  .channel-number-container {
     position: sticky;
     left: 0;
     z-index: 1999;
     height: 100%;
     box-sizing: border-box;
-    background: linear-gradient(to right, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0));
-    pointer-events: none;
-    text-shadow: 0 0 5px #ffffff;
+    .channel-number-background {
+      background: linear-gradient(to right, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0));
+      height: 100%;
+    }
+    .channel-number {
+      text-shadow: 0 0 5px #ffffff;
+    }
   }
   .mute-solo {
     height: 66px;
@@ -71,6 +84,15 @@
     .knob-container {
       margin-right: 10px;
     }
+  }
+  .channel-drag-target {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    margin-top: -2px;
+    height: 2px;
+    background-color: $pink;
+    z-index: 2000;
   }
 }
 

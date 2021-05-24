@@ -5,6 +5,7 @@ import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
 import { v4 as uuid } from 'uuid'
+import arrayMove from 'array-move'
 import { VIEWS, SECTIONS, DEFAULT_PRESET, BLANK_CHANNEL } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
@@ -217,6 +218,17 @@ export default function App() {
     setNumChannels((numChannels) => numChannels - 1)
   }, [])
 
+  const changeChannelOrder = useCallback((channelNum, newChannelNum) => {
+    setUIState((uiState) => {
+      const uiStateCopy = deepStateCopy(uiState)
+      uiStateCopy.channels = arrayMove(uiStateCopy.channels, channelNum, newChannelNum)
+      uiStateCopy.channels.forEach((channel, i) => {
+        channel.channelNum = i
+      })
+      return uiStateCopy
+    })
+  }, [])
+
   // render UI
 
   const channels = useMemo(
@@ -242,9 +254,12 @@ export default function App() {
           duplicateChannel={duplicateChannel}
           deleteChannel={deleteChannel}
           initState={d}
+          container={container}
+          changeChannelOrder={changeChannelOrder}
         />
       )),
     [
+      changeChannelOrder,
       currentPreset.channels,
       deleteChannel,
       duplicateChannel,
