@@ -47,6 +47,10 @@ body {
   margin-top: 60px;
   padding-top: 2px;
   height: calc(100vh - 62px);
+  &.grabbing {
+    margin-top: 0;
+    padding-top: 62px;
+  }
 }
 
 .grabbing {

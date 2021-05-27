@@ -12,8 +12,6 @@ import Channel from './components/Channel'
 import Modal from './components/Modal'
 import usePresets from './hooks/usePresets'
 
-const CLOCK_WIDTH = 658
-
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
   window.localStorage.setItem('presets', JSON.stringify([DEFAULT_PRESET]))
