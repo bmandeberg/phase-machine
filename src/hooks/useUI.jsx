@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { CHANNEL_COLORS, RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN } from '../globals'
+import { RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
@@ -16,6 +16,7 @@ import Switch from 'react-switch'
 
 export default function useUI(
   id,
+  color,
   channelNum,
   key,
   setKey,
@@ -106,7 +107,7 @@ export default function useUI(
           <div
             className={classNames('channel-number', { auxiliary })}
             style={{
-              color: CHANNEL_COLORS[channelNum % CHANNEL_COLORS.length],
+              color,
               cursor: draggingChannel ? 'grabbing' : 'grab',
             }}
             {...drag()}
@@ -116,7 +117,7 @@ export default function useUI(
         </div>
       )
     },
-    [channelNum, drag, draggingChannel]
+    [channelNum, color, drag, draggingChannel]
   )
 
   const duplicateDeleteEl = useMemo(() => {

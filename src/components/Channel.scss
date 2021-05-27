@@ -90,7 +90,6 @@
     width: 100%;
     margin-top: -2px;
     height: 2px;
-    background-color: $pink;
     z-index: 2000;
   }
 }
@@ -262,7 +261,6 @@
     position: absolute;
     width: 2px;
     height: 262px;
-    background-color: $pink;
     z-index: 2000;
     &.shift-left {
       margin-left: -1px;

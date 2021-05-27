@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
 import { v4 as uuid } from 'uuid'
 import arrayMove from 'array-move'
-import { VIEWS, SECTIONS, DEFAULT_PRESET, BLANK_CHANNEL } from './globals'
+import { VIEWS, SECTIONS, DEFAULT_PRESET, BLANK_CHANNEL, CHANNEL_COLORS } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
@@ -168,13 +168,18 @@ export default function App() {
 
   // channel management
 
+  const getChannelColor = useCallback((channels) => {
+    const nextColor = CHANNEL_COLORS.find((color) => !channels.map((c) => c.color).includes(color))
+    return nextColor || CHANNEL_COLORS[0]
+  }, [])
+
   useEffect(() => {
     setUIState((uiState) => {
       const uiStateCopy = Object.assign({}, uiState, { numChannels })
       const currentChannelsLength = uiStateCopy.channels.length
       if (numChannels > currentChannelsLength) {
         for (let i = 0; i < numChannels - currentChannelsLength; i++) {
-          uiStateCopy.channels.push(BLANK_CHANNEL(uiStateCopy.channels.length))
+          uiStateCopy.channels.push(BLANK_CHANNEL(uiStateCopy.channels.length, getChannelColor(uiStateCopy.channels)))
         }
       } else {
         uiStateCopy.channels = uiStateCopy.channels.slice(0, numChannels)
@@ -184,24 +189,28 @@ export default function App() {
       }
       return uiStateCopy
     })
-  }, [numChannels, setUIState])
+  }, [getChannelColor, numChannels, setUIState])
 
-  const duplicateChannel = useCallback((id) => {
-    setUIState((uiState) => {
-      const uiStateCopy = deepStateCopy(uiState)
-      const channelNum = uiStateCopy.channels.find((c) => c.id === id).channelNum
-      const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelNum]), {
-        id: uuid(),
-        channelNum: channelNum + 1,
+  const duplicateChannel = useCallback(
+    (id) => {
+      setUIState((uiState) => {
+        const uiStateCopy = deepStateCopy(uiState)
+        const channelNum = uiStateCopy.channels.find((c) => c.id === id).channelNum
+        const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelNum]), {
+          id: uuid(),
+          channelNum: channelNum + 1,
+          color: getChannelColor(uiStateCopy.channels),
+        })
+        uiStateCopy.channels.splice(channelNum + 1, 0, duplicatedChannel)
+        uiStateCopy.channels.forEach((channel, i) => {
+          channel.channelNum = i
+        })
+        return uiStateCopy
       })
-      uiStateCopy.channels.splice(channelNum + 1, 0, duplicatedChannel)
-      uiStateCopy.channels.forEach((channel, i) => {
-        channel.channelNum = i
-      })
-      return uiStateCopy
-    })
-    setNumChannels((numChannels) => numChannels + 1)
-  }, [])
+      setNumChannels((numChannels) => numChannels + 1)
+    },
+    [getChannelColor]
+  )
 
   const deleteChannel = useCallback((id) => {
     setUIState((uiState) => {
@@ -235,6 +244,7 @@ export default function App() {
         <Channel
           numChannels={numChannels}
           key={d.id}
+          color={d.color}
           channelNum={d.channelNum}
           setGrabbing={setGrabbing}
           grabbing={grabbing}

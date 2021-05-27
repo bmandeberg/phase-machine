@@ -12,7 +12,7 @@ export const VIEWS = ['stacked', 'horizontal', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequencer']
 
-export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9700', '#a825f4']
+export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9700', '#a825f4', '#00C591', '#EDDB00']
 
 export const RATES = [
   '1m',
@@ -270,8 +270,9 @@ export function noteString(playingNote) {
   return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
 }
 
-export const BLANK_CHANNEL = (channelNum) => ({
+export const BLANK_CHANNEL = (channelNum, color) => ({
   id: uuid(),
+  color,
   channelNum,
   velocity: KNOB_MAX,
   key: [...Array(12)].map(() => false),
@@ -310,5 +311,5 @@ export const DEFAULT_PRESET = {
   tempo: 120,
   numChannels: 1,
   channelSync: false,
-  channels: [BLANK_CHANNEL(0)],
+  channels: [BLANK_CHANNEL(0, CHANNEL_COLORS[0])],
 }

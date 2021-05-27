@@ -21,6 +21,7 @@ const CLOCK_CHANNEL_HEIGHT = 262
 
 export default function Channel({
   numChannels,
+  color,
   channelNum,
   setGrabbing,
   grabbing,
@@ -432,6 +433,7 @@ export default function Channel({
     keyViewTypeEl,
   } = useUI(
     id.current,
+    color,
     channelNum,
     key,
     setKey,
@@ -543,10 +545,10 @@ export default function Channel({
           className={classNames('channel-drag-target', {
             'shift-left': !horizontal && dragTarget !== dragRow * numHorizontalChannels,
           })}
-          style={{ top, left }}></div>
+          style={{ top, left, backgroundColor: color }}></div>
       )
     },
-    [channelNum, dragRow, dragTarget, numChannels]
+    [channelNum, color, dragRow, dragTarget, numChannels]
   )
 
   // watch and update state
@@ -554,6 +556,7 @@ export default function Channel({
   useEffect(() => {
     const state = {
       id: id.current,
+      color,
       channelNum,
       velocity,
       key,
@@ -587,6 +590,7 @@ export default function Channel({
   }, [
     axis,
     channelNum,
+    color,
     instrumentOn,
     instrumentType,
     key,
@@ -762,6 +766,7 @@ export default function Channel({
 }
 Channel.propTypes = {
   numChannels: PropTypes.number,
+  color: PropTypes.string,
   channelNum: PropTypes.number,
   grabbing: PropTypes.bool,
   setGrabbing: PropTypes.func,
