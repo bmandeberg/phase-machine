@@ -14,5 +14,15 @@
     &:first-of-type {
       margin-top: 0;
     }
+    .dropdown-container {
+      float: right;
+      margin-top: 0;
+    }
+    &.dropdown {
+      height: 28px;
+      .settings-label {
+        line-height: 34px;
+      }
+    }
   }
 }

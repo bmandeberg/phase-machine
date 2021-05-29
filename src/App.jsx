@@ -47,11 +47,12 @@ export default function App() {
 
   // settings
   const [showStepNumbers, setShowStepNumbers] = useState(
-    JSON.parse(window.localStorage.getItem('showStepNumbers')) || false
+    JSON.parse(window.localStorage.getItem('showStepNumbers')) ?? false
   )
   const [separateMIDIChannels, setSeparateMIDIChannels] = useState(
-    JSON.parse(window.localStorage.getItem('separateMIDIChannels')) || true
+    JSON.parse(window.localStorage.getItem('separateMIDIChannels')) ?? true
   )
+  const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
 
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
@@ -60,6 +61,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('separateMIDIChannels', separateMIDIChannels)
   }, [separateMIDIChannels])
+
+  useEffect(() => {
+    window.localStorage.setItem('linearKnobs', linearKnobs)
+  }, [linearKnobs])
 
   // init MIDI
 
@@ -256,6 +261,7 @@ export default function App() {
           playing={playing}
           showStepNumbers={showStepNumbers}
           separateMIDIChannels={separateMIDIChannels}
+          linearKnobs={linearKnobs}
           midiOut={midiOut}
           setChannelState={setChannelState}
           channelPreset={currentPreset.channels[i]}
@@ -272,6 +278,7 @@ export default function App() {
       deleteChannel,
       duplicateChannel,
       grabbing,
+      linearKnobs,
       midiOut,
       numChannels,
       numChannelsSoloed,
@@ -333,6 +340,8 @@ export default function App() {
           setShowStepNumbers={setShowStepNumbers}
           separateMIDIChannels={separateMIDIChannels}
           setSeparateMIDIChannels={setSeparateMIDIChannels}
+          linearKnobs={linearKnobs}
+          setLinearKnobs={setLinearKnobs}
         />
       </CSSTransition>
     </div>

@@ -10,6 +10,8 @@ export default function Modal({
   setShowStepNumbers,
   separateMIDIChannels,
   setSeparateMIDIChannels,
+  linearKnobs,
+  setLinearKnobs,
 }) {
   const modalTypeRef = useRef()
 
@@ -38,6 +40,8 @@ export default function Modal({
                 setShowStepNumbers={setShowStepNumbers}
                 separateMIDIChannels={separateMIDIChannels}
                 setSeparateMIDIChannels={setSeparateMIDIChannels}
+                linearKnobs={linearKnobs}
+                setLinearKnobs={setLinearKnobs}
               />
             )}
           </div>
@@ -53,4 +57,6 @@ Modal.propTypes = {
   setSeparateMIDIChannels: PropTypes.func,
   showStepNumbers: PropTypes.bool,
   setShowStepNumbers: PropTypes.func,
+  linearKnobs: PropTypes.bool,
+  setLinearKnobs: PropTypes.func,
 }

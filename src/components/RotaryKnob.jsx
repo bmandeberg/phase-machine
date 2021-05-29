@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { KNOB_MAX } from '../globals'
 import Key from './Key'
 import { Knob } from 'react-rotary-knob'
+import LinearKnob from './LinearKnob'
 import './RotaryKnob.scss'
 
 const AXIS_LINE_SIZE = 270
@@ -32,6 +33,7 @@ export default function RotaryKnob({
   inline,
   detent,
   mute,
+  linearKnobs,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -44,9 +46,11 @@ export default function RotaryKnob({
           setValue(roundedVal)
         }
       } else {
+        const mid = (maxVal - minVal) / 2 + minVal
+        const range = maxVal - minVal
         const maxDistance = (maxVal - minVal) / 5
         let distance = Math.abs(val - value)
-        if (distance > maxDistance) {
+        if (!linearKnobs && distance > maxDistance) {
           if (val - value > 0 && value !== minVal) {
             setValue(minVal)
           } else if (val - value < 0 && value !== maxVal) {
@@ -54,15 +58,15 @@ export default function RotaryKnob({
           }
           return
         } else {
-          if (detent && val > maxVal / 2 - maxVal * 0.05 && val < maxVal / 2 + maxVal * 0.05) {
-            setValue(maxVal / 2)
+          if (detent && val > mid - range * 0.05 && val < mid + range * 0.05) {
+            setValue(mid)
           } else {
             setValue(val)
           }
         }
       }
     },
-    [axisKnob, value, setValue, maxVal, minVal, detent]
+    [axisKnob, value, setValue, maxVal, minVal, linearKnobs, detent]
   )
 
   const startTurningKnob = useCallback(() => {
@@ -316,21 +320,39 @@ export default function RotaryKnob({
           showKeyPreview={showKeyPreview}
         />
       )}
-      <Knob
-        className={classNames('knob', { grabbing })}
-        min={minVal}
-        max={maxVal}
-        value={value}
-        onChange={updateValue}
-        skin={activeSkin}
-        unlockDistance={30}
-        preciseMode={false}
-        style={knobSize}
-        onStart={axisKnob ? startChangingAxis : startTurningKnob}
-        onEnd={axisKnob ? stopChangingAxis : stopTurningKnob}
-        clampMax={axisKnob ? 360 : 270}
-        rotateDegrees={axisKnob ? 0 : -135}
-      />
+      {linearKnobs ? (
+        <LinearKnob
+          className={classNames('knob', { grabbing })}
+          min={minVal}
+          max={maxVal}
+          value={value}
+          onChange={updateValue}
+          skin={activeSkin}
+          unlockDistance={30}
+          preciseMode={false}
+          style={knobSize}
+          onStart={axisKnob ? startChangingAxis : startTurningKnob}
+          onEnd={axisKnob ? stopChangingAxis : stopTurningKnob}
+          clampMax={axisKnob ? 360 : 270}
+          rotateDegrees={axisKnob ? 0 : -135}
+        />
+      ) : (
+        <Knob
+          className={classNames('knob', { grabbing })}
+          min={minVal}
+          max={maxVal}
+          value={value}
+          onChange={updateValue}
+          skin={activeSkin}
+          unlockDistance={30}
+          preciseMode={false}
+          style={knobSize}
+          onStart={axisKnob ? startChangingAxis : startTurningKnob}
+          onEnd={axisKnob ? stopChangingAxis : stopTurningKnob}
+          clampMax={axisKnob ? 360 : 270}
+          rotateDegrees={axisKnob ? 0 : -135}
+        />
+      )}
       <div className="knob-label no-select">{axisKnob ? 'Axis' : label}</div>
     </div>
   )
@@ -359,4 +381,5 @@ RotaryKnob.propTypes = {
   inline: PropTypes.bool,
   detent: PropTypes.bool,
   mute: PropTypes.bool,
+  linearKnobs: PropTypes.bool,
 }

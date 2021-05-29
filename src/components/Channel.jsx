@@ -33,6 +33,7 @@ export default function Channel({
   playing,
   showStepNumbers,
   separateMIDIChannels,
+  linearKnobs,
   midiOut,
   setChannelState,
   channelPreset,
@@ -514,7 +515,8 @@ export default function Channel({
     duplicateChannel,
     deleteChannel,
     drag,
-    draggingChannel
+    draggingChannel,
+    linearKnobs
   )
 
   const dragTargetUI = useCallback(
@@ -778,12 +780,13 @@ Channel.propTypes = {
   playing: PropTypes.bool,
   separateMIDIChannels: PropTypes.bool,
   showStepNumbers: PropTypes.bool,
+  linearKnobs: PropTypes.bool,
   midiOut: PropTypes.string,
   setChannelState: PropTypes.func,
   channelPreset: PropTypes.object,
   duplicateChannel: PropTypes.func,
   deleteChannel: PropTypes.func,
   initState: PropTypes.object,
-  container: PropTypes.element,
+  container: PropTypes.object,
   changeChannelOrder: PropTypes.func,
 }

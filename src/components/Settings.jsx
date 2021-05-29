@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import Switch from 'react-switch'
+import Dropdn from '../components/Dropdn'
 import './Settings.scss'
 
 export default function Settings({
@@ -8,7 +9,16 @@ export default function Settings({
   setShowStepNumbers,
   separateMIDIChannels,
   setSeparateMIDIChannels,
+  linearKnobs,
+  setLinearKnobs,
 }) {
+  const setKnobType = useCallback(
+    (knobType) => {
+      setLinearKnobs(knobType === 'Linear')
+    },
+    [setLinearKnobs]
+  )
+
   return (
     <div className="settings">
       <div className="settings-item">
@@ -43,6 +53,15 @@ export default function Settings({
           height={24}
         />
       </div>
+      <div className="settings-item dropdown">
+        <p className="settings-label">Knob type</p>
+        <Dropdn
+          options={['Linear', 'Relative Circular']}
+          value={linearKnobs ? 'Linear' : 'Relative Circular'}
+          setValue={setKnobType}
+          noTextTransform
+        />
+      </div>
     </div>
   )
 }
@@ -51,4 +70,6 @@ Settings.propTypes = {
   setSeparateMIDIChannels: PropTypes.func,
   showStepNumbers: PropTypes.bool,
   setShowStepNumbers: PropTypes.func,
+  linearKnobs: PropTypes.bool,
+  setLinearKnobs: PropTypes.func,
 }

@@ -97,7 +97,8 @@ export default function useUI(
   duplicateChannel,
   deleteChannel,
   drag,
-  draggingChannel
+  draggingChannel,
+  linearKnobs
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -203,6 +204,7 @@ export default function useUI(
           startChangingAxis={startChangingAxis}
           stopChangingAxis={stopChangingAxis}
           mute={muted}
+          linearKnobs={linearKnobs}
         />
       )
     },
@@ -211,6 +213,7 @@ export default function useUI(
       grabbing,
       key,
       keyPreview,
+      linearKnobs,
       muted,
       playingPitchClass,
       setKey,
@@ -325,10 +328,11 @@ export default function useUI(
           grabbing={grabbing}
           squeeze={!vertical ? 6 : 0}
           mute={muted}
+          linearKnobs={linearKnobs}
         />
       )
     },
-    [grabbing, keySustain, muted, setGrabbing, setKeySustain]
+    [grabbing, keySustain, linearKnobs, muted, setGrabbing, setKeySustain]
   )
 
   const keySwingEl = useCallback(
@@ -345,6 +349,7 @@ export default function useUI(
             squeeze={!vertical ? 2 : 0}
             detent
             mute={mute}
+            linearKnobs={linearKnobs}
           />
           <NumInput
             value={keySwingLength}
@@ -357,7 +362,7 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, keySwing, keySwingLength, mute, setGrabbing, setKeySwing, setKeySwingLength]
+    [grabbing, keySwing, keySwingLength, linearKnobs, mute, setGrabbing, setKeySwing, setKeySwingLength]
   )
 
   const seqLengthEl = useCallback(
@@ -430,6 +435,7 @@ export default function useUI(
             inline={inline}
             detent
             mute={mute}
+            linearKnobs={linearKnobs}
           />
           <NumInput
             value={seqSwingLength}
@@ -443,7 +449,7 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, mute, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength]
+    [grabbing, linearKnobs, mute, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength]
   )
 
   const seqSustainEl = useCallback(
@@ -459,10 +465,11 @@ export default function useUI(
           grabbing={grabbing}
           inline={inline}
           mute={mute}
+          linearKnobs={linearKnobs}
         />
       )
     },
-    [grabbing, mute, seqSustain, setGrabbing, setSeqSustain]
+    [grabbing, linearKnobs, mute, seqSustain, setGrabbing, setSeqSustain]
   )
 
   const legatoEl = useCallback(
