@@ -10,7 +10,6 @@ export default function usePresets(
   presets,
   setCurrentPreset,
   deepStateCopy,
-  setTempo,
   setNumChannels,
   setChannelSync,
   setPresets,

@@ -163,7 +163,6 @@ export default function App() {
     presets,
     setCurrentPreset,
     deepStateCopy,
-    setTempo,
     setNumChannels,
     setChannelSync,
     setPresets,
