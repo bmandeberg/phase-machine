@@ -308,7 +308,6 @@ export const DEFAULT_PRESET = {
   id: uuid(),
   hotkey: null,
   placeholder: false,
-  tempo: 120,
   numChannels: 1,
   channelSync: false,
   channels: [BLANK_CHANNEL(0, CHANNEL_COLORS[0])],

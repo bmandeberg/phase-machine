@@ -4,8 +4,6 @@ import { PRESET_HOLD_TIME } from '../globals'
 
 export default function usePresets(
   setUIState,
-  numChannels,
-  tempo,
   channelSync,
   uiState,
   currentPreset,
@@ -37,12 +35,11 @@ export default function usePresets(
   useEffect(() => {
     setUIState((uiState) => {
       const uiStateCopy = Object.assign({}, uiState, {
-        tempo,
         channelSync,
       })
       return uiStateCopy
     })
-  }, [channelSync, setUIState, tempo])
+  }, [channelSync, setUIState])
 
   const setPresetName = useCallback(
     (presetName) => {
@@ -103,13 +100,12 @@ export default function usePresets(
       const preset = presets.find((p) => p.id === presetID)
       setCurrentPreset(deepStateCopy(preset))
       setUIState(deepStateCopy(preset))
-      setTempo(preset.tempo)
       setNumChannels(preset.numChannels)
       setChannelSync(preset.channelSync)
       // save in localStorage
       window.localStorage.setItem('activePreset', presetID)
     },
-    [deepStateCopy, presets, setChannelSync, setCurrentPreset, setNumChannels, setTempo, setUIState]
+    [deepStateCopy, presets, setChannelSync, setCurrentPreset, setNumChannels, setUIState]
   )
 
   const dedupName = useCallback(

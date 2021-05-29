@@ -27,7 +27,7 @@ export default function App() {
   )
   const [uiState, setUIState] = useState(deepStateCopy(currentPreset))
 
-  const [tempo, setTempo] = useState(currentPreset.tempo)
+  const [tempo, setTempo] = useState(JSON.parse(window.localStorage.getItem('tempo')) ?? 120)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(currentPreset.numChannels)
   const [view, setView] = useState(VIEWS[0])
@@ -148,6 +148,7 @@ export default function App() {
     if (Tone.Transport.bpm.value !== tempo) {
       Tone.Transport.bpm.value = tempo
     }
+    window.localStorage.setItem('tempo', tempo)
   }, [tempo])
 
   const numChannelsSoloed = useMemo(() => uiState.channels.reduce((acc, curr) => acc + (curr.solo ? 1 : 0), 0), [
@@ -156,8 +157,6 @@ export default function App() {
 
   const { setChannelState, setPresetName, presetDirty, setPreset, savePreset, newPreset, deletePreset } = usePresets(
     setUIState,
-    numChannels,
-    tempo,
     channelSync,
     uiState,
     currentPreset,
