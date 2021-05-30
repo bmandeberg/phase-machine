@@ -49,6 +49,7 @@ export default function Key({
             selected: musicalKey[i],
             previewed: !pianoKeys && showKeyPreview && keyPreview[i],
             playing: playingPitchClass === i,
+            mute,
           })}
           style={{
             transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : null,
@@ -59,7 +60,6 @@ export default function Key({
         [...Array(12)].map((d, i) => (
           <SelectedKey key={i} visible={showKeyPreview && keyPreview[i]} {...SELECTED_KEYS[i]} />
         ))}
-      {pianoKeys && mute && <div className="key-border"></div>}
     </div>
   )
 }
