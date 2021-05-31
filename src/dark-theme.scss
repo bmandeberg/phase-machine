@@ -1,0 +1,213 @@
+@import './sass-globals.scss';
+$darkBackground: #090c10;
+$darkMuteBackground: #23232b;
+$darkMediumGray: #45454c;
+$darkMediumGrayHover: lighten($darkMediumGray, 3%);
+$darkDarkGray: #1e1e25;
+$darkDarkGrayHover: lighten($darkDarkGray, 3%);
+$darkLightGray: #a0a0b4;
+$darkGreen: #00c591;
+$darkGreenHover: lighten($darkGreen, 20%);
+
+.dark-theme {
+  background-color: $darkBackground;
+  color: $darkLightGray;
+
+  .mute-solo {
+    .button {
+      background-color: $darkMediumGray;
+      color: $darkLightGray;
+      &:hover {
+        background-color: $darkMediumGrayHover;
+      }
+    }
+    .mute {
+      &.muted {
+        color: $darkBackground;
+        background: $red;
+        &:hover {
+          background: $redHover;
+        }
+      }
+    }
+    .solo {
+      &.soloed {
+        color: $darkBackground;
+        background: $darkGreen;
+        &:hover {
+          background: $darkGreenHover;
+        }
+      }
+    }
+  }
+
+  .channel-horizontal {
+    .channel-number-background {
+      background: linear-gradient(to right, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
+      height: 100%;
+    }
+    .channel-number {
+      text-shadow: 0 0 5px $darkBackground;
+    }
+  }
+
+  .duplicate-delete {
+    div {
+      background-color: transparent;
+    }
+    .duplicate {
+      background-image: url('./assets/plus-icon-gray-dark.png');
+      background-size: 13px;
+      &.mute {
+        background-image: url('./assets/plus-icon-dark-gray-dark.png');
+        background-size: 13px;
+      }
+      &:hover {
+        background-image: url('./assets/plus-icon-green-dark.png');
+        background-size: 13px;
+      }
+    }
+    .delete {
+      background-image: url('./assets/trash-icon-gray-dark.png');
+      background-size: 13px 14px;
+      &.mute {
+        background-image: url('./assets/trash-icon-dark-gray-dark.png');
+        background-size: 13px 14px;
+      }
+      &:hover {
+        background-image: url('./assets/trash-icon-red.png');
+        background-size: 13px 14px;
+      }
+    }
+  }
+
+  .key {
+    &.piano-keys {
+      .pitch-class {
+        background-color: $darkDarkGray;
+        border: 2px solid $darkBackground;
+        border-top: none;
+        &.mute {
+          border-color: $darkMuteBackground;
+        }
+        &:hover {
+          background-color: $darkDarkGrayHover;
+        }
+        &.white-key {
+          background-color: $darkMediumGray;
+          border-right: none;
+          border-bottom: none;
+          &:hover {
+            background-color: $darkMediumGrayHover;
+          }
+        }
+      }
+    }
+    &.clock {
+      .pitch-class {
+        background-color: $darkMediumGray;
+        &:hover {
+          background-color: $darkMediumGrayHover;
+        }
+      }
+    }
+    .pitch-class {
+      cursor: pointer;
+      border-style: solid;
+      border-color: $pink;
+      border-width: 0;
+      transition: border-width $transitionTime / 4, border-color $transitionTime / 2,
+        background-color $transitionTime / 4;
+      &.selected {
+        background-color: $green !important;
+        &:hover {
+          background-color: $greenHover !important;
+        }
+      }
+      &.playing {
+        background-color: $orangeHover !important;
+        &:hover {
+          background-color: $orangeHover !important;
+        }
+      }
+      &.previewed {
+        border-width: 5px;
+      }
+    }
+  }
+
+  .mute {
+    $muteGray: #39393f;
+    $muteGrayHover: lighten($muteGray, 3%);
+    background-color: #23232b;
+    .button {
+      background-color: $muteGray;
+      &:hover {
+        background-color: $muteGrayHover;
+      }
+    }
+    .react-numeric-input {
+      b {
+        background-color: $muteGray;
+        border-color: $muteGray;
+      }
+      input {
+        border-color: $muteGray;
+      }
+    }
+    .Dropdown-control,
+    .Dropdown-arrow-wrapper {
+      border-color: $muteGray;
+      background-color: $muteGray;
+      &:hover {
+        background-color: $muteGrayHover;
+      }
+    }
+    .react-switch-bg {
+      background-color: $muteGray !important;
+    }
+    .split-button {
+      background-color: $muteGray;
+      &:hover {
+        background-color: $muteGrayHover;
+      }
+      .split-button-action {
+        &:hover {
+          background-color: $lightGrayHover;
+        }
+        &:active {
+          background-color: $mediumGray;
+        }
+      }
+      .split-button-arrow {
+        background-color: #c6c6c6;
+        &.split-button-arrow-left {
+          border-right: 1px solid #888888;
+        }
+      }
+    }
+    .piano-keys .white-key {
+      background-color: $muteGray !important;
+      &:hover {
+        background-color: $muteGrayHover !important;
+      }
+      &.selected {
+        background-color: $darkGreen !important;
+        &:hover {
+          background-color: $darkGreenHover !important;
+        }
+      }
+      &.playing {
+        background-color: $orange !important;
+        &:hover {
+          background-color: $orangeHover !important;
+        }
+      }
+    }
+    &.channel-clock {
+      .channel-clock-bottom.drawer-open .piano-drawer-border {
+        border: 2px solid $darkBackground;
+      }
+    }
+  }
+}

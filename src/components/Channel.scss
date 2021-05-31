@@ -449,6 +449,15 @@
       pointer-events: none;
     }
   }
+  &.channel-horizontal {
+    .channel-number-background {
+      background: linear-gradient(to right, rgba(242, 242, 242, 1) 5%, rgba(242, 242, 242, 0));
+      height: 100%;
+    }
+    .channel-number {
+      text-shadow: 0 0 5px #f2f2f2;
+    }
+  }
 }
 
 .duplicate-delete {
