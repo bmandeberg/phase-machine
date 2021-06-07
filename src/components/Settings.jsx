@@ -84,7 +84,7 @@ export default function Settings({
       </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Theme</p>
-        <Dropdn options={['toxic', 'dark']} value={theme} setValue={setTheme} capitalize />
+        <Dropdn options={['light', 'dark']} value={theme} setValue={setTheme} capitalize />
       </div>
     </div>
   )
