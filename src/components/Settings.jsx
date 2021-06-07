@@ -12,6 +12,7 @@ export default function Settings({
   linearKnobs,
   setLinearKnobs,
   theme,
+  setTheme,
 }) {
   const setKnobType = useCallback(
     (knobType) => {
@@ -63,6 +64,15 @@ export default function Settings({
           noTextTransform
         />
       </div>
+      <div className="settings-item dropdown">
+        <p className="settings-label">Theme</p>
+        <Dropdn
+          options={['toxic', 'dark']}
+          value={theme}
+          setValue={setTheme}
+          capitalize
+        />
+      </div>
     </div>
   )
 }
@@ -74,4 +84,5 @@ Settings.propTypes = {
   linearKnobs: PropTypes.bool,
   setLinearKnobs: PropTypes.func,
   theme: PropTypes.string,
+  setTheme: PropTypes.func,
 }

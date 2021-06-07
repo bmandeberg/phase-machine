@@ -15,11 +15,14 @@
       margin-top: 0;
     }
     .dropdown-container {
-      float: right;
+      display: inline-block;
+      vertical-align: top;
       margin-top: 0;
     }
     &.dropdown {
       height: 28px;
+      display: flex;
+      justify-content: space-between;
       .settings-label {
         line-height: 34px;
       }

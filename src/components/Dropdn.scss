@@ -185,6 +185,13 @@
       text-transform: none;
     }
   }
+  &.capitalize {
+    .Dropdown-control,
+    .Dropdown-menu,
+    .dropdown-min-width {
+      text-transform: capitalize;
+    }
+  }
   &.inline-dropdown {
     margin-top: 14px;
     height: 28px;

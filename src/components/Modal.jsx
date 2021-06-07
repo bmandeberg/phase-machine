@@ -13,6 +13,7 @@ export default function Modal({
   linearKnobs,
   setLinearKnobs,
   theme,
+  setTheme,
 }) {
   const modalTypeRef = useRef()
 
@@ -44,6 +45,7 @@ export default function Modal({
                 linearKnobs={linearKnobs}
                 setLinearKnobs={setLinearKnobs}
                 theme={theme}
+                setTheme={setTheme}
               />
             )}
           </div>
@@ -62,4 +64,5 @@ Modal.propTypes = {
   linearKnobs: PropTypes.bool,
   setLinearKnobs: PropTypes.func,
   theme: PropTypes.string,
+  setTheme: PropTypes.func,
 }

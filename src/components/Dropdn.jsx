@@ -25,6 +25,7 @@ export default function Dropdn(props) {
       className={classNames('dropdown-container', props.className, {
         'small-dropdown': props.small,
         'no-text-transform': props.noTextTransform,
+        'capitalize': props.capitalize,
         'inline-dropdown': props.inline,
         'dropdown-num-inputs-container': props.setNum1,
         'show-dropdown-num-inputs': props.showNumInputs,
@@ -59,6 +60,7 @@ Dropdn.propTypes = {
   placeholder: PropTypes.string,
   small: PropTypes.bool,
   noTextTransform: PropTypes.bool,
+  capitalize: PropTypes.bool,
   inline: PropTypes.bool,
   num1: PropTypes.number,
   setNum1: PropTypes.func,

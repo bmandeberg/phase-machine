@@ -54,7 +54,7 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('separateMIDIChannels')) ?? true
   )
   const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
-  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'dark')
+  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'toxic')
 
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
@@ -350,6 +350,7 @@ export default function App() {
           linearKnobs={linearKnobs}
           setLinearKnobs={setLinearKnobs}
           theme={theme}
+          setTheme={setTheme}
         />
       </CSSTransition>
     </div>
