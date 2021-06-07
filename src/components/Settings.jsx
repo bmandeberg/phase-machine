@@ -11,6 +11,8 @@ export default function Settings({
   setSeparateMIDIChannels,
   linearKnobs,
   setLinearKnobs,
+  hotkeyRestart,
+  setHotkeyRestart,
   theme,
   setTheme,
 }) {
@@ -55,6 +57,22 @@ export default function Settings({
           height={24}
         />
       </div>
+      <div className="settings-item">
+        <p className="settings-label">Hotkey Restart Channel</p>
+        <Switch
+          className="instrument-switch"
+          onChange={setHotkeyRestart}
+          checked={hotkeyRestart}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+          onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+          offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
+          onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
+          width={48}
+          height={24}
+        />
+      </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Knob type</p>
         <Dropdn
@@ -66,12 +84,7 @@ export default function Settings({
       </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Theme</p>
-        <Dropdn
-          options={['toxic', 'dark']}
-          value={theme}
-          setValue={setTheme}
-          capitalize
-        />
+        <Dropdn options={['toxic', 'dark']} value={theme} setValue={setTheme} capitalize />
       </div>
     </div>
   )
@@ -83,6 +96,8 @@ Settings.propTypes = {
   setShowStepNumbers: PropTypes.func,
   linearKnobs: PropTypes.bool,
   setLinearKnobs: PropTypes.func,
+  hotkeyRestart: PropTypes.bool,
+  setHotkeyRestart: PropTypes.func,
   theme: PropTypes.string,
   setTheme: PropTypes.func,
 }

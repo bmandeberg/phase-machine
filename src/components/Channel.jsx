@@ -45,6 +45,7 @@ export default function Channel({
   container,
   changeChannelOrder,
   theme,
+  hotkeyRestart,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
@@ -103,6 +104,7 @@ export default function Channel({
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
+  const hotkeyRestartRef = useRef(hotkeyRestart)
 
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
@@ -113,10 +115,20 @@ export default function Channel({
   }, [channelNum])
 
   useEffect(() => {
+    hotkeyRestartRef.current = hotkeyRestart
+  }, [hotkeyRestart])
+
+  useEffect(() => {
     if (channelPreset) {
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else {
+        if (hotkeyRestartRef.current) {
+          prevStep.current = undefined
+          currentStep.current = 0
+          nextStep.current = undefined
+          setPlayingStep(null)
+        }
         setVelocity(channelPreset.velocity)
         setKey(channelPreset.key.slice())
         setKeyRate(channelPreset.keyRate)
@@ -794,4 +806,5 @@ Channel.propTypes = {
   container: PropTypes.object,
   changeChannelOrder: PropTypes.func,
   theme: PropTypes.string,
+  hotkeyRestart: PropTypes.bool,
 }

@@ -12,6 +12,8 @@ export default function Modal({
   setSeparateMIDIChannels,
   linearKnobs,
   setLinearKnobs,
+  hotkeyRestart,
+  setHotkeyRestart,
   theme,
   setTheme,
 }) {
@@ -44,6 +46,8 @@ export default function Modal({
                 setSeparateMIDIChannels={setSeparateMIDIChannels}
                 linearKnobs={linearKnobs}
                 setLinearKnobs={setLinearKnobs}
+                hotkeyRestart={hotkeyRestart}
+                setHotkeyRestart={setHotkeyRestart}
                 theme={theme}
                 setTheme={setTheme}
               />
@@ -63,6 +67,8 @@ Modal.propTypes = {
   setShowStepNumbers: PropTypes.func,
   linearKnobs: PropTypes.bool,
   setLinearKnobs: PropTypes.func,
+  hotkeyRestart: PropTypes.bool,
+  setHotkeyRestart: PropTypes.func,
   theme: PropTypes.string,
   setTheme: PropTypes.func,
 }

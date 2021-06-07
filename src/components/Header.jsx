@@ -117,7 +117,6 @@ export default class Header extends React.Component {
             setSelected={this.props.setScrollTo}
           />
         )}
-        {/* <Checkbox checked={this.props.channelSync} setChecked={this.props.setChannelSync} label="Channel Sync" /> */}
         <div className="header-aux">
           <div
             className="aux-item header-settings"

@@ -50,11 +50,16 @@ export default function App() {
   const [showStepNumbers, setShowStepNumbers] = useState(
     JSON.parse(window.localStorage.getItem('showStepNumbers')) ?? false
   )
+
   const [separateMIDIChannels, setSeparateMIDIChannels] = useState(
     JSON.parse(window.localStorage.getItem('separateMIDIChannels')) ?? true
   )
+
   const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
+
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'toxic')
+
+  const [hotkeyRestart, setHotkeyRestart] = useState(JSON.parse(window.localStorage.getItem('hotkeyRestart')) ?? true)
 
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
@@ -71,6 +76,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    window.localStorage.setItem('hotkeyRestart', hotkeyRestart)
+  }, [hotkeyRestart])
 
   // init MIDI
 
@@ -157,9 +166,10 @@ export default function App() {
     window.localStorage.setItem('tempo', tempo)
   }, [tempo])
 
-  const numChannelsSoloed = useMemo(() => uiState.channels.reduce((acc, curr) => acc + (curr.solo ? 1 : 0), 0), [
-    uiState,
-  ])
+  const numChannelsSoloed = useMemo(
+    () => uiState.channels.reduce((acc, curr) => acc + (curr.solo ? 1 : 0), 0),
+    [uiState]
+  )
 
   const { setChannelState, setPresetName, presetDirty, setPreset, savePreset, newPreset, deletePreset } = usePresets(
     setUIState,
@@ -275,6 +285,7 @@ export default function App() {
           container={container}
           changeChannelOrder={changeChannelOrder}
           theme={theme}
+          hotkeyRestart={hotkeyRestart}
         />
       )),
     [
@@ -283,6 +294,7 @@ export default function App() {
       deleteChannel,
       duplicateChannel,
       grabbing,
+      hotkeyRestart,
       linearKnobs,
       midiOut,
       numChannels,
@@ -349,6 +361,8 @@ export default function App() {
           setSeparateMIDIChannels={setSeparateMIDIChannels}
           linearKnobs={linearKnobs}
           setLinearKnobs={setLinearKnobs}
+          hotkeyRestart={hotkeyRestart}
+          setHotkeyRestart={setHotkeyRestart}
           theme={theme}
           setTheme={setTheme}
         />
