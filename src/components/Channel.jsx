@@ -118,16 +118,20 @@ export default function Channel({
     hotkeyRestartRef.current = hotkeyRestart
   }, [hotkeyRestart])
 
+  const seqRestart = useCallback(() => {
+    prevStep.current = undefined
+    currentStep.current = 0
+    nextStep.current = undefined
+    setPlayingStep(null)
+  }, [])
+
   useEffect(() => {
     if (channelPreset) {
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else {
         if (hotkeyRestartRef.current) {
-          prevStep.current = undefined
-          currentStep.current = 0
-          nextStep.current = undefined
-          setPlayingStep(null)
+          seqRestart()
         }
         setVelocity(channelPreset.velocity)
         setKey(channelPreset.key.slice())
@@ -158,7 +162,7 @@ export default function Channel({
         setInstrumentType(channelPreset.instrumentType)
       }
     }
-  }, [channelPreset])
+  }, [channelPreset, seqRestart])
 
   const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
 
@@ -447,6 +451,7 @@ export default function Channel({
     legatoEl,
     instrumentEl,
     keyViewTypeEl,
+    seqRestartEl,
   } = useUI(
     id.current,
     color,
@@ -532,7 +537,8 @@ export default function Channel({
     drag,
     draggingChannel,
     linearKnobs,
-    theme
+    theme,
+    seqRestart
   )
 
   const dragTargetUI = useCallback(
@@ -675,6 +681,7 @@ export default function Channel({
               {seqSustainEl(true)}
               {seqSwingEl(true)}
               {legatoEl(true)}
+              {seqRestartEl}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
@@ -715,6 +722,7 @@ export default function Channel({
             {seqSustainEl(true)}
             {seqSwingEl(true)}
             {legatoEl(true)}
+            {seqRestartEl}
           </div>
         </Sequencer>
         <div className="channel-module border"></div>

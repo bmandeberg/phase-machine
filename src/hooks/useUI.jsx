@@ -99,7 +99,8 @@ export default function useUI(
   drag,
   draggingChannel,
   linearKnobs,
-  theme
+  theme,
+  seqRestart
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -504,6 +505,14 @@ export default function useUI(
     [legato, setLegato, theme]
   )
 
+  const seqRestartEl = useMemo(() => {
+    return (
+      <div className="button seq-restart" onClick={seqRestart}>
+        Restart
+      </div>
+    )
+  }, [seqRestart])
+
   const instrumentEl = useCallback(
     (small) => {
       return (
@@ -543,5 +552,6 @@ export default function useUI(
     legatoEl,
     instrumentEl,
     keyViewTypeEl,
+    seqRestartEl,
   }
 }

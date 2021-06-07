@@ -58,7 +58,7 @@ export default function Settings({
         />
       </div>
       <div className="settings-item">
-        <p className="settings-label">Hotkey Restart Channel</p>
+        <p className="settings-label">Hotkey Restart Sequencer</p>
         <Switch
           className="instrument-switch"
           onChange={setHotkeyRestart}
