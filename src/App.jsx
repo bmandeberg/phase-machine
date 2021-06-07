@@ -11,6 +11,7 @@ import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
 import usePresets from './hooks/usePresets'
+import './dark-theme.scss'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
@@ -53,6 +54,7 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('separateMIDIChannels')) ?? true
   )
   const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
+  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'dark')
 
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
@@ -65,6 +67,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('linearKnobs', linearKnobs)
   }, [linearKnobs])
+
+  useEffect(() => {
+    window.localStorage.setItem('theme', theme)
+  }, [theme])
 
   // init MIDI
 
@@ -268,6 +274,7 @@ export default function App() {
           initState={d}
           container={container}
           changeChannelOrder={changeChannelOrder}
+          theme={theme}
         />
       )),
     [
@@ -286,13 +293,14 @@ export default function App() {
       setChannelState,
       showStepNumbers,
       tempo,
+      theme,
       uiState.channels,
       view,
     ]
   )
 
   return (
-    <div id="container" ref={container} className={classNames({ grabbing, resizing })}>
+    <div id="container" ref={container} className={classNames({ grabbing, resizing, 'dark-theme': theme === 'dark' })}>
       <Header
         tempo={tempo}
         setTempo={setTempo}
@@ -319,6 +327,7 @@ export default function App() {
         newPreset={newPreset}
         deletePreset={deletePreset}
         setModalType={setModalType}
+        theme={theme}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>
@@ -340,6 +349,7 @@ export default function App() {
           setSeparateMIDIChannels={setSeparateMIDIChannels}
           linearKnobs={linearKnobs}
           setLinearKnobs={setLinearKnobs}
+          theme={theme}
         />
       </CSSTransition>
     </div>

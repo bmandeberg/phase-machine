@@ -1,17 +1,35 @@
 @import './sass-globals.scss';
 $darkBackground: #090c10;
-$darkMuteBackground: #23232b;
+$darkMuteBackground: #1c1c23;
 $darkMediumGray: #45454c;
 $darkMediumGrayHover: lighten($darkMediumGray, 3%);
+$darkMediumGrayActive: darken($darkMediumGray, 3%);
 $darkDarkGray: #1e1e25;
 $darkDarkGrayHover: lighten($darkDarkGray, 3%);
 $darkLightGray: #a0a0b4;
 $darkGreen: #00c591;
-$darkGreenHover: lighten($darkGreen, 20%);
+$darkGreenHover: lighten($darkGreen, 6%);
+$darkDarkOrange: #9e5302;
+$splitButtonAction: #313139;
+$headerBlue: #17326d;
+$headerBlueHover: lighten($headerBlue, 5%);
+$headerBlueActive: darken($headerBlue, 3%);
+$headerDarkBlue: #0f182d;
 
 .dark-theme {
   background-color: $darkBackground;
   color: $darkLightGray;
+
+  .button {
+    background-color: $darkMediumGray;
+    color: $darkLightGray;
+    &:hover {
+      background-color: $darkMediumGrayHover;
+    }
+    &:active {
+      background-color: $darkMediumGrayActive;
+    }
+  }
 
   .mute-solo {
     .button {
@@ -41,7 +59,12 @@ $darkGreenHover: lighten($darkGreen, 20%);
     }
   }
 
+  .border {
+    border-color: $darkMediumGray;
+  }
+
   .channel-horizontal {
+    border-color: $darkMediumGray;
     .channel-number-background {
       background: linear-gradient(to right, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
       height: 100%;
@@ -119,9 +142,9 @@ $darkGreenHover: lighten($darkGreen, 20%);
       transition: border-width $transitionTime / 4, border-color $transitionTime / 2,
         background-color $transitionTime / 4;
       &.selected {
-        background-color: $green !important;
+        background-color: $darkGreen !important;
         &:hover {
-          background-color: $greenHover !important;
+          background-color: $darkGreenHover !important;
         }
       }
       &.playing {
@@ -136,36 +159,504 @@ $darkGreenHover: lighten($darkGreen, 20%);
     }
   }
 
+  .react-numeric-input {
+    input {
+      background-color: $darkDarkGray;
+      color: $darkLightGray;
+      border: 1px solid $darkMediumGray;
+      box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+    }
+    b {
+      border-color: $darkMediumGray;
+      background-color: $darkMediumGray;
+      &:hover {
+        background-color: $darkMediumGrayHover;
+      }
+      &:active {
+        background-color: $darkMediumGrayActive;
+      }
+    }
+    b:first-of-type {
+      border-bottom-color: $darkMuteBackground;
+      i {
+        border-color: transparent transparent $darkLightGray;
+      }
+    }
+    b:last-of-type {
+      i {
+        border-color: $darkLightGray transparent transparent;
+      }
+    }
+  }
+
+  .num-input.small-input {
+    input {
+      background-color: $darkBackground;
+      border: 1px solid $headerBlue;
+    }
+    b {
+      border-color: $headerBlue;
+      background: $headerBlue;
+      &:hover {
+        background: $headerBlueHover;
+      }
+      &:active {
+        background-color: $headerBlueActive;
+      }
+    }
+    b:first-of-type {
+      border-bottom-color: $headerDarkBlue;
+      i {
+        border-color: transparent transparent $blue;
+      }
+    }
+    b:last-of-type {
+      i {
+        border-color: $blue transparent transparent;
+      }
+    }
+  }
+
+  #header {
+    background-color: $headerDarkBlue;
+    color: $blue;
+    .header-aux {
+      .header-settings {
+        background: url('./assets/gear-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/gear-hover-blue.png');
+          background-size: 22px;
+        }
+      }
+    }
+  }
+  #header-border {
+    background-color: #101d38;
+  }
+
+  .radio-buttons {
+    .radio-button {
+      border: 1px solid $headerBlue;
+      color: $blue;
+      background-color: $headerBlue;
+      &:hover {
+        background-color: $headerBlueHover;
+      }
+      &:active {
+        background-color: $headerBlueActive;
+      }
+      &.radio-button-selected {
+        background-color: $darkGreen;
+        border: 1px solid $darkGreen;
+        color: $headerDarkBlue;
+      }
+    }
+  }
+
+  .piano {
+    $inRangeColor: #787887;
+    .piano-note {
+      background-color: #26262f;
+      border-color: $darkBackground;
+      &.in-range {
+        background-color: $darkDarkGray;
+        border-color: transparent;
+      }
+      &.white-key {
+        background-color: $darkMediumGray;
+        &.in-range {
+          background-color: $inRangeColor;
+          border-color: #3c3c3c;
+        }
+      }
+      &.playing {
+        background-color: darken($orange, 2%);
+        &.white-key.in-range {
+          border-color: $darkOrange;
+          background-color: $orange;
+          &.next-black-key-near {
+            &::before {
+              border: 2px solid $inRangeColor;
+              border-right: none;
+              border-top: none;
+            }
+          }
+          &.next-black-key-middle {
+            &::after {
+              border: 2px solid $inRangeColor;
+              border-right: none;
+              border-top: none;
+            }
+          }
+          &.next-black-key-far {
+            &::after {
+              border: 2px solid $inRangeColor;
+              border-right: none;
+              border-top: none;
+            }
+          }
+          &.prev-black-key-near {
+            &::before {
+              border: 2px solid $inRangeColor;
+              border-left: none;
+              border-top: none;
+            }
+          }
+          &.prev-black-key-middle {
+            &::before {
+              border: 2px solid $inRangeColor;
+              border-left: none;
+              border-top: none;
+            }
+          }
+          &.prev-black-key-far {
+            &::before {
+              border: 2px solid $inRangeColor;
+              border-left: none;
+              border-top: none;
+            }
+          }
+          & + .piano-note.in-range {
+            &::after {
+              border: 2px solid $inRangeColor;
+              border-right: none;
+              border-left: none;
+              border-top: none;
+            }
+            & + .white-key.in-range {
+              border-color: $darkOrange;
+            }
+          }
+          & + .white-key.in-range {
+            border-color: $darkOrange;
+          }
+        }
+      }
+    }
+    .piano-range {
+      path {
+        stroke: $darkGreen;
+      }
+    }
+    .piano-border {
+      border-left: 2px solid $darkBackground;
+      border-right: 2px solid $darkBackground;
+    }
+  }
+
+  .Dropdown-root {
+    &.is-open .Dropdown-arrow {
+      border-color: transparent transparent $darkLightGray !important;
+    }
+  }
+
+  .Dropdown-control {
+    background-color: $darkMediumGray;
+    border: 1px solid $darkMediumGray;
+    color: $darkLightGray;
+  }
+
+  .Dropdown-arrow-wrapper {
+    border: 1px solid $darkMediumGray;
+    border-left-color: $darkBackground;
+    background-color: $darkMediumGray;
+    &:hover {
+      background-color: $darkMediumGrayHover;
+    }
+    &:active {
+      background-color: $darkMediumGrayActive;
+    }
+  }
+
+  .Dropdown-arrow {
+    border-color: $darkLightGray transparent transparent;
+  }
+
+  .Dropdown-menu {
+    background-color: $darkBackground;
+    border: 1px solid $darkMediumGray;
+  }
+
+  .Dropdown-menu .Dropdown-group > .Dropdown-title {
+    color: $darkLightGray;
+  }
+
+  .Dropdown-option {
+    color: $darkLightGray;
+  }
+
+  .Dropdown-option:hover,
+  .Dropdown-option.is-selected {
+    background-color: $darkGreen;
+    color: $darkBackground;
+  }
+
+  .Dropdown-noresults {
+    color: $darkLightGray;
+  }
+
+  .dropdown-container {
+    &.small-dropdown {
+      .Dropdown-control {
+        background-color: $headerBlue;
+        border: 1px solid $headerBlue;
+        color: $blue;
+      }
+      .Dropdown-arrow-wrapper {
+        border: 1px solid $headerBlue;
+        border-left-color: $headerDarkBlue;
+        background-color: $headerBlue;
+        &:hover {
+          background-color: $headerBlueHover;
+        }
+        &:active {
+          background-color: $headerBlueActive;
+        }
+      }
+      .Dropdown-arrow {
+        border-color: $blue transparent transparent;
+      }
+      .Dropdown-root.is-open .Dropdown-arrow {
+        border-color: transparent transparent $blue !important;
+      }
+      .Dropdown-menu {
+        border: 1px solid $headerBlue;
+      }
+      .Dropdown-option:hover,
+      .Dropdown-option.is-selected {
+        background-color: $darkGreen;
+        color: $darkBackground;
+      }
+    }
+    &.dropdown-num-inputs-container {
+      .Dropdown-arrow-wrapper {
+        z-index: 1;
+      }
+    }
+  }
+
+  .presets {
+    border: 1px solid $headerBlue;
+    background-color: $headerBlue;
+    color: $blue;
+    .preset-action {
+      border-right-color: $headerDarkBlue;
+      &:hover {
+        background-color: $headerBlueHover;
+      }
+      &:active {
+        background-color: $headerBlueActive;
+      }
+      &.disabled {
+        background-color: #2a416b;
+      }
+    }
+    input {
+      background-color: $darkBackground;
+      color: $darkLightGray;
+    }
+    .preset-hotkey {
+      background-color: $blue;
+      color: #ffffff;
+    }
+    .Dropdown-arrow-wrapper {
+      border-left-color: $headerBlue !important;
+    }
+    .Dropdown-control {
+      border-right-color: $headerDarkBlue !important;
+    }
+  }
+
+  .split-button {
+    background-color: $darkMediumGray;
+    .split-button-action {
+      &:hover {
+        background-color: $darkMediumGrayHover;
+      }
+      &:active {
+        background-color: $darkMediumGrayActive;
+      }
+    }
+    .split-button-arrow {
+      background-color: $splitButtonAction;
+      &:hover {
+        background-color: lighten($splitButtonAction, 3%);
+      }
+      &:active {
+        background-color: darken($splitButtonAction, 3%);
+      }
+      &.split-button-arrow-left {
+        border-right: 1px solid $darkBackground;
+        &::before {
+          border-color: transparent $darkLightGray transparent transparent;
+        }
+      }
+      &.split-button-arrow-right {
+        &::before {
+          border-color: transparent transparent transparent $darkLightGray;
+        }
+      }
+    }
+  }
+
+  .split-button-container {
+    &.small-split-button {
+      .split-button {
+        border: 1px solid $orange;
+        background-color: $lightOrange;
+        color: $orange;
+        .split-button-action {
+          border-right: 1px solid $orange;
+          &:hover {
+            background-color: $darkLightOrange;
+          }
+          &:active {
+            background-color: $darkerLightOrange;
+          }
+        }
+        .split-button-arrow {
+          background-color: $lightOrange;
+          &.split-button-arrow-left {
+            &::before {
+              border-color: transparent $orange transparent transparent;
+            }
+          }
+          &.split-button-arrow-right {
+            &::before {
+              border-color: transparent transparent transparent $orange;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .sequence-step {
+    background-color: $darkMediumGray;
+    color: $darkBackground;
+    &:hover {
+      background-color: $darkMediumGrayHover;
+    }
+    &:active {
+      background-color: $darkMediumGrayActive;
+    }
+    &.selected {
+      background-color: $darkGreen;
+      &:hover {
+        background-color: $darkGreenHover;
+      }
+    }
+    &.playing {
+      background-color: $darkDarkOrange;
+      &:hover {
+        background-color: $darkOrange;
+      }
+      &.selected {
+        background-color: $orange;
+        color: $darkBackground;
+        &:hover {
+          background-color: $orangeHover;
+        }
+      }
+    }
+  }
+
+  .knob-container {
+    &.axis-knob {
+      &::before {
+        background: $darkBackground;
+      }
+    }
+  }
+
+  .channel-clock {
+    border: 1px solid $darkMediumGray;
+    .channel-drawer-control {
+      $arrow-size: 8px;
+      background-color: $darkMediumGray;
+      &:hover {
+        background-color: $darkMediumGrayHover;
+      }
+      &:active {
+        background-color: $darkMediumGrayActive;
+      }
+      .arrow-down {
+        border-top: $arrow-size - 3px solid $darkLightGray;
+      }
+      &.drawer-open {
+        background: $darkGreen;
+        &:hover {
+          background: $darkGreenHover;
+        }
+        .arrow-down {
+          border-top: $arrow-size - 3px solid $darkBackground;
+        }
+      }
+    }
+  }
+
+  .modal-container {
+    background-color: rgba(0, 0, 0, 0.85);
+    .modal-window {
+      background-color: $darkBackground;
+      box-shadow: 0px 0px 6px $darkGreen;
+    }
+  }
+
   .mute {
     $muteGray: #39393f;
     $muteGrayHover: lighten($muteGray, 3%);
-    background-color: #23232b;
+    $muteGrayActive: darken($muteGray, 3%);
+    $muteDarkGray: #17171e;
+    background-color: $darkMuteBackground;
+
     .button {
       background-color: $muteGray;
       &:hover {
         background-color: $muteGrayHover;
       }
+      &:active {
+        background-color: $muteGrayActive;
+      }
     }
+
     .react-numeric-input {
       b {
         background-color: $muteGray;
         border-color: $muteGray;
+        &:hover {
+          background-color: $muteGrayHover;
+        }
+        &:active {
+          background-color: $muteGrayActive;
+        }
+      }
+      b:first-of-type {
+        border-bottom-color: $darkMuteBackground;
       }
       input {
         border-color: $muteGray;
       }
     }
+
     .Dropdown-control,
     .Dropdown-arrow-wrapper {
       border-color: $muteGray;
       background-color: $muteGray;
+    }
+
+    .Dropdown-arrow-wrapper {
+      border-left-color: $darkMuteBackground;
       &:hover {
         background-color: $muteGrayHover;
       }
     }
+
     .react-switch-bg {
       background-color: $muteGray !important;
     }
+
     .split-button {
       background-color: $muteGray;
       &:hover {
@@ -180,33 +671,65 @@ $darkGreenHover: lighten($darkGreen, 20%);
         }
       }
       .split-button-arrow {
-        background-color: #c6c6c6;
+        $muteSplitButtonAction: darken($splitButtonAction, 4%);
+        background-color: $muteSplitButtonAction;
+        &:hover {
+          background-color: lighten($muteSplitButtonAction, 3%);
+        }
+        &:active {
+          background-color: darken($muteSplitButtonAction, 3%);
+        }
         &.split-button-arrow-left {
-          border-right: 1px solid #888888;
+          border-right: 1px solid $darkBackground;
+          &::before {
+            border-color: transparent $darkLightGray transparent transparent;
+          }
+        }
+        &.split-button-arrow-right {
+          &::before {
+            border-color: transparent transparent transparent $darkLightGray;
+          }
         }
       }
     }
-    .piano-keys .white-key {
-      background-color: $muteGray !important;
-      &:hover {
-        background-color: $muteGrayHover !important;
+
+    .piano-keys {
+      .pitch-class {
+        background-color: $muteDarkGray;
       }
-      &.selected {
-        background-color: $darkGreen !important;
+      .white-key {
+        background-color: $muteGray !important;
         &:hover {
-          background-color: $darkGreenHover !important;
+          background-color: $muteGrayHover !important;
         }
-      }
-      &.playing {
-        background-color: $orange !important;
-        &:hover {
-          background-color: $orangeHover !important;
+        &.selected {
+          background-color: $darkGreen !important;
+          &:hover {
+            background-color: $darkGreenHover !important;
+          }
+        }
+        &.playing {
+          background-color: $orange !important;
+          &:hover {
+            background-color: $orangeHover !important;
+          }
         }
       }
     }
+
     &.channel-clock {
       .channel-clock-bottom.drawer-open .piano-drawer-border {
         border: 2px solid $darkBackground;
+      }
+    }
+
+    &.channel-horizontal {
+      .channel-number-background {
+        background: linear-gradient(to right, rgba(28, 28, 35, 1) 5%, rgba(28, 28, 35, 0));
+        height: 100%;
+      }
+      .channel-number {
+        text-shadow: 0 0 5px $darkMuteBackground;
       }
     }
   }

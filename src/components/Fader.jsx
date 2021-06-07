@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { useGesture } from 'react-use-gesture'
@@ -6,11 +6,15 @@ import { constrain } from '../math'
 import faderSlot from '../assets/fader-slot.svg'
 import faderKnob from '../assets/fader-knob.svg'
 import faderKnobMute from '../assets/fader-knob-mute.svg'
+import faderSlotDark from '../assets/fader-slot-dark.svg'
+import faderKnobDark from '../assets/fader-knob-dark.svg'
+import faderKnobMuteDark from '../assets/fader-knob-mute-dark.svg'
+import faderSlotMuteDark from '../assets/fader-slot-mute-dark.svg'
 import './Fader.scss'
 
 const FADER_HEIGHT = 41
 
-export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute }) {
+export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute, theme }) {
   const faderClick = useCallback(
     (e) => {
       var bounding = e.target.getBoundingClientRect()
@@ -27,6 +31,24 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     },
     [setValue]
   )
+
+  const faderSlotGraphic = useMemo(() => {
+    if (theme === 'dark') {
+      if (mute) {
+        return faderSlotMuteDark
+      }
+      return faderSlotDark
+    }
+    return faderSlot
+  }, [mute, theme])
+
+  const faderKnobGraphic = useMemo(() => {
+    if (mute) {
+      return theme === 'dark' ? faderKnobMuteDark : faderKnobMute
+    } else {
+      return theme === 'dark' ? faderKnobDark : faderKnob
+    }
+  }, [mute, theme])
 
   const drag = useGesture({
     onDrag: ({ delta: [dx, dy] }) => {
@@ -45,9 +67,9 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
 
   return (
     <div className="fader channel-module" onClick={faderClick}>
-      <img src={faderSlot} alt="" className="fader-slot" />
+      <img src={faderSlotGraphic} alt="" className="fader-slot" />
       <img
-        src={mute ? faderKnobMute : faderKnob}
+        src={faderKnobGraphic}
         alt=""
         style={{ top: FADER_HEIGHT * (1 - value) - 1 }}
         {...drag()}
@@ -65,4 +87,5 @@ Fader.propTypes = {
   setGrabbing: PropTypes.func,
   label: PropTypes.string,
   mute: PropTypes.bool,
+  theme: PropTypes.string,
 }

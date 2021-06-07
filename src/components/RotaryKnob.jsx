@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { KNOB_MAX } from '../globals'
@@ -34,6 +34,7 @@ export default function RotaryKnob({
   detent,
   mute,
   linearKnobs,
+  theme,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -102,6 +103,14 @@ export default function RotaryKnob({
     return {}
   }, [axisKnob, axisKnobLarge, inline])
 
+  const knobColor = useMemo(() => {
+    if (theme === 'dark') {
+      return mute ? '39393f' : '45454c'
+    } else {
+      return mute ? 'D8D8D8' : 'E6E6E6'
+    }
+  }, [mute, theme])
+
   const skin = useMemo(() => {
     const st0 = Math.round(Math.random() * 100000)
     const st1 = Math.round(Math.random() * 100000)
@@ -115,11 +124,11 @@ export default function RotaryKnob({
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 110.6 97.5" style="enable-background:new 0 0 110.6 97.5;" xml:space="preserve">
 <style type="text/css">
-	.st${st0}{fill:#${mute ? 'D8D8D8' : 'E6E6E6'};}
-	.st${st1}{fill:#CCCCCC;}
-	.st${st2}{fill:#FFFFFF;}
-	.st${st3}{fill:#666666;}
-	.st${st4}{fill:none;stroke:#999999;stroke-miterlimit:10;}
+	.st${st0}{fill:#${knobColor};}
+	.st${st1}{fill:#${theme === 'dark' ? '23232b' : 'CCCCCC'};}
+	.st${st2}{fill:#${theme === 'dark' ? '090c10' : 'FFFFFF'};}
+	.st${st3}{fill:#${theme === 'dark' ? 'a0a0b4' : '666666'};}
+	.st${st4}{fill:none;stroke:#${theme === 'dark' ? '666666' : '999999'};stroke-miterlimit:10;}
 </style>
 <desc>Created with Sketch.</desc>
 <g id="knob">
@@ -144,7 +153,7 @@ export default function RotaryKnob({
 </svg>
 `,
     }
-  }, [mute])
+  }, [knobColor, theme])
 
   const detentSkin = useMemo(() => {
     const st0 = Math.round(Math.random() * 100000)
@@ -160,12 +169,12 @@ export default function RotaryKnob({
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 110.6 97.5" style="enable-background:new 0 0 110.6 97.5;" xml:space="preserve">
 <style type="text/css">
-	.st${st0}{fill:#${mute ? 'D8D8D8' : 'E6E6E6'};}
-	.st${st1}{fill:#CCCCCC;}
-	.st${st2}{fill:#FFFFFF;}
-	.st${st3}{fill:#666666;}
-	.st${st4}{fill:none;stroke:#999999;stroke-miterlimit:10;}
-  .st${st5}{fill:none;stroke:#666666;stroke-width:2;stroke-miterlimit:10;}
+	.st${st0}{fill:#${knobColor};}
+	.st${st1}{fill:#${theme === 'dark' ? '23232b' : 'CCCCCC'};}
+	.st${st2}{fill:#${theme === 'dark' ? '090c10' : 'FFFFFF'};}
+	.st${st3}{fill:#${theme === 'dark' ? 'a0a0b4' : '666666'};}
+	.st${st4}{fill:none;stroke:#${theme === 'dark' ? '666666' : '999999'};stroke-miterlimit:10;}
+  .st${st5}{fill:none;stroke:#${theme === 'dark' ? 'a0a0b4' : '666666'};stroke-width:2;stroke-miterlimit:10;}
 </style>
 <desc>Created with Sketch.</desc>
 <g id="knob">
@@ -190,7 +199,7 @@ export default function RotaryKnob({
 </svg>
 `,
     }
-  }, [mute])
+  }, [knobColor, theme])
 
   const axisSkin = useMemo(() => {
     const st0 = Math.round(Math.random() * 100000)
@@ -204,10 +213,10 @@ export default function RotaryKnob({
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 84 84" style="enable-background:new 0 0 84 84;" xml:space="preserve">
 <style type="text/css">
-	.st${st0}{fill:#${mute ? 'D8D8D8' : 'E6E6E6'};}
-	.st${st1}{fill:#CCCCCC;}
-	.st${st2}{fill:#FFFFFF;}
-	.st${st3}{fill:#666666;}
+	.st${st0}{fill:#${knobColor};}
+	.st${st1}{fill:#${theme === 'dark' ? '23232b' : 'CCCCCC'};}
+	.st${st2}{fill:#${theme === 'dark' ? '090c10' : 'FFFFFF'};}
+	.st${st3}{fill:#${theme === 'dark' ? 'a0a0b4' : '666666'};}
 </style>
 <desc>Created with Sketch.</desc>
 <g id="knob">
@@ -252,7 +261,7 @@ export default function RotaryKnob({
 </svg>
 `,
     }
-  }, [mute])
+  }, [knobColor, theme])
 
   const activeSkin = useMemo(() => {
     if (axisKnob) return axisSkin
@@ -382,4 +391,5 @@ RotaryKnob.propTypes = {
   detent: PropTypes.bool,
   mute: PropTypes.bool,
   linearKnobs: PropTypes.bool,
+  theme: PropTypes.string,
 }

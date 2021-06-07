@@ -13,6 +13,7 @@ export default function Instrument({
   instrumentType,
   setInstrumentType,
   small,
+  theme,
 }) {
   const incrementInstrument = useCallback(
     (next) => {
@@ -42,10 +43,10 @@ export default function Instrument({
             checked={instrumentOn}
             uncheckedIcon={false}
             checkedIcon={false}
-            offColor={'#e6e6e6'}
-            onColor={'#e6e6e6'}
-            offHandleColor={'#666666'}
-            onHandleColor={'#33ff00'}
+            offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+            onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+            offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
+            onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
             width={48}
             height={24}
           />
@@ -57,7 +58,7 @@ export default function Instrument({
         <div className="button disabled">Instr</div>
       ) : (
         <SplitButton
-          content={INSTRUMENT_TYPES[instrumentType]}
+          content={INSTRUMENT_TYPES[instrumentType](theme)}
           rightAction={() => incrementInstrument(true)}
           leftAction={() => incrementInstrument(false)}
         />
@@ -72,4 +73,5 @@ Instrument.propTypes = {
   setInstrumentType: PropTypes.func,
   className: PropTypes.string,
   small: PropTypes.bool,
+  theme: PropTypes.string,
 }

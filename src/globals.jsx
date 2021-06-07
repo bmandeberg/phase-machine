@@ -1,10 +1,15 @@
 import React from 'react'
 import { v4 as uuid } from 'uuid'
 import sine from './assets/sine_wave.svg'
+import lightSine from './assets/sine_wave_light.svg'
 import square from './assets/square_wave.svg'
+import lightSquare from './assets/square_wave_light.svg'
 import triangle from './assets/triangle_wave.svg'
+import lightTriangle from './assets/triangle_wave_light.svg'
 import sawtooth from './assets/sawtooth_wave.svg'
+import lightSawtooth from './assets/sawtooth_wave_light.svg'
 import pulse from './assets/pulse_wave.svg'
+import lightPulse from './assets/pulse_wave_light.svg'
 
 import { rangeWrapper } from './math'
 
@@ -46,86 +51,86 @@ export const RATES = [
 ]
 
 export const INSTRUMENT_TYPES = {
-  sine: <img className="wave-icon" src={sine} alt="" />,
-  square: <img className="wave-icon" src={square} alt="" />,
-  triangle: <img className="wave-icon" src={triangle} alt="" />,
-  sawtooth: <img className="wave-icon" src={sawtooth} alt="" />,
-  pulse: <img className="wave-icon" src={pulse} alt="" />,
-  pwm: (
+  sine: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />,
+  square: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />,
+  triangle: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />,
+  sawtooth: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />,
+  pulse: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightPulse : pulse} alt="" />,
+  pwm: (theme) => (
     <span className="wave-title" style={{ marginTop: 2, marginRight: 0 }}>
       pwm
     </span>
   ),
-  fmsine: (
+  fmsine: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={sine} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />
     </div>
   ),
-  fmsquare: (
+  fmsquare: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={square} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />
     </div>
   ),
-  fmtriangle: (
+  fmtriangle: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={triangle} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />
     </div>
   ),
-  fmsawtooth: (
+  fmsawtooth: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={sawtooth} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />
     </div>
   ),
-  amsine: (
+  amsine: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={sine} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />
     </div>
   ),
-  amsquare: (
+  amsquare: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={square} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />
     </div>
   ),
-  amtriangle: (
+  amtriangle: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={triangle} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />
     </div>
   ),
-  amsawtooth: (
+  amsawtooth: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={sawtooth} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />
     </div>
   ),
-  fatsine: (
+  fatsine: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={sine} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />
     </div>
   ),
-  fatsquare: (
+  fatsquare: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={square} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />
     </div>
   ),
-  fattriangle: (
+  fattriangle: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={triangle} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />
     </div>
   ),
-  fatsawtooth: (
+  fatsawtooth: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={sawtooth} alt="" />
+      <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />
     </div>
   ),
 }

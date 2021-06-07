@@ -11,6 +11,7 @@ export default function Settings({
   setSeparateMIDIChannels,
   linearKnobs,
   setLinearKnobs,
+  theme,
 }) {
   const setKnobType = useCallback(
     (knobType) => {
@@ -29,10 +30,10 @@ export default function Settings({
           checked={showStepNumbers}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={'#e6e6e6'}
-          onColor={'#e6e6e6'}
-          offHandleColor={'#666666'}
-          onHandleColor={'#33ff00'}
+          offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+          onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+          offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
+          onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
           width={48}
           height={24}
         />
@@ -45,10 +46,10 @@ export default function Settings({
           checked={separateMIDIChannels}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={'#e6e6e6'}
-          onColor={'#e6e6e6'}
-          offHandleColor={'#666666'}
-          onHandleColor={'#33ff00'}
+          offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+          onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+          offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
+          onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
           width={48}
           height={24}
         />
@@ -72,4 +73,5 @@ Settings.propTypes = {
   setShowStepNumbers: PropTypes.func,
   linearKnobs: PropTypes.bool,
   setLinearKnobs: PropTypes.func,
+  theme: PropTypes.string,
 }

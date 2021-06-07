@@ -3,10 +3,15 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Dropdn from './Dropdn'
 import addIcon from '../assets/plus-icon-orange.svg'
+import addIconBlue from '../assets/plus-icon-blue.svg'
 import trashIcon from '../assets/trash-icon.svg'
+import trashIconBlue from '../assets/trash-icon-blue.svg'
 import trashIconDisabled from '../assets/trash-icon-disabled.svg'
+import trashIconDisabledBlue from '../assets/trash-icon-disabled-blue.svg'
 import saveIcon from '../assets/save-icon.svg'
+import saveIconBlue from '../assets/save-icon-blue.svg'
 import saveIconDisabled from '../assets/save-icon-disabled.svg'
+import saveIconDisabledBlue from '../assets/save-icon-disabled-blue.svg'
 import edited from '../assets/edit-tag.svg'
 import './Presets.scss'
 
@@ -21,6 +26,20 @@ export default function Presets(props) {
     }
     return padding
   }, [props.presetHotkey, props.presetDirty])
+
+  const activeTrashIcon = useMemo(() => {
+    if (props.theme === 'dark') {
+      return props.preset.placeholder ? trashIconDisabledBlue : trashIconBlue
+    }
+    return props.preset.placeholder ? trashIconDisabled : trashIcon
+  }, [props.preset.placeholder, props.theme])
+
+  const activeSaveIcon = useMemo(() => {
+    if (props.theme === 'dark') {
+      return props.presetDirty || props.preset.placeholder ? saveIconBlue : saveIconDisabledBlue
+    }
+    return props.presetDirty || props.preset.placeholder ? saveIcon : saveIconDisabled
+  }, [props.preset.placeholder, props.presetDirty, props.theme])
 
   return (
     <div className={classNames('presets-container', props.className)}>
@@ -52,15 +71,15 @@ export default function Presets(props) {
             disabled: !props.presetDirty && !props.preset.placeholder,
           })}
           onClick={props.savePreset}>
-          <img src={props.presetDirty || props.preset.placeholder ? saveIcon : saveIconDisabled} alt="Save" />
+          <img src={activeSaveIcon} alt="Save" />
         </div>
         <div
           className={classNames('preset-action preset-delete', { disabled: props.preset.placeholder })}
           onClick={props.deletePreset}>
-          <img src={props.preset.placeholder ? trashIconDisabled : trashIcon} alt="Delete" />
+          <img src={activeTrashIcon} alt="Delete" />
         </div>
         <div className="preset-action preset-new" onClick={props.newPreset}>
-          <img src={addIcon} alt="New" />
+          <img src={props.theme === 'dark' ? addIconBlue : addIcon} alt="New" />
         </div>
       </div>
       <p className="presets-label no-select">Preset</p>
@@ -79,4 +98,5 @@ Presets.propTypes = {
   savePreset: PropTypes.func,
   newPreset: PropTypes.func,
   deletePreset: PropTypes.func,
+  theme: PropTypes.string,
 }

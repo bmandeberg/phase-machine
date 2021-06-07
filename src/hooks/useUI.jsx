@@ -98,7 +98,8 @@ export default function useUI(
   deleteChannel,
   drag,
   draggingChannel,
-  linearKnobs
+  linearKnobs,
+  theme
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -164,9 +165,10 @@ export default function useUI(
         setGrabbing={setGrabbing}
         grabbing={grabbing}
         mute={muted}
+        theme={theme}
       />
     )
-  }, [grabbing, muted, setGrabbing, setVelocity, velocity])
+  }, [grabbing, muted, setGrabbing, setVelocity, theme, velocity])
 
   const shiftEl = useMemo(() => {
     return (
@@ -205,6 +207,7 @@ export default function useUI(
           stopChangingAxis={stopChangingAxis}
           mute={muted}
           linearKnobs={linearKnobs}
+          theme={theme}
         />
       )
     },
@@ -221,6 +224,7 @@ export default function useUI(
       showKeyPreview,
       startChangingAxis,
       stopChangingAxis,
+      theme,
       turningAxisKnob,
       updateAxis,
     ]
@@ -329,10 +333,11 @@ export default function useUI(
           squeeze={!vertical ? 6 : 0}
           mute={muted}
           linearKnobs={linearKnobs}
+          theme={theme}
         />
       )
     },
-    [grabbing, keySustain, linearKnobs, muted, setGrabbing, setKeySustain]
+    [grabbing, keySustain, linearKnobs, muted, setGrabbing, setKeySustain, theme]
   )
 
   const keySwingEl = useCallback(
@@ -350,6 +355,7 @@ export default function useUI(
             detent
             mute={mute}
             linearKnobs={linearKnobs}
+            theme={theme}
           />
           <NumInput
             value={keySwingLength}
@@ -362,7 +368,7 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, keySwing, keySwingLength, linearKnobs, mute, setGrabbing, setKeySwing, setKeySwingLength]
+    [grabbing, keySwing, keySwingLength, linearKnobs, mute, setGrabbing, setKeySwing, setKeySwingLength, theme]
   )
 
   const seqLengthEl = useCallback(
@@ -436,6 +442,7 @@ export default function useUI(
             detent
             mute={mute}
             linearKnobs={linearKnobs}
+            theme={theme}
           />
           <NumInput
             value={seqSwingLength}
@@ -449,7 +456,7 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, linearKnobs, mute, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength]
+    [grabbing, linearKnobs, mute, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength, theme]
   )
 
   const seqSustainEl = useCallback(
@@ -466,10 +473,11 @@ export default function useUI(
           inline={inline}
           mute={mute}
           linearKnobs={linearKnobs}
+          theme={theme}
         />
       )
     },
-    [grabbing, linearKnobs, mute, seqSustain, setGrabbing, setSeqSustain]
+    [grabbing, linearKnobs, mute, seqSustain, setGrabbing, setSeqSustain, theme]
   )
 
   const legatoEl = useCallback(
@@ -482,10 +490,10 @@ export default function useUI(
             checked={legato}
             uncheckedIcon={false}
             checkedIcon={false}
-            offColor={'#e6e6e6'}
-            onColor={'#e6e6e6'}
-            offHandleColor={'#666666'}
-            onHandleColor={'#33ff00'}
+            offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+            onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
+            offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
+            onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
             width={48}
             height={24}
           />
@@ -493,7 +501,7 @@ export default function useUI(
         </div>
       )
     },
-    [legato, setLegato]
+    [legato, setLegato, theme]
   )
 
   const instrumentEl = useCallback(
@@ -506,10 +514,11 @@ export default function useUI(
           instrumentType={instrumentType}
           setInstrumentType={setInstrumentType}
           small={small}
+          theme={theme}
         />
       )
     },
-    [instrumentOn, instrumentType, setInstrumentOn, setInstrumentType]
+    [instrumentOn, instrumentType, setInstrumentOn, setInstrumentType, theme]
   )
 
   return {

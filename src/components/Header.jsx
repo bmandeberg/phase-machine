@@ -7,9 +7,10 @@ import NumInput from './NumInput'
 import Dropdn from './Dropdn'
 import Presets from './Presets'
 import RadioButtons from './RadioButtons'
-import Checkbox from './Checkbox'
 import logo from '../assets/logo.svg'
+import logoDark from '../assets/logo-dark.svg'
 import play from '../assets/play.svg'
+import playDark from '../assets/play-dark.svg'
 import stop from '../assets/stop.svg'
 import './Header.scss'
 
@@ -51,16 +52,16 @@ export default class Header extends React.Component {
   render() {
     return (
       <div id="header">
-        <img id="logo" src={logo} alt="Phase Machine" />
+        <img id="logo" src={this.props.theme === 'dark' ? logoDark : logo} alt="Phase Machine" />
         <img
           id="play-stop"
           className="header-item"
-          src={this.props.playing ? stop : play}
+          src={this.props.playing ? stop : this.props.theme === 'dark' ? playDark : play}
           alt="PLAY"
           onClick={this.playStop.bind(this)}
         />
         <NumInput
-          className="header-item small-input"
+          className="header-item"
           value={this.props.tempo}
           setValue={this.props.setTempo}
           label="Tempo"
@@ -69,7 +70,7 @@ export default class Header extends React.Component {
           small
         />
         <NumInput
-          className="header-item small-input"
+          className="header-item"
           value={this.props.numChannels}
           setValue={this.props.setNumChannels}
           label="Channels"
@@ -88,6 +89,7 @@ export default class Header extends React.Component {
           savePreset={this.props.savePreset}
           newPreset={this.props.newPreset}
           deletePreset={this.props.deletePreset}
+          theme={this.props.theme}
         />
         <Dropdn
           className="header-item"
@@ -155,4 +157,5 @@ Header.propTypes = {
   newPreset: PropTypes.func,
   deletePreset: PropTypes.func,
   setModalType: PropTypes.func,
+  theme: PropTypes.string,
 }

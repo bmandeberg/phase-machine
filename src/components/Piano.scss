@@ -72,21 +72,7 @@
         border-bottom: none;
         margin-left: 0;
         border-color: $lightOrange;
-        // background-color: lighten($orange, 5%);
         background-color: $orange;
-        // &.next-black-key-near {
-        //   &::after {
-        //     content: 'hey';
-        //     position: absolute;
-        //     height: 55px;
-        //     width: 5px;
-        //     border: 2px solid #ffffff;
-        //     border-left: none;
-        //     border-top: none;
-        //     left: -3px;
-        //     transform: translate(-0.5px);
-        //   }
-        // }
         &.next-black-key-near {
           &::before {
             content: '';

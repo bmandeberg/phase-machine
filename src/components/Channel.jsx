@@ -13,7 +13,9 @@ import useLoop from '../hooks/useLoop'
 import useKeyManipulation from '../hooks/useKeyManipulation'
 import useUI from '../hooks/useUI'
 import arrowSmall from '../assets/arrow-small.svg'
+import arrowSmallDark from '../assets/arrow-small-dark.svg'
 import arrowClock from '../assets/arrow-clock.svg'
+import arrowClockDark from '../assets/arrow-clock-dark.svg'
 import './Channel.scss'
 
 const CLOCK_CHANNEL_WIDTH = 657
@@ -42,6 +44,7 @@ export default function Channel({
   initState,
   container,
   changeChannelOrder,
+  theme,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
@@ -516,7 +519,8 @@ export default function Channel({
     deleteChannel,
     drag,
     draggingChannel,
-    linearKnobs
+    linearKnobs,
+    theme
   )
 
   const dragTargetUI = useCallback(
@@ -634,7 +638,7 @@ export default function Channel({
         {keyEl}
         {shiftEl}
         {axisEl(false)}
-        <img className="arrow-small" src={arrowSmall} alt="" draggable="false" />
+        <img className="arrow-small" src={theme === 'dark' ? arrowSmallDark : arrowSmall} alt="" draggable="false" />
         {flipOppositeEl}
         {pianoEl}
         {keyRateEl}
@@ -719,7 +723,7 @@ export default function Channel({
             {shiftEl}
             {keyViewTypeEl}
           </div>
-          <img className="arrow-clock" src={arrowClock} alt="" />
+          <img className="arrow-clock" src={theme === 'dark' ? arrowClockDark : arrowClock} alt="" />
           {axisEl(true)}
           <div className="channel-vertical">
             {keyArpModeEl}
@@ -789,4 +793,5 @@ Channel.propTypes = {
   initState: PropTypes.object,
   container: PropTypes.object,
   changeChannelOrder: PropTypes.func,
+  theme: PropTypes.string,
 }
