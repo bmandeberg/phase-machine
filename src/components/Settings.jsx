@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import Switch from 'react-switch'
 import Dropdn from '../components/Dropdn'
+import { THEMES } from '../globals'
 import './Settings.scss'
 
 export default function Settings({
@@ -84,7 +85,7 @@ export default function Settings({
       </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Theme</p>
-        <Dropdn options={['light', 'dark']} value={theme} setValue={setTheme} capitalize />
+        <Dropdn options={THEMES} value={theme} setValue={setTheme} capitalize />
       </div>
     </div>
   )

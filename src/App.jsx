@@ -6,12 +6,13 @@ import classNames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
 import { v4 as uuid } from 'uuid'
 import arrayMove from 'array-move'
-import { VIEWS, SECTIONS, DEFAULT_PRESET, BLANK_CHANNEL, CHANNEL_COLORS } from './globals'
+import { MAX_CHANNELS, VIEWS, SECTIONS, DEFAULT_PRESET, BLANK_CHANNEL, CHANNEL_COLORS } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
 import usePresets from './hooks/usePresets'
 import './dark-theme.scss'
+import './contrast-theme.scss'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
@@ -212,23 +213,25 @@ export default function App() {
 
   const duplicateChannel = useCallback(
     (id) => {
-      setUIState((uiState) => {
-        const uiStateCopy = deepStateCopy(uiState)
-        const channelNum = uiStateCopy.channels.find((c) => c.id === id).channelNum
-        const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelNum]), {
-          id: uuid(),
-          channelNum: channelNum + 1,
-          color: getChannelColor(uiStateCopy.channels),
+      if (uiState.channels.length < MAX_CHANNELS) {
+        setUIState((uiState) => {
+          const uiStateCopy = deepStateCopy(uiState)
+          const channelNum = uiStateCopy.channels.find((c) => c.id === id).channelNum
+          const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelNum]), {
+            id: uuid(),
+            channelNum: channelNum + 1,
+            color: getChannelColor(uiStateCopy.channels),
+          })
+          uiStateCopy.channels.splice(channelNum + 1, 0, duplicatedChannel)
+          uiStateCopy.channels.forEach((channel, i) => {
+            channel.channelNum = i
+          })
+          return uiStateCopy
         })
-        uiStateCopy.channels.splice(channelNum + 1, 0, duplicatedChannel)
-        uiStateCopy.channels.forEach((channel, i) => {
-          channel.channelNum = i
-        })
-        return uiStateCopy
-      })
-      setNumChannels((numChannels) => numChannels + 1)
+        setNumChannels((numChannels) => numChannels + 1)
+      }
     },
-    [getChannelColor]
+    [getChannelColor, uiState.channels.length]
   )
 
   const deleteChannel = useCallback((id) => {
@@ -312,7 +315,15 @@ export default function App() {
   )
 
   return (
-    <div id="container" ref={container} className={classNames({ grabbing, resizing, 'dark-theme': theme === 'dark' })}>
+    <div
+      id="container"
+      ref={container}
+      className={classNames({
+        grabbing,
+        resizing,
+        'dark-theme': theme === 'dark',
+        'contrast-theme': theme === 'contrast',
+      })}>
       <Header
         tempo={tempo}
         setTempo={setTempo}
