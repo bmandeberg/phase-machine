@@ -32,7 +32,7 @@ export default function App() {
   const [tempo, setTempo] = useState(JSON.parse(window.localStorage.getItem('tempo')) ?? 120)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(currentPreset.numChannels)
-  const [view, setView] = useState(VIEWS[0])
+  const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[0])
   const [midiOut, setMidiOut] = useState(null)
   const [midiOuts, setMidiOuts] = useState([])
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
@@ -81,6 +81,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('hotkeyRestart', hotkeyRestart)
   }, [hotkeyRestart])
+
+  useEffect(() => {
+    window.localStorage.setItem('view', view)
+  }, [view])
 
   // init MIDI
 
