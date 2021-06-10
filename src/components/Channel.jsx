@@ -280,6 +280,7 @@ export default function Channel({
     (time, interval, sustain) => {
       const prevNote = noteString(prevNoteIndex.current)
       const note = noteString(noteIndex.current)
+      if (!note) return
       const channel = separateMIDIChannels ? channelNum + 1 : 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
