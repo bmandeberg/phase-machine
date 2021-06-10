@@ -278,17 +278,14 @@ export default function Channel({
   // play note
   const playNote = useCallback(
     (time, interval, sustain) => {
-      const prevNote = noteString(prevNoteIndex.current)
       const note = noteString(noteIndex.current)
       const channel = separateMIDIChannels ? channelNum + 1 : 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
-      // console.log(note)
       if (notePlaying.current) {
         Tone.context.clearTimeout(noteOffTimeout.current)
-        if (prevNoteIndex.current !== undefined) {
-          noteOff(channel, prevNote, midiOutObj, false, time, clockOffset)
-        }
+        const noteOffTime = time - (noteIndex.current === playingNoteRef.current ? 0.005 : 0)
+        noteOff(channel, noteString(playingNoteRef.current), midiOutObj, false, noteOffTime, clockOffset)
       }
       if (instrumentOn) {
         instrument.current.triggerAttack(note, time, velocity)
@@ -300,8 +297,8 @@ export default function Channel({
       setPlayingNote(noteIndex.current)
       Tone.context.setTimeout(() => {
         notePlaying.current = true
+        playingNoteRef.current = noteIndex.current
       }, time - Tone.immediate())
-      playingNoteRef.current = noteIndex.current
       // schedule note-off if we are not legato or if the next step is off
       if (!legato || !seqSteps[nextStep.current]) {
         const sustainTime = Math.max(sustain * interval, 0.08)
