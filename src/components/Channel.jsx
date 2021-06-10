@@ -233,17 +233,23 @@ export default function Channel({
     instrument.current.oscillator.type = instrumentType
   }, [instrumentType])
 
-  const noteOff = useCallback((channel, note, midiOutObj, offTime) => {
-    instrument.current.triggerRelease()
+  const noteOff = useCallback((channel, note, midiOutObj, delay, offTime, clockOffset) => {
+    instrument.current.triggerRelease(offTime)
     if (midiOutObj) {
       const params = {}
       if (offTime) {
-        params.time = offTime
+        params.time = offTime * 1000 + clockOffset
       }
       midiOutObj.stopNote(note, channel, params)
     }
     setNoteOn(false)
-    notePlaying.current = false
+    if (delay) {
+      Tone.context.setTimeout(() => {
+        notePlaying.current = false
+      }, PLAY_NOTE_BUFFER_TIME)
+    } else {
+      notePlaying.current = false
+    }
   }, [])
 
   // note off when stop playing
@@ -252,7 +258,8 @@ export default function Channel({
       const channel = separateMIDIChannels ? channelNum + 1 : 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
-      noteOff(channel, note, midiOutObj, null)
+      Tone.context.clearTimeout(noteOffTimeout.current)
+      noteOff(channel, note, midiOutObj, true, Tone.now(), WebMidi.time - Tone.immediate() * 1000)
     }
   }, [channelNum, midiOut, noteOff, playing, separateMIDIChannels])
 
@@ -262,7 +269,7 @@ export default function Channel({
       const channel = separateMIDIChannels ? channelNum + 1 : 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
-      noteOff(channel, note, midiOutObj, null)
+      noteOff(channel, note, midiOutObj, true, null)
     }
   }, [channelNum, midiOut, muted, noteOff, separateMIDIChannels])
 
@@ -278,27 +285,29 @@ export default function Channel({
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
       // console.log(note)
       if (notePlaying.current) {
-        clearTimeout(noteOffTimeout.current)
+        Tone.context.clearTimeout(noteOffTimeout.current)
         if (prevNoteIndex.current !== undefined) {
-          noteOff(channel, prevNote, midiOutObj, time * 1000 + clockOffset)
+          noteOff(channel, prevNote, midiOutObj, false, time, clockOffset)
         }
       }
       if (instrumentOn) {
         instrument.current.triggerAttack(note, time, velocity)
       }
-      setNoteOn(true)
-      notePlaying.current = true
       if (midiOutObj) {
         midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
       }
+      setNoteOn(true)
       setPlayingNote(noteIndex.current)
+      Tone.context.setTimeout(() => {
+        notePlaying.current = true
+      }, time - Tone.immediate())
       playingNoteRef.current = noteIndex.current
       // schedule note-off if we are not legato or if the next step is off
       if (!legato || !seqSteps[nextStep.current]) {
-        const sustainTime = Math.max(sustain * interval * 1000, 80)
-        clearTimeout(noteOffTimeout.current)
-        noteOffTimeout.current = setTimeout(() => {
-          noteOff(channel, note, midiOutObj, null)
+        const sustainTime = Math.max(sustain * interval, 0.08)
+        Tone.context.clearTimeout(noteOffTimeout.current)
+        noteOffTimeout.current = Tone.context.setTimeout(() => {
+          noteOff(channel, note, midiOutObj, false, null)
         }, time - Tone.immediate() + sustainTime)
       }
     },
@@ -312,7 +321,7 @@ export default function Channel({
       if (playNoteBuffer.current.seq && (!legato || !seqSteps[prevStep.current] || !notePlaying.current)) {
         notePlayed = true
         playNote(
-          playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME / 1000,
+          playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME,
           playNoteBuffer.current.seq.interval,
           seqSustain
         )
@@ -323,7 +332,7 @@ export default function Channel({
         (!notePlaying.current || !(legato && prevNoteIndex.current === noteIndex.current))
       ) {
         playNote(
-          playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME / 1000,
+          playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME,
           playNoteBuffer.current.key.interval,
           keySustain
         )
@@ -335,7 +344,7 @@ export default function Channel({
   const loadPlayNoteBuffer = useCallback(
     (type, time, interval) => {
       if (!playNoteBuffer.current.seq && !playNoteBuffer.current.key) {
-        setTimeout(clearPlayNoteBuffer, PLAY_NOTE_BUFFER_TIME)
+        Tone.context.setTimeout(clearPlayNoteBuffer, PLAY_NOTE_BUFFER_TIME)
       }
       playNoteBuffer.current[type] = { time, interval }
     },

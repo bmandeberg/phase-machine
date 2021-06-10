@@ -267,7 +267,7 @@ export const MAX_SWING_LENGTH = 6
 
 export const PRESET_HOLD_TIME = 1000
 
-export const PLAY_NOTE_BUFFER_TIME = 15
+export const PLAY_NOTE_BUFFER_TIME = 0.015
 
 export function noteString(playingNote) {
   if (!playingNote) {
