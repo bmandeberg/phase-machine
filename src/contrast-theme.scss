@@ -1,42 +1,44 @@
 @import './sass-globals.scss';
 $darkBackground: #090c10;
 $darkMuteBackground: #1c1c23;
+$lightMediumGray: #ccd0ff;
 $darkMediumGray: #45454c;
-$darkMediumGrayHover: lighten($darkMediumGray, 3%);
-$darkMediumGrayActive: darken($darkMediumGray, 3%);
+$lightMediumGrayHover: lighten($lightMediumGray, 5%);
+$lightMediumGrayActive: darken($lightMediumGray, 5%);
 $darkDarkGray: #1e1e25;
 $darkDarkGrayHover: lighten($darkDarkGray, 3%);
+$darkTextGray: #383842;
 $darkLightGray: #a0a0b4;
-$darkGreen: #00c591;
-$darkGreenHover: lighten($darkGreen, 6%);
 $darkDarkOrange: #9e5302;
-$splitButtonAction: #313139;
-$headerBlue: #17326d;
-$headerBlueHover: lighten($headerBlue, 5%);
-$headerBlueActive: darken($headerBlue, 3%);
+$darkerMediumGray: #979ebf;
+$pitchClassGray: #7a7f93;
+$darkerMediumGrayHover: lighten($darkerMediumGray, 5%);
+$darkerMediumGrayActive: darken($darkerMediumGray, 5%);
+$blueHover: lighten($blue, 5%);
+$blueActive: darken($blue, 3%);
 $headerDarkBlue: #0f182d;
 
 .contrast-theme {
   background-color: $darkBackground;
-  color: $darkLightGray;
+  color: $lightMediumGray;
 
   .button {
-    background-color: $darkMediumGray;
-    color: $darkLightGray;
+    background-color: $lightMediumGray;
+    color: $darkTextGray;
     &:hover {
-      background-color: $darkMediumGrayHover;
+      background-color: $lightMediumGrayHover;
     }
     &:active {
-      background-color: $darkMediumGrayActive;
+      background-color: $lightMediumGrayActive;
     }
   }
 
   .mute-solo {
     .button {
-      background-color: $darkMediumGray;
-      color: $darkLightGray;
+      color: $darkTextGray;
+      background-color: $lightMediumGray;
       &:hover {
-        background-color: $darkMediumGrayHover;
+        background-color: $lightMediumGrayHover;
       }
     }
     .mute {
@@ -51,20 +53,20 @@ $headerDarkBlue: #0f182d;
     .solo {
       &.soloed {
         color: $darkBackground;
-        background: $darkGreen;
+        background: $green;
         &:hover {
-          background: $darkGreenHover;
+          background: $greenHover;
         }
       }
     }
   }
 
   .border {
-    border-color: $darkMediumGray;
+    border-color: $pitchClassGray;
   }
 
   .channel-horizontal {
-    border-color: $darkMediumGray;
+    border-color: $pitchClassGray;
     .channel-number-background {
       background: linear-gradient(to right, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
       height: 100%;
@@ -79,22 +81,22 @@ $headerDarkBlue: #0f182d;
       background-color: transparent;
     }
     .duplicate {
-      background-image: url('./assets/plus-icon-gray-dark.png');
+      background-image: url('./assets/plus-icon-light.png');
       background-size: 13px;
       &.mute {
-        background-image: url('./assets/plus-icon-dark-gray-dark.png');
+        background-image: url('./assets/plus-icon-darker-light.png');
         background-size: 13px;
       }
       &:hover {
-        background-image: url('./assets/plus-icon-green-dark.png');
+        background-image: url('./assets/plus-icon-green.png');
         background-size: 13px;
       }
     }
     .delete {
-      background-image: url('./assets/trash-icon-gray-dark.png');
+      background-image: url('./assets/trash-icon-light.png');
       background-size: 13px 14px;
       &.mute {
-        background-image: url('./assets/trash-icon-dark-gray-dark.png');
+        background-image: url('./assets/trash-icon-darker-light.png');
         background-size: 13px 14px;
       }
       &:hover {
@@ -107,30 +109,33 @@ $headerDarkBlue: #0f182d;
   .key {
     &.piano-keys {
       .pitch-class {
-        background-color: $darkDarkGray;
+        background-color: $darkMediumGray;
         border: 2px solid $darkBackground;
         border-top: none;
         &.mute {
           border-color: $darkMuteBackground;
         }
         &:hover {
-          background-color: $darkDarkGrayHover;
+          background-color: darken($darkMediumGray, 4%);
         }
         &.white-key {
-          background-color: $darkMediumGray;
+          background-color: $lightMediumGray;
           border-right: none;
           border-bottom: none;
           &:hover {
-            background-color: $darkMediumGrayHover;
+            background-color: $lightMediumGrayHover;
           }
         }
       }
     }
     &.clock {
       .pitch-class {
-        background-color: $darkMediumGray;
+        background-color: darken($darkerMediumGray, 15%);
         &:hover {
-          background-color: $darkMediumGrayHover;
+          background-color: darken($darkerMediumGrayHover, 15%);
+        }
+        &:active {
+          background-color: darken($darkerMediumGrayActive, 15%);
         }
       }
     }
@@ -142,9 +147,9 @@ $headerDarkBlue: #0f182d;
       transition: border-width $transitionTime / 4, border-color $transitionTime / 2,
         background-color $transitionTime / 4;
       &.selected {
-        background-color: $darkGreen !important;
+        background-color: $green !important;
         &:hover {
-          background-color: $darkGreenHover !important;
+          background-color: $greenHover !important;
         }
       }
       &.playing {
@@ -162,29 +167,29 @@ $headerDarkBlue: #0f182d;
   .react-numeric-input {
     input {
       background-color: $darkDarkGray;
-      color: $darkLightGray;
-      border: 1px solid $darkMediumGray;
+      color: $lightMediumGray;
+      border: 1px solid $lightMediumGray;
       box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
     }
     b {
-      border-color: $darkMediumGray;
-      background-color: $darkMediumGray;
+      border-color: $lightMediumGray;
+      background-color: $lightMediumGray;
       &:hover {
-        background-color: $darkMediumGrayHover;
+        background-color: $lightMediumGrayHover;
       }
       &:active {
-        background-color: $darkMediumGrayActive;
+        background-color: $lightMediumGrayActive;
       }
     }
     b:first-of-type {
       border-bottom-color: $darkMuteBackground;
       i {
-        border-color: transparent transparent $darkLightGray;
+        border-color: transparent transparent $darkTextGray;
       }
     }
     b:last-of-type {
       i {
-        border-color: $darkLightGray transparent transparent;
+        border-color: $darkTextGray transparent transparent;
       }
     }
   }
@@ -192,27 +197,27 @@ $headerDarkBlue: #0f182d;
   .num-input.small-input {
     input {
       background-color: $darkBackground;
-      border: 1px solid $headerBlue;
+      border: 1px solid $blue;
     }
     b {
-      border-color: $headerBlue;
-      background: $headerBlue;
+      border-color: $blue;
+      background: $blue;
       &:hover {
-        background: $headerBlueHover;
+        background: $blueHover;
       }
       &:active {
-        background-color: $headerBlueActive;
+        background-color: $blueActive;
       }
     }
     b:first-of-type {
       border-bottom-color: $headerDarkBlue;
       i {
-        border-color: transparent transparent $blue;
+        border-color: transparent transparent $headerDarkBlue;
       }
     }
     b:last-of-type {
       i {
-        border-color: $blue transparent transparent;
+        border-color: $headerDarkBlue transparent transparent;
       }
     }
   }
@@ -237,36 +242,35 @@ $headerDarkBlue: #0f182d;
 
   .radio-buttons {
     .radio-button {
-      border: 1px solid $headerBlue;
-      color: $blue;
-      background-color: $headerBlue;
+      border: 1px solid $blue;
+      color: $headerDarkBlue;
+      background-color: $blue;
       &:hover {
-        background-color: $headerBlueHover;
+        background-color: $blueHover;
       }
       &:active {
-        background-color: $headerBlueActive;
+        background-color: $blueActive;
       }
       &.radio-button-selected {
-        background-color: $darkGreen;
-        border: 1px solid $darkGreen;
+        background-color: $green;
+        border: 1px solid $green;
         color: $headerDarkBlue;
       }
     }
   }
 
   .piano {
-    $inRangeColor: #787887;
     .piano-note {
-      background-color: #26262f;
+      background-color: $darkMediumGray;
       border-color: $darkBackground;
       &.in-range {
         background-color: $darkDarkGray;
         border-color: transparent;
       }
       &.white-key {
-        background-color: $darkMediumGray;
+        background-color: $pitchClassGray;
         &.in-range {
-          background-color: $inRangeColor;
+          background-color: $lightMediumGray;
           border-color: #3c3c3c;
         }
       }
@@ -277,49 +281,49 @@ $headerDarkBlue: #0f182d;
           background-color: $orange;
           &.next-black-key-near {
             &::before {
-              border: 2px solid $inRangeColor;
+              border: 2px solid $lightMediumGray;
               border-right: none;
               border-top: none;
             }
           }
           &.next-black-key-middle {
             &::after {
-              border: 2px solid $inRangeColor;
+              border: 2px solid $lightMediumGray;
               border-right: none;
               border-top: none;
             }
           }
           &.next-black-key-far {
             &::after {
-              border: 2px solid $inRangeColor;
+              border: 2px solid $lightMediumGray;
               border-right: none;
               border-top: none;
             }
           }
           &.prev-black-key-near {
             &::before {
-              border: 2px solid $inRangeColor;
+              border: 2px solid $lightMediumGray;
               border-left: none;
               border-top: none;
             }
           }
           &.prev-black-key-middle {
             &::before {
-              border: 2px solid $inRangeColor;
+              border: 2px solid $lightMediumGray;
               border-left: none;
               border-top: none;
             }
           }
           &.prev-black-key-far {
             &::before {
-              border: 2px solid $inRangeColor;
+              border: 2px solid $lightMediumGray;
               border-left: none;
               border-top: none;
             }
           }
           & + .piano-note.in-range {
             &::after {
-              border: 2px solid $inRangeColor;
+              border: 2px solid $lightMediumGray;
               border-right: none;
               border-left: none;
               border-top: none;
@@ -336,7 +340,7 @@ $headerDarkBlue: #0f182d;
     }
     .piano-range {
       path {
-        stroke: $darkGreen;
+        stroke: $green;
       }
     }
     .piano-border {
@@ -347,85 +351,85 @@ $headerDarkBlue: #0f182d;
 
   .Dropdown-root {
     &.is-open .Dropdown-arrow {
-      border-color: transparent transparent $darkLightGray !important;
+      border-color: transparent transparent $darkTextGray !important;
     }
   }
 
   .Dropdown-control {
-    background-color: $darkMediumGray;
-    border: 1px solid $darkMediumGray;
-    color: $darkLightGray;
+    background-color: $lightMediumGray;
+    border: 1px solid $lightMediumGray;
+    color: $darkTextGray;
   }
 
   .Dropdown-arrow-wrapper {
-    border: 1px solid $darkMediumGray;
+    border: 1px solid $lightMediumGray;
     border-left-color: $darkBackground;
-    background-color: $darkMediumGray;
+    background-color: $lightMediumGray;
     &:hover {
-      background-color: $darkMediumGrayHover;
+      background-color: $lightMediumGrayHover;
     }
     &:active {
-      background-color: $darkMediumGrayActive;
+      background-color: $lightMediumGrayActive;
     }
   }
 
   .Dropdown-arrow {
-    border-color: $darkLightGray transparent transparent;
+    border-color: $darkTextGray transparent transparent;
   }
 
   .Dropdown-menu {
     background-color: $darkBackground;
-    border: 1px solid $darkMediumGray;
+    border: 1px solid $lightMediumGray;
   }
 
   .Dropdown-menu .Dropdown-group > .Dropdown-title {
-    color: $darkLightGray;
+    color: $lightMediumGray;
   }
 
   .Dropdown-option {
-    color: $darkLightGray;
+    color: $lightMediumGray;
   }
 
   .Dropdown-option:hover,
   .Dropdown-option.is-selected {
-    background-color: $darkGreen;
+    background-color: $green;
     color: $darkBackground;
   }
 
   .Dropdown-noresults {
-    color: $darkLightGray;
+    color: $lightMediumGray;
   }
 
   .dropdown-container {
     &.small-dropdown {
       .Dropdown-control {
-        background-color: $headerBlue;
-        border: 1px solid $headerBlue;
-        color: $blue;
+        background-color: $blue;
+        border: 1px solid $blue;
+        color: $headerDarkBlue;
       }
       .Dropdown-arrow-wrapper {
-        border: 1px solid $headerBlue;
+        border: 1px solid $blue;
         border-left-color: $headerDarkBlue;
-        background-color: $headerBlue;
+        background-color: $blue;
         &:hover {
-          background-color: $headerBlueHover;
+          background-color: $blueHover;
         }
         &:active {
-          background-color: $headerBlueActive;
+          background-color: $blueActive;
         }
       }
       .Dropdown-arrow {
-        border-color: $blue transparent transparent;
+        border-color: $headerDarkBlue transparent transparent;
       }
       .Dropdown-root.is-open .Dropdown-arrow {
-        border-color: transparent transparent $blue !important;
+        border-color: transparent transparent $headerDarkBlue !important;
       }
       .Dropdown-menu {
-        border: 1px solid $headerBlue;
+        border: 1px solid $blue;
       }
       .Dropdown-option:hover,
       .Dropdown-option.is-selected {
-        background-color: $darkGreen;
+        background-color: $green;
         color: $darkBackground;
       }
     }
@@ -437,31 +441,31 @@ $headerDarkBlue: #0f182d;
   }
 
   .presets {
-    border: 1px solid $headerBlue;
-    background-color: $headerBlue;
-    color: $blue;
+    border: 1px solid $blue;
+    background-color: $blue;
+    color: $headerDarkBlue;
     .preset-action {
       border-right-color: $headerDarkBlue;
       &:hover {
-        background-color: $headerBlueHover;
+        background-color: $blueHover;
       }
       &:active {
-        background-color: $headerBlueActive;
+        background-color: $blueActive;
       }
       &.disabled {
-        background-color: #2a416b;
+        background-color: darken($blue, 10%);
       }
     }
     input {
       background-color: $darkBackground;
-      color: $darkLightGray;
+      color: $lightMediumGray;
     }
     .preset-hotkey {
       background-color: $blue;
-      color: #ffffff;
+      color: $darkBackground;
     }
     .Dropdown-arrow-wrapper {
-      border-left-color: $headerBlue !important;
+      border-left-color: $blue !important;
     }
     .Dropdown-control {
       border-right-color: $headerDarkBlue !important;
@@ -469,32 +473,32 @@ $headerDarkBlue: #0f182d;
   }
 
   .split-button {
-    background-color: $darkMediumGray;
+    background-color: $lightMediumGray;
     .split-button-action {
       &:hover {
-        background-color: $darkMediumGrayHover;
+        background-color: $lightMediumGrayHover;
       }
       &:active {
-        background-color: $darkMediumGrayActive;
+        background-color: $lightMediumGrayActive;
       }
     }
     .split-button-arrow {
-      background-color: $splitButtonAction;
+      background-color: $darkerMediumGray;
       &:hover {
-        background-color: lighten($splitButtonAction, 3%);
+        background-color: lighten($darkerMediumGray, 3%);
       }
       &:active {
-        background-color: darken($splitButtonAction, 3%);
+        background-color: darken($darkerMediumGray, 3%);
       }
       &.split-button-arrow-left {
         border-right: 1px solid $darkBackground;
         &::before {
-          border-color: transparent $darkLightGray transparent transparent;
+          border-color: transparent $darkTextGray transparent transparent;
         }
       }
       &.split-button-arrow-right {
         &::before {
-          border-color: transparent transparent transparent $darkLightGray;
+          border-color: transparent transparent transparent $darkTextGray;
         }
       }
     }
@@ -503,28 +507,28 @@ $headerDarkBlue: #0f182d;
   .split-button-container {
     &.small-split-button {
       .split-button {
-        border: 1px solid $orange;
-        background-color: $lightOrange;
-        color: $orange;
+        border: 1px solid $blue;
+        background-color: $blue;
+        color: $headerDarkBlue;
         .split-button-action {
-          border-right: 1px solid $orange;
+          border-right: 1px solid $headerDarkBlue;
           &:hover {
-            background-color: $darkLightOrange;
+            background-color: $blueHover;
           }
           &:active {
-            background-color: $darkerLightOrange;
+            background-color: $blueActive;
           }
         }
         .split-button-arrow {
-          background-color: $lightOrange;
+          background-color: $blue;
           &.split-button-arrow-left {
             &::before {
-              border-color: transparent $orange transparent transparent;
+              border-color: transparent $headerDarkBlue transparent transparent;
             }
           }
           &.split-button-arrow-right {
             &::before {
-              border-color: transparent transparent transparent $orange;
+              border-color: transparent transparent transparent $headerDarkBlue;
             }
           }
         }
@@ -533,18 +537,18 @@ $headerDarkBlue: #0f182d;
   }
 
   .sequence-step {
-    background-color: $darkMediumGray;
+    background-color: $darkerMediumGray;
     color: $darkBackground;
     &:hover {
-      background-color: $darkMediumGrayHover;
+      background-color: $darkerMediumGrayHover;
     }
     &:active {
-      background-color: $darkMediumGrayActive;
+      background-color: $darkerMediumGrayActive;
     }
     &.selected {
-      background-color: $darkGreen;
+      background-color: $green;
       &:hover {
-        background-color: $darkGreenHover;
+        background-color: $greenHover;
       }
     }
     &.playing {
@@ -571,23 +575,23 @@ $headerDarkBlue: #0f182d;
   }
 
   .channel-clock {
-    border: 1px solid $darkMediumGray;
+    border: 1px solid $pitchClassGray;
     .channel-drawer-control {
       $arrow-size: 8px;
-      background-color: $darkMediumGray;
+      background-color: $lightMediumGray;
       &:hover {
-        background-color: $darkMediumGrayHover;
+        background-color: $lightMediumGrayHover;
       }
       &:active {
-        background-color: $darkMediumGrayActive;
+        background-color: $lightMediumGrayActive;
       }
       .arrow-down {
-        border-top: $arrow-size - 3px solid $darkLightGray;
+        border-top: $arrow-size - 3px solid $darkTextGray;
       }
       &.drawer-open {
-        background: $darkGreen;
+        background: $green;
         &:hover {
-          background: $darkGreenHover;
+          background: $greenHover;
         }
         .arrow-down {
           border-top: $arrow-size - 3px solid $darkBackground;
@@ -600,19 +604,21 @@ $headerDarkBlue: #0f182d;
     background-color: rgba(0, 0, 0, 0.85);
     .modal-window {
       background-color: $darkBackground;
-      box-shadow: 0px 0px 6px $darkGreen;
+      box-shadow: 0px 0px 6px $green;
     }
   }
 
   .mute {
-    $muteGray: #39393f;
+    $muteGray: #aab1cc;
     $muteGrayHover: lighten($muteGray, 3%);
     $muteGrayActive: darken($muteGray, 3%);
     $muteDarkGray: #17171e;
     background-color: $darkMuteBackground;
+    color: $muteGray;
 
     .button {
       background-color: $muteGray;
+      color: $darkMuteBackground;
       &:hover {
         background-color: $muteGrayHover;
       }
@@ -634,9 +640,18 @@ $headerDarkBlue: #0f182d;
       }
       b:first-of-type {
         border-bottom-color: $darkMuteBackground;
+        i {
+          border-color: transparent transparent $darkMuteBackground;
+        }
+      }
+      b:last-of-type {
+        i {
+          border-color: $darkMuteBackground transparent transparent;
+        }
       }
       input {
         border-color: $muteGray;
+        color: $muteGray;
       }
     }
 
@@ -644,6 +659,11 @@ $headerDarkBlue: #0f182d;
     .Dropdown-arrow-wrapper {
       border-color: $muteGray;
       background-color: $muteGray;
+    }
+
+    .Dropdown-menu {
+      border: 1px solid $muteGray;
+      color: $muteGray;
     }
 
     .Dropdown-arrow-wrapper {
@@ -654,7 +674,7 @@ $headerDarkBlue: #0f182d;
     }
 
     .react-switch-bg {
-      background-color: $muteGray !important;
+      background-color: $darkMediumGray !important;
     }
 
     .split-button {
@@ -671,7 +691,7 @@ $headerDarkBlue: #0f182d;
         }
       }
       .split-button-arrow {
-        $muteSplitButtonAction: darken($splitButtonAction, 4%);
+        $muteSplitButtonAction: darken($darkerMediumGray, 6%);
         background-color: $muteSplitButtonAction;
         &:hover {
           background-color: lighten($muteSplitButtonAction, 3%);
@@ -682,12 +702,12 @@ $headerDarkBlue: #0f182d;
         &.split-button-arrow-left {
           border-right: 1px solid $darkBackground;
           &::before {
-            border-color: transparent $darkLightGray transparent transparent;
+            border-color: transparent $darkMuteBackground transparent transparent;
           }
         }
         &.split-button-arrow-right {
           &::before {
-            border-color: transparent transparent transparent $darkLightGray;
+            border-color: transparent transparent transparent $darkMuteBackground;
           }
         }
       }
@@ -703,9 +723,9 @@ $headerDarkBlue: #0f182d;
           background-color: $muteGrayHover !important;
         }
         &.selected {
-          background-color: $darkGreen !important;
+          background-color: $green !important;
           &:hover {
-            background-color: $darkGreenHover !important;
+            background-color: $greenHover !important;
           }
         }
         &.playing {

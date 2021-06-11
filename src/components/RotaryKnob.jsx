@@ -104,12 +104,69 @@ export default function RotaryKnob({
   }, [axisKnob, axisKnobLarge, inline])
 
   const knobColor = useMemo(() => {
-    if (theme === 'dark') {
-      return mute ? '39393f' : '45454c'
-    } else {
-      return mute ? 'D8D8D8' : 'E6E6E6'
+    switch (theme) {
+      case 'light':
+        return mute ? 'D8D8D8' : 'E6E6E6'
+      case 'dark':
+        return mute ? '39393f' : '45454c'
+      case 'contrast':
+        return mute ? 'aab1cc' : 'CCD0FF'
+      default:
+        return mute ? 'D8D8D8' : 'E6E6E6'
     }
   }, [mute, theme])
+
+  const knobInnerStroke = useMemo(() => {
+    switch (theme) {
+      case 'light':
+        return 'FFFFFF'
+      case 'dark':
+        return '090c10'
+      case 'contrast':
+        return '090C10'
+      default:
+        return 'FFFFFF'
+    }
+  }, [theme])
+
+  const knobOuterStroke = useMemo(() => {
+    switch (theme) {
+      case 'light':
+        return 'CCCCCC'
+      case 'dark':
+        return '23232b'
+      case 'contrast':
+        return mute ? '454C60' : '757CA0'
+      default:
+        return 'CCCCCC'
+    }
+  }, [mute, theme])
+
+  const knobIndicator = useMemo(() => {
+    switch (theme) {
+      case 'light':
+        return '666666'
+      case 'dark':
+        return 'a0a0b4'
+      case 'contrast':
+        return mute ? '1C1C23' : '383842'
+      default:
+        return '666666'
+    }
+  }, [mute, theme])
+
+  const knobTicks = useMemo(() => {
+    switch (theme) {
+      case 'light':
+        return '999999'
+      case 'dark':
+        return '666666'
+      case 'contrast':
+        return 'CCD0FF'
+      default:
+        return '999999'
+    }
+  }, [theme])
 
   const skin = useMemo(() => {
     const st0 = Math.round(Math.random() * 100000)
@@ -125,10 +182,10 @@ export default function RotaryKnob({
 	 viewBox="0 0 110.6 97.5" style="enable-background:new 0 0 110.6 97.5;" xml:space="preserve">
 <style type="text/css">
 	.st${st0}{fill:#${knobColor};}
-	.st${st1}{fill:#${theme === 'dark' ? '23232b' : 'CCCCCC'};}
-	.st${st2}{fill:#${theme === 'dark' ? '090c10' : 'FFFFFF'};}
-	.st${st3}{fill:#${theme === 'dark' ? 'a0a0b4' : '666666'};}
-	.st${st4}{fill:none;stroke:#${theme === 'dark' ? '666666' : '999999'};stroke-miterlimit:10;}
+	.st${st1}{fill:#${knobOuterStroke};}
+	.st${st2}{fill:#${knobInnerStroke};}
+	.st${st3}{fill:#${knobIndicator};}
+	.st${st4}{fill:none;stroke:#${knobTicks};stroke-miterlimit:10;}
 </style>
 <desc>Created with Sketch.</desc>
 <g id="knob">
@@ -153,7 +210,7 @@ export default function RotaryKnob({
 </svg>
 `,
     }
-  }, [knobColor, theme])
+  }, [knobColor, knobIndicator, knobInnerStroke, knobOuterStroke, knobTicks])
 
   const detentSkin = useMemo(() => {
     const st0 = Math.round(Math.random() * 100000)
@@ -170,11 +227,11 @@ export default function RotaryKnob({
 	 viewBox="0 0 110.6 97.5" style="enable-background:new 0 0 110.6 97.5;" xml:space="preserve">
 <style type="text/css">
 	.st${st0}{fill:#${knobColor};}
-	.st${st1}{fill:#${theme === 'dark' ? '23232b' : 'CCCCCC'};}
-	.st${st2}{fill:#${theme === 'dark' ? '090c10' : 'FFFFFF'};}
-	.st${st3}{fill:#${theme === 'dark' ? 'a0a0b4' : '666666'};}
-	.st${st4}{fill:none;stroke:#${theme === 'dark' ? '666666' : '999999'};stroke-miterlimit:10;}
-  .st${st5}{fill:none;stroke:#${theme === 'dark' ? 'a0a0b4' : '666666'};stroke-width:2;stroke-miterlimit:10;}
+	.st${st1}{fill:#${knobOuterStroke};}
+	.st${st2}{fill:#${knobInnerStroke};}
+	.st${st3}{fill:#${knobIndicator};}
+	.st${st4}{fill:none;stroke:#${knobTicks};stroke-miterlimit:10;}
+  .st${st5}{fill:none;stroke:#${knobTicks};stroke-width:2;stroke-miterlimit:10;}
 </style>
 <desc>Created with Sketch.</desc>
 <g id="knob">
@@ -199,7 +256,7 @@ export default function RotaryKnob({
 </svg>
 `,
     }
-  }, [knobColor, theme])
+  }, [knobColor, knobIndicator, knobInnerStroke, knobOuterStroke, knobTicks])
 
   const axisSkin = useMemo(() => {
     const st0 = Math.round(Math.random() * 100000)
@@ -214,9 +271,9 @@ export default function RotaryKnob({
 	 viewBox="0 0 84 84" style="enable-background:new 0 0 84 84;" xml:space="preserve">
 <style type="text/css">
 	.st${st0}{fill:#${knobColor};}
-	.st${st1}{fill:#${theme === 'dark' ? '23232b' : 'CCCCCC'};}
-	.st${st2}{fill:#${theme === 'dark' ? '090c10' : 'FFFFFF'};}
-	.st${st3}{fill:#${theme === 'dark' ? 'a0a0b4' : '666666'};}
+	.st${st1}{fill:#${knobOuterStroke};}
+	.st${st2}{fill:#${knobInnerStroke};}
+	.st${st3}{fill:#${knobIndicator};}
 </style>
 <desc>Created with Sketch.</desc>
 <g id="knob">
@@ -261,7 +318,7 @@ export default function RotaryKnob({
 </svg>
 `,
     }
-  }, [knobColor, theme])
+  }, [knobColor, knobIndicator, knobInnerStroke, knobOuterStroke])
 
   const activeSkin = useMemo(() => {
     if (axisKnob) return axisSkin

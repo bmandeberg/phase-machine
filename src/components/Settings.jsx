@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import Switch from 'react-switch'
 import Dropdn from '../components/Dropdn'
-import { THEMES } from '../globals'
+import { THEMES, themedSwitch } from '../globals'
 import './Settings.scss'
 
 export default function Settings({
@@ -34,10 +34,10 @@ export default function Settings({
           checked={showStepNumbers}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-          onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-          offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
-          onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
+          offColor={themedSwitch('offColor', theme)}
+          onColor={themedSwitch('onColor', theme)}
+          offHandleColor={themedSwitch('offHandleColor', theme)}
+          onHandleColor={themedSwitch('onHandleColor', theme)}
           width={48}
           height={24}
         />
@@ -50,10 +50,10 @@ export default function Settings({
           checked={separateMIDIChannels}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-          onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-          offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
-          onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
+          offColor={themedSwitch('offColor', theme)}
+          onColor={themedSwitch('onColor', theme)}
+          offHandleColor={themedSwitch('offHandleColor', theme)}
+          onHandleColor={themedSwitch('onHandleColor', theme)}
           width={48}
           height={24}
         />
@@ -66,10 +66,10 @@ export default function Settings({
           checked={hotkeyRestart}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-          onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-          offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
-          onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
+          offColor={themedSwitch('offColor', theme)}
+          onColor={themedSwitch('onColor', theme)}
+          offHandleColor={themedSwitch('offHandleColor', theme)}
+          onHandleColor={themedSwitch('onHandleColor', theme)}
           width={48}
           height={24}
         />

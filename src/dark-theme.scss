@@ -34,7 +34,6 @@ $headerDarkBlue: #0f182d;
   .mute-solo {
     .button {
       background-color: $darkMediumGray;
-      color: $darkLightGray;
       &:hover {
         background-color: $darkMediumGrayHover;
       }
@@ -503,28 +502,28 @@ $headerDarkBlue: #0f182d;
   .split-button-container {
     &.small-split-button {
       .split-button {
-        border: 1px solid $orange;
-        background-color: $lightOrange;
-        color: $orange;
+        border: 1px solid $headerBlue;
+        background-color: $headerBlue;
+        color: $blue;
         .split-button-action {
-          border-right: 1px solid $orange;
+          border-right: 1px solid $headerDarkBlue;
           &:hover {
-            background-color: $darkLightOrange;
+            background-color: $headerBlueHover;
           }
           &:active {
-            background-color: $darkerLightOrange;
+            background-color: $headerBlueActive;
           }
         }
         .split-button-arrow {
-          background-color: $lightOrange;
+          background-color: $headerBlue;
           &.split-button-arrow-left {
             &::before {
-              border-color: transparent $orange transparent transparent;
+              border-color: transparent $blue transparent transparent;
             }
           }
           &.split-button-arrow-right {
             &::before {
-              border-color: transparent transparent transparent $orange;
+              border-color: transparent transparent transparent $blue;
             }
           }
         }
@@ -644,6 +643,10 @@ $headerDarkBlue: #0f182d;
     .Dropdown-arrow-wrapper {
       border-color: $muteGray;
       background-color: $muteGray;
+    }
+
+    .Dropdown-menu {
+      border: 1px solid $muteGray;
     }
 
     .Dropdown-arrow-wrapper {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Switch from 'react-switch'
 import SplitButton from './SplitButton'
-import { INSTRUMENT_TYPES } from '../globals'
+import { INSTRUMENT_TYPES, themedSwitch } from '../globals'
 import './Instrument.scss'
 
 export default function Instrument({
@@ -14,6 +14,7 @@ export default function Instrument({
   setInstrumentType,
   small,
   theme,
+  mute
 }) {
   const incrementInstrument = useCallback(
     (next) => {
@@ -43,10 +44,10 @@ export default function Instrument({
             checked={instrumentOn}
             uncheckedIcon={false}
             checkedIcon={false}
-            offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-            onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-            offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
-            onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
+            offColor={themedSwitch('offColor', theme)}
+            onColor={themedSwitch('onColor', theme)}
+            offHandleColor={themedSwitch('offHandleColor', theme, mute)}
+            onHandleColor={themedSwitch('onHandleColor', theme)}
             width={48}
             height={24}
           />
@@ -74,4 +75,5 @@ Instrument.propTypes = {
   className: PropTypes.string,
   small: PropTypes.bool,
   theme: PropTypes.string,
+  mute: PropTypes.bool,
 }

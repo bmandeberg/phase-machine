@@ -2,14 +2,19 @@ import React from 'react'
 import { v4 as uuid } from 'uuid'
 import sine from './assets/sine_wave.svg'
 import lightSine from './assets/sine_wave_light.svg'
+import darkSine from './assets/sine_wave_dark.svg'
 import square from './assets/square_wave.svg'
 import lightSquare from './assets/square_wave_light.svg'
+import darkSquare from './assets/square_wave_dark.svg'
 import triangle from './assets/triangle_wave.svg'
 import lightTriangle from './assets/triangle_wave_light.svg'
+import darkTriangle from './assets/triangle_wave_dark.svg'
 import sawtooth from './assets/sawtooth_wave.svg'
 import lightSawtooth from './assets/sawtooth_wave_light.svg'
+import darkSawtooth from './assets/sawtooth_wave_dark.svg'
 import pulse from './assets/pulse_wave.svg'
 import lightPulse from './assets/pulse_wave_light.svg'
+import darkPulse from './assets/pulse_wave_dark.svg'
 
 import { rangeWrapper } from './math'
 
@@ -19,7 +24,7 @@ export const SECTIONS = ['key', 'piano', 'sequencer']
 
 export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9700', '#a825f4', '#00C591', '#EDDB00']
 
-export const THEMES = ['light', 'dark']
+export const THEMES = ['light', 'dark', 'contrast']
 
 export const RATES = [
   '1m',
@@ -52,13 +57,126 @@ export const RATES = [
   '0',
 ]
 
+function themedIcon(icon, theme) {
+  switch (icon) {
+    case 'sine':
+      switch (theme) {
+        case 'light':
+          return sine
+        case 'dark':
+          return lightSine
+        case 'contrast':
+          return darkSine
+        default:
+          return sine
+      }
+    case 'square':
+      switch (theme) {
+        case 'light':
+          return square
+        case 'dark':
+          return lightSquare
+        case 'contrast':
+          return darkSquare
+        default:
+          return square
+      }
+    case 'triangle':
+      switch (theme) {
+        case 'light':
+          return triangle
+        case 'dark':
+          return lightTriangle
+        case 'contrast':
+          return darkTriangle
+        default:
+          return triangle
+      }
+    case 'sawtooth':
+      switch (theme) {
+        case 'light':
+          return sawtooth
+        case 'dark':
+          return lightSawtooth
+        case 'contrast':
+          return darkSawtooth
+        default:
+          return sawtooth
+      }
+    case 'pulse':
+      switch (theme) {
+        case 'light':
+          return pulse
+        case 'dark':
+          return lightPulse
+        case 'contrast':
+          return darkPulse
+        default:
+          return pulse
+      }
+    default:
+      return null
+  }
+}
+
+export function themedSwitch(component, theme, mute) {
+  switch (component) {
+    case 'offColor':
+      switch (theme) {
+        case 'light':
+          return '#e6e6e6'
+        case 'dark':
+          return '#45454c'
+        case 'contrast':
+          return '#45454C'
+        default:
+          return '#e6e6e6'
+      }
+    case 'onColor':
+      switch (theme) {
+        case 'light':
+          return '#e6e6e6'
+        case 'dark':
+          return '#45454c'
+        case 'contrast':
+          return '#45454C'
+        default:
+          return '#e6e6e6'
+      }
+    case 'offHandleColor':
+      switch (theme) {
+        case 'light':
+          return '#666666'
+        case 'dark':
+          return '#a0a0b4'
+        case 'contrast':
+          return mute ? '#aab1cc' : '#CCD0FF'
+        default:
+          return '#666666'
+      }
+    case 'onHandleColor':
+      switch (theme) {
+        case 'light':
+          return '#33ff00'
+        case 'dark':
+          return '#00c591'
+        case 'contrast':
+          return '#33ff00'
+        default:
+          return '#33ff00'
+      }
+    default:
+      return '#e6e6e6'
+  }
+}
+
 export const INSTRUMENT_TYPES = {
-  sine: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />,
-  square: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />,
-  triangle: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />,
-  sawtooth: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />,
-  pulse: (theme) => <img className="wave-icon" src={theme === 'dark' ? lightPulse : pulse} alt="" />,
-  pwm: (theme) => (
+  sine: (theme) => <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />,
+  square: (theme) => <img className="wave-icon" src={themedIcon('square', theme)} alt="" />,
+  triangle: (theme) => <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />,
+  sawtooth: (theme) => <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />,
+  pulse: (theme) => <img className="wave-icon" src={themedIcon('pulse', theme)} alt="" />,
+  pwm: () => (
     <span className="wave-title" style={{ marginTop: 2, marginRight: 0 }}>
       pwm
     </span>
@@ -66,73 +184,73 @@ export const INSTRUMENT_TYPES = {
   fmsine: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />
+      <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />
     </div>
   ),
   fmsquare: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />
+      <img className="wave-icon" src={themedIcon('square', theme)} alt="" />
     </div>
   ),
   fmtriangle: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />
+      <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />
     </div>
   ),
   fmsawtooth: (theme) => (
     <div>
       <span className="wave-title">fm</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />
+      <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />
     </div>
   ),
   amsine: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />
+      <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />
     </div>
   ),
   amsquare: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />
+      <img className="wave-icon" src={themedIcon('square', theme)} alt="" />
     </div>
   ),
   amtriangle: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />
+      <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />
     </div>
   ),
   amsawtooth: (theme) => (
     <div>
       <span className="wave-title">am</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />
+      <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />
     </div>
   ),
   fatsine: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSine : sine} alt="" />
+      <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />
     </div>
   ),
   fatsquare: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSquare : square} alt="" />
+      <img className="wave-icon" src={themedIcon('square', theme)} alt="" />
     </div>
   ),
   fattriangle: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightTriangle : triangle} alt="" />
+      <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />
     </div>
   ),
   fatsawtooth: (theme) => (
     <div>
       <span className="wave-title">fat</span>
-      <img className="wave-icon" src={theme === 'dark' ? lightSawtooth : sawtooth} alt="" />
+      <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />
     </div>
   ),
 }

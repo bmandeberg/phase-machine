@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN } from '../globals'
+import { RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN, themedSwitch } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
@@ -491,10 +491,10 @@ export default function useUI(
             checked={legato}
             uncheckedIcon={false}
             checkedIcon={false}
-            offColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-            onColor={theme === 'dark' ? '#45454c' : '#e6e6e6'}
-            offHandleColor={theme === 'dark' ? '#a0a0b4' : '#666666'}
-            onHandleColor={theme === 'dark' ? '#00c591' : '#33ff00'}
+            offColor={themedSwitch('offColor', theme)}
+            onColor={themedSwitch('onColor', theme)}
+            offHandleColor={themedSwitch('offHandleColor', theme, mute)}
+            onHandleColor={themedSwitch('onHandleColor', theme)}
             width={48}
             height={24}
           />
@@ -502,7 +502,7 @@ export default function useUI(
         </div>
       )
     },
-    [legato, setLegato, theme]
+    [legato, mute, setLegato, theme]
   )
 
   const seqRestartEl = useMemo(() => {
@@ -524,10 +524,11 @@ export default function useUI(
           setInstrumentType={setInstrumentType}
           small={small}
           theme={theme}
+          mute={mute}
         />
       )
     },
-    [instrumentOn, instrumentType, setInstrumentOn, setInstrumentType, theme]
+    [instrumentOn, instrumentType, mute, setInstrumentOn, setInstrumentType, theme]
   )
 
   return {

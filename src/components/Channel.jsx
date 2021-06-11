@@ -14,8 +14,12 @@ import useKeyManipulation from '../hooks/useKeyManipulation'
 import useUI from '../hooks/useUI'
 import arrowSmall from '../assets/arrow-small.svg'
 import arrowSmallDark from '../assets/arrow-small-dark.svg'
+import arrowSmallLight from '../assets/arrow-small-light.svg'
+import arrowSmallLightMute from '../assets/arrow-small-light-mute.svg'
 import arrowClock from '../assets/arrow-clock.svg'
 import arrowClockDark from '../assets/arrow-clock-dark.svg'
+import arrowClockLight from '../assets/arrow-clock-light.svg'
+import arrowClockLightMute from '../assets/arrow-clock-light-mute.svg'
 import './Channel.scss'
 
 const CLOCK_CHANNEL_WIDTH = 657
@@ -651,6 +655,32 @@ export default function Channel({
     velocity,
   ])
 
+  const arrowSmallGraphic = useMemo(() => {
+    switch (theme) {
+      case 'light':
+        return arrowSmall
+      case 'dark':
+        return arrowSmallDark
+      case 'contrast':
+        return mute ? arrowSmallLightMute : arrowSmallLight
+      default:
+        return null
+    }
+  }, [mute, theme])
+
+  const arrowClockGraphic = useMemo(() => {
+    switch (theme) {
+      case 'light':
+        return arrowClock
+      case 'dark':
+        return arrowClockDark
+      case 'contrast':
+        return mute ? arrowClockLightMute : arrowClockLight
+      default:
+        return null
+    }
+  }, [mute, theme])
+
   // return based on view
 
   if (view === 'stacked') {
@@ -663,7 +693,7 @@ export default function Channel({
         {keyEl}
         {shiftEl}
         {axisEl(false)}
-        <img className="arrow-small" src={theme === 'dark' ? arrowSmallDark : arrowSmall} alt="" draggable="false" />
+        <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />
         {flipOppositeEl}
         {pianoEl}
         {keyRateEl}
@@ -750,7 +780,7 @@ export default function Channel({
             {shiftEl}
             {keyViewTypeEl}
           </div>
-          <img className="arrow-clock" src={theme === 'dark' ? arrowClockDark : arrowClock} alt="" />
+          <img className="arrow-clock" src={arrowClockGraphic} alt="" />
           {axisEl(true)}
           <div className="channel-vertical">
             {keyArpModeEl}

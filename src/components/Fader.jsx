@@ -10,6 +10,9 @@ import faderSlotDark from '../assets/fader-slot-dark.svg'
 import faderKnobDark from '../assets/fader-knob-dark.svg'
 import faderKnobMuteDark from '../assets/fader-knob-mute-dark.svg'
 import faderSlotMuteDark from '../assets/fader-slot-mute-dark.svg'
+import faderKnobLight from '../assets/fader-knob-light.svg'
+import faderKnobMuteLight from '../assets/fader-knob-mute-light.svg'
+import faderSlotLight from '../assets/fader-slot-light.svg'
 import './Fader.scss'
 
 const FADER_HEIGHT = 41
@@ -33,20 +36,28 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
   )
 
   const faderSlotGraphic = useMemo(() => {
-    if (theme === 'dark') {
-      if (mute) {
-        return faderSlotMuteDark
-      }
-      return faderSlotDark
+    switch (theme) {
+      case 'light':
+        return faderSlot
+      case 'dark':
+        return mute ? faderSlotMuteDark : faderSlotDark
+      case 'contrast':
+        return faderSlotLight
+      default:
+        return faderSlot
     }
-    return faderSlot
   }, [mute, theme])
 
   const faderKnobGraphic = useMemo(() => {
-    if (mute) {
-      return theme === 'dark' ? faderKnobMuteDark : faderKnobMute
-    } else {
-      return theme === 'dark' ? faderKnobDark : faderKnob
+    switch (theme) {
+      case 'light':
+        return mute ? faderKnobMute : faderKnob
+      case 'dark':
+        return mute ? faderKnobMuteDark : faderKnobDark
+      case 'contrast':
+        return mute ? faderKnobMuteLight : faderKnobLight
+      default:
+        return faderKnob
     }
   }, [mute, theme])
 
