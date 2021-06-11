@@ -238,7 +238,7 @@ export default function Channel({
   }, [instrumentType])
 
   const noteOff = useCallback((channel, note, midiOutObj, delay, offTime, clockOffset) => {
-    instrument.current.triggerRelease(offTime)
+    instrument.current.triggerRelease(offTime ?? undefined)
     if (midiOutObj) {
       const params = {}
       if (offTime) {
