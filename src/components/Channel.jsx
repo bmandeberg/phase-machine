@@ -110,6 +110,10 @@ export default function Channel({
   const presetInitialized = useRef(false)
   const hotkeyRestartRef = useRef(hotkeyRestart)
 
+  const channelNumRef = useRef(channelNum)
+  const midiOutRef = useRef(midiOut)
+  const separateMIDIChannelsRef = useRef(separateMIDIChannels)
+
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
   }, [key])
@@ -276,6 +280,19 @@ export default function Channel({
       noteOff(channel, note, midiOutObj, true, null)
     }
   }, [channelNum, midiOut, muted, noteOff, separateMIDIChannels])
+
+  // note off when changing channel number
+  useEffect(() => {
+    if (notePlaying.current && noteIndex.current !== undefined) {
+      const channel = separateMIDIChannelsRef.current ? channelNumRef.current + 1 : 1
+      const note = noteString(noteIndex.current)
+      const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
+      noteOff(channel, note, midiOutObj, true, null)
+    }
+    channelNumRef.current = channelNum
+    midiOutRef.current = midiOut
+    separateMIDIChannelsRef.current = separateMIDIChannels
+  }, [channelNum, midiOut, noteOff, separateMIDIChannels])
 
   // loop events
 
