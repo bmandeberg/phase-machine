@@ -71,6 +71,12 @@ $headerDarkBlue: #0f182d;
     .channel-number {
       text-shadow: 0 0 5px $darkBackground;
     }
+    &.channel-in-active {
+      background-color: darken($darkGreen, 30%);
+      .channel-horizontal {
+        background-color: darken($darkGreen, 30%);
+      }
+    }
   }
 
   .duplicate-delete {
@@ -592,6 +598,9 @@ $headerDarkBlue: #0f182d;
           border-top: $arrow-size - 3px solid $darkBackground;
         }
       }
+    }
+    &.channel-in-active {
+      background-color: darken($darkGreen, 30%);
     }
   }
 

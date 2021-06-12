@@ -702,25 +702,77 @@ export default function Channel({
 
   if (view === 'stacked') {
     return (
-      <div className={classNames('channel channel-horizontal', { mute: muted })}>
-        {channelNumEl(false)}
-        {duplicateDeleteEl}
-        {muteSoloEl}
-        {velocityEl}
-        {keyEl}
-        {shiftEl}
-        {axisEl(false)}
-        <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />
-        {flipOppositeEl}
-        {pianoEl}
-        {keyRateEl}
-        {keyArpModeEl}
-        {keySustainEl(false)}
-        {keySwingEl(false)}
-        <div
-          style={{ top: numChannels * CHANNEL_HEIGHT }}
-          className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
-          {channelNumEl(true)}
+      <CSSTransition
+        timeout={400}
+        in={true}
+        appear={true}
+        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
+        <div className={classNames('channel channel-horizontal', { mute: muted })}>
+          {channelNumEl(false)}
+          {duplicateDeleteEl}
+          {muteSoloEl}
+          {velocityEl}
+          {keyEl}
+          {shiftEl}
+          {axisEl(false)}
+          <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />
+          {flipOppositeEl}
+          {pianoEl}
+          {keyRateEl}
+          {keyArpModeEl}
+          {keySustainEl(false)}
+          {keySwingEl(false)}
+          <div
+            style={{ top: numChannels * CHANNEL_HEIGHT }}
+            className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
+            {channelNumEl(true)}
+            <Sequencer
+              className="channel-module"
+              seqSteps={seqSteps}
+              setSeqSteps={setSeqSteps}
+              seqLength={seqLength}
+              playingStep={playingStep}
+              showStepNumbers={showStepNumbers}>
+              <div className="sequencer-controls">
+                {seqLengthEl(true)}
+                {seqRateEl(true)}
+                {seqArpModeEl(true)}
+                {seqSustainEl(true)}
+                {seqSwingEl(true)}
+                {legatoEl(true)}
+                {seqRestartEl}
+              </div>
+            </Sequencer>
+            <div className="channel-module border"></div>
+            {instrumentEl(false)}
+          </div>
+          {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
+        </div>
+      </CSSTransition>
+    )
+  } else if (view === 'horizontal') {
+    return (
+      <CSSTransition
+        timeout={400}
+        in={true}
+        appear={true}
+        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
+        <div className={classNames('channel channel-horizontal', { mute: muted })}>
+          {channelNumEl(false)}
+          {duplicateDeleteEl}
+          {muteSoloEl}
+          {velocityEl}
+          {keyEl}
+          {shiftEl}
+          {axisEl(false)}
+          <img className="arrow-small" src={arrowSmall} alt="" draggable="false" />
+          {flipOppositeEl}
+          {pianoEl}
+          {keyRateEl}
+          {keyArpModeEl}
+          {keySustainEl(false)}
+          {keySwingEl(false)}
+          <div className="channel-module border"></div>
           <Sequencer
             className="channel-module"
             seqSteps={seqSteps}
@@ -740,106 +792,72 @@ export default function Channel({
           </Sequencer>
           <div className="channel-module border"></div>
           {instrumentEl(false)}
+          {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
         </div>
-        {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
-      </div>
-    )
-  } else if (view === 'horizontal') {
-    return (
-      <div className={classNames('channel channel-horizontal', { mute: muted })}>
-        {channelNumEl(false)}
-        {duplicateDeleteEl}
-        {muteSoloEl}
-        {velocityEl}
-        {keyEl}
-        {shiftEl}
-        {axisEl(false)}
-        <img className="arrow-small" src={arrowSmall} alt="" draggable="false" />
-        {flipOppositeEl}
-        {pianoEl}
-        {keyRateEl}
-        {keyArpModeEl}
-        {keySustainEl(false)}
-        {keySwingEl(false)}
-        <div className="channel-module border"></div>
-        <Sequencer
-          className="channel-module"
-          seqSteps={seqSteps}
-          setSeqSteps={setSeqSteps}
-          seqLength={seqLength}
-          playingStep={playingStep}
-          showStepNumbers={showStepNumbers}>
-          <div className="sequencer-controls">
-            {seqLengthEl(true)}
-            {seqRateEl(true)}
-            {seqArpModeEl(true)}
-            {seqSustainEl(true)}
-            {seqSwingEl(true)}
-            {legatoEl(true)}
-            {seqRestartEl}
-          </div>
-        </Sequencer>
-        <div className="channel-module border"></div>
-        {instrumentEl(false)}
-        {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
-      </div>
+      </CSSTransition>
     )
   } else if (view === 'clock') {
     return (
-      <div className={classNames('channel channel-clock', { mute: muted })}>
-        <div className="channel-clock-top">
-          {channelNumEl(false)}
-          {duplicateDeleteEl}
-          {muteSoloEl}
-          {velocityEl}
-          <div className="channel-vertical left-vertical">
-            {flipOppositeEl}
-            {shiftEl}
-            {keyViewTypeEl}
-          </div>
-          <img className="arrow-clock" src={arrowClockGraphic} alt="" />
-          {axisEl(true)}
-          <div className="channel-vertical">
-            {keyArpModeEl}
-            <div>
-              {keyRateEl}
-              {keySustainEl(true)}
+      <CSSTransition
+        timeout={400}
+        in={true}
+        appear={true}
+        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
+        <div className={classNames('channel channel-clock', { mute: muted })}>
+          <div className="channel-clock-top">
+            {channelNumEl(false)}
+            {duplicateDeleteEl}
+            {muteSoloEl}
+            {velocityEl}
+            <div className="channel-vertical left-vertical">
+              {flipOppositeEl}
+              {shiftEl}
+              {keyViewTypeEl}
             </div>
-            {keySwingEl(true)}
+            <img className="arrow-clock" src={arrowClockGraphic} alt="" />
+            {axisEl(true)}
+            <div className="channel-vertical">
+              {keyArpModeEl}
+              <div>
+                {keyRateEl}
+                {keySustainEl(true)}
+              </div>
+              {keySwingEl(true)}
+            </div>
+            <div
+              className={classNames('channel-drawer-control', { 'drawer-open': drawerOpen })}
+              onClick={() => {
+                setDrawerOpen((drawerOpen) => !drawerOpen)
+              }}>
+              <div className="arrow-down"></div>
+            </div>
           </div>
-          <div
-            className={classNames('channel-drawer-control', { 'drawer-open': drawerOpen })}
-            onClick={() => {
-              setDrawerOpen((drawerOpen) => !drawerOpen)
-            }}>
-            <div className="arrow-down"></div>
-          </div>
+          <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
+            <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>
+              <div className="piano-container">{pianoEl}</div>
+              <div className="piano-drawer-border"></div>
+              <Sequencer
+                className="channel-module"
+                seqSteps={seqSteps}
+                setSeqSteps={setSeqSteps}
+                seqLength={seqLength}
+                playingStep={playingStep}
+                showStepNumbers={showStepNumbers}
+              />
+              <div className="sequencer-controls">
+                {seqLengthEl(false)}
+                {seqRateEl(false)}
+                {seqArpModeEl(false)}
+                {seqSustainEl(false)}
+                {seqSwingEl(false)}
+                {legatoEl(false)}
+                {instrumentEl(true)}
+              </div>
+            </div>
+          </CSSTransition>
+          {draggingChannel && dragTarget !== channelNum && dragTargetUI(false)}
         </div>
-        <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
-          <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>
-            <div className="piano-container">{pianoEl}</div>
-            <div className="piano-drawer-border"></div>
-            <Sequencer
-              className="channel-module"
-              seqSteps={seqSteps}
-              setSeqSteps={setSeqSteps}
-              seqLength={seqLength}
-              playingStep={playingStep}
-              showStepNumbers={showStepNumbers}
-            />
-            <div className="sequencer-controls">
-              {seqLengthEl(false)}
-              {seqRateEl(false)}
-              {seqArpModeEl(false)}
-              {seqSustainEl(false)}
-              {seqSwingEl(false)}
-              {legatoEl(false)}
-              {instrumentEl(true)}
-            </div>
-          </div>
-        </CSSTransition>
-        {draggingChannel && dragTarget !== channelNum && dragTargetUI(false)}
-      </div>
+      </CSSTransition>
     )
   }
   return null
