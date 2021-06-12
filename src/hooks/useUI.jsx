@@ -100,7 +100,8 @@ export default function useUI(
   draggingChannel,
   linearKnobs,
   theme,
-  seqRestart
+  seqRestart,
+  seqOpposite
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -507,11 +508,19 @@ export default function useUI(
 
   const seqRestartEl = useMemo(() => {
     return (
-      <div className="button seq-restart" onClick={seqRestart}>
+      <div className="button seq-button channel-module" onClick={seqRestart}>
         Restart
       </div>
     )
   }, [seqRestart])
+
+  const seqOppositeEl = useMemo(() => {
+    return (
+      <div className="button seq-button channel-module" onClick={seqOpposite}>
+        Opposite
+      </div>
+    )
+  }, [seqOpposite])
 
   const instrumentEl = useCallback(
     (small) => {
@@ -554,5 +563,6 @@ export default function useUI(
     instrumentEl,
     keyViewTypeEl,
     seqRestartEl,
+    seqOppositeEl,
   }
 }

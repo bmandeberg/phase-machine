@@ -133,6 +133,10 @@ export default function Channel({
     setPlayingStep(null)
   }, [])
 
+  const seqOpposite = useCallback(() => {
+    setSeqSteps((seqSteps) => seqSteps.map((step) => !step))
+  }, [])
+
   useEffect(() => {
     if (channelPreset) {
       if (!presetInitialized.current) {
@@ -480,6 +484,7 @@ export default function Channel({
     instrumentEl,
     keyViewTypeEl,
     seqRestartEl,
+    seqOppositeEl,
   } = useUI(
     id.current,
     color,
@@ -566,7 +571,8 @@ export default function Channel({
     draggingChannel,
     linearKnobs,
     theme,
-    seqRestart
+    seqRestart,
+    seqOpposite
   )
 
   const dragTargetUI = useCallback(
@@ -741,6 +747,7 @@ export default function Channel({
                 {seqSwingEl(true)}
                 {legatoEl(true)}
                 {seqRestartEl}
+                {seqOppositeEl}
               </div>
             </Sequencer>
             <div className="channel-module border"></div>
@@ -788,6 +795,7 @@ export default function Channel({
               {seqSwingEl(true)}
               {legatoEl(true)}
               {seqRestartEl}
+              {seqOppositeEl}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
