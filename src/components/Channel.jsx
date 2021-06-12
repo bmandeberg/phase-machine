@@ -609,42 +609,47 @@ export default function Channel({
     [channelNum, color, dragRow, dragTarget, numChannels]
   )
 
-  // watch and update state
+  // watch and update state, with debounce
 
+  const channelStateDebounce = useRef()
   useEffect(() => {
-    const state = {
-      id: id.current,
-      color,
-      channelNum,
-      velocity,
-      key,
-      keyRate,
-      keyArpMode,
-      keyArpInc1,
-      keyArpInc2,
-      keySustain,
-      keySwing,
-      keySwingLength,
-      mute,
-      solo,
-      shiftAmt,
-      axis,
-      rangeStart,
-      rangeEnd,
-      seqSteps,
-      seqLength,
-      seqRate,
-      seqArpMode,
-      seqArpInc1,
-      seqArpInc2,
-      seqSwing,
-      seqSwingLength,
-      seqSustain,
-      legato,
-      instrumentOn,
-      instrumentType,
-    }
-    setChannelState(id.current, state)
+    clearTimeout(channelStateDebounce.current)
+    const debounceTime = 200
+    channelStateDebounce.current = setTimeout(() => {
+      const state = {
+        id: id.current,
+        color,
+        channelNum,
+        velocity,
+        key,
+        keyRate,
+        keyArpMode,
+        keyArpInc1,
+        keyArpInc2,
+        keySustain,
+        keySwing,
+        keySwingLength,
+        mute,
+        solo,
+        shiftAmt,
+        axis,
+        rangeStart,
+        rangeEnd,
+        seqSteps,
+        seqLength,
+        seqRate,
+        seqArpMode,
+        seqArpInc1,
+        seqArpInc2,
+        seqSwing,
+        seqSwingLength,
+        seqSustain,
+        legato,
+        instrumentOn,
+        instrumentType,
+      }
+      setChannelState(id.current, state)
+    }, debounceTime)
   }, [
     axis,
     channelNum,
