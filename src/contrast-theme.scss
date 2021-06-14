@@ -545,6 +545,11 @@ $headerDarkBlue: #0f182d;
     }
   }
 
+  .wave-title {
+    background-color: $lightMediumGray;
+    color: $darkTextGray;
+  }
+
   .sequence-step {
     background-color: $darkerMediumGray;
     color: $darkBackground;
@@ -723,6 +728,10 @@ $headerDarkBlue: #0f182d;
           }
         }
       }
+    }
+
+    .wave-title {
+      background-color: $muteGray;
     }
 
     .piano-keys {

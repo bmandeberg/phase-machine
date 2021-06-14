@@ -326,6 +326,10 @@ export default function RotaryKnob({
     return skin
   }, [axisKnob, axisSkin, detent, detentSkin, skin])
 
+  const activeClass = useMemo(() => {
+    return classNames('knob', { grabbing })
+  }, [grabbing])
+
   return (
     <div
       style={{ marginLeft: squeeze && -squeeze }}
@@ -388,7 +392,7 @@ export default function RotaryKnob({
       )}
       {linearKnobs ? (
         <LinearKnob
-          className={classNames('knob', { grabbing })}
+          className={activeClass}
           min={minVal}
           max={maxVal}
           value={value}
@@ -404,7 +408,7 @@ export default function RotaryKnob({
         />
       ) : (
         <Knob
-          className={classNames('knob', { grabbing })}
+          className={activeClass}
           min={minVal}
           max={maxVal}
           value={value}
