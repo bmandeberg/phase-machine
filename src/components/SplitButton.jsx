@@ -15,7 +15,7 @@ export default function SplitButton(props) {
           <div
             className="split-button-action split-button-arrow split-button-arrow-left"
             onClick={props.leftAction || notImplemented}></div>
-          <div className="split-button-action split-button-content" onClick={props.contentAction || notImplemented}>
+          <div className="split-button-content" onClick={props.contentAction || notImplemented}>
             {props.content || 'Edit'}
           </div>
           <div
@@ -24,7 +24,7 @@ export default function SplitButton(props) {
         </div>
       ) : (
         <div className="split-button">
-          <div className="split-button-action split-button-content" onClick={props.contentAction || notImplemented}>
+          <div className="split-button-content" onClick={props.contentAction || notImplemented}>
             {props.content || 'Edit'}
           </div>
           <div

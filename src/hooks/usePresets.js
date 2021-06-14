@@ -72,11 +72,6 @@ export default function usePresets(
                       return true
                     }
                   }
-                } else if (channelParam === 'instrumentType') {
-                  // compare special cases
-                  if (channel[channelParam].value !== presetChannel[channelParam].value) {
-                    return true
-                  }
                 } else {
                   // compare everything else
                   if (channel[channelParam] !== presetChannel[channelParam]) {

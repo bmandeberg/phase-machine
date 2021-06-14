@@ -15,6 +15,15 @@ import darkSawtooth from './assets/sawtooth_wave_dark.svg'
 import pulse from './assets/pulse_wave.svg'
 import lightPulse from './assets/pulse_wave_light.svg'
 import darkPulse from './assets/pulse_wave_dark.svg'
+import drums from './assets/samples-drums.svg'
+import lightDrums from './assets/samples-drums-light.svg'
+import darkDrums from './assets/samples-drums-dark.svg'
+import marimba from './assets/samples-marimba.svg'
+import lightMarimba from './assets/samples-marimba-light.svg'
+import darkMarimba from './assets/samples-marimba-dark.svg'
+import piano from './assets/samples-piano.svg'
+import lightPiano from './assets/samples-piano-light.svg'
+import darkPiano from './assets/samples-piano-dark.svg'
 
 import { rangeWrapper } from './math'
 
@@ -114,6 +123,39 @@ function themedIcon(icon, theme) {
         default:
           return pulse
       }
+    case 'drums':
+      switch (theme) {
+        case 'light':
+          return drums
+        case 'dark':
+          return lightDrums
+        case 'contrast':
+          return darkDrums
+        default:
+          return drums
+      }
+    case 'marimba':
+      switch (theme) {
+        case 'light':
+          return marimba
+        case 'dark':
+          return lightMarimba
+        case 'contrast':
+          return darkMarimba
+        default:
+          return marimba
+      }
+    case 'piano':
+      switch (theme) {
+        case 'light':
+          return piano
+        case 'dark':
+          return lightPiano
+        case 'contrast':
+          return darkPiano
+        default:
+          return piano
+      }
     default:
       return null
   }
@@ -177,7 +219,7 @@ export const INSTRUMENT_TYPES = {
   sawtooth: (theme) => <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />,
   pulse: (theme) => <img className="wave-icon" src={themedIcon('pulse', theme)} alt="" />,
   pwm: () => (
-    <span className="wave-title" style={{ marginTop: 2, marginRight: 0 }}>
+    <span className="wave-title" style={{ marginRight: 0 }}>
       pwm
     </span>
   ),
@@ -253,6 +295,9 @@ export const INSTRUMENT_TYPES = {
       <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />
     </div>
   ),
+  piano: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('piano', theme)} alt="" />,
+  marimba: (theme) => <img className="wave-icon" style={{ height: 18 }} src={themedIcon('marimba', theme)} alt="" />,
+  drums: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drums', theme)} alt="" />,
 }
 
 export const ARP_MODES = {

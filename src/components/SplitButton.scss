@@ -21,8 +21,11 @@
     }
   }
   .split-button-content {
-    padding-bottom: 4px;
+    height: 36px;
     min-width: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .split-button-arrow {
     height: 27px;

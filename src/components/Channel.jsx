@@ -97,8 +97,6 @@ export default function Channel({
   const [legato, setLegato] = useState(initState.legato)
   const [instrumentOn, setInstrumentOn] = useState(initState.instrumentOn)
   const [instrumentType, setInstrumentType] = useState(initState.instrumentType)
-  const initInstrumentType = useRef(instrumentType)
-  const instrument = useRef()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [keyViewType, setKeyViewType] = useState(1)
 
@@ -223,10 +221,18 @@ export default function Channel({
 
   // instrument
 
+  const initInstrumentType = useRef(instrumentType)
+  const instrument = useRef()
+  const synthInstrument = useRef()
+  const drumsInstrument = useRef()
+  const pianoInstrument = useRef()
+  const marimbaInstrument = useRef()
+
   useEffect(() => {
-    instrument.current = new Tone.MonoSynth({
+    const samplerInstruments = ['drums', 'piano', 'marimba']
+    synthInstrument.current = new Tone.MonoSynth({
       oscillator: {
-        type: initInstrumentType.current,
+        type: samplerInstruments.includes(initInstrumentType.current) ? 'triangle' : initInstrumentType.current,
       },
       envelope: {
         attack: 0.05,
@@ -236,13 +242,123 @@ export default function Channel({
         baseFrequency: 3000,
       },
     }).toDestination()
+    pianoInstrument.current = new Tone.Sampler({
+      urls: {
+        C2: 'Ensoniq-SQ-2-Piano-C2.mp3',
+        C4: 'Ensoniq-SQ-2-Piano-C4.mp3',
+        C7: 'Ensoniq-SQ-2-Piano-C7.mp3',
+      },
+      baseUrl: window.location.origin + '/samples/piano/',
+    }).toDestination()
+    marimbaInstrument.current = new Tone.Sampler({
+      urls: {
+        C4: 'Roland-SC-88-Marimba-C4.mp3',
+      },
+      baseUrl: window.location.origin + '/samples/marimba/',
+    }).toDestination()
+    drumsInstrument.current = new Tone.Sampler({
+      urls: {
+        Eb0: 'Korg-N1R-High-Q.mp3',
+        E0: 'Korg-N1R-Slap.mp3',
+        F0: 'Korg-N1R-Scratch-Push.mp3',
+        Gb0: 'Korg-N1R-Scratch-Pull.mp3',
+        G0: 'Korg-N1R-Sticks.mp3',
+        Ab0: 'Korg-N1R-Square-Click.mp3',
+        A0: 'Korg-N1R-Metronome-Click.mp3',
+        Bb0: 'Korg-N1R-Metronome-Bell.mp3',
+        B0: 'Korg-N1R-Bass-Drum-2.mp3',
+        C1: 'Korg-N1R-Bass-Drum.mp3',
+        Db1: 'Korg-N1R-Side-Stick.mp3',
+        D1: 'Korg-N1R-Snare-Drum.mp3',
+        Eb1: 'Korg-N1R-Clap.mp3',
+        E1: 'Korg-N1R-Snare-Drum-2.mp3',
+        F1: 'Korg-N1R-Low-Tom-2.mp3',
+        Gb1: 'Korg-N1R-Closed-Hi-Hat.mp3',
+        G1: 'Korg-N1R-Low-Tom.mp3',
+        Ab1: 'Korg-N1R-Pedal-Hi-Hat.mp3',
+        A1: 'Korg-N1R-Mid-Tom-2.mp3',
+        Bb1: 'Korg-N1R-Open-Hi-Hat.mp3',
+        B1: 'Korg-N1R-Mid-Tom.mp3',
+        C2: 'Korg-N1R-High-Tom-2.mp3',
+        Db2: 'Korg-N1R-Crash-Cymbal.mp3',
+        D2: 'Korg-N1R-High-Tom.mp3',
+        Eb2: 'Korg-N1R-Ride-Cymbal.mp3',
+        E2: 'Korg-N1R-Chinese-Cymbal.mp3',
+        F2: 'Korg-N1R-Ride-Bell.mp3',
+        Gb2: 'Korg-N1R-Tambourine.mp3',
+        G2: 'Korg-N1R-Splash-Cymbal.mp3',
+        Ab2: 'Korg-N1R-Cowbell.mp3',
+        A2: 'Korg-N1R-Crash-Cymbal-2.mp3',
+        Bb2: 'Korg-N1R-Vibraslap.mp3',
+        B2: 'Korg-N1R-Ride-Cymbal-2.mp3',
+        C3: 'Korg-N1R-High-Bongo.mp3',
+        Db3: 'Korg-N1R-Low-Bongo.mp3',
+        D3: 'Roland-SC-88-Mute-High-Conga.mp3',
+        Eb3: 'Roland-SC-88-Open-High-Conga.mp3',
+        E3: 'Roland-SC-88-Low-Conga.mp3',
+        F3: 'Korg-N1R-High-Timbale.mp3',
+        Gb3: 'Korg-N1R-Low-Timbale.mp3',
+        G3: 'Korg-N1R-High-Agogo.mp3',
+        Ab3: 'Korg-N1R-Low-Agogo.mp3',
+        A3: 'Korg-N1R-Cabasa.mp3',
+        Bb3: 'Korg-N1R-Maracas.mp3',
+        B3: 'Korg-N1R-Short-Whistle.mp3',
+        C4: 'Korg-N1R-Long-Whistle.mp3',
+        Db4: 'Korg-N1R-Short-Guiro.mp3',
+        D4: 'Korg-N1R-Long-Guiro.mp3',
+        Eb4: 'Korg-N1R-Claves.mp3',
+        E4: 'Korg-N1R-High-Wood-Block.mp3',
+        F4: 'Korg-N1R-Low-Wood-Block.mp3',
+        Gb4: 'Roland-SC-88-Mute-Cuica.mp3',
+        G4: 'Roland-SC-88-Open-Cuica.mp3',
+        Ab4: 'Korg-N1R-Mute-Triangle.mp3',
+        A4: 'Korg-N1R-Open-Triangle.mp3',
+        Bb4: 'Korg-N1R-Shaker.mp3',
+        B4: 'Korg-N1R-Jingle-Bell.mp3',
+        C5: 'Korg-N1R-Belltree.mp3',
+        Db5: 'Korg-N1R-Castanets.mp3',
+        D5: 'Korg-N1R-Mute-Surdo.mp3',
+        Eb5: 'Korg-N1R-Open-Surdo.mp3',
+      },
+      baseUrl: window.location.origin + '/samples/drums/',
+    }).toDestination()
+    switch (initInstrumentType.current) {
+      case 'piano':
+        instrument.current = pianoInstrument.current
+        break
+      case 'marimba':
+        instrument.current = marimbaInstrument.current
+        break
+      case 'drums':
+        instrument.current = drumsInstrument.current
+        break
+      default:
+        instrument.current = synthInstrument.current
+    }
     return () => {
-      instrument.current.dispose()
+      synthInstrument.current.dispose()
+      marimbaInstrument.current.dispose()
+      pianoInstrument.current.dispose()
+      drumsInstrument.current.dispose()
     }
   }, [])
 
   useEffect(() => {
-    instrument.current.oscillator.type = instrumentType
+    instrument.current.triggerRelease()
+    switch (instrumentType) {
+      case 'piano':
+        instrument.current = pianoInstrument.current
+        break
+      case 'marimba':
+        instrument.current = marimbaInstrument.current
+        break
+      case 'drums':
+        instrument.current = drumsInstrument.current
+        break
+      default:
+        instrument.current = synthInstrument.current
+        instrument.current.oscillator.type = instrumentType
+    }
   }, [instrumentType])
 
   const noteOff = useCallback((channel, note, midiOutObj, delay, offTime, clockOffset) => {
