@@ -12,6 +12,7 @@
 /build
 /dist/*
 !/dist/index.html
+!/dist/samples
 
 # misc
 .DS_Store
