@@ -200,7 +200,7 @@ export default function usePresets(
 
   useEffect(() => {
     function keydown(e) {
-      if (!isNaN(+e.key) && document.activeElement.getAttribute('type') !== 'text') {
+      if (e.key !== ' ' && !isNaN(+e.key) && document.activeElement.getAttribute('type') !== 'text') {
         if (keydownTimer.current === null) {
           keydownTimer.current = window.performance.now()
         } else if (keydownTimer.current && window.performance.now() - keydownTimer.current > PRESET_HOLD_TIME) {
