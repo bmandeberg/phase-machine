@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Dropdown from 'react-dropdown'
@@ -20,23 +20,21 @@ function longestText(options) {
 }
 
 export default function Dropdn(props) {
+  const setValue = useCallback((e) => props.setValue(e.value), [props])
+  const placeholder = useMemo(() => props.placeholder || 'Select an option', [props.placeholder])
+
   return (
     <div
       className={classNames('dropdown-container', props.className, {
         'small-dropdown': props.small,
         'no-text-transform': props.noTextTransform,
-        'capitalize': props.capitalize,
+        capitalize: props.capitalize,
         'inline-dropdown': props.inline,
         'dropdown-num-inputs-container': props.setNum1,
         'show-dropdown-num-inputs': props.showNumInputs,
       })}>
       <div className="dropdown">
-        <Dropdown
-          options={props.options}
-          onChange={(e) => props.setValue(e.value)}
-          value={props.value}
-          placeholder={props.placeholder || 'Select an option'}
-        />
+        <Dropdown options={props.options} onChange={setValue} value={props.value} placeholder={placeholder} />
         <div className="dropdown-min-width">{longestText(props.options)}</div>
       </div>
       {props.label && <p className="dropdown-label no-select">{props.label}</p>}

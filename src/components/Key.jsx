@@ -31,6 +31,8 @@ export default function Key({
     [musicalKey, playingPitchClass, setKey, setPlayingPitchClass]
   )
 
+  const selectedKeyVisible = useCallback((i) => showKeyPreview && keyPreview[i], [keyPreview, showKeyPreview])
+
   return (
     <div
       className={classNames('key', className, {
@@ -57,9 +59,7 @@ export default function Key({
           onClick={() => togglePitchClass(i)}></div>
       ))}
       {pianoKeys &&
-        [...Array(12)].map((d, i) => (
-          <SelectedKey key={i} visible={showKeyPreview && keyPreview[i]} {...SELECTED_KEYS[i]} />
-        ))}
+        [...Array(12)].map((d, i) => <SelectedKey key={i} visible={selectedKeyVisible(i)} {...SELECTED_KEYS[i]} />)}
     </div>
   )
 }

@@ -318,6 +318,8 @@ export default function App() {
     ]
   )
 
+  const presetOptions = useMemo(() => presets.map((p) => ({ label: p.name, value: p.id })), [presets])
+
   return (
     <div
       id="container"
@@ -346,7 +348,7 @@ export default function App() {
         setChannelSync={setChannelSync}
         preset={uiState}
         setPresetName={setPresetName}
-        presetOptions={presets.map((p) => ({ label: p.name, value: p.id }))}
+        presetOptions={presetOptions}
         setPreset={setPreset}
         presetDirty={presetDirty}
         presetHotkey={currentPreset.hotkey}

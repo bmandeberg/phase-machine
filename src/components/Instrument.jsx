@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Switch from 'react-switch'
@@ -14,7 +14,7 @@ export default function Instrument({
   setInstrumentType,
   small,
   theme,
-  mute
+  mute,
 }) {
   const incrementInstrument = useCallback(
     (next) => {
@@ -33,6 +33,15 @@ export default function Instrument({
     [instrumentType, setInstrumentType]
   )
 
+  const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
+  const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
+  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
+  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+
+  const splitButtonContent = useMemo(() => INSTRUMENT_TYPES[instrumentType](theme), [instrumentType, theme])
+  const splitButtonRight = useCallback(() => incrementInstrument(true), [incrementInstrument])
+  const splitButtonLeft = useCallback(() => incrementInstrument(false), [incrementInstrument])
+
   return (
     <div className={classNames('instrument', className)}>
       <div className="instrument-switch-container">
@@ -44,10 +53,10 @@ export default function Instrument({
             checked={instrumentOn}
             uncheckedIcon={false}
             checkedIcon={false}
-            offColor={themedSwitch('offColor', theme)}
-            onColor={themedSwitch('onColor', theme)}
-            offHandleColor={themedSwitch('offHandleColor', theme, mute)}
-            onHandleColor={themedSwitch('onHandleColor', theme)}
+            offColor={offColor}
+            onColor={onColor}
+            offHandleColor={offHandleColor}
+            onHandleColor={onHandleColor}
             width={48}
             height={24}
           />
@@ -58,11 +67,7 @@ export default function Instrument({
       {small ? (
         <div className="button disabled">Instr</div>
       ) : (
-        <SplitButton
-          content={INSTRUMENT_TYPES[instrumentType](theme)}
-          rightAction={() => incrementInstrument(true)}
-          leftAction={() => incrementInstrument(false)}
-        />
+        <SplitButton content={splitButtonContent} rightAction={splitButtonRight} leftAction={splitButtonLeft} />
       )}
     </div>
   )

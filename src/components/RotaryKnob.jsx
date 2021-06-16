@@ -330,6 +330,17 @@ export default function RotaryKnob({
     return classNames('knob', { grabbing })
   }, [grabbing])
 
+  const onStart = useMemo(
+    () => (axisKnob ? startChangingAxis : startTurningKnob),
+    [axisKnob, startChangingAxis, startTurningKnob]
+  )
+  const onEnd = useMemo(
+    () => (axisKnob ? stopChangingAxis : stopTurningKnob),
+    [axisKnob, stopChangingAxis, stopTurningKnob]
+  )
+  const clampMax = useMemo(() => (axisKnob ? 360 : 270), [axisKnob])
+  const rotateDegrees = useMemo(() => (axisKnob ? 0 : -135), [axisKnob])
+
   return (
     <div
       style={{ marginLeft: squeeze && -squeeze }}
@@ -401,10 +412,10 @@ export default function RotaryKnob({
           unlockDistance={30}
           preciseMode={false}
           style={knobSize}
-          onStart={axisKnob ? startChangingAxis : startTurningKnob}
-          onEnd={axisKnob ? stopChangingAxis : stopTurningKnob}
-          clampMax={axisKnob ? 360 : 270}
-          rotateDegrees={axisKnob ? 0 : -135}
+          onStart={onStart}
+          onEnd={onEnd}
+          clampMax={clampMax}
+          rotateDegrees={rotateDegrees}
         />
       ) : (
         <Knob
@@ -417,10 +428,10 @@ export default function RotaryKnob({
           unlockDistance={30}
           preciseMode={false}
           style={knobSize}
-          onStart={axisKnob ? startChangingAxis : startTurningKnob}
-          onEnd={axisKnob ? stopChangingAxis : stopTurningKnob}
-          clampMax={axisKnob ? 360 : 270}
-          rotateDegrees={axisKnob ? 0 : -135}
+          onStart={onStart}
+          onEnd={onEnd}
+          clampMax={clampMax}
+          rotateDegrees={rotateDegrees}
         />
       )}
       <div className="knob-label no-select">{axisKnob ? 'Axis' : label}</div>

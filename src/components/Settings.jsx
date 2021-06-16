@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import Switch from 'react-switch'
 import Dropdn from '../components/Dropdn'
@@ -24,6 +24,13 @@ export default function Settings({
     [setLinearKnobs]
   )
 
+  const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
+  const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
+  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
+  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+
+  const knobsDropdownValue = useMemo(() => (linearKnobs ? 'Linear' : 'Relative Circular'), [linearKnobs])
+
   return (
     <div className="settings">
       <div className="settings-item">
@@ -34,10 +41,10 @@ export default function Settings({
           checked={showStepNumbers}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={themedSwitch('offColor', theme)}
-          onColor={themedSwitch('onColor', theme)}
-          offHandleColor={themedSwitch('offHandleColor', theme)}
-          onHandleColor={themedSwitch('onHandleColor', theme)}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
           width={48}
           height={24}
         />
@@ -50,10 +57,10 @@ export default function Settings({
           checked={separateMIDIChannels}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={themedSwitch('offColor', theme)}
-          onColor={themedSwitch('onColor', theme)}
-          offHandleColor={themedSwitch('offHandleColor', theme)}
-          onHandleColor={themedSwitch('onHandleColor', theme)}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
           width={48}
           height={24}
         />
@@ -66,10 +73,10 @@ export default function Settings({
           checked={hotkeyRestart}
           uncheckedIcon={false}
           checkedIcon={false}
-          offColor={themedSwitch('offColor', theme)}
-          onColor={themedSwitch('onColor', theme)}
-          offHandleColor={themedSwitch('offHandleColor', theme)}
-          onHandleColor={themedSwitch('onHandleColor', theme)}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
           width={48}
           height={24}
         />
@@ -78,7 +85,7 @@ export default function Settings({
         <p className="settings-label">Knob type</p>
         <Dropdn
           options={['Linear', 'Relative Circular']}
-          value={linearKnobs ? 'Linear' : 'Relative Circular'}
+          value={knobsDropdownValue}
           setValue={setKnobType}
           noTextTransform
         />

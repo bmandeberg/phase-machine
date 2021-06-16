@@ -190,9 +190,10 @@ export default function useUI(
 
   const axisEl = useCallback(
     (clock) => {
+      const className = classNames({ 'channel-module': !clock, 'axis-knob': clock })
       return (
         <RotaryKnob
-          className={classNames({ 'channel-module': !clock, 'axis-knob': clock })}
+          className={className}
           value={axis}
           setValue={updateAxis}
           grabbing={grabbing}
@@ -304,12 +305,14 @@ export default function useUI(
     )
   }, [keyRate, setKeyRate])
 
+  const arpModes = useMemo(() => Object.keys(ARP_MODES), [])
+
   const keyArpModeEl = useMemo(() => {
     return (
       <Dropdn
         className="channel-module key-arp-mode"
         label="Arp Mode"
-        options={Object.keys(ARP_MODES)}
+        options={arpModes}
         setValue={setKeyArpMode}
         value={keyArpMode}
         showNumInputs={keyArpMode === '+/-'}
@@ -319,7 +322,7 @@ export default function useUI(
         setNum2={setKeyArpInc2}
       />
     )
-  }, [keyArpInc1, keyArpInc2, keyArpMode, setKeyArpInc1, setKeyArpInc2, setKeyArpMode])
+  }, [arpModes, keyArpInc1, keyArpInc2, keyArpMode, setKeyArpInc1, setKeyArpInc2, setKeyArpMode])
 
   const keySustainEl = useCallback(
     (vertical) => {
@@ -414,7 +417,7 @@ export default function useUI(
         <Dropdn
           className="channel-module seq-arp-mode"
           label="Seq Mode"
-          options={Object.keys(ARP_MODES)}
+          options={arpModes}
           setValue={setSeqArpMode}
           value={seqArpMode}
           inline={inline}
@@ -426,7 +429,7 @@ export default function useUI(
         />
       )
     },
-    [seqArpInc1, seqArpInc2, seqArpMode, setSeqArpInc1, setSeqArpInc2, setSeqArpMode]
+    [arpModes, seqArpInc1, seqArpInc2, seqArpMode, setSeqArpInc1, setSeqArpInc2, setSeqArpMode]
   )
 
   const seqSwingEl = useCallback(
@@ -482,6 +485,11 @@ export default function useUI(
     [grabbing, linearKnobs, mute, seqSustain, setGrabbing, setSeqSustain, theme]
   )
 
+  const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
+  const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
+  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
+  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+
   const legatoEl = useCallback(
     (inline) => {
       return (
@@ -492,10 +500,10 @@ export default function useUI(
             checked={legato}
             uncheckedIcon={false}
             checkedIcon={false}
-            offColor={themedSwitch('offColor', theme)}
-            onColor={themedSwitch('onColor', theme)}
-            offHandleColor={themedSwitch('offHandleColor', theme, mute)}
-            onHandleColor={themedSwitch('onHandleColor', theme)}
+            offColor={offColor}
+            onColor={onColor}
+            offHandleColor={offHandleColor}
+            onHandleColor={onHandleColor}
             width={48}
             height={24}
           />
@@ -503,7 +511,7 @@ export default function useUI(
         </div>
       )
     },
-    [legato, mute, setLegato, theme]
+    [legato, offColor, offHandleColor, onColor, onHandleColor, setLegato]
   )
 
   const seqRestartEl = useMemo(() => {
