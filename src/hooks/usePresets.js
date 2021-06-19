@@ -159,7 +159,7 @@ export default function usePresets(
   const newPreset = useCallback(
     (e, hotkey = null) => {
       const uiStateCopy = Object.assign({}, uiState, {
-        name: dedupName('New Preset'),
+        name: uiState.name !== currentPreset.name ? uiState.name : dedupName('New Preset'),
         placeholder: false,
         id: uuid(),
         hotkey,
@@ -175,7 +175,7 @@ export default function usePresets(
       // save in localStorage
       window.localStorage.setItem('activePreset', uiStateCopy.id)
     },
-    [dedupName, deepStateCopy, setCurrentPreset, setPresets, setUIState, uiState]
+    [currentPreset.name, dedupName, deepStateCopy, setCurrentPreset, setPresets, setUIState, uiState]
   )
 
   const deletePreset = useCallback(() => {
