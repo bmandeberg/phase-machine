@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { MAX_SEQUENCE_LENGTH } from '../globals'
@@ -24,6 +24,12 @@ export default function Sequencer({
     },
     [setSeqSteps]
   )
+
+  useEffect(() => {
+    setSeqSteps((seqSteps) => {
+      return seqSteps.map((s, i) => (i + 1 > seqLength ? false : s))
+    })
+  }, [seqLength, setSeqSteps])
 
   return (
     <div className={classNames('sequencer', className)}>
