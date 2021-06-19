@@ -433,7 +433,7 @@ export const PRESET_HOLD_TIME = 1000
 export const PLAY_NOTE_BUFFER_TIME = 0.015
 
 export function noteString(playingNote) {
-  if (!playingNote) {
+  if (!playingNote && playingNote !== 0) {
     return null
   }
   const notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
