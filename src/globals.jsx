@@ -471,6 +471,7 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
   legato: false,
   instrumentOn: true,
   instrumentType: 'triangle',
+  rangeMode: true,
 })
 
 export const DEFAULT_PRESET = {

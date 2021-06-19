@@ -101,7 +101,9 @@ export default function useUI(
   linearKnobs,
   theme,
   seqRestart,
-  seqOpposite
+  seqOpposite,
+  rangeMode,
+  setRangeMode
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -244,6 +246,42 @@ export default function useUI(
       />
     )
   }, [doFlip, doOpposite, previewFlip, previewOpposite, setShowKeyPreview])
+
+  const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
+  const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
+  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
+  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+
+  const rangeModeTrue = useCallback(() => setRangeMode(true), [setRangeMode])
+  const rangeModeFalse = useCallback(() => setRangeMode(false), [setRangeMode])
+  const notesModeEl = useMemo(() => {
+    return (
+      <div className="notes-mode">
+        <Switch
+          className="switch"
+          onChange={setRangeMode}
+          checked={rangeMode}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={onHandleColor}
+          onHandleColor={onHandleColor}
+          width={46}
+          height={24}
+        />
+        <div className="notes-mode-labels">
+          <p onClick={rangeModeTrue} className={classNames('notes-mode-label', { 'notes-mode-selected': rangeMode })}>
+            Range
+          </p>
+          <p onClick={rangeModeFalse} className={classNames('notes-mode-label', { 'notes-mode-selected': !rangeMode })}>
+            Keybd
+          </p>
+        </div>
+        <p className="notes-mode-title">Mode</p>
+      </div>
+    )
+  }, [offColor, onColor, onHandleColor, rangeMode, rangeModeFalse, rangeModeTrue, setRangeMode])
 
   const pianoEl = useMemo(() => {
     return (
@@ -485,11 +523,6 @@ export default function useUI(
     [grabbing, linearKnobs, mute, seqSustain, setGrabbing, setSeqSustain, theme]
   )
 
-  const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
-  const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
-  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
-  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
-
   const legatoEl = useCallback(
     (inline) => {
       return (
@@ -572,5 +605,6 @@ export default function useUI(
     keyViewTypeEl,
     seqRestartEl,
     seqOppositeEl,
+    notesModeEl,
   }
 }

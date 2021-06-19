@@ -350,6 +350,12 @@ $headerDarkBlue: #0f182d;
     }
   }
 
+  .notes-mode {
+    .notes-mode-selected {
+      color: $darkGreen;
+    }
+  }
+
   .Dropdown-root {
     &.is-open .Dropdown-arrow {
       border-color: transparent transparent $darkLightGray !important;

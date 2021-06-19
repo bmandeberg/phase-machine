@@ -104,6 +104,8 @@ export default function Channel({
   const [dragTarget, setDragTarget] = useState(channelNum)
   const [dragRow, setDragRow] = useState(0)
 
+  const [rangeMode, setRangeMode] = useState(true)
+
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
   const hotkeyRestartRef = useRef(hotkeyRestart)
@@ -170,6 +172,7 @@ export default function Channel({
         setLegato(channelPreset.legato)
         setInstrumentOn(channelPreset.instrumentOn)
         setInstrumentType(channelPreset.instrumentType)
+        setRangeMode(channelPreset.rangeMode)
       }
     }
   }, [channelPreset, seqRestart])
@@ -601,6 +604,7 @@ export default function Channel({
     keyViewTypeEl,
     seqRestartEl,
     seqOppositeEl,
+    notesModeEl,
   } = useUI(
     id.current,
     color,
@@ -688,7 +692,9 @@ export default function Channel({
     linearKnobs,
     theme,
     seqRestart,
-    seqOpposite
+    seqOpposite,
+    rangeMode,
+    setRangeMode
   )
 
   const dragTargetUI = useCallback(
@@ -763,6 +769,7 @@ export default function Channel({
         legato,
         instrumentOn,
         instrumentType,
+        rangeMode,
       }
       setChannelState(id.current, state)
     }, debounceTime)
@@ -783,6 +790,7 @@ export default function Channel({
     legato,
     mute,
     rangeEnd,
+    rangeMode,
     rangeStart,
     seqArpInc1,
     seqArpInc2,
@@ -844,6 +852,7 @@ export default function Channel({
           {axisEl(false)}
           <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />
           {flipOppositeEl}
+          {notesModeEl}
           {pianoEl}
           {keyRateEl}
           {keyArpModeEl}
