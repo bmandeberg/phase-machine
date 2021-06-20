@@ -903,10 +903,12 @@ export default function Channel({
           {muteSoloEl}
           {velocityEl}
           {keyEl}
-          {shiftEl}
-          {axisEl(false)}
-          <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />
-          {flipOppositeEl}
+          <div className="transformations">
+            {rangeMode && shiftEl}
+            {rangeMode && axisEl(false)}
+            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
+            {rangeMode && flipOppositeEl}
+          </div>
           {notesModeEl}
           {pianoEl}
           {keyRateEl}
@@ -955,10 +957,12 @@ export default function Channel({
           {muteSoloEl}
           {velocityEl}
           {keyEl}
-          {shiftEl}
-          {axisEl(false)}
-          <img className="arrow-small" src={arrowSmall} alt="" draggable="false" />
-          {flipOppositeEl}
+          <div className="transformations">
+            {rangeMode && shiftEl}
+            {rangeMode && axisEl(false)}
+            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
+            {rangeMode && flipOppositeEl}
+          </div>
           {notesModeEl}
           {pianoEl}
           {keyRateEl}

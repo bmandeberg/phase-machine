@@ -278,6 +278,12 @@
   }
 }
 
+.transformations {
+  display: inline-block;
+  vertical-align: top;
+  width: 224px;
+}
+
 .channel-vertical {
   &.left-vertical {
     position: relative;
