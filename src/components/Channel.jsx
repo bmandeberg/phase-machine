@@ -5,7 +5,14 @@ import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
 import { useGesture } from 'react-use-gesture'
-import { BLANK_PITCH_CLASSES, CHANNEL_HEIGHT, PLAY_NOTE_BUFFER_TIME, handleArpMode, noteString } from '../globals'
+import {
+  BLANK_PITCH_CLASSES,
+  CHANNEL_HEIGHT,
+  PLAY_NOTE_BUFFER_TIME,
+  MIDDLE_C,
+  handleArpMode,
+  noteString,
+} from '../globals'
 import { pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
 import Sequencer from './Sequencer'
@@ -565,23 +572,35 @@ export default function Channel({
   )
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
 
-  const keyRef = useRef(key)
-  useEffect(() => {
-    keyRef.current = key
-  }, [key])
+  // manage key and notes for range and keybd modes
 
   useEffect(() => {
     if (rangeMode) {
-      setKeybdPitches(pitchesInRange(rangeStart, rangeEnd, keyRef.current))
+      setKeybdPitches(pitchesInRange(rangeStart, rangeEnd, key))
     }
-  }, [rangeEnd, rangeMode, rangeStart])
+  }, [key, rangeEnd, rangeMode, rangeStart])
 
   useEffect(() => {
     if (!rangeMode) {
-      setRangeStart(Math.min(...keybdPitches))
-      setRangeEnd(Math.max(...keybdPitches) + 1)
+      if (!keybdPitches.length) {
+        setRangeStart(MIDDLE_C)
+        setRangeEnd(MIDDLE_C + 12)
+      } else {
+        setRangeStart(Math.min(...keybdPitches))
+        setRangeEnd(Math.max(...keybdPitches) + 1)
+      }
     }
   }, [keybdPitches, rangeMode])
+
+  useEffect(() => {
+    if (!rangeMode) {
+      const newKey = BLANK_PITCH_CLASSES()
+      keybdPitches.forEach((note) => {
+        newKey[note % 12] = true
+      })
+      setKey(newKey)
+    }
+  }, [rangeMode, keybdPitches])
 
   // key manipulation functions
 
@@ -940,6 +959,7 @@ export default function Channel({
           {axisEl(false)}
           <img className="arrow-small" src={arrowSmall} alt="" draggable="false" />
           {flipOppositeEl}
+          {notesModeEl}
           {pianoEl}
           {keyRateEl}
           {keyArpModeEl}

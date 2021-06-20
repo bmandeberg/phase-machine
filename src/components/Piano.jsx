@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain } from '../globals'
@@ -92,11 +92,31 @@ export default function Piano({
     },
   })
 
+  const selectNote = useCallback(
+    (noteIndex) => {
+      if (!rangeMode) {
+        setKeybdPitches((keybdPitches) => {
+          const keybdPitchesCopy = keybdPitches.slice()
+          for (let i = 0; i < keybdPitches.length; i++) {
+            if (keybdPitches[i] === noteIndex) {
+              keybdPitchesCopy.splice(i, 1)
+              return keybdPitchesCopy
+            }
+          }
+          keybdPitchesCopy.push(noteIndex)
+          return keybdPitchesCopy.sort()
+        })
+      }
+    },
+    [rangeMode, setKeybdPitches]
+  )
+
   return (
     <div className="piano channel-module">
       {[...Array(12 * OCTAVES)].map((d, i) => (
         <div
           key={i}
+          onClick={() => selectNote(i)}
           className={classNames('piano-note', {
             'white-key': whiteKey(i),
             'next-black-key-near': nextBlackKey.near(i),
