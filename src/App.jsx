@@ -109,7 +109,7 @@ export default function App() {
         WebMidi.addListener('disconnected', disconnectMidi)
       }
     })
-    viewRef.current = VIEWS[0]
+    viewRef.current = view
     const containerEl = container.current
     function handleScroll() {
       if (viewRef.current === 'horizontal') {
