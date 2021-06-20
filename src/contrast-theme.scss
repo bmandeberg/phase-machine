@@ -64,6 +64,25 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
   }
 
+  .midi {
+    .midi-in {
+      background-color: $darkerMediumGray;
+      &:hover {
+        background-color: lighten($darkerMediumGray, 3%);
+      }
+      &:active {
+        background-color: darken($darkerMediumGray, 3%);
+      }
+      &.midi-active {
+        background-color: $green;
+        color: $darkBackground;
+        &:hover {
+          background-color: $greenHover;
+        }
+      }
+    }
+  }
+
   .border {
     border-color: $pitchClassGray;
   }

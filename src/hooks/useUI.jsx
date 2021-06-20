@@ -6,6 +6,7 @@ import NumInput from '../components/NumInput'
 import Dropdn from '../components/Dropdn'
 import Key from '../components/Key'
 import MuteSolo from '../components/MuteSolo'
+import MIDI from '../components/MIDI'
 import FlipOpposite from '../components/FlipOpposite'
 import Piano from '../components/Piano'
 import Instrument from '../components/Instrument'
@@ -105,7 +106,11 @@ export default function useUI(
   rangeMode,
   setRangeMode,
   keybdPitches,
-  setKeybdPitches
+  setKeybdPitches,
+  midiIn,
+  setMidiIn,
+  midiHold,
+  setMidiHold
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -168,14 +173,17 @@ export default function useUI(
     turningAxisKnob,
   ])
 
-  const muteSoloEl = useMemo(() => {
-    return <MuteSolo mute={mute} setMute={setMute} solo={solo} setSolo={setSolo} />
-  }, [mute, setMute, setSolo, solo])
+  const muteSoloEl = useMemo(
+    () => <MuteSolo mute={mute} setMute={setMute} solo={solo} setSolo={setSolo} />,
+    [mute, setMute, setSolo, solo]
+  )
+
+  const midiEl = useMemo(() => <MIDI midiIn={midiIn} setMidiIn={setMidiIn} />, [midiIn, setMidiIn])
 
   const velocityEl = useMemo(() => {
     return (
       <Fader
-        className="channel-module"
+        className="channel-module velocity"
         value={velocity}
         setValue={setVelocity}
         label="Vel"
@@ -631,5 +639,6 @@ export default function useUI(
     seqRestartEl,
     seqOppositeEl,
     notesModeEl,
+    midiEl,
   }
 }

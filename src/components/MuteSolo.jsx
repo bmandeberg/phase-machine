@@ -13,7 +13,7 @@ export default function MuteSolo({ mute, setMute, solo, setSolo }) {
   }, [setSolo])
 
   return (
-    <div className="mute-solo channel-module">
+    <div className="mute-solo">
       <div className={classNames('button no-select mute', { muted: mute })} onClick={toggleMute}>
         M
       </div>

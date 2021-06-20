@@ -1,0 +1,26 @@
+@import '../sass-globals.scss';
+
+.midi {
+  width: 64px;
+  height: 28px;
+  .button {
+    display: inline-block;
+    margin-bottom: 0 !important;
+  }
+  .midi-modal {
+    box-sizing: border-box;
+    width: 36px;
+  }
+  .midi-in {
+    box-sizing: border-box;
+    width: 28px;
+    background-color: $lightAlternateGray;
+    &.midi-active {
+      background-color: $green;
+      color: #ffffff;
+      &:hover {
+        background-color: $greenHover;
+      }
+    }
+  }
+}

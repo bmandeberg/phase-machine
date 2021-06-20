@@ -59,6 +59,25 @@ $headerDarkBlue: #0f182d;
     }
   }
 
+  .midi {
+    .midi-in {
+      background-color: $splitButtonAction;
+      &:hover {
+        background-color: lighten($splitButtonAction, 3%);
+      }
+      &:active {
+        background-color: darken($splitButtonAction, 3%);
+      }
+      &.midi-active {
+        background-color: $darkGreen;
+        color: $darkBackground;
+        &:hover {
+          background-color: $darkGreenHover;
+        }
+      }
+    }
+  }
+
   .border {
     border-color: $darkMediumGray;
   }

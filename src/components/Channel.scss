@@ -31,6 +31,12 @@
   transition: background-color $transitionTime;
 }
 
+.channel-primary {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 8px;
+}
+
 .channel-horizontal {
   height: 96px;
   border-bottom: 1px solid $lightMediumGray;
@@ -51,13 +57,13 @@
       text-shadow: 0 0 5px #ffffff;
     }
   }
-  .mute-solo {
-    height: 66px;
+  .velocity {
+    margin-right: 14px;
   }
   .arrow-small {
     width: 18px;
     position: absolute;
-    left: 436px;
+    left: 472px;
     top: 28px;
   }
   .flip-opposite {
@@ -106,6 +112,13 @@
   margin-top: -1px;
   margin-left: -1px;
   width: 656px;
+  .channel-primary {
+    margin-right: 16px;
+  }
+  .velocity {
+    margin-top: 21px;
+    margin-right: 0;
+  }
   .key {
     margin-top: 1px;
     margin-right: 32px;
@@ -287,7 +300,6 @@
 .channel-vertical {
   &.left-vertical {
     position: relative;
-    margin-left: 2px;
   }
   display: inline-block;
   vertical-align: top;

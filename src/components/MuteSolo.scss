@@ -5,7 +5,6 @@ $buttonSize: 28px;
 .mute-solo {
   text-transform: uppercase;
   margin-top: 16px;
-  margin-right: 8px !important;
   .button {
     width: $buttonSize;
     height: $buttonSize;
@@ -15,12 +14,13 @@ $buttonSize: 28px;
     text-align: center;
     line-height: 36px;
     cursor: pointer;
+    display: inline-block;
     &:hover {
       background: $lightGrayHover;
     }
   }
   .mute {
-    margin-bottom: 8px;
+    margin-right: 8px;
     &.muted {
       color: #ffffff;
       background: $red;

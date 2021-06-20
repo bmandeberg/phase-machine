@@ -114,6 +114,9 @@ export default function Channel({
   const [rangeMode, setRangeMode] = useState(initState.rangeMode)
   const [keybdPitches, setKeybdPitches] = useState(initState.keybdPitches)
 
+  const [midiIn, setMidiIn] = useState(initState.midiIn)
+  const [midiHold, setMidiHold] = useState(initState.midiToggle)
+
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
   const hotkeyRestartRef = useRef(hotkeyRestart)
@@ -656,6 +659,7 @@ export default function Channel({
     seqRestartEl,
     seqOppositeEl,
     notesModeEl,
+    midiEl,
   } = useUI(
     id.current,
     color,
@@ -747,7 +751,11 @@ export default function Channel({
     rangeMode,
     setRangeMode,
     keybdPitches,
-    setKeybdPitches
+    setKeybdPitches,
+    midiIn,
+    setMidiIn,
+    midiHold,
+    setMidiHold
   )
 
   const dragTargetUI = useCallback(
@@ -900,7 +908,10 @@ export default function Channel({
         <div className={classNames('channel channel-horizontal', { mute: muted })}>
           {channelNumEl(false)}
           {duplicateDeleteEl}
-          {muteSoloEl}
+          <div className="channel-primary">
+            {muteSoloEl}
+            {midiEl}
+          </div>
           {velocityEl}
           {keyEl}
           <div className="transformations">
@@ -954,7 +965,10 @@ export default function Channel({
         <div className={classNames('channel channel-horizontal', { mute: muted })}>
           {channelNumEl(false)}
           {duplicateDeleteEl}
-          {muteSoloEl}
+          <div className="channel-primary">
+            {muteSoloEl}
+            {midiEl}
+          </div>
           {velocityEl}
           {keyEl}
           <div className="transformations">
@@ -1005,8 +1019,11 @@ export default function Channel({
           <div className="channel-clock-top">
             {channelNumEl(false)}
             {duplicateDeleteEl}
-            {muteSoloEl}
-            {velocityEl}
+            <div className="channel-primary">
+              {muteSoloEl}
+              {midiEl}
+              {velocityEl}
+            </div>
             <div className="channel-vertical left-vertical">
               {flipOppositeEl}
               {shiftEl}

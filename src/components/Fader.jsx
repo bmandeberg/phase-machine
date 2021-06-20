@@ -17,7 +17,7 @@ import './Fader.scss'
 
 const FADER_HEIGHT = 41
 
-export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute, theme }) {
+export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute, theme, className }) {
   const faderClick = useCallback(
     (e) => {
       var bounding = e.target.getBoundingClientRect()
@@ -77,7 +77,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
   })
 
   return (
-    <div className="fader channel-module" onClick={faderClick}>
+    <div className={classNames('fader channel-module', className)} onClick={faderClick}>
       <img src={faderSlotGraphic} alt="" className="fader-slot" />
       <img
         src={faderKnobGraphic}
@@ -99,4 +99,5 @@ Fader.propTypes = {
   label: PropTypes.string,
   mute: PropTypes.bool,
   theme: PropTypes.string,
+  className: PropTypes.string,
 }
