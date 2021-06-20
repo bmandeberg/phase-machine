@@ -44,6 +44,9 @@
       &:first-of-type {
         border-right: none;
       }
+      &.no-pointer-events {
+        pointer-events: none;
+      }
     }
     .piano-key-selected {
       position: absolute;

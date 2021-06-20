@@ -22,6 +22,10 @@ export default function Piano({
   setResizing,
   noteOn,
   mute,
+  rangeMode,
+  keybdPitches,
+  setKeybdPitches,
+  theme,
 }) {
   const [changingRange, setChangingRange] = useState(false)
   const [rangeStartReference, setRangeStartReference] = useState(rangeStart)
@@ -103,61 +107,75 @@ export default function Piano({
             'prev-black-key-far': prevBlackKey.far(i),
             'black-key-left': blackKeyLeft(i),
             'black-key-right': blackKeyRight(i),
-            'in-range': !mute && i >= rangeStart && i < rangeEnd,
+            'in-range': !mute && (!rangeMode || (i >= rangeStart && i < rangeEnd)),
+            selected: !rangeMode && keybdPitches.includes(i),
+            interactive: !rangeMode,
             playing: noteOn && playingNote === i,
           })}></div>
       ))}
-      <svg
-        style={{ left: pxStart.px - 2 }}
-        className="piano-range"
-        width={pxEnd.px - pxStart.px + 2}
-        height="99"
-        xmlns="http://www.w3.org/2000/svg">
-        <path
-          d={`${noteLeftBoundary(pxStart.boundaryType, 1, CHANNEL_HEIGHT)} ${noteRightBoundary(
-            pxEnd.boundaryType,
-            pxEnd.px - pxStart.px + 1
-          )}`}
-        />
-      </svg>
-      <div
-        {...dragRangeLeft()}
-        style={{ left: pxStart.px - 6, width: pxStart.boundaryType ? 14 : 10 }}
-        className="range-resize"></div>
-      <div
-        {...dragRange()}
-        style={{
-          left: pxStart.px + (pxStart.boundaryType ? 8 : 4),
-          width: pxEnd.px - pxStart.px - 10 - (pxStart.boundaryType ? 4 : 0) - (pxEnd.boundaryType ? 4 : 0),
-        }}
-        className={classNames('range-drag', { grabbing, resizing })}></div>
-      <div
-        {...dragRangeRight()}
-        style={{ left: pxEnd.px - (pxEnd.boundaryType ? 10 : 6), width: pxEnd.boundaryType ? 14 : 10 }}
-        className="range-resize"></div>
-      <svg
-        style={{ left: pxStart.px - 2 }}
-        className={classNames('piano-range piano-range-glow', { 'show-range-glow': changingRange })}
-        width={pxEnd.px - pxStart.px + 2}
-        height="99"
-        xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur id="blur" result="coloredBlur" stdDeviation="4"></feGaussianBlur>
-            <feMerge>
-              <feMergeNode in="coloredBlur"></feMergeNode>
-              <feMergeNode in="SourceGraphic"></feMergeNode>
-            </feMerge>
-          </filter>
-        </defs>
-        <path
-          d={`${noteLeftBoundary(pxStart.boundaryType, 1, CHANNEL_HEIGHT)} ${noteRightBoundary(
-            pxEnd.boundaryType,
-            pxEnd.px - pxStart.px + 1
-          )}`}
-        />
-      </svg>
-      {mute && <div className="piano-border"></div>}
+      {rangeMode && (
+        <svg
+          style={{ left: pxStart.px - 2 }}
+          className="piano-range"
+          width={pxEnd.px - pxStart.px + 2}
+          height="99"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d={`${noteLeftBoundary(pxStart.boundaryType, 1, CHANNEL_HEIGHT)} ${noteRightBoundary(
+              pxEnd.boundaryType,
+              pxEnd.px - pxStart.px + 1
+            )}`}
+          />
+        </svg>
+      )}
+      {rangeMode && (
+        <div
+          {...dragRangeLeft()}
+          style={{ left: pxStart.px - 6, width: pxStart.boundaryType ? 14 : 10 }}
+          className="range-resize"></div>
+      )}
+      {rangeMode && (
+        <div
+          {...dragRange()}
+          style={{
+            left: pxStart.px + (pxStart.boundaryType ? 8 : 4),
+            width: pxEnd.px - pxStart.px - 10 - (pxStart.boundaryType ? 4 : 0) - (pxEnd.boundaryType ? 4 : 0),
+          }}
+          className={classNames('range-drag', { grabbing, resizing })}></div>
+      )}
+      {rangeMode && (
+        <div
+          {...dragRangeRight()}
+          style={{ left: pxEnd.px - (pxEnd.boundaryType ? 10 : 6), width: pxEnd.boundaryType ? 14 : 10 }}
+          className="range-resize"></div>
+      )}
+      {rangeMode && (
+        <svg
+          style={{ left: pxStart.px - 2 }}
+          className={classNames('piano-range piano-range-glow', { 'show-range-glow': changingRange })}
+          width={pxEnd.px - pxStart.px + 2}
+          height="99"
+          xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur id="blur" result="coloredBlur" stdDeviation="4"></feGaussianBlur>
+              <feMerge>
+                <feMergeNode in="coloredBlur"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+              </feMerge>
+            </filter>
+          </defs>
+          <path
+            d={`${noteLeftBoundary(pxStart.boundaryType, 1, CHANNEL_HEIGHT)} ${noteRightBoundary(
+              pxEnd.boundaryType,
+              pxEnd.px - pxStart.px + 1
+            )}`}
+          />
+        </svg>
+      )}
+      {(mute || (theme === 'light' && !rangeMode)) && (
+        <div className={classNames('piano-border', { 'dark-border': !rangeMode })}></div>
+      )}
     </div>
   )
 }
@@ -173,6 +191,10 @@ Piano.propTypes = {
   setResizing: PropTypes.func,
   noteOn: PropTypes.bool,
   mute: PropTypes.bool,
+  rangeMode: PropTypes.bool,
+  keybdPitches: PropTypes.array,
+  setKeybdPitches: PropTypes.func,
+  theme: PropTypes.string,
 }
 
 function noteLeftBoundary(boundaryType, x, height) {

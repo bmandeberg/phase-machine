@@ -103,7 +103,9 @@ export default function useUI(
   seqRestart,
   seqOpposite,
   rangeMode,
-  setRangeMode
+  setRangeMode,
+  keybdPitches,
+  setKeybdPitches
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -151,9 +153,20 @@ export default function useUI(
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
         mute={muted}
+        rangeMode={rangeMode}
       />
     )
-  }, [key, keyPreview, muted, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, turningAxisKnob])
+  }, [
+    key,
+    keyPreview,
+    muted,
+    playingPitchClass,
+    rangeMode,
+    setKey,
+    setPlayingPitchClass,
+    showKeyPreview,
+    turningAxisKnob,
+  ])
 
   const muteSoloEl = useMemo(() => {
     return <MuteSolo mute={mute} setMute={setMute} solo={solo} setSolo={setSolo} />
@@ -252,8 +265,8 @@ export default function useUI(
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
 
-  const rangeModeTrue = useCallback(() => setRangeMode(true), [setRangeMode])
-  const rangeModeFalse = useCallback(() => setRangeMode(false), [setRangeMode])
+  const setRangeModeTrue = useCallback(() => setRangeMode(true), [setRangeMode])
+  const setRangeModeFalse = useCallback(() => setRangeMode(false), [setRangeMode])
   const notesModeEl = useMemo(() => {
     return (
       <div className="notes-mode">
@@ -271,17 +284,21 @@ export default function useUI(
           height={24}
         />
         <div className="notes-mode-labels">
-          <p onClick={rangeModeTrue} className={classNames('notes-mode-label', { 'notes-mode-selected': rangeMode })}>
+          <p
+            onClick={setRangeModeTrue}
+            className={classNames('notes-mode-label', { 'notes-mode-selected': rangeMode })}>
             Range
           </p>
-          <p onClick={rangeModeFalse} className={classNames('notes-mode-label', { 'notes-mode-selected': !rangeMode })}>
+          <p
+            onClick={setRangeModeFalse}
+            className={classNames('notes-mode-label', { 'notes-mode-selected': !rangeMode })}>
             Keybd
           </p>
         </div>
         <p className="notes-mode-title">Mode</p>
       </div>
     )
-  }, [offColor, onColor, onHandleColor, rangeMode, rangeModeFalse, rangeModeTrue, setRangeMode])
+  }, [offColor, onColor, onHandleColor, rangeMode, setRangeModeFalse, setRangeModeTrue, setRangeMode])
 
   const pianoEl = useMemo(() => {
     return (
@@ -298,21 +315,29 @@ export default function useUI(
         resizing={resizing}
         setResizing={setResizing}
         mute={muted}
+        rangeMode={rangeMode}
+        keybdPitches={keybdPitches}
+        setKeybdPitches={setKeybdPitches}
+        theme={theme}
       />
     )
   }, [
     channelNum,
     grabbing,
+    keybdPitches,
     muted,
     noteOn,
     playingNote,
     rangeEnd,
+    rangeMode,
     rangeStart,
     resizing,
     setGrabbing,
+    setKeybdPitches,
     setRangeEnd,
     setRangeStart,
     setResizing,
+    theme,
   ])
 
   const keyViewTypeEl = useMemo(() => {

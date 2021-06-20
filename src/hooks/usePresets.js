@@ -66,7 +66,7 @@ export default function usePresets(
             for (const channelParam in channel) {
               if (channel.hasOwnProperty(channelParam) && channelParam !== 'id') {
                 // compare arrays
-                if (['key', 'seqSteps'].some((s) => s === channelParam)) {
+                if (['key', 'seqSteps', 'keybdPitches'].some((s) => s === channelParam)) {
                   for (let j = 0; j < channel[channelParam].length; j++) {
                     if (channel[channelParam][j] !== presetChannel[channelParam][j]) {
                       return true

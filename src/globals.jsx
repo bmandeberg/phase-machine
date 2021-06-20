@@ -472,6 +472,7 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
   instrumentOn: true,
   instrumentType: 'triangle',
   rangeMode: true,
+  keybdPitches: [],
 })
 
 export const DEFAULT_PRESET = {

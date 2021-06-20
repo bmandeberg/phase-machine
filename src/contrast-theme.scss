@@ -6,7 +6,7 @@ $darkMediumGray: #45454c;
 $lightMediumGrayHover: lighten($lightMediumGray, 5%);
 $lightMediumGrayActive: darken($lightMediumGray, 5%);
 $darkDarkGray: #1e1e25;
-$darkDarkGrayHover: lighten($darkDarkGray, 3%);
+$darkDarkGrayHover: lighten($darkDarkGray, 8%);
 $darkTextGray: #383842;
 $darkLightGray: #a0a0b4;
 $darkDarkOrange: #9e5302;
@@ -17,6 +17,9 @@ $darkerMediumGrayActive: darken($darkerMediumGray, 5%);
 $blueHover: lighten($blue, 5%);
 $blueActive: darken($blue, 3%);
 $headerDarkBlue: #0f182d;
+$darkGreen: darken($green, 15%);
+$darkGreenHover: lighten($darkGreen, 3%);
+$lighterDarkGreen: lighten($darkGreen, 6%);
 
 .contrast-theme {
   background-color: $darkBackground;
@@ -269,6 +272,7 @@ $headerDarkBlue: #0f182d;
   }
 
   .piano {
+    $inRangeBorderColor: #3c3c3c;
     .piano-note {
       background-color: $darkMediumGray;
       border-color: $darkBackground;
@@ -276,18 +280,32 @@ $headerDarkBlue: #0f182d;
         background-color: $darkDarkGray;
         border-color: transparent;
       }
+      &.interactive:hover {
+        background-color: $darkDarkGrayHover;
+      }
       &.white-key {
         background-color: $pitchClassGray;
         &.in-range {
           background-color: $lightMediumGray;
-          border-color: #3c3c3c;
+          border-color: $inRangeBorderColor;
+          &.selected {
+            background-color: $darkGreen;
+            border-color: $lighterDarkGreen;
+          }
+        }
+        &.interactive:hover {
+          background-color: $lightMediumGrayHover;
         }
       }
-      &.playing {
-        background-color: darken($orange, 2%);
+      &.selected {
+        background-color: $darkGreen;
+        &.interactive:hover {
+          background-color: $darkGreenHover;
+        }
+      }
+      &.playing,
+      &.selected {
         &.white-key.in-range {
-          border-color: $darkOrange;
-          background-color: $orange;
           &.next-black-key-near {
             &::before {
               border: 2px solid $lightMediumGray;
@@ -338,11 +356,32 @@ $headerDarkBlue: #0f182d;
               border-top: none;
             }
             & + .white-key.in-range {
-              border-color: $darkOrange;
+              border-left-color: $lighterDarkGreen;
             }
           }
           & + .white-key.in-range {
-            border-color: $darkOrange;
+            border-left-color: $lighterDarkGreen;
+          }
+        }
+      }
+      &.playing {
+        background-color: darken($orange, 2%);
+        &.interactive:hover {
+          background-color: $orangeHover;
+        }
+        &.white-key.in-range {
+          border-color: $darkOrange;
+          background-color: $orange;
+          & + .piano-note.in-range {
+            & + .white-key.in-range {
+              border-left-color: $darkOrange;
+            }
+          }
+          & + .white-key.in-range {
+            border-left-color: $darkOrange;
+          }
+          &.interactive:hover {
+            background-color: $orangeHover;
           }
         }
       }

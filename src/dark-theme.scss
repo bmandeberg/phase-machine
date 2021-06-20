@@ -5,10 +5,11 @@ $darkMediumGray: #45454c;
 $darkMediumGrayHover: lighten($darkMediumGray, 3%);
 $darkMediumGrayActive: darken($darkMediumGray, 3%);
 $darkDarkGray: #1e1e25;
-$darkDarkGrayHover: lighten($darkDarkGray, 3%);
+$darkDarkGrayHover: lighten($darkDarkGray, 5%);
 $darkLightGray: #a0a0b4;
 $darkGreen: #00c591;
 $darkGreenHover: lighten($darkGreen, 6%);
+$darkDarkGreen: darken($darkGreen, 14%);
 $darkDarkOrange: #9e5302;
 $splitButtonAction: #313139;
 $headerBlue: #17326d;
@@ -261,6 +262,8 @@ $headerDarkBlue: #0f182d;
 
   .piano {
     $inRangeColor: #787887;
+    $inRangeColorHover: lighten($inRangeColor, 5%);
+    $inRangeBorderColor: #3c3c3c;
     .piano-note {
       background-color: #26262f;
       border-color: $darkBackground;
@@ -268,18 +271,32 @@ $headerDarkBlue: #0f182d;
         background-color: $darkDarkGray;
         border-color: transparent;
       }
+      &.interactive:hover {
+        background-color: $darkDarkGrayHover;
+      }
       &.white-key {
         background-color: $darkMediumGray;
         &.in-range {
           background-color: $inRangeColor;
-          border-color: #3c3c3c;
+          border-color: $inRangeBorderColor;
+          &.selected {
+            background-color: $darkGreen;
+          }
+        }
+        &.interactive:hover {
+          background-color: $inRangeColorHover;
         }
       }
-      &.playing {
-        background-color: darken($orange, 2%);
+      &.selected {
+        background-color: $darkGreen;
+        &.interactive:hover {
+          background-color: $darkGreenHover;
+        }
+      }
+      &.playing,
+      &.selected {
         &.white-key.in-range {
-          border-color: $darkOrange;
-          background-color: $orange;
+          border-color: $darkDarkGreen;
           &.next-black-key-near {
             &::before {
               border: 2px solid $inRangeColor;
@@ -330,11 +347,32 @@ $headerDarkBlue: #0f182d;
               border-top: none;
             }
             & + .white-key.in-range {
-              border-color: $darkOrange;
+              border-left-color: $darkDarkGreen;
             }
           }
           & + .white-key.in-range {
-            border-color: $darkOrange;
+            border-left-color: $darkDarkGreen;
+          }
+        }
+      }
+      &.playing {
+        background-color: darken($orange, 2%);
+        &.interactive:hover {
+          background-color: $orangeHover;
+        }
+        &.white-key.in-range {
+          border-color: $darkOrange;
+          background-color: $orange;
+          & + .piano-note.in-range {
+            & + .white-key.in-range {
+              border-left-color: $darkOrange;
+            }
+          }
+          & + .white-key.in-range {
+            border-left-color: $darkOrange;
+          }
+          &.interactive:hover {
+            background-color: $orangeHover;
           }
         }
       }

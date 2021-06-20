@@ -104,7 +104,8 @@ export default function Channel({
   const [dragTarget, setDragTarget] = useState(channelNum)
   const [dragRow, setDragRow] = useState(0)
 
-  const [rangeMode, setRangeMode] = useState(true)
+  const [rangeMode, setRangeMode] = useState(initState.rangeMode)
+  const [keybdPitches, setKeybdPitches] = useState(initState.keybdPitches)
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
@@ -173,6 +174,7 @@ export default function Channel({
         setInstrumentOn(channelPreset.instrumentOn)
         setInstrumentType(channelPreset.instrumentType)
         setRangeMode(channelPreset.rangeMode)
+        setKeybdPitches(channelPreset.keybdPitches)
       }
     }
   }, [channelPreset, seqRestart])
@@ -522,7 +524,7 @@ export default function Channel({
   const keyCallback = useCallback(
     (time, interval) => {
       // console.log('KEY', time, Tone.immediate())
-      const pitchRange = pitchesInRange(rangeStart, rangeEnd, key)
+      const pitchRange = rangeMode ? pitchesInRange(rangeStart, rangeEnd, key) : keybdPitches
       if (pitchRange.length) {
         prevNoteIndex.current = noteIndex.current
         if (noteIndex.current !== undefined) {
@@ -547,9 +549,39 @@ export default function Channel({
         }
       }
     },
-    [emptyKey, key, keyArpInc1, keyArpInc2, keyArpMode, loadPlayNoteBuffer, muted, rangeEnd, rangeStart]
+    [
+      emptyKey,
+      key,
+      keyArpInc1,
+      keyArpInc2,
+      keyArpMode,
+      keybdPitches,
+      loadPlayNoteBuffer,
+      muted,
+      rangeEnd,
+      rangeMode,
+      rangeStart,
+    ]
   )
   useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
+
+  const keyRef = useRef(key)
+  useEffect(() => {
+    keyRef.current = key
+  }, [key])
+
+  useEffect(() => {
+    if (rangeMode) {
+      setKeybdPitches(pitchesInRange(rangeStart, rangeEnd, keyRef.current))
+    }
+  }, [rangeEnd, rangeMode, rangeStart])
+
+  useEffect(() => {
+    if (!rangeMode) {
+      setRangeStart(Math.min(...keybdPitches))
+      setRangeEnd(Math.max(...keybdPitches) + 1)
+    }
+  }, [keybdPitches, rangeMode])
 
   // key manipulation functions
 
@@ -694,7 +726,9 @@ export default function Channel({
     seqRestart,
     seqOpposite,
     rangeMode,
-    setRangeMode
+    setRangeMode,
+    keybdPitches,
+    setKeybdPitches
   )
 
   const dragTargetUI = useCallback(
@@ -770,6 +804,7 @@ export default function Channel({
         instrumentOn,
         instrumentType,
         rangeMode,
+        keybdPitches,
       }
       setChannelState(id.current, state)
     }, debounceTime)
@@ -787,6 +822,7 @@ export default function Channel({
     keySustain,
     keySwing,
     keySwingLength,
+    keybdPitches,
     legato,
     mute,
     rangeEnd,

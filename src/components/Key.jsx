@@ -16,6 +16,7 @@ export default function Key({
   keyPreview,
   showKeyPreview,
   mute,
+  rangeMode,
 }) {
   const togglePitchClass = useCallback(
     (i) => {
@@ -52,6 +53,7 @@ export default function Key({
             previewed: !pianoKeys && showKeyPreview && keyPreview[i],
             playing: playingPitchClass === i,
             mute,
+            'no-pointer-events': !rangeMode,
           })}
           style={{
             transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : null,
@@ -74,6 +76,7 @@ Key.propTypes = {
   keyPreview: PropTypes.array,
   showKeyPreview: PropTypes.bool,
   mute: PropTypes.bool,
+  rangeMode: PropTypes.bool,
 }
 
 function SelectedKey({ left, type, visible }) {
