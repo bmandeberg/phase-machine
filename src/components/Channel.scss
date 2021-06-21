@@ -36,6 +36,10 @@
   vertical-align: top;
   margin-right: 8px;
 }
+.clear-reset {
+  width: 61px;
+  margin-top: 16px;
+}
 
 .channel-horizontal {
   height: 96px;
@@ -68,10 +72,6 @@
   }
   .flip-opposite {
     margin-left: 11px;
-  }
-  .clear-reset {
-    width: 61px;
-    margin-top: 16px;
   }
   .key-arp-mode,
   .seq-arp-mode .dropdown {
@@ -122,6 +122,11 @@
   .velocity {
     margin-top: 21px;
     margin-right: 0;
+  }
+  .notes-mode {
+    margin-left: 0;
+    position: absolute;
+    bottom: 0;
   }
   .key {
     margin-top: 1px;
@@ -304,6 +309,8 @@
 .channel-vertical {
   &.left-vertical {
     position: relative;
+    width: 61px;
+    height: 245px;
   }
   display: inline-block;
   vertical-align: top;
@@ -321,6 +328,15 @@
     margin-top: 21px;
     margin-right: auto;
     margin-left: auto;
+  }
+  .midi-input-mode {
+    margin-left: -41px;
+    .label-left {
+      margin-right: 5px;
+    }
+    .label-right {
+      margin-left: 5px;
+    }
   }
   .swing-module {
     .num-input {

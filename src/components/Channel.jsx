@@ -1047,11 +1047,14 @@ export default function Channel({
               {velocityEl}
             </div>
             <div className="channel-vertical left-vertical">
-              {flipOppositeEl}
-              {shiftEl}
-              {keyViewTypeEl}
+              {rangeMode && flipOppositeEl}
+              {rangeMode && shiftEl}
+              {!rangeMode && clearResetEl}
+              {!rangeMode && midiInputModeEl}
+              {/* {keyViewTypeEl} */}
+              {notesModeEl}
             </div>
-            <img className="arrow-clock" src={arrowClockGraphic} alt="" />
+            {rangeMode && <img className="arrow-clock" src={arrowClockGraphic} alt="" />}
             {axisEl(true)}
             <div className="channel-vertical">
               {keyArpModeEl}
