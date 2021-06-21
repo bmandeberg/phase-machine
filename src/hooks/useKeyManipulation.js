@@ -21,7 +21,7 @@ export default function useKeyManipulation(
   setPlayingPitchClass,
   playingNoteRef,
   noteIndex,
-  prevNoteIndex,
+  prevNoteIndex
 ) {
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -90,12 +90,7 @@ export default function useKeyManipulation(
   const clearNotes = useCallback(() => {
     setKey(BLANK_PITCH_CLASSES())
     setKeybdPitches([])
-    setPlayingNote(undefined)
-    setPlayingPitchClass(undefined)
-    playingNoteRef.current = undefined
-    noteIndex.current = undefined
-    prevNoteIndex.current = undefined
-  }, [noteIndex, playingNoteRef, prevNoteIndex, setKey, setKeybdPitches, setPlayingNote, setPlayingPitchClass])
+  }, [setKey, setKeybdPitches])
 
   const restartNotes = useCallback(() => {
     setPlayingNote(undefined)

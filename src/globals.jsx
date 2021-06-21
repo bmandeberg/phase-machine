@@ -440,6 +440,10 @@ export function noteString(playingNote) {
   return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
 }
 
+export function convertMidiNumber(midiNumber) {
+  return midiNumber - 24
+}
+
 export const BLANK_CHANNEL = (channelNum, color) => ({
   id: uuid(),
   color,

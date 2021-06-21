@@ -12,6 +12,7 @@ import {
   MIDDLE_C,
   handleArpMode,
   noteString,
+  convertMidiNumber,
 } from '../globals'
 import { pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
@@ -57,10 +58,13 @@ export default function Channel({
   changeChannelOrder,
   theme,
   hotkeyRestart,
+  midiNoteOn,
+  midiNoteOff,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
   const [key, setKey] = useState(initState.key)
+  const keyRef = useRef()
   const [keyRate, setKeyRate] = useState(initState.keyRate)
   const [keyArpMode, setKeyArpMode] = useState(initState.keyArpMode)
   const [keyArpInc1, setKeyArpInc1] = useState(initState.keyArpInc1)
@@ -112,10 +116,14 @@ export default function Channel({
   const [dragRow, setDragRow] = useState(0)
 
   const [rangeMode, setRangeMode] = useState(initState.rangeMode)
+  const rangeModeRef = useRef()
   const [keybdPitches, setKeybdPitches] = useState(initState.keybdPitches)
+  const keybdPitchesRef = useRef()
 
   const [midiIn, setMidiIn] = useState(initState.midiIn)
+  const midiInRef = useRef()
   const [midiHold, setMidiHold] = useState(initState.midiHold)
+  const midiHoldRef = useRef()
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
@@ -147,6 +155,81 @@ export default function Channel({
   const seqOpposite = useCallback(() => {
     setSeqSteps((seqSteps) => seqSteps.map((step) => !step))
   }, [])
+
+  // midi input
+
+  useEffect(() => {
+    midiInRef.current = midiIn
+  }, [midiIn])
+  useEffect(() => {
+    midiHoldRef.current = midiHold
+  }, [midiHold])
+  useEffect(() => {
+    rangeModeRef.current = rangeMode
+  }, [rangeMode])
+  useEffect(() => {
+    keyRef.current = key
+    if (!key.includes(true)) {
+      setPlayingNote(undefined)
+      setPlayingPitchClass(undefined)
+      playingNoteRef.current = undefined
+      noteIndex.current = undefined
+      prevNoteIndex.current = undefined
+    }
+  }, [key])
+  useEffect(() => {
+    keybdPitchesRef.current = keybdPitches
+  }, [keybdPitches])
+
+  useEffect(() => {
+    if (midiInRef.current && midiNoteOn) {
+      if (rangeModeRef.current) {
+        const pitchClassIndex = midiNoteOn.note.number % 12
+        if (midiHoldRef.current || !keyRef.current[pitchClassIndex]) {
+          setKey((key) => {
+            const keyCopy = key.slice()
+            keyCopy[pitchClassIndex] = true
+            return keyCopy
+          })
+        } else {
+          setKey((key) => {
+            const keyCopy = key.slice()
+            keyCopy[pitchClassIndex] = false
+            return keyCopy
+          })
+        }
+      } else {
+        const noteNumber = convertMidiNumber(midiNoteOn.note.number)
+        if (midiHoldRef.current || !keybdPitchesRef.current.includes(noteNumber)) {
+          setKeybdPitches((keybdPitches) => {
+            const keybdPitchesCopy = keybdPitches.slice()
+            keybdPitchesCopy.push(noteNumber)
+            return keybdPitchesCopy.sort()
+          })
+        } else {
+          setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+        }
+      }
+    }
+  }, [midiNoteOn])
+
+  useEffect(() => {
+    if (midiInRef.current && midiNoteOff && midiHoldRef.current) {
+      if (rangeModeRef.current) {
+        const pitchClassIndex = midiNoteOff.note.number % 12
+        setKey((key) => {
+          const keyCopy = key.slice()
+          keyCopy[pitchClassIndex] = false
+          return keyCopy
+        })
+      } else {
+        const noteNumber = convertMidiNumber(midiNoteOff.note.number)
+        setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+      }
+    }
+  }, [midiNoteOff])
+
+  // set channel state when preset is changed
 
   useEffect(() => {
     if (channelPreset) {
@@ -1127,4 +1210,6 @@ Channel.propTypes = {
   changeChannelOrder: PropTypes.func,
   theme: PropTypes.string,
   hotkeyRestart: PropTypes.bool,
+  midiNoteOn: PropTypes.object,
+  midiNoteOff: PropTypes.object,
 }

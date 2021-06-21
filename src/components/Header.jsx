@@ -108,6 +108,15 @@ export default class Header extends React.Component {
           placeholder="No MIDI Out"
           small
         />
+        <Dropdn
+          className="header-item"
+          label="MIDI In"
+          options={this.props.midiIns}
+          setValue={this.props.setMidiIn}
+          value={this.props.midiIn}
+          placeholder="No MIDI In"
+          small
+        />
         {this.props.view === 'horizontal' && (
           <RadioButtons
             className="header-item"
@@ -135,7 +144,10 @@ Header.propTypes = {
   setPlaying: PropTypes.func,
   midiOuts: PropTypes.array,
   midiOut: PropTypes.string,
+  midiIns: PropTypes.array,
+  midiIn: PropTypes.string,
   setMidiOut: PropTypes.func,
+  setMidiIn: PropTypes.func,
   numChannels: PropTypes.number,
   setNumChannels: PropTypes.func,
   VIEWS: PropTypes.array,

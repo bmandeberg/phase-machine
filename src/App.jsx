@@ -33,8 +33,18 @@ export default function App() {
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(currentPreset.numChannels)
   const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[0])
+  const viewRef = useRef()
+  viewRef.current = view
+
   const [midiOut, setMidiOut] = useState(null)
+  const midiOutRef = useRef()
   const [midiOuts, setMidiOuts] = useState([])
+  const [midiIn, setMidiIn] = useState(null)
+  const midiInRef = useRef()
+  const [midiIns, setMidiIns] = useState([])
+  const [midiNoteOn, setMidiNoteOn] = useState(null)
+  const [midiNoteOff, setMidiNoteOff] = useState(null)
+
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(currentPreset.channelSync)
 
@@ -45,7 +55,6 @@ export default function App() {
   const keydownTimer = useRef(null)
 
   const container = useRef()
-  const viewRef = useRef()
 
   // settings
   const [showStepNumbers, setShowStepNumbers] = useState(
@@ -92,6 +101,7 @@ export default function App() {
     function connectMidi() {
       setMidiOuts(WebMidi.outputs.map((o) => o.name))
       setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0].name)
+      setMidiIns(WebMidi.inputs.map((i) => i.name))
     }
     function disconnectMidi(e) {
       setMidiOuts(WebMidi.outputs.map((o) => o.name))
@@ -99,6 +109,12 @@ export default function App() {
         if (e.port.name === midiOut) {
           return WebMidi.outputs[0] ? WebMidi.outputs[0].name : null
         } else return midiOut
+      })
+      setMidiIns(WebMidi.inputs.map((i) => i.name))
+      setMidiIn((midiIn) => {
+        if (e.port.name === midiIn) {
+          return null
+        } else return midiIn
       })
     }
     WebMidi.enable((err) => {
@@ -109,7 +125,6 @@ export default function App() {
         WebMidi.addListener('disconnected', disconnectMidi)
       }
     })
-    viewRef.current = view
     const containerEl = container.current
     function handleScroll() {
       if (viewRef.current === 'horizontal') {
@@ -134,6 +149,29 @@ export default function App() {
       WebMidi.removeListener('disconnected', disconnectMidi)
     }
   }, [])
+
+  useEffect(() => {
+    if (midiIn) {
+      if (midiIn === midiOutRef.current) {
+        alert("Can't set MIDI input to current MIDI output - avoiding circular MIDI messages!")
+        setMidiIn(null)
+      }
+      if (midiInRef.current) {
+        midiInRef.current.removeListener()
+      }
+      midiInRef.current = WebMidi.getInputByName(midiIn)
+      midiInRef.current.addListener('noteon', 'all', (e) => {
+        setMidiNoteOn(e)
+      })
+      midiInRef.current.addListener('noteoff', 'all', (e) => {
+        setMidiNoteOff(e)
+      })
+    }
+  }, [midiIn])
+
+  useEffect(() => {
+    midiOutRef.current = midiOut
+  }, [midiOut])
 
   const updateView = useCallback((view) => {
     viewRef.current = view
@@ -293,6 +331,8 @@ export default function App() {
           changeChannelOrder={changeChannelOrder}
           theme={theme}
           hotkeyRestart={hotkeyRestart}
+          midiNoteOn={midiNoteOn}
+          midiNoteOff={midiNoteOff}
         />
       )),
     [
@@ -303,6 +343,8 @@ export default function App() {
       grabbing,
       hotkeyRestart,
       linearKnobs,
+      midiNoteOff,
+      midiNoteOn,
       midiOut,
       numChannels,
       numChannelsSoloed,
@@ -337,7 +379,10 @@ export default function App() {
         setPlaying={setPlaying}
         midiOuts={midiOuts}
         midiOut={midiOut}
+        midiIns={midiIns}
+        midiIn={midiIn}
         setMidiOut={setMidiOut}
+        setMidiIn={setMidiIn}
         numChannels={numChannels}
         setNumChannels={setNumChannels}
         view={view}
