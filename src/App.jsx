@@ -111,6 +111,7 @@ export default function App() {
         } else return midiOut
       })
       setMidiIns(WebMidi.inputs.map((i) => i.name))
+      midiInRef.current = null
       setMidiIn((midiIn) => {
         if (e.port.name === midiIn) {
           return null
@@ -154,7 +155,8 @@ export default function App() {
     if (midiIn) {
       if (midiIn === midiOutRef.current) {
         alert("Can't set MIDI input to current MIDI output - avoiding circular MIDI messages!")
-        setMidiIn(null)
+        setMidiIn(midiInRef.current ? midiInRef.current.name : null)
+        return
       }
       if (midiInRef.current) {
         midiInRef.current.removeListener()
