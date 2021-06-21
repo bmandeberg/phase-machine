@@ -1,0 +1,32 @@
+@import '../sass-globals.scss';
+
+.midi-input-mode {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 19px;
+  margin-left: 4px;
+  position: relative;
+  height: 64px;
+  .switch-label {
+    display: inline-block;
+    vertical-align: top;
+    text-transform: uppercase;
+    line-height: 30px;
+    cursor: pointer;
+    &.label-left {
+      margin-right: 8px;
+    }
+    &.label-right {
+      margin-left: 8px;
+    }
+  }
+  .midi-input-mode-title {
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 24px;
+    height: 24px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+  }
+}

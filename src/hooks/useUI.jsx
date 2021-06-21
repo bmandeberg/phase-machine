@@ -11,6 +11,7 @@ import FlipOpposite from '../components/FlipOpposite'
 import Piano from '../components/Piano'
 import Instrument from '../components/Instrument'
 import Fader from '../components/Fader'
+import MidiInputMode from '../components/MidiInputMode'
 import Switch from 'react-switch'
 
 // ui elements
@@ -110,7 +111,9 @@ export default function useUI(
   midiIn,
   setMidiIn,
   midiHold,
-  setMidiHold
+  setMidiHold,
+  clearNotes,
+  restartNotes
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -272,6 +275,25 @@ export default function useUI(
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+
+  const clearResetEl = useMemo(
+    () => (
+      <div className="clear-reset channel-module">
+        <div onClick={clearNotes} className="button">
+          Clear
+        </div>
+        <div onClick={restartNotes} className="button">
+          Restart
+        </div>
+      </div>
+    ),
+    [clearNotes, restartNotes]
+  )
+
+  const midiInputModeEl = useMemo(
+    () => <MidiInputMode midiHold={midiHold} setMidiHold={setMidiHold} theme={theme} />,
+    [midiHold, setMidiHold, theme]
+  )
 
   const setRangeModeTrue = useCallback(() => setRangeMode(true), [setRangeMode])
   const setRangeModeFalse = useCallback(() => setRangeMode(false), [setRangeMode])
@@ -640,5 +662,7 @@ export default function useUI(
     seqOppositeEl,
     notesModeEl,
     midiEl,
+    clearResetEl,
+    midiInputModeEl,
   }
 }

@@ -78,6 +78,12 @@ $headerDarkBlue: #0f182d;
     }
   }
 
+  .switch-label {
+    &.selected {
+      color: $darkGreen;
+    }
+  }
+
   .border {
     border-color: $darkMediumGray;
   }

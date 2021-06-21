@@ -69,6 +69,10 @@
   .flip-opposite {
     margin-left: 11px;
   }
+  .clear-reset {
+    width: 61px;
+    margin-top: 16px;
+  }
   .key-arp-mode,
   .seq-arp-mode .dropdown {
     min-width: 136px;
@@ -382,6 +386,12 @@
     .switch-label {
       margin-left: 8px;
     }
+  }
+}
+
+.switch-label {
+  &.selected {
+    color: $green;
   }
 }
 

@@ -115,7 +115,7 @@ export default function Channel({
   const [keybdPitches, setKeybdPitches] = useState(initState.keybdPitches)
 
   const [midiIn, setMidiIn] = useState(initState.midiIn)
-  const [midiHold, setMidiHold] = useState(initState.midiToggle)
+  const [midiHold, setMidiHold] = useState(initState.midiHold)
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
@@ -185,6 +185,8 @@ export default function Channel({
         setInstrumentType(channelPreset.instrumentType)
         setRangeMode(channelPreset.rangeMode)
         setKeybdPitches(channelPreset.keybdPitches)
+        setMidiIn(channelPreset.midiIn)
+        setMidiHold(channelPreset.midiHold)
       }
     }
   }, [channelPreset, seqRestart])
@@ -618,6 +620,8 @@ export default function Channel({
     previewFlip,
     startChangingAxis,
     stopChangingAxis,
+    clearNotes,
+    restartNotes,
   } = useKeyManipulation(
     key,
     shiftAmt,
@@ -629,7 +633,13 @@ export default function Channel({
     setAxis,
     axis,
     setGrabbing,
-    setTurningAxisKnob
+    setTurningAxisKnob,
+    setKeybdPitches,
+    setPlayingNote,
+    setPlayingPitchClass,
+    playingNoteRef,
+    noteIndex,
+    prevNoteIndex
   )
 
   // ui elements
@@ -660,6 +670,8 @@ export default function Channel({
     seqOppositeEl,
     notesModeEl,
     midiEl,
+    clearResetEl,
+    midiInputModeEl,
   } = useUI(
     id.current,
     color,
@@ -755,7 +767,9 @@ export default function Channel({
     midiIn,
     setMidiIn,
     midiHold,
-    setMidiHold
+    setMidiHold,
+    clearNotes,
+    restartNotes
   )
 
   const dragTargetUI = useCallback(
@@ -832,6 +846,8 @@ export default function Channel({
         instrumentType,
         rangeMode,
         keybdPitches,
+        midiIn,
+        midiHold,
       }
       setChannelState(id.current, state)
     }, debounceTime)
@@ -851,6 +867,8 @@ export default function Channel({
     keySwingLength,
     keybdPitches,
     legato,
+    midiHold,
+    midiIn,
     mute,
     rangeEnd,
     rangeMode,
@@ -919,6 +937,8 @@ export default function Channel({
             {rangeMode && axisEl(false)}
             {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
+            {!rangeMode && clearResetEl}
+            {!rangeMode && midiInputModeEl}
           </div>
           {notesModeEl}
           {pianoEl}

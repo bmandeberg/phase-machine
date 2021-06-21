@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { flip, opposite, shiftWrapper, shift } from '../math'
+import { BLANK_PITCH_CLASSES } from '../globals'
 
 // key manipulation functions
 
@@ -14,7 +15,13 @@ export default function useKeyManipulation(
   setAxis,
   axis,
   setGrabbing,
-  setTurningAxisKnob
+  setTurningAxisKnob,
+  setKeybdPitches,
+  setPlayingNote,
+  setPlayingPitchClass,
+  playingNoteRef,
+  noteIndex,
+  prevNoteIndex,
 ) {
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -80,6 +87,24 @@ export default function useKeyManipulation(
     setShowKeyPreview(false)
   }, [setGrabbing, setShowKeyPreview, setTurningAxisKnob])
 
+  const clearNotes = useCallback(() => {
+    setKey(BLANK_PITCH_CLASSES())
+    setKeybdPitches([])
+    setPlayingNote(undefined)
+    setPlayingPitchClass(undefined)
+    playingNoteRef.current = undefined
+    noteIndex.current = undefined
+    prevNoteIndex.current = undefined
+  }, [noteIndex, playingNoteRef, prevNoteIndex, setKey, setKeybdPitches, setPlayingNote, setPlayingPitchClass])
+
+  const restartNotes = useCallback(() => {
+    setPlayingNote(undefined)
+    setPlayingPitchClass(undefined)
+    playingNoteRef.current = undefined
+    noteIndex.current = undefined
+    prevNoteIndex.current = undefined
+  }, [noteIndex, playingNoteRef, prevNoteIndex, setPlayingNote, setPlayingPitchClass])
+
   return {
     previewShift,
     updateShift,
@@ -91,5 +116,7 @@ export default function useKeyManipulation(
     previewFlip,
     startChangingAxis,
     stopChangingAxis,
+    clearNotes,
+    restartNotes,
   }
 }
