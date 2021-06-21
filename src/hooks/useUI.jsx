@@ -238,6 +238,7 @@ export default function useUI(
           mute={muted}
           linearKnobs={linearKnobs}
           theme={theme}
+          rangeMode={rangeMode}
         />
       )
     },
@@ -249,6 +250,7 @@ export default function useUI(
       linearKnobs,
       muted,
       playingPitchClass,
+      rangeMode,
       setKey,
       setPlayingPitchClass,
       showKeyPreview,

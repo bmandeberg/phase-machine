@@ -35,6 +35,7 @@ export default function RotaryKnob({
   mute,
   linearKnobs,
   theme,
+  rangeMode,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -399,6 +400,7 @@ export default function RotaryKnob({
           turningAxisKnob={turningAxisKnob}
           keyPreview={keyPreview}
           showKeyPreview={showKeyPreview}
+          rangeMode={rangeMode}
         />
       )}
       {linearKnobs ? (
@@ -464,4 +466,5 @@ RotaryKnob.propTypes = {
   mute: PropTypes.bool,
   linearKnobs: PropTypes.bool,
   theme: PropTypes.string,
+  rangeMode: PropTypes.bool,
 }
