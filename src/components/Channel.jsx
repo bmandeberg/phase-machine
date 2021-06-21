@@ -996,6 +996,8 @@ export default function Channel({
             {rangeMode && axisEl(false)}
             {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
+            {!rangeMode && clearResetEl}
+            {!rangeMode && midiInputModeEl}
           </div>
           {notesModeEl}
           {pianoEl}
