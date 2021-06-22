@@ -1,6 +1,8 @@
 import React, { useCallback, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Settings from './Settings'
+import MIDIModal from './MIDIModal'
+import { CSSTransition } from 'react-transition-group'
 import './Modal.scss'
 
 export default function Modal({
@@ -16,6 +18,8 @@ export default function Modal({
   setHotkeyRestart,
   theme,
   setTheme,
+  midiHold,
+  setMidiHold,
 }) {
   const modalTypeRef = useRef()
 
@@ -52,6 +56,9 @@ export default function Modal({
                 setTheme={setTheme}
               />
             )}
+            {modalTypeRef.current === 'MIDI' && (
+              <MIDIModal midiHold={midiHold} setMidiHold={setMidiHold} theme={theme} />
+            )}
           </div>
         </div>
       </div>
@@ -71,4 +78,6 @@ Modal.propTypes = {
   setHotkeyRestart: PropTypes.func,
   theme: PropTypes.string,
   setTheme: PropTypes.func,
+  midiHold: PropTypes.bool,
+  setMidiHold: PropTypes.func,
 }

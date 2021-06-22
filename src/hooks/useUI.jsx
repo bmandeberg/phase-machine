@@ -114,7 +114,8 @@ export default function useUI(
   midiHold,
   setMidiHold,
   clearNotes,
-  restartNotes
+  restartNotes,
+  openMidiModal
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -182,7 +183,10 @@ export default function useUI(
     [mute, setMute, setSolo, solo]
   )
 
-  const midiEl = useMemo(() => <MIDI midiIn={midiIn} setMidiIn={setMidiIn} />, [midiIn, setMidiIn])
+  const midiEl = useMemo(
+    () => <MIDI midiIn={midiIn} setMidiIn={setMidiIn} openMidiModal={openMidiModal} />,
+    [midiIn, openMidiModal, setMidiIn]
+  )
 
   const velocityEl = useMemo(() => {
     return (

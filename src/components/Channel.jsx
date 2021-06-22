@@ -17,6 +17,7 @@ import {
 import { pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
 import Sequencer from './Sequencer'
+import Modal from './Modal'
 import useLoop from '../hooks/useLoop'
 import useKeyManipulation from '../hooks/useKeyManipulation'
 import useUI from '../hooks/useUI'
@@ -133,6 +134,8 @@ export default function Channel({
   const midiOutRef = useRef(midiOut)
   const separateMIDIChannelsRef = useRef(separateMIDIChannels)
 
+  const [modalType, setModalType] = useState('')
+
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
   }, [key])
@@ -156,7 +159,7 @@ export default function Channel({
     setSeqSteps((seqSteps) => seqSteps.map((step) => !step))
   }, [])
 
-  // midi input
+  // MIDI
 
   useEffect(() => {
     midiInRef.current = midiIn
@@ -228,6 +231,10 @@ export default function Channel({
       }
     }
   }, [midiNoteOff])
+
+  const openMidiModal = useCallback(() => {
+    setModalType('MIDI')
+  }, [])
 
   // set channel state when preset is changed
 
@@ -852,7 +859,8 @@ export default function Channel({
     midiHold,
     setMidiHold,
     clearNotes,
-    restartNotes
+    restartNotes,
+    openMidiModal
   )
 
   const dragTargetUI = useCallback(
@@ -1055,6 +1063,15 @@ export default function Channel({
             {instrumentEl(false)}
           </div>
           {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
+          <CSSTransition in={!!modalType} timeout={300} classNames="show">
+            <Modal
+              modalType={modalType}
+              setModalType={setModalType}
+              midiHold={midiHold}
+              setMidiHold={setMidiHold}
+              theme={theme}
+            />
+          </CSSTransition>
         </div>
       </CSSTransition>
     )
