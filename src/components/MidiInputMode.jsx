@@ -20,24 +20,26 @@ export default function MidiInputMode({ midiHold, setMidiHold, theme }) {
 
   return (
     <div className="midi-input-mode">
-      <div onClick={setToggle} className={classNames('switch-label label-left', { selected: !midiHold })}>
-        Toggle
-      </div>
-      <Switch
-        // className="instrument-switch"
-        onChange={setMidiHold}
-        checked={midiHold}
-        uncheckedIcon={false}
-        checkedIcon={false}
-        offColor={offColor}
-        onColor={onColor}
-        offHandleColor={onHandleColor}
-        onHandleColor={onHandleColor}
-        width={48}
-        height={24}
-      />
-      <div onClick={setHold} className={classNames('switch-label label-right', { selected: midiHold })}>
-        Hold
+      <div className="midi-input-switch-container">
+        <div onClick={setToggle} className={classNames('switch-label label-left', { selected: !midiHold })}>
+          Toggle
+        </div>
+        <Switch
+          // className="instrument-switch"
+          onChange={setMidiHold}
+          checked={midiHold}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={onHandleColor}
+          onHandleColor={onHandleColor}
+          width={48}
+          height={24}
+        />
+        <div onClick={setHold} className={classNames('switch-label label-right', { selected: midiHold })}>
+          Hold
+        </div>
       </div>
       <p className="midi-input-mode-title no-select">MIDI Input</p>
     </div>

@@ -3,6 +3,19 @@
 .midi-modal {
   width: 220px;
   .midi-input-mode {
-    width: 150px;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+  .midi-input-switch-container {
+    float: right;
+  }
+  .midi-input-mode-title {
+    float: left;
+    width: auto;
+    font-size: 18px;
+    text-transform: none;
+    position: static;
+    line-height: 30px;
   }
 }

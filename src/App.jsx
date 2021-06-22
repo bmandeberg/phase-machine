@@ -61,10 +61,6 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('showStepNumbers')) ?? false
   )
 
-  const [separateMIDIChannels, setSeparateMIDIChannels] = useState(
-    JSON.parse(window.localStorage.getItem('separateMIDIChannels')) ?? true
-  )
-
   const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
 
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'light')
@@ -74,10 +70,6 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
   }, [showStepNumbers])
-
-  useEffect(() => {
-    window.localStorage.setItem('separateMIDIChannels', separateMIDIChannels)
-  }, [separateMIDIChannels])
 
   useEffect(() => {
     window.localStorage.setItem('linearKnobs', linearKnobs)
@@ -321,7 +313,6 @@ export default function App() {
           tempo={tempo}
           playing={playing}
           showStepNumbers={showStepNumbers}
-          separateMIDIChannels={separateMIDIChannels}
           linearKnobs={linearKnobs}
           midiOut={midiOut}
           setChannelState={setChannelState}
@@ -352,7 +343,6 @@ export default function App() {
       numChannelsSoloed,
       playing,
       resizing,
-      separateMIDIChannels,
       setChannelState,
       showStepNumbers,
       tempo,
@@ -421,8 +411,6 @@ export default function App() {
           setModalType={setModalType}
           showStepNumbers={showStepNumbers}
           setShowStepNumbers={setShowStepNumbers}
-          separateMIDIChannels={separateMIDIChannels}
-          setSeparateMIDIChannels={setSeparateMIDIChannels}
           linearKnobs={linearKnobs}
           setLinearKnobs={setLinearKnobs}
           hotkeyRestart={hotkeyRestart}

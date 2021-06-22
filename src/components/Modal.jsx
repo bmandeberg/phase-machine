@@ -10,8 +10,6 @@ export default function Modal({
   setModalType,
   showStepNumbers,
   setShowStepNumbers,
-  separateMIDIChannels,
-  setSeparateMIDIChannels,
   linearKnobs,
   setLinearKnobs,
   hotkeyRestart,
@@ -46,8 +44,6 @@ export default function Modal({
               <Settings
                 showStepNumbers={showStepNumbers}
                 setShowStepNumbers={setShowStepNumbers}
-                separateMIDIChannels={separateMIDIChannels}
-                setSeparateMIDIChannels={setSeparateMIDIChannels}
                 linearKnobs={linearKnobs}
                 setLinearKnobs={setLinearKnobs}
                 hotkeyRestart={hotkeyRestart}
@@ -68,8 +64,6 @@ export default function Modal({
 Modal.propTypes = {
   modalType: PropTypes.string,
   setModalType: PropTypes.func,
-  separateMIDIChannels: PropTypes.bool,
-  setSeparateMIDIChannels: PropTypes.func,
   showStepNumbers: PropTypes.bool,
   setShowStepNumbers: PropTypes.func,
   linearKnobs: PropTypes.bool,

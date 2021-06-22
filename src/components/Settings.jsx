@@ -8,8 +8,6 @@ import './Settings.scss'
 export default function Settings({
   showStepNumbers,
   setShowStepNumbers,
-  separateMIDIChannels,
-  setSeparateMIDIChannels,
   linearKnobs,
   setLinearKnobs,
   hotkeyRestart,
@@ -39,22 +37,6 @@ export default function Settings({
           className="instrument-switch"
           onChange={setShowStepNumbers}
           checked={showStepNumbers}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
-      </div>
-      <div className="settings-item">
-        <p className="settings-label">Separate MIDI channels</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setSeparateMIDIChannels}
-          checked={separateMIDIChannels}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -98,8 +80,6 @@ export default function Settings({
   )
 }
 Settings.propTypes = {
-  separateMIDIChannels: PropTypes.bool,
-  setSeparateMIDIChannels: PropTypes.func,
   showStepNumbers: PropTypes.bool,
   setShowStepNumbers: PropTypes.func,
   linearKnobs: PropTypes.bool,

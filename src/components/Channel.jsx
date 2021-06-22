@@ -47,7 +47,6 @@ export default function Channel({
   tempo,
   playing,
   showStepNumbers,
-  separateMIDIChannels,
   linearKnobs,
   midiOut,
   setChannelState,
@@ -125,6 +124,7 @@ export default function Channel({
   const midiInRef = useRef()
   const [midiHold, setMidiHold] = useState(initState.midiHold)
   const midiHoldRef = useRef()
+  
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
@@ -132,7 +132,6 @@ export default function Channel({
 
   const channelNumRef = useRef(channelNum)
   const midiOutRef = useRef(midiOut)
-  const separateMIDIChannelsRef = useRef(separateMIDIChannels)
 
   const [modalType, setModalType] = useState('')
 
@@ -490,36 +489,35 @@ export default function Channel({
   // note off when stop playing
   useEffect(() => {
     if (!playing && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = separateMIDIChannels ? channelNum + 1 : 1
+      const channel = channelNum + 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       Tone.context.clearTimeout(noteOffTimeout.current)
       noteOff(channel, note, midiOutObj, true, Tone.now(), WebMidi.time - Tone.immediate() * 1000)
     }
-  }, [channelNum, midiOut, noteOff, playing, separateMIDIChannels])
+  }, [channelNum, midiOut, noteOff, playing])
 
   // note off when muting
   useEffect(() => {
     if (muted && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = separateMIDIChannels ? channelNum + 1 : 1
+      const channel = channelNum + 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       noteOff(channel, note, midiOutObj, true, null)
     }
-  }, [channelNum, midiOut, muted, noteOff, separateMIDIChannels])
+  }, [channelNum, midiOut, muted, noteOff])
 
   // note off when changing channel number
   useEffect(() => {
     if (notePlaying.current && noteIndex.current !== undefined) {
-      const channel = separateMIDIChannelsRef.current ? channelNumRef.current + 1 : 1
+      const channel = channelNumRef.current + 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
       noteOff(channel, note, midiOutObj, true, null)
     }
     channelNumRef.current = channelNum
     midiOutRef.current = midiOut
-    separateMIDIChannelsRef.current = separateMIDIChannels
-  }, [channelNum, midiOut, noteOff, separateMIDIChannels])
+  }, [channelNum, midiOut, noteOff])
 
   // loop events
 
@@ -528,7 +526,7 @@ export default function Channel({
     (time, interval, sustain) => {
       const note = noteString(noteIndex.current)
       if (!note) return
-      const channel = separateMIDIChannels ? channelNum + 1 : 1
+      const channel = channelNum + 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
       if (notePlaying.current) {
@@ -557,7 +555,7 @@ export default function Channel({
         }, time - Tone.immediate() + sustainTime)
       }
     },
-    [separateMIDIChannels, channelNum, midiOut, legato, seqSteps, noteOff, instrumentOn, velocity]
+    [channelNum, midiOut, legato, seqSteps, noteOff, instrumentOn, velocity]
   )
 
   const clearPlayNoteBuffer = useCallback(() => {
@@ -1214,7 +1212,6 @@ Channel.propTypes = {
   numChannelsSoloed: PropTypes.number,
   tempo: PropTypes.number,
   playing: PropTypes.bool,
-  separateMIDIChannels: PropTypes.bool,
   showStepNumbers: PropTypes.bool,
   linearKnobs: PropTypes.bool,
   midiOut: PropTypes.string,
