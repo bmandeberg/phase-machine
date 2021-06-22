@@ -18,4 +18,11 @@
     position: static;
     line-height: 30px;
   }
+  .channel-num {
+    display: inline-block;
+    vertical-align: top;
+    font-size: 28px;
+    color: $green;
+    margin-left: 10px;
+  }
 }

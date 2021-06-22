@@ -124,7 +124,8 @@ export default function Channel({
   const midiInRef = useRef()
   const [midiHold, setMidiHold] = useState(initState.midiHold)
   const midiHoldRef = useRef()
-  
+  const [customMidiOutChannel, setCustomMidiOutChannel] = useState(false)
+  const [midiOutChannel, setMidiOutChannel] = useState(1)
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
@@ -276,6 +277,8 @@ export default function Channel({
         setKeybdPitches(channelPreset.keybdPitches)
         setMidiIn(channelPreset.midiIn)
         setMidiHold(channelPreset.midiHold)
+        setCustomMidiOutChannel(channelPreset.customMidiOutChannel)
+        setMidiOutChannel(channelPreset.midiOutChannel)
       }
     }
   }, [channelPreset, seqRestart])
@@ -489,35 +492,35 @@ export default function Channel({
   // note off when stop playing
   useEffect(() => {
     if (!playing && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = channelNum + 1
+      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       Tone.context.clearTimeout(noteOffTimeout.current)
       noteOff(channel, note, midiOutObj, true, Tone.now(), WebMidi.time - Tone.immediate() * 1000)
     }
-  }, [channelNum, midiOut, noteOff, playing])
+  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel, noteOff, playing])
 
   // note off when muting
   useEffect(() => {
     if (muted && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = channelNum + 1
+      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       noteOff(channel, note, midiOutObj, true, null)
     }
-  }, [channelNum, midiOut, muted, noteOff])
+  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel, muted, noteOff])
 
   // note off when changing channel number
   useEffect(() => {
     if (notePlaying.current && noteIndex.current !== undefined) {
-      const channel = channelNumRef.current + 1
+      const channel = customMidiOutChannel ? midiOutChannel : channelNumRef.current + 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
       noteOff(channel, note, midiOutObj, true, null)
     }
     channelNumRef.current = channelNum
     midiOutRef.current = midiOut
-  }, [channelNum, midiOut, noteOff])
+  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel, noteOff])
 
   // loop events
 
@@ -526,7 +529,7 @@ export default function Channel({
     (time, interval, sustain) => {
       const note = noteString(noteIndex.current)
       if (!note) return
-      const channel = channelNum + 1
+      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
       const clockOffset = WebMidi.time - Tone.immediate() * 1000
       if (notePlaying.current) {
@@ -555,7 +558,7 @@ export default function Channel({
         }, time - Tone.immediate() + sustainTime)
       }
     },
-    [channelNum, midiOut, legato, seqSteps, noteOff, instrumentOn, velocity]
+    [customMidiOutChannel, midiOutChannel, channelNum, midiOut, instrumentOn, legato, seqSteps, noteOff, velocity]
   )
 
   const clearPlayNoteBuffer = useCallback(() => {
@@ -937,6 +940,8 @@ export default function Channel({
         keybdPitches,
         midiIn,
         midiHold,
+        customMidiOutChannel,
+        midiOutChannel,
       }
       setChannelState(id.current, state)
     }, debounceTime)
@@ -944,6 +949,7 @@ export default function Channel({
     axis,
     channelNum,
     color,
+    customMidiOutChannel,
     instrumentOn,
     instrumentType,
     key,
@@ -958,6 +964,7 @@ export default function Channel({
     legato,
     midiHold,
     midiIn,
+    midiOutChannel,
     mute,
     rangeEnd,
     rangeMode,
@@ -1068,6 +1075,11 @@ export default function Channel({
               midiHold={midiHold}
               setMidiHold={setMidiHold}
               theme={theme}
+              customMidiOutChannel={customMidiOutChannel}
+              setCustomMidiOutChannel={setCustomMidiOutChannel}
+              channelNum={channelNum}
+              midiOutChannel={midiOutChannel}
+              setMidiOutChannel={setMidiOutChannel}
             />
           </CSSTransition>
         </div>

@@ -18,6 +18,11 @@ export default function Modal({
   setTheme,
   midiHold,
   setMidiHold,
+  customMidiOutChannel,
+  setCustomMidiOutChannel,
+  channelNum,
+  midiOutChannel,
+  setMidiOutChannel,
 }) {
   const modalTypeRef = useRef()
 
@@ -53,7 +58,16 @@ export default function Modal({
               />
             )}
             {modalTypeRef.current === 'MIDI' && (
-              <MIDIModal midiHold={midiHold} setMidiHold={setMidiHold} theme={theme} />
+              <MIDIModal
+                midiHold={midiHold}
+                setMidiHold={setMidiHold}
+                customMidiOutChannel={customMidiOutChannel}
+                setCustomMidiOutChannel={setCustomMidiOutChannel}
+                channelNum={channelNum}
+                theme={theme}
+                midiOutChannel={midiOutChannel}
+                setMidiOutChannel={setMidiOutChannel}
+              />
             )}
           </div>
         </div>
@@ -74,4 +88,9 @@ Modal.propTypes = {
   setTheme: PropTypes.func,
   midiHold: PropTypes.bool,
   setMidiHold: PropTypes.func,
+  customMidiOutChannel: PropTypes.bool,
+  setCustomMidiOutChannel: PropTypes.func,
+  channelNum: PropTypes.number,
+  midiOutChannel: PropTypes.number,
+  setMidiOutChannel: PropTypes.func,
 }

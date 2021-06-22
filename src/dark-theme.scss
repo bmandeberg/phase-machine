@@ -78,6 +78,12 @@ $headerDarkBlue: #0f182d;
     }
   }
 
+  .midi-modal {
+    .channel-num {
+      color: $darkGreen;
+    }
+  }
+
   .switch-label {
     &.selected {
       color: $darkGreen;

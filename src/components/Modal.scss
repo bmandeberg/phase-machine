@@ -54,6 +54,20 @@
       padding: 20px;
       box-sizing: border-box;
       font-size: 18px;
+      .modal-item {
+        margin-top: 10px;
+        &:first-of-type {
+          margin-top: 0;
+        }
+        .modal-label {
+          display: inline-block;
+          vertical-align: middle;
+          height: 24px;
+        }
+        .modal-param {
+          float: right;
+        }
+      }
     }
   }
   &.show-enter {
@@ -104,6 +118,18 @@
     pointer-events: none;
     .modal-buffer {
       margin-top: 120px;
+    }
+  }
+  .modal-num-input {
+    height: 34px;
+    .modal-label {
+      line-height: 35px;
+    }
+  }
+  .num-input {
+    margin-top: 0;
+    .num-input-label {
+      display: none;
     }
   }
 }

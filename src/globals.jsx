@@ -479,6 +479,8 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
   keybdPitches: [],
   midiIn: false,
   midiHold: false,
+  customMidiOutChannel: false,
+  midiOutChannel: 1,
 })
 
 export const DEFAULT_PRESET = {
