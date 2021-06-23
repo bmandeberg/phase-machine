@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Switch from 'react-switch'
 import Dropdn from '../components/Dropdn'
+import MultiSelect from './MultiSelect'
 import { THEMES, themedSwitch } from '../globals'
 import './Settings.scss'
 
@@ -14,6 +15,8 @@ export default function Settings({
   setHotkeyRestart,
   theme,
   setTheme,
+  presets,
+  modalType,
 }) {
   const setKnobType = useCallback(
     (knobType) => {
@@ -28,6 +31,27 @@ export default function Settings({
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
 
   const knobsDropdownValue = useMemo(() => (linearKnobs ? 'Linear' : 'Relative Circular'), [linearKnobs])
+
+  const presetNames = useMemo(() => presets.map((p) => p.name), [presets])
+  const [selectedPresets, setSelectedPresets] = useState([])
+
+  useEffect(() => {
+    if (!modalType) {
+      setSelectedPresets([])
+    }
+  }, [modalType])
+
+  const copyPresets = useCallback(() => {
+    const exportPresets = presets.filter((p) => selectedPresets.includes(p.name))
+    navigator.clipboard.writeText(JSON.stringify(exportPresets)).then(
+      () => {
+        alert('Presets copied to clipboard!')
+      },
+      () => {
+        alert('Unable to copy presets to clipboard!')
+      }
+    )
+  }, [presets, selectedPresets])
 
   return (
     <div className="settings">
@@ -76,6 +100,22 @@ export default function Settings({
         <p className="settings-label">Theme</p>
         <Dropdn options={THEMES} value={theme} setValue={setTheme} capitalize />
       </div>
+      <div className="settings-item">
+        <p>Export Presets</p>
+        {modalType && (
+          <MultiSelect
+            options={presetNames}
+            values={selectedPresets}
+            setValues={setSelectedPresets}
+            placeholder="Select Presets"
+          />
+        )}
+        {selectedPresets.length > 0 && (
+          <div onClick={copyPresets} className="copy-presets button green-button">
+            Copy Presets to clipboard
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -88,4 +128,6 @@ Settings.propTypes = {
   setHotkeyRestart: PropTypes.func,
   theme: PropTypes.string,
   setTheme: PropTypes.func,
+  presets: PropTypes.array,
+  modalType: PropTypes.string,
 }

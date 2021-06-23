@@ -417,6 +417,7 @@ export default function App() {
           setHotkeyRestart={setHotkeyRestart}
           theme={theme}
           setTheme={setTheme}
+          presets={presets}
         />
       </CSSTransition>
     </div>

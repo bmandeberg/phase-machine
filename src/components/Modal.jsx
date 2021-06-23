@@ -2,7 +2,6 @@ import React, { useCallback, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Settings from './Settings'
 import MIDIModal from './MIDIModal'
-import { CSSTransition } from 'react-transition-group'
 import './Modal.scss'
 
 export default function Modal({
@@ -23,6 +22,7 @@ export default function Modal({
   channelNum,
   midiOutChannel,
   setMidiOutChannel,
+  presets,
 }) {
   const modalTypeRef = useRef()
 
@@ -55,6 +55,8 @@ export default function Modal({
                 setHotkeyRestart={setHotkeyRestart}
                 theme={theme}
                 setTheme={setTheme}
+                presets={presets}
+                modalType={modalType}
               />
             )}
             {modalTypeRef.current === 'MIDI' && (
@@ -93,4 +95,5 @@ Modal.propTypes = {
   channelNum: PropTypes.number,
   midiOutChannel: PropTypes.number,
   setMidiOutChannel: PropTypes.func,
+  presets: PropTypes.array,
 }

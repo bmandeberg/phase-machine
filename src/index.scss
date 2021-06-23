@@ -83,20 +83,29 @@ body {
   font-size: 16px;
   text-transform: uppercase;
   text-align: center;
-  background: $lightGray;
+  background-color: $lightGray;
   padding: 0 7px;
   cursor: pointer;
   &:hover {
-    background: $lightGrayHover;
+    background-color: $lightGrayHover;
   }
   &:active {
-    background: $mediumGray;
+    background-color: $mediumGray;
   }
   &:first-of-type {
     margin-bottom: 8px;
   }
   &.disabled {
     cursor: url('./assets/not-allowed.png') 10 10, not-allowed !important;
+  }
+  &.green-button {
+    background-color: $green;
+    &:hover {
+      background-color: $greenHover;
+    }
+    &:active {
+      background-color: $greenActive;
+    }
   }
 }
 

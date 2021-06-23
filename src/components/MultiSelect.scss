@@ -1,0 +1,134 @@
+@import '../sass-globals.scss';
+
+.multi-select {
+  position: relative;
+  background-color: $lightGray;
+  border: 1px solid $mediumGray;
+  box-sizing: border-box;
+  color: $darkGray;
+  min-height: 28px;
+  padding: 4px 32px 4px 5px;
+  font-size: 19px;
+  box-sizing: border-box;
+  cursor: pointer;
+
+  .multi-select-selections {
+    line-height: 18px;
+  }
+
+  .multi-select-placeholder {
+    color: lighten($darkGray, 10%);
+    line-height: 24px;
+    height: 18px;
+  }
+
+  .multi-select-arrow-container {
+    width: 26px;
+    height: 100%;
+    border: 1px solid $mediumGray;
+    background-color: $lightGray;
+    position: absolute;
+    right: -1px;
+    top: -1px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+      background-color: $lightGrayHover;
+    }
+    &:active {
+      background-color: $mediumGray;
+    }
+  }
+
+  .multi-select-arrow {
+    border-color: $darkGray transparent transparent;
+    border-style: solid;
+    border-width: 5px 7px 0px;
+    display: block;
+    height: 0;
+    width: 0;
+  }
+
+  .multi-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    display: none;
+    background-color: white;
+    border: 1px solid $mediumGray;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    z-index: 1000;
+    -webkit-overflow-scrolling: touch;
+    &.dropdown-open {
+      display: block;
+    }
+  }
+
+  .multi-select-option {
+    @extend .no-select;
+    font-size: 19px;
+    color: $lightTextGray;
+    cursor: pointer;
+    display: block;
+    padding: 5px;
+    line-height: 21px;
+    height: 17px;
+    white-space: nowrap;
+    &:hover {
+      background-color: $lightGray;
+      color: $darkGray;
+    }
+  }
+
+  .multi-select-selection {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 2px;
+    background-color: $darkGray;
+    height: 22px;
+    box-sizing: border-box;
+    border-radius: 3px;
+    color: $lightGray;
+    cursor: auto;
+    .multi-select-remove {
+      display: inline-block;
+      vertical-align: top;
+      height: 22px;
+      width: 18px;
+      position: relative;
+      cursor: pointer;
+      &:before, &:after {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 10px;
+        width: 12px;
+        height: 2px;
+        background-color: $mediumGray;
+        border-radius: 2px;
+      }
+      &:before {
+        transform: rotate(45deg);
+      }
+      &:after {
+        transform: rotate(-45deg);
+      }
+      &:hover {
+        &:before, &:after {
+          background-color: $red;
+        }
+      }
+    }
+    .multi-select-value {
+      padding: 4px 6px 4px 2px;
+      display: inline-block;
+      vertical-align: top;
+      font-size: 16px;
+    }
+  }
+}

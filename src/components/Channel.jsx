@@ -1137,6 +1137,20 @@ export default function Channel({
           <div className="channel-module border"></div>
           {instrumentEl(false)}
           {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
+          <CSSTransition in={!!modalType} timeout={300} classNames="show">
+            <Modal
+              modalType={modalType}
+              setModalType={setModalType}
+              midiHold={midiHold}
+              setMidiHold={setMidiHold}
+              theme={theme}
+              customMidiOutChannel={customMidiOutChannel}
+              setCustomMidiOutChannel={setCustomMidiOutChannel}
+              channelNum={channelNum}
+              midiOutChannel={midiOutChannel}
+              setMidiOutChannel={setMidiOutChannel}
+            />
+          </CSSTransition>
         </div>
       </CSSTransition>
     )
@@ -1206,6 +1220,20 @@ export default function Channel({
             </div>
           </CSSTransition>
           {draggingChannel && dragTarget !== channelNum && dragTargetUI(false)}
+          <CSSTransition in={!!modalType} timeout={300} classNames="show">
+            <Modal
+              modalType={modalType}
+              setModalType={setModalType}
+              midiHold={midiHold}
+              setMidiHold={setMidiHold}
+              theme={theme}
+              customMidiOutChannel={customMidiOutChannel}
+              setCustomMidiOutChannel={setCustomMidiOutChannel}
+              channelNum={channelNum}
+              midiOutChannel={midiOutChannel}
+              setMidiOutChannel={setMidiOutChannel}
+            />
+          </CSSTransition>
         </div>
       </CSSTransition>
     )

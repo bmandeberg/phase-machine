@@ -83,6 +83,19 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
   }
 
+  .midi-modal {
+    .channel-num {
+      color: $green;
+    }
+    border-right: 1px solid $darkBackground;
+  }
+
+  .switch-label {
+    &.selected {
+      color: $green;
+    }
+  }
+
   .border {
     border-color: $pitchClassGray;
   }
@@ -413,6 +426,12 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     .piano-border {
       border-left: 2px solid $darkBackground;
       border-right: 2px solid $darkBackground;
+    }
+  }
+
+  .notes-mode {
+    .notes-mode-selected {
+      color: $green;
     }
   }
 

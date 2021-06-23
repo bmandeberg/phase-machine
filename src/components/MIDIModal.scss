@@ -22,7 +22,7 @@
     display: inline-block;
     vertical-align: top;
     font-size: 28px;
-    color: $green;
-    margin-left: 10px;
+    color: darken($green, 10%);
+    margin-left: 15px;
   }
 }
