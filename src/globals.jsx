@@ -33,7 +33,7 @@ export const SECTIONS = ['key', 'piano', 'sequencer']
 
 export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9700', '#a825f4', '#00C591', '#EDDB00']
 
-export const THEMES = ['light', 'dark', 'contrast']
+export const THEMES = ['dark', 'light', 'contrast']
 
 export const RATES = [
   '1m',

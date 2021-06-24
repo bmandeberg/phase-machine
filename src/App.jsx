@@ -63,7 +63,7 @@ export default function App() {
 
   const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
 
-  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'light')
+  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'dark')
 
   const [hotkeyRestart, setHotkeyRestart] = useState(JSON.parse(window.localStorage.getItem('hotkeyRestart')) ?? true)
 
