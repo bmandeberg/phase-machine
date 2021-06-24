@@ -36,10 +36,6 @@
   vertical-align: top;
   margin-right: 8px;
 }
-.clear-reset {
-  width: 61px;
-  margin-top: 16px;
-}
 
 .channel-horizontal {
   height: 96px;
@@ -62,16 +58,20 @@
     }
   }
   .velocity {
-    margin-right: 14px;
+    margin-right: 16px;
   }
   .arrow-small {
     width: 18px;
     position: absolute;
-    left: 472px;
-    top: 28px;
+    left: 550px;
+    top: 64px;
   }
   .flip-opposite {
     margin-left: 11px;
+  }
+  .clear-reset {
+    width: 62px;
+    margin-top: 16px;
   }
   .key-arp-mode,
   .seq-arp-mode .dropdown {
@@ -125,8 +125,10 @@
   }
   .notes-mode {
     margin-left: 0;
-    position: absolute;
-    bottom: 0;
+  }
+  .clear-reset {
+    width: 61px;
+    margin-top: 16px;
   }
   .key {
     margin-top: 1px;
@@ -135,7 +137,7 @@
   }
   .arrow-clock {
     position: absolute;
-    top: 27px;
+    top: 156px;
     left: 192px;
     width: 113px;
   }
@@ -330,12 +332,36 @@
     margin-left: auto;
   }
   .midi-input-mode {
-    margin-left: -41px;
-    .label-left {
-      margin-right: 5px;
+    margin-left: 0;
+    margin-top: 21px;
+    width: 36px;
+    position: relative;
+    .switch {
+      transform: rotate(90deg);
+      margin-left: -12px;
+      margin-top: 11px;
     }
-    .label-right {
-      margin-left: 5px;
+    .switch-label {
+      position: absolute;
+      left: 34px;
+      line-height: 16px;
+      margin-left: 0;
+      margin-right: 0;
+      &.label-left {
+        top: 6px;
+      }
+      &.label-right {
+        top: 31px;
+      }
+    }
+    .midi-input-mode-title {
+      font-size: 16px;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      height: 12px;
+      left: -7px;
+      pointer-events: none;
     }
   }
   .swing-module {

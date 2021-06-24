@@ -25,7 +25,7 @@ export default function MidiInputMode({ midiHold, setMidiHold, theme }) {
           Toggle
         </div>
         <Switch
-          // className="instrument-switch"
+          className="switch"
           onChange={setMidiHold}
           checked={midiHold}
           uncheckedIcon={false}
@@ -41,7 +41,7 @@ export default function MidiInputMode({ midiHold, setMidiHold, theme }) {
           Hold
         </div>
       </div>
-      <p className="midi-input-mode-title no-select">MIDI Input</p>
+      <p className="midi-input-mode-title no-select">MIDI In</p>
     </div>
   )
 }

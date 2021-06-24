@@ -1027,16 +1027,16 @@ export default function Channel({
             {midiEl}
           </div>
           {velocityEl}
+          {notesModeEl}
           {keyEl}
           <div className="transformations">
             {rangeMode && shiftEl}
             {rangeMode && axisEl(false)}
             {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
-            {!rangeMode && clearResetEl}
             {!rangeMode && midiInputModeEl}
+            {!rangeMode && clearResetEl}
           </div>
-          {notesModeEl}
           {pianoEl}
           {keyRateEl}
           {keyArpModeEl}
@@ -1100,16 +1100,16 @@ export default function Channel({
             {midiEl}
           </div>
           {velocityEl}
+          {notesModeEl}
           {keyEl}
           <div className="transformations">
             {rangeMode && shiftEl}
             {rangeMode && axisEl(false)}
             {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
-            {!rangeMode && clearResetEl}
             {!rangeMode && midiInputModeEl}
+            {!rangeMode && clearResetEl}
           </div>
-          {notesModeEl}
           {pianoEl}
           {keyRateEl}
           {keyArpModeEl}
@@ -1171,12 +1171,12 @@ export default function Channel({
               {velocityEl}
             </div>
             <div className="channel-vertical left-vertical">
-              {rangeMode && flipOppositeEl}
-              {rangeMode && shiftEl}
-              {!rangeMode && clearResetEl}
-              {!rangeMode && midiInputModeEl}
-              {/* {keyViewTypeEl} */}
               {notesModeEl}
+              {rangeMode && shiftEl}
+              {rangeMode && flipOppositeEl}
+              {!rangeMode && midiInputModeEl}
+              {!rangeMode && clearResetEl}
+              {/* {keyViewTypeEl} */}
             </div>
             {rangeMode && <img className="arrow-clock" src={arrowClockGraphic} alt="" />}
             {axisEl(true)}
