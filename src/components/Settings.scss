@@ -27,8 +27,13 @@
         line-height: 34px;
       }
     }
-    .copy-presets {
+    .presets-action {
       margin-top: 5px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 75px;
+      resize: vertical;
     }
   }
 }

@@ -1,14 +1,27 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './MultiSelect.scss'
 
 export default function MultiSelect({ options, setValues, values, placeholder }) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const multiSelectRef = useRef()
 
   const toggleDropdown = useCallback((e) => {
     e.stopPropagation()
     setDropdownOpen((dropdownOpen) => !dropdownOpen)
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (multiSelectRef.current && !multiSelectRef.current.contains(event.target)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
   }, [])
 
   const addValue = useCallback(
@@ -25,20 +38,27 @@ export default function MultiSelect({ options, setValues, values, placeholder })
   )
 
   const removeValue = useCallback(
-    (value) => {
+    (e, value) => {
+      e.stopPropagation()
       setValues((values) => values.filter((v) => v !== value))
     },
     [setValues]
   )
 
+  const stopPropagation = useCallback((e) => {
+    e.stopPropagation()
+  }, [])
+
   return (
-    <div className="multi-select">
+    <div ref={multiSelectRef} className="multi-select">
       <div onClick={toggleDropdown} className="multi-select-control">
         <div className="multi-select-selections">
           {values.map((value, i) => (
             <div key={i} className="multi-select-selection">
-              <div onClick={() => removeValue(value)} className="multi-select-remove"></div>
-              <div className="multi-select-value">{value}</div>
+              <div onClick={(e) => removeValue(e, value)} className="multi-select-remove"></div>
+              <div onClick={stopPropagation} className="multi-select-value">
+                {value}
+              </div>
             </div>
           ))}
           {!values.length && <p className="multi-select-placeholder">{placeholder}</p>}

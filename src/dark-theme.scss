@@ -9,6 +9,7 @@ $darkDarkGrayHover: lighten($darkDarkGray, 5%);
 $darkLightGray: #a0a0b4;
 $darkGreen: #00c591;
 $darkGreenHover: lighten($darkGreen, 6%);
+$darkGreenActive: darken($darkGreen, 5%);
 $darkDarkGreen: darken($darkGreen, 10%);
 $darkDarkOrange: #9e5302;
 $splitButtonAction: #313139;
@@ -21,6 +22,13 @@ $headerDarkBlue: #0f182d;
   background-color: $darkBackground;
   color: $darkLightGray;
 
+  textarea {
+    background-color: $darkDarkGray;
+    color: $darkLightGray;
+    border: 1px solid $darkMediumGray;
+    box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+  }
+
   .button {
     background-color: $darkMediumGray;
     color: $darkLightGray;
@@ -29,6 +37,16 @@ $headerDarkBlue: #0f182d;
     }
     &:active {
       background-color: $darkMediumGrayActive;
+    }
+    &.green-button {
+      background-color: $darkGreen;
+      color: $darkBackground;
+      &:hover {
+        background-color: $darkGreenHover;
+      }
+      &:active {
+        background-color: $darkGreenActive;
+      }
     }
   }
 
@@ -422,6 +440,62 @@ $headerDarkBlue: #0f182d;
   .notes-mode {
     .notes-mode-selected {
       color: $darkGreen;
+    }
+  }
+
+  .multi-select {
+    background-color: $darkMediumGray;
+    border: 1px solid $darkMediumGray;
+    color: $darkLightGray;
+
+    .multi-select-placeholder {
+      color: darken($darkLightGray, 7%);
+    }
+
+    .multi-select-arrow-container {
+      border: 1px solid $darkMediumGray;
+      border-left-color: $darkBackground;
+      background-color: $darkMediumGray;
+      &:hover {
+        background-color: $darkMediumGrayHover;
+      }
+      &:active {
+        background-color: $darkMediumGrayActive;
+      }
+    }
+
+    .multi-select-arrow {
+      border-color: $darkLightGray transparent transparent;
+    }
+
+    .multi-select-dropdown {
+      background-color: $darkBackground;
+      border: 1px solid $darkMediumGray;
+    }
+
+    .multi-select-option {
+      color: $darkLightGray;
+      &:hover {
+        background-color: $darkGreen;
+        color: $darkBackground;
+      }
+    }
+
+    .multi-select-selection {
+      background-color: $darkDarkGray;
+      color: $darkLightGray;
+      .multi-select-remove {
+        &:before,
+        &:after {
+          background-color: $darkLightGray;
+        }
+        &:hover {
+          &:before,
+          &:after {
+            background-color: $red;
+          }
+        }
+      }
     }
   }
 

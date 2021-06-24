@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useMemo } from 'react'
+import { isArray } from 'tone'
 import { v4 as uuid } from 'uuid'
 import { PRESET_HOLD_TIME } from '../globals'
 
@@ -102,29 +103,26 @@ export default function usePresets(
     [deepStateCopy, presets, setChannelSync, setCurrentPreset, setNumChannels, setUIState]
   )
 
-  const dedupName = useCallback(
-    (name, id) => {
-      const sameNamePreset = presets.find((p) => p.name === name)
-      if (sameNamePreset && !(id && sameNamePreset.id === id)) {
-        const digitMatch = /\s\((\d+)\)$/
-        const baseName = name.replace(digitMatch, '')
-        const incRegex = new RegExp(baseName + '\\s\\((\\d+)\\)$')
-        const nameIncrements = presets.reduce(
-          (acc, curr) => {
-            const match = curr.name.match(incRegex)
-            if (match && !(id && curr.id === id)) {
-              acc.push(+match[1])
-            }
-            return acc
-          },
-          [1]
-        )
-        const maxInc = Math.max(...nameIncrements)
-        return `${baseName} (${maxInc + 1})`
-      } else return name
-    },
-    [presets]
-  )
+  const dedupName = useCallback((name, id, presets) => {
+    const sameNamePreset = presets.find((p) => p.name === name)
+    if (sameNamePreset && !(id && sameNamePreset.id === id)) {
+      const digitMatch = /\s\((\d+)\)$/
+      const baseName = name.replace(digitMatch, '')
+      const incRegex = new RegExp(baseName + '\\s\\((\\d+)\\)$')
+      const nameIncrements = presets.reduce(
+        (acc, curr) => {
+          const match = curr.name.match(incRegex)
+          if (match && !(id && curr.id === id)) {
+            acc.push(+match[1])
+          }
+          return acc
+        },
+        [1]
+      )
+      const maxInc = Math.max(...nameIncrements)
+      return `${baseName} (${maxInc + 1})`
+    } else return name
+  }, [])
 
   const savePreset = useCallback(
     (e, hotkey = null) => {
@@ -134,7 +132,7 @@ export default function usePresets(
       })
       for (let i = 0; i < presets.length; i++) {
         if (presets[i].name === uiStateCopy.name && presets[i].id !== uiStateCopy.id) {
-          uiStateCopy.name = dedupName(uiStateCopy.name, uiStateCopy.id)
+          uiStateCopy.name = dedupName(uiStateCopy.name, uiStateCopy.id, presets)
           break
         }
       }
@@ -158,10 +156,11 @@ export default function usePresets(
 
   const newPreset = useCallback(
     (e, hotkey = null) => {
+      const id = uuid()
       const uiStateCopy = Object.assign({}, uiState, {
-        name: dedupName(uiState.name !== currentPreset.name ? uiState.name : 'New Preset'),
+        name: dedupName(uiState.name !== currentPreset.name ? uiState.name : 'New Preset', id, presets),
         placeholder: false,
-        id: uuid(),
+        id,
         hotkey,
       })
       // sync state and presets
@@ -175,12 +174,12 @@ export default function usePresets(
       // save in localStorage
       window.localStorage.setItem('activePreset', uiStateCopy.id)
     },
-    [currentPreset.name, dedupName, deepStateCopy, setCurrentPreset, setPresets, setUIState, uiState]
+    [currentPreset.name, dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setUIState, uiState]
   )
 
   const deletePreset = useCallback(() => {
     const uiStateCopy = Object.assign({}, uiState, {
-      name: dedupName('New Preset', uiState.id),
+      name: dedupName('New Preset', uiState.id, presets),
       id: uuid(),
       hotkey: null,
       placeholder: true,
@@ -190,7 +189,99 @@ export default function usePresets(
     setCurrentPreset(uiStateCopy)
     // save in localStorage
     window.localStorage.removeItem('activePreset')
-  }, [dedupName, deepStateCopy, setCurrentPreset, setPresets, setUIState, uiState])
+  }, [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setUIState, uiState])
+
+  const validPreset = useCallback((preset) => {
+    function invalidProp(obj, prop, type) {
+      return !obj.hasOwnProperty(prop) || typeof obj[prop] !== type
+    }
+    if (
+      invalidProp(preset, 'name', 'string') ||
+      invalidProp(preset, 'id', 'string') ||
+      invalidProp(preset, 'hotkey', 'number') ||
+      invalidProp(preset, 'placeholder', 'boolean') ||
+      invalidProp(preset, 'numChannels', 'number') ||
+      invalidProp(preset, 'channelSync', 'boolean') ||
+      invalidProp(preset, 'channels', 'object')
+    ) {
+      return false
+    }
+    for (let i = 0; i < preset.channels.length; i++) {
+      const channel = preset.channels[i]
+      if (
+        invalidProp(channel, 'id', 'string') ||
+        invalidProp(channel, 'color', 'string') ||
+        invalidProp(channel, 'channelNum', 'number') ||
+        invalidProp(channel, 'velocity', 'number') ||
+        invalidProp(channel, 'key', 'object') ||
+        channel.key.length !== 12 ||
+        invalidProp(channel, 'keyRate', 'string') ||
+        invalidProp(channel, 'keyArpMode', 'string') ||
+        invalidProp(channel, 'keyArpInc1', 'number') ||
+        invalidProp(channel, 'keyArpInc2', 'number') ||
+        invalidProp(channel, 'keySustain', 'number') ||
+        invalidProp(channel, 'keySwing', 'number') ||
+        invalidProp(channel, 'keySwingLength', 'number') ||
+        invalidProp(channel, 'mute', 'boolean') ||
+        invalidProp(channel, 'solo', 'boolean') ||
+        invalidProp(channel, 'shiftAmt', 'number') ||
+        invalidProp(channel, 'axis', 'number') ||
+        invalidProp(channel, 'rangeStart', 'number') ||
+        invalidProp(channel, 'rangeEnd', 'number') ||
+        invalidProp(channel, 'seqSteps', 'object') ||
+        invalidProp(channel, 'seqLength', 'number') ||
+        invalidProp(channel, 'seqRate', 'string') ||
+        invalidProp(channel, 'seqArpMode', 'string') ||
+        invalidProp(channel, 'seqArpInc1', 'number') ||
+        invalidProp(channel, 'seqArpInc2', 'number') ||
+        invalidProp(channel, 'seqSwing', 'number') ||
+        invalidProp(channel, 'seqSwingLength', 'number') ||
+        invalidProp(channel, 'seqSustain', 'number') ||
+        invalidProp(channel, 'legato', 'boolean') ||
+        invalidProp(channel, 'instrumentOn', 'boolean') ||
+        invalidProp(channel, 'instrumentType', 'string') ||
+        invalidProp(channel, 'rangeMode', 'boolean') ||
+        invalidProp(channel, 'keybdPitches', 'object') ||
+        invalidProp(channel, 'midiIn', 'boolean') ||
+        invalidProp(channel, 'midiHold', 'boolean') ||
+        invalidProp(channel, 'customMidiOutChannel', 'boolean') ||
+        invalidProp(channel, 'midiOutChannel', 'number')
+      ) {
+        return false
+      }
+      return true
+    }
+  }, [])
+
+  const importPresets = useCallback(
+    (presetsString) => {
+      try {
+        const parsedPresets = JSON.parse(presetsString)
+        if (Array.isArray(parsedPresets) && parsedPresets.length) {
+          for (let i = 0; i < parsedPresets.length; i++) {
+            if (!validPreset(parsedPresets[i])) {
+              alert('Some presets are invalid format!')
+              return
+            }
+          }
+          setPresets((presets) => {
+            const presetsCopy = presets.slice()
+            parsedPresets.forEach((p) => {
+              const id = uuid()
+              presetsCopy.push(Object.assign(p, { name: dedupName(p.name, id, presetsCopy), id, hotkey: null }))
+            })
+            return presetsCopy
+          })
+          alert(`${parsedPresets.length} Preset${parsedPresets.length !== 1 ? 's' : ''} imported`)
+        } else alert('No valid presets to import')
+      } catch (error) {
+        alert('Invalid presets!')
+      }
+    },
+    [dedupName, setPresets, validPreset]
+  )
+
+  // update localStorage when presets change
 
   useEffect(() => {
     window.localStorage.setItem('presets', JSON.stringify(presets))
@@ -245,5 +336,6 @@ export default function usePresets(
     savePreset,
     newPreset,
     deletePreset,
+    importPresets,
   }
 }

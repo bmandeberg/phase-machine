@@ -16,6 +16,7 @@ export default function Settings({
   theme,
   setTheme,
   presets,
+  importPresets,
   modalType,
 }) {
   const setKnobType = useCallback(
@@ -34,6 +35,11 @@ export default function Settings({
 
   const presetNames = useMemo(() => presets.map((p) => p.name), [presets])
   const [selectedPresets, setSelectedPresets] = useState([])
+  const [presetsJSON, setPresetsJSON] = useState('')
+
+  const updatePresetsJSON = useCallback((e) => {
+    setPresetsJSON(e.target.value)
+  }, [])
 
   useEffect(() => {
     if (!modalType) {
@@ -102,17 +108,24 @@ export default function Settings({
       </div>
       <div className="settings-item">
         <p>Export Presets</p>
-        {modalType && (
-          <MultiSelect
-            options={presetNames}
-            values={selectedPresets}
-            setValues={setSelectedPresets}
-            placeholder="Select Presets"
-          />
-        )}
+        <MultiSelect
+          options={presetNames}
+          values={selectedPresets}
+          setValues={setSelectedPresets}
+          placeholder="Select Presets"
+        />
         {selectedPresets.length > 0 && (
-          <div onClick={copyPresets} className="copy-presets button green-button">
+          <div onClick={copyPresets} className="presets-action button green-button">
             Copy Presets to clipboard
+          </div>
+        )}
+      </div>
+      <div className="settings-item">
+        <p>Import Presets</p>
+        <textarea value={presetsJSON} onChange={updatePresetsJSON} />
+        {presetsJSON.length > 0 && (
+          <div onClick={() => importPresets(presetsJSON)} className="presets-action button green-button">
+            Import Presets
           </div>
         )}
       </div>
@@ -129,5 +142,6 @@ Settings.propTypes = {
   theme: PropTypes.string,
   setTheme: PropTypes.func,
   presets: PropTypes.array,
+  importPresets: PropTypes.func,
   modalType: PropTypes.string,
 }

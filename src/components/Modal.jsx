@@ -23,6 +23,7 @@ export default function Modal({
   midiOutChannel,
   setMidiOutChannel,
   presets,
+  importPresets,
 }) {
   const modalTypeRef = useRef()
 
@@ -56,6 +57,7 @@ export default function Modal({
                 theme={theme}
                 setTheme={setTheme}
                 presets={presets}
+                importPresets={importPresets}
                 modalType={modalType}
               />
             )}
@@ -96,4 +98,5 @@ Modal.propTypes = {
   midiOutChannel: PropTypes.number,
   setMidiOutChannel: PropTypes.func,
   presets: PropTypes.array,
+  importPresets: PropTypes.func,
 }

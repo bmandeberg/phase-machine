@@ -208,19 +208,20 @@ export default function App() {
     [uiState]
   )
 
-  const { setChannelState, setPresetName, presetDirty, setPreset, savePreset, newPreset, deletePreset } = usePresets(
-    setUIState,
-    channelSync,
-    uiState,
-    currentPreset,
-    presets,
-    setCurrentPreset,
-    deepStateCopy,
-    setNumChannels,
-    setChannelSync,
-    setPresets,
-    keydownTimer
-  )
+  const { setChannelState, setPresetName, presetDirty, setPreset, savePreset, newPreset, deletePreset, importPresets } =
+    usePresets(
+      setUIState,
+      channelSync,
+      uiState,
+      currentPreset,
+      presets,
+      setCurrentPreset,
+      deepStateCopy,
+      setNumChannels,
+      setChannelSync,
+      setPresets,
+      keydownTimer
+    )
 
   // channel management
 
@@ -418,6 +419,7 @@ export default function App() {
           theme={theme}
           setTheme={setTheme}
           presets={presets}
+          importPresets={importPresets}
         />
       </CSSTransition>
     </div>

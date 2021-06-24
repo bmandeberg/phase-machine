@@ -25,6 +25,13 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
   background-color: $darkBackground;
   color: $lightMediumGray;
 
+  textarea {
+    background-color: $darkDarkGray;
+    color: $lightMediumGray;
+    border: 1px solid $lightMediumGray;
+    box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+  }
+
   .button {
     background-color: $lightMediumGray;
     color: $darkTextGray;
@@ -33,6 +40,9 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
     &:active {
       background-color: $lightMediumGrayActive;
+    }
+    &.green-button {
+      color: $darkBackground;
     }
   }
 
@@ -432,6 +442,62 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
   .notes-mode {
     .notes-mode-selected {
       color: $green;
+    }
+  }
+
+  .multi-select {
+    background-color: $lightMediumGray;
+    border: 1px solid $lightMediumGray;
+    color: $darkTextGray;
+
+    .multi-select-placeholder {
+      color: lighten($darkTextGray, 7%);
+    }
+
+    .multi-select-arrow-container {
+      border: 1px solid $lightMediumGray;
+      border-left-color: $darkBackground;
+      background-color: $lightMediumGray;
+      &:hover {
+        background-color: $lightMediumGrayHover;
+      }
+      &:active {
+        background-color: $lightMediumGrayActive;
+      }
+    }
+
+    .multi-select-arrow {
+      border-color: $darkTextGray transparent transparent;
+    }
+
+    .multi-select-dropdown {
+      background-color: $darkBackground;
+      border: 1px solid $lightMediumGray;
+    }
+
+    .multi-select-option {
+      color: $lightMediumGray;
+      &:hover {
+        background-color: $green;
+        color: $darkBackground;
+      }
+    }
+
+    .multi-select-selection {
+      background-color: $blue;
+      color: $darkBackground;
+      .multi-select-remove {
+        &:before,
+        &:after {
+          background-color: $darkBackground;
+        }
+        &:hover {
+          &:before,
+          &:after {
+            background-color: $red;
+          }
+        }
+      }
     }
   }
 
