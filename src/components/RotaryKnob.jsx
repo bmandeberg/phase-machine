@@ -350,6 +350,7 @@ export default function RotaryKnob({
         'axis-knob-large': axisKnobLarge,
         'knob-active': turningAxisKnob,
         'inline-knob': inline,
+        'hidden-knob': axisKnob && !rangeMode,
       })}>
       {axisKnob && (
         <div className="axis-knob-helper">
