@@ -24,6 +24,7 @@ export default function Modal({
   setMidiOutChannel,
   presets,
   importPresets,
+  modalContent,
 }) {
   const modalTypeRef = useRef()
 
@@ -46,7 +47,7 @@ export default function Modal({
             <div className="modal-close" onClick={closeModal}></div>
           </div>
           <div className="modal-content">
-            {modalTypeRef.current === 'settings' && (
+            {modalTypeRef.current === 'settings' && modalContent && (
               <Settings
                 showStepNumbers={showStepNumbers}
                 setShowStepNumbers={setShowStepNumbers}
@@ -61,7 +62,7 @@ export default function Modal({
                 modalType={modalType}
               />
             )}
-            {modalTypeRef.current === 'MIDI' && (
+            {modalTypeRef.current === 'MIDI' && modalContent && (
               <MIDIModal
                 midiHold={midiHold}
                 setMidiHold={setMidiHold}
@@ -80,6 +81,7 @@ export default function Modal({
   )
 }
 Modal.propTypes = {
+  modalContent: PropTypes.bool,
   modalType: PropTypes.string,
   setModalType: PropTypes.func,
   showStepNumbers: PropTypes.bool,

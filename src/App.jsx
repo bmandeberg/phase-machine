@@ -49,6 +49,13 @@ export default function App() {
   const [channelSync, setChannelSync] = useState(currentPreset.channelSync)
 
   const [modalType, setModalType] = useState('')
+  const [modalContent, setModalContent] = useState(false)
+  const showModal = useCallback(() => {
+    setModalContent(true)
+  }, [])
+  const hideModal = useCallback(() => {
+    setModalContent(false)
+  }, [])
 
   const [grabbing, setGrabbing] = useState(false)
   const [resizing, setResizing] = useState(false)
@@ -406,8 +413,9 @@ export default function App() {
           </div>
         )}
       </div>
-      <CSSTransition in={!!modalType} timeout={300} classNames="show">
+      <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>
         <Modal
+          modalContent={modalContent}
           modalType={modalType}
           setModalType={setModalType}
           showStepNumbers={showStepNumbers}

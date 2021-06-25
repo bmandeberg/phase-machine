@@ -127,6 +127,14 @@ export default function Channel({
   const [customMidiOutChannel, setCustomMidiOutChannel] = useState(false)
   const [midiOutChannel, setMidiOutChannel] = useState(1)
 
+  const [modalContent, setModalContent] = useState(false)
+  const showModal = useCallback(() => {
+    setModalContent(true)
+  }, [])
+  const hideModal = useCallback(() => {
+    setModalContent(false)
+  }, [])
+
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
   const hotkeyRestartRef = useRef(hotkeyRestart)
@@ -864,6 +872,27 @@ export default function Channel({
     openMidiModal
   )
 
+  const modalEl = useMemo(
+    () => (
+      <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>
+        <Modal
+          modalContent={modalContent}
+          modalType={modalType}
+          setModalType={setModalType}
+          midiHold={midiHold}
+          setMidiHold={setMidiHold}
+          theme={theme}
+          customMidiOutChannel={customMidiOutChannel}
+          setCustomMidiOutChannel={setCustomMidiOutChannel}
+          channelNum={channelNum}
+          midiOutChannel={midiOutChannel}
+          setMidiOutChannel={setMidiOutChannel}
+        />
+      </CSSTransition>
+    ),
+    [channelNum, customMidiOutChannel, hideModal, midiHold, midiOutChannel, modalContent, modalType, showModal, theme]
+  )
+
   const dragTargetUI = useCallback(
     (horizontal) => {
       const numHorizontalChannels = Math.floor(window.innerWidth / CLOCK_CHANNEL_WIDTH)
@@ -1068,20 +1097,7 @@ export default function Channel({
             {instrumentEl(false)}
           </div>
           {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
-          <CSSTransition in={!!modalType} timeout={300} classNames="show">
-            <Modal
-              modalType={modalType}
-              setModalType={setModalType}
-              midiHold={midiHold}
-              setMidiHold={setMidiHold}
-              theme={theme}
-              customMidiOutChannel={customMidiOutChannel}
-              setCustomMidiOutChannel={setCustomMidiOutChannel}
-              channelNum={channelNum}
-              midiOutChannel={midiOutChannel}
-              setMidiOutChannel={setMidiOutChannel}
-            />
-          </CSSTransition>
+          {modalEl}
         </div>
       </CSSTransition>
     )
@@ -1137,20 +1153,7 @@ export default function Channel({
           <div className="channel-module border"></div>
           {instrumentEl(false)}
           {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
-          <CSSTransition in={!!modalType} timeout={300} classNames="show">
-            <Modal
-              modalType={modalType}
-              setModalType={setModalType}
-              midiHold={midiHold}
-              setMidiHold={setMidiHold}
-              theme={theme}
-              customMidiOutChannel={customMidiOutChannel}
-              setCustomMidiOutChannel={setCustomMidiOutChannel}
-              channelNum={channelNum}
-              midiOutChannel={midiOutChannel}
-              setMidiOutChannel={setMidiOutChannel}
-            />
-          </CSSTransition>
+          {modalEl}
         </div>
       </CSSTransition>
     )
@@ -1220,20 +1223,7 @@ export default function Channel({
             </div>
           </CSSTransition>
           {draggingChannel && dragTarget !== channelNum && dragTargetUI(false)}
-          <CSSTransition in={!!modalType} timeout={300} classNames="show">
-            <Modal
-              modalType={modalType}
-              setModalType={setModalType}
-              midiHold={midiHold}
-              setMidiHold={setMidiHold}
-              theme={theme}
-              customMidiOutChannel={customMidiOutChannel}
-              setCustomMidiOutChannel={setCustomMidiOutChannel}
-              channelNum={channelNum}
-              midiOutChannel={midiOutChannel}
-              setMidiOutChannel={setMidiOutChannel}
-            />
-          </CSSTransition>
+          {modalEl}
         </div>
       </CSSTransition>
     )
