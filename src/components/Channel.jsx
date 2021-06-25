@@ -478,6 +478,10 @@ export default function Channel({
     }
   }, [instrumentType])
 
+  const openInstrumentModal = useCallback(() => {
+    setModalType('instrument')
+  }, [])
+
   const noteOff = useCallback((channel, note, midiOutObj, delay, offTime, clockOffset) => {
     instrument.current.triggerRelease(offTime ?? undefined)
     if (midiOutObj) {
@@ -869,7 +873,8 @@ export default function Channel({
     setMidiHold,
     clearNotes,
     restartNotes,
-    openMidiModal
+    openMidiModal,
+    openInstrumentModal
   )
 
   const modalEl = useMemo(
@@ -887,10 +892,26 @@ export default function Channel({
           channelNum={channelNum}
           midiOutChannel={midiOutChannel}
           setMidiOutChannel={setMidiOutChannel}
+          instrumentOn={instrumentOn}
+          setInstrumentOn={setInstrumentOn}
+          instrumentType={instrumentType}
+          setInstrumentType={setInstrumentType}
         />
       </CSSTransition>
     ),
-    [channelNum, customMidiOutChannel, hideModal, midiHold, midiOutChannel, modalContent, modalType, showModal, theme]
+    [
+      channelNum,
+      customMidiOutChannel,
+      hideModal,
+      instrumentOn,
+      instrumentType,
+      midiHold,
+      midiOutChannel,
+      modalContent,
+      modalType,
+      showModal,
+      theme,
+    ]
   )
 
   const dragTargetUI = useCallback(

@@ -12,6 +12,13 @@
     display: inline-block;
     vertical-align: middle;
   }
+  .split-button {
+    width: 72px;
+    .split-button-action {
+      padding-top: 10px;
+      padding-bottom: 5px;
+    }
+  }
   .switch-label {
     display: inline-block;
     vertical-align: bottom;

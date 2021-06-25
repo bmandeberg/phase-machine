@@ -115,7 +115,8 @@ export default function useUI(
   setMidiHold,
   clearNotes,
   restartNotes,
-  openMidiModal
+  openMidiModal,
+  openInstrumentModal
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -606,10 +607,12 @@ export default function useUI(
           small={small}
           theme={theme}
           mute={mute}
+          openInstrumentModal={openInstrumentModal}
+          inModal={false}
         />
       )
     },
-    [instrumentOn, instrumentType, mute, setInstrumentOn, setInstrumentType, theme]
+    [instrumentOn, instrumentType, mute, openInstrumentModal, setInstrumentOn, setInstrumentType, theme]
   )
 
   return {

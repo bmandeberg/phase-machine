@@ -626,7 +626,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
 
   .split-button {
     background-color: $lightMediumGray;
-    .split-button-action {
+    .split-button-action, .split-button-content {
       &:hover {
         background-color: $lightMediumGrayHover;
       }

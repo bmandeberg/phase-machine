@@ -624,7 +624,7 @@ $headerDarkBlue: #0f182d;
 
   .split-button {
     background-color: $darkMediumGray;
-    .split-button-action {
+    .split-button-action, .split-button-content {
       &:hover {
         background-color: $darkMediumGrayHover;
       }

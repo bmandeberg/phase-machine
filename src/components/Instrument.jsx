@@ -15,6 +15,8 @@ export default function Instrument({
   small,
   theme,
   mute,
+  openInstrumentModal,
+  inModal,
 }) {
   const incrementInstrument = useCallback(
     (next) => {
@@ -65,9 +67,16 @@ export default function Instrument({
         {!small && <div className="instrument-label">Instrument</div>}
       </div>
       {small ? (
-        <div className="button disabled">Instr</div>
+        <div onClick={openInstrumentModal} className="button">
+          Instr
+        </div>
       ) : (
-        <SplitButton content={splitButtonContent} rightAction={splitButtonRight} leftAction={splitButtonLeft} />
+        <SplitButton
+          content={splitButtonContent}
+          rightAction={splitButtonRight}
+          leftAction={splitButtonLeft}
+          contentAction={openInstrumentModal}
+        />
       )}
     </div>
   )
@@ -81,4 +90,6 @@ Instrument.propTypes = {
   small: PropTypes.bool,
   theme: PropTypes.string,
   mute: PropTypes.bool,
+  openInstrumentModal: PropTypes.func,
+  inModal: PropTypes.bool,
 }

@@ -3,13 +3,13 @@
 .split-button {
   background-color: $lightGray;
   box-sizing: border-box;
-  cursor: pointer;
   font-size: 19px;
   line-height: 19px;
   text-align: center;
   .split-button-action {
     position: relative;
     box-sizing: border-box;
+    cursor: pointer;
     &:last-of-type {
       border-right: none;
     }
@@ -26,6 +26,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    &:hover {
+      background-color: $lightGrayHover;
+    }
+    &:active {
+      background-color: $mediumGray;
+    }
   }
   .split-button-arrow {
     height: 27px;

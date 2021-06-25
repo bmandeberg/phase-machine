@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Settings from './Settings'
 import MIDIModal from './MIDIModal'
+import InstrumentModal from './InstrumentModal'
 import './Modal.scss'
 
 export default function Modal({
@@ -25,6 +26,10 @@ export default function Modal({
   presets,
   importPresets,
   modalContent,
+  instrumentOn,
+  setInstrumentOn,
+  instrumentType,
+  setInstrumentType,
 }) {
   const modalTypeRef = useRef()
 
@@ -74,6 +79,15 @@ export default function Modal({
                 setMidiOutChannel={setMidiOutChannel}
               />
             )}
+            {modalTypeRef.current === 'instrument' && modalContent && (
+              <InstrumentModal
+                instrumentOn={instrumentOn}
+                setInstrumentOn={setInstrumentOn}
+                instrumentType={instrumentType}
+                setInstrumentType={setInstrumentType}
+                theme={theme}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -101,4 +115,8 @@ Modal.propTypes = {
   setMidiOutChannel: PropTypes.func,
   presets: PropTypes.array,
   importPresets: PropTypes.func,
+  instrumentOn: PropTypes.bool,
+  setInstrumentOn: PropTypes.func,
+  instrumentType: PropTypes.string,
+  setInstrumentType: PropTypes.func,
 }

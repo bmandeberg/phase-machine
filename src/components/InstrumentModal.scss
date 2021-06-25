@@ -1,0 +1,14 @@
+@import '../sass-globals.scss';
+
+.instrument-modal {
+  .instrument {
+    margin-top: 0;
+  }
+  .instrument-label {
+    display: none;
+  }
+  .split-button-content {
+    pointer-events: none;
+    cursor: auto;
+  }
+}
