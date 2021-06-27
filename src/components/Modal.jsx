@@ -30,6 +30,10 @@ export default function Modal({
   setInstrumentOn,
   instrumentType,
   setInstrumentType,
+  instrumentParams,
+  setInstrumentParams,
+  instruments,
+  effects,
 }) {
   const modalTypeRef = useRef()
 
@@ -85,6 +89,10 @@ export default function Modal({
                 setInstrumentOn={setInstrumentOn}
                 instrumentType={instrumentType}
                 setInstrumentType={setInstrumentType}
+                instrumentParams={instrumentParams}
+                setInstrumentParams={setInstrumentParams}
+                instruments={instruments}
+                effects={effects}
                 theme={theme}
               />
             )}
@@ -119,4 +127,8 @@ Modal.propTypes = {
   setInstrumentOn: PropTypes.func,
   instrumentType: PropTypes.string,
   setInstrumentType: PropTypes.func,
+  instrumentParams: PropTypes.object,
+  setInstrumentParams: PropTypes.func,
+  instruments: PropTypes.object,
+  effects: PropTypes.object,
 }

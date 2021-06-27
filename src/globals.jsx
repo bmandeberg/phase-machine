@@ -212,6 +212,8 @@ export function themedSwitch(component, theme, mute) {
   }
 }
 
+export const SIGNAL_TYPES = ['sine', 'square', 'triangle', 'sawtooth']
+
 export const INSTRUMENT_TYPES = {
   sine: (theme) => <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />,
   square: (theme) => <img className="wave-icon" src={themedIcon('square', theme)} alt="" />,
@@ -347,6 +349,10 @@ export const SUSTAIN_MIN = 0.2
 
 export const MAX_CHANNELS = 8
 
+export const SAMPLER_INSTRUMENTS = ['drums', 'piano', 'marimba']
+
+export const EFFECTS = ['none', 'chorus', 'distortion', 'delay', 'reverb', 'tremolo', 'vibrato']
+
 export const BLANK_PITCH_CLASSES = () => [
   false,
   false,
@@ -481,6 +487,48 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
   midiHold: false,
   customMidiOutChannel: false,
   midiOutChannel: 1,
+  instrumentParams: {
+    portamento: 0,
+    modulationType: 'square',
+    harmonicity: 1, // use set()
+    fatSpread: 20,
+    fatCount: 3,
+    pulseWidth: 0.2,
+    pwmFreq: 0.4, // 0.1 - 5
+    envAttack: 0.05,
+    envDecay: 0.1,
+    envSustain: 0.9,
+    envRelease: 1,
+    cutoff: 3000,
+    resonance: 1,
+    rolloff: -12, // -24, -48, -96
+    filterAttack: 0,
+    filterDecay: 0.2,
+    filterSustain: 0.5,
+    filterRelease: 2,
+    filterAmount: 3,
+    samplerAttack: 0,
+    samplerRelease: 0.1,
+    effectType: EFFECTS[0],
+    effectWet: 1,
+    chorusDepth: 0.5,
+    chorusDelayTime: 2.5,
+    chorusFreq: 4,
+    chorusSpread: 0,
+    chorusType: 'sine',
+    distortion: 0.8,
+    delayTime: 0.25,
+    delayFeedback: 0.5,
+    reverbDecay: 1.5,
+    reverbPreDelay: 0.01,
+    tremoloDepth: 0.75,
+    tremoloFreq: 9,
+    tremoloSpread: 0,
+    tremoloType: 'sine',
+    vibratoDepth: 0.1,
+    vibratoFreq: 5,
+    vibratoType: 'sine',
+  },
 })
 
 export const DEFAULT_PRESET = {

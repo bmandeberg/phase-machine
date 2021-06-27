@@ -435,7 +435,11 @@ export default function App() {
 }
 
 function channelCopy(c) {
-  return Object.assign({}, c, { key: c.key.slice(), seqSteps: c.seqSteps.slice() })
+  return Object.assign({}, c, {
+    key: c.key.slice(),
+    seqSteps: c.seqSteps.slice(),
+    instrumentParams: Object.assign({}, c.instrumentParams),
+  })
 }
 
 function deepStateCopy(state) {

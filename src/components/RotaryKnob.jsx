@@ -413,7 +413,6 @@ export default function RotaryKnob({
           onChange={updateValue}
           skin={activeSkin}
           unlockDistance={30}
-          preciseMode={false}
           style={knobSize}
           onStart={onStart}
           onEnd={onEnd}

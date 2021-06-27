@@ -10,6 +10,7 @@ import {
   CHANNEL_HEIGHT,
   PLAY_NOTE_BUFFER_TIME,
   MIDDLE_C,
+  SAMPLER_INSTRUMENTS,
   handleArpMode,
   noteString,
   convertMidiNumber,
@@ -126,6 +127,10 @@ export default function Channel({
   const midiHoldRef = useRef()
   const [customMidiOutChannel, setCustomMidiOutChannel] = useState(false)
   const [midiOutChannel, setMidiOutChannel] = useState(1)
+
+  // instrument params
+  const [instrumentParams, setInstrumentParams] = useState(initState.instrumentParams)
+  const instrumentParamsRef = useRef(instrumentParams)
 
   const [modalContent, setModalContent] = useState(false)
   const showModal = useCallback(() => {
@@ -287,6 +292,20 @@ export default function Channel({
         setMidiHold(channelPreset.midiHold)
         setCustomMidiOutChannel(channelPreset.customMidiOutChannel)
         setMidiOutChannel(channelPreset.midiOutChannel)
+        setInstrumentParams(channelPreset.instrumentParams)
+        setModalType(null)
+        updateInstruments(
+          synthInstrument.current,
+          [pianoInstrument.current, marimbaInstrument.current, drumsInstrument.current],
+          chorusEffect.current,
+          distortionEffect.current,
+          delayEffect.current,
+          reverbEffect.current,
+          tremoloEffect.current,
+          vibratoEffect.current,
+          channelPreset.instrumentType,
+          channelPreset.instrumentParams
+        )
       }
     }
   }, [channelPreset, seqRestart])
@@ -344,19 +363,42 @@ export default function Channel({
   const drumsInstrument = useRef()
   const pianoInstrument = useRef()
   const marimbaInstrument = useRef()
+  const chorusEffect = useRef()
+  const distortionEffect = useRef()
+  const delayEffect = useRef()
+  const reverbEffect = useRef()
+  const tremoloEffect = useRef()
+  const vibratoEffect = useRef()
 
   useEffect(() => {
-    const samplerInstruments = ['drums', 'piano', 'marimba']
     synthInstrument.current = new Tone.MonoSynth({
+      portamento: instrumentParamsRef.current.portamento,
       oscillator: {
-        type: samplerInstruments.includes(initInstrumentType.current) ? 'triangle' : initInstrumentType.current,
+        type: SAMPLER_INSTRUMENTS.includes(initInstrumentType.current) ? 'triangle' : initInstrumentType.current,
+        modulationType: instrumentParamsRef.current.modulationType,
+        harmonicity: instrumentParamsRef.current.harmonicity,
+        spread: instrumentParamsRef.current.fatSpread,
+        count: instrumentParamsRef.current.fatCount,
+        width: instrumentParamsRef.current.pulseWidth,
+        modulationFrequency: instrumentParamsRef.current.pwmFreq,
       },
       envelope: {
-        attack: 0.05,
+        attack: instrumentParamsRef.current.envAttack,
+        decay: instrumentParamsRef.current.envDecay,
+        sustain: instrumentParamsRef.current.envSustain,
+        release: instrumentParamsRef.current.envRelease,
+      },
+      filter: {
+        Q: instrumentParamsRef.current.resonance,
+        rolloff: instrumentParamsRef.current.rolloff,
       },
       filterEnvelope: {
-        attack: 0,
-        baseFrequency: 3000,
+        baseFrequency: instrumentParamsRef.current.cutoff,
+        attack: instrumentParamsRef.current.filterAttack,
+        decay: instrumentParamsRef.current.filterDecay,
+        sustain: instrumentParamsRef.current.filterSustain,
+        release: instrumentParamsRef.current.filterRelease,
+        octaves: instrumentParamsRef.current.filterAmount,
       },
     }).toDestination()
     pianoInstrument.current = new Tone.Sampler({
@@ -367,12 +409,20 @@ export default function Channel({
       },
       baseUrl: window.location.origin + '/samples/piano/',
     }).toDestination()
+    pianoInstrument.current.set({
+      attack: instrumentParamsRef.current.samplerAttack,
+      release: instrumentParamsRef.current.samplerRelease,
+    })
     marimbaInstrument.current = new Tone.Sampler({
       urls: {
         C4: 'Roland-SC-88-Marimba-C4.mp3',
       },
       baseUrl: window.location.origin + '/samples/marimba/',
     }).toDestination()
+    marimbaInstrument.current.set({
+      attack: instrumentParamsRef.current.samplerAttack,
+      release: instrumentParamsRef.current.samplerRelease,
+    })
     drumsInstrument.current = new Tone.Sampler({
       urls: {
         C1: 'Korg-N1R-Bass-Drum-2.mp3',
@@ -439,6 +489,79 @@ export default function Channel({
       },
       baseUrl: window.location.origin + '/samples/drums/',
     }).toDestination()
+    drumsInstrument.current.set({
+      attack: instrumentParamsRef.current.samplerAttack,
+      release: instrumentParamsRef.current.samplerRelease,
+    })
+    chorusEffect.current = new Tone.Chorus(
+      instrumentParamsRef.current.chorusFreq,
+      instrumentParamsRef.current.chorusDelayTime,
+      instrumentParamsRef.current.chorusDepth
+    ).toDestination()
+    chorusEffect.current.set({
+      wet: instrumentParamsRef.current.effectWet,
+      spread: instrumentParamsRef.current.chorusSpread,
+      type: instrumentParamsRef.current.chorusType,
+    })
+    distortionEffect.current = new Tone.Distortion(instrumentParamsRef.current.distortion).toDestination()
+    distortionEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
+    delayEffect.current = new Tone.FeedbackDelay(
+      instrumentParamsRef.current.delayTime,
+      instrumentParamsRef.current.delayFeedback
+    ).toDestination()
+    delayEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
+    reverbEffect.current = new Tone.Reverb(instrumentParamsRef.current.reverbDecay).toDestination()
+    reverbEffect.current.set({
+      wet: instrumentParamsRef.current.effectWet,
+      preDelay: instrumentParamsRef.current.reverbPreDelay,
+    })
+    tremoloEffect.current = new Tone.Tremolo(
+      instrumentParamsRef.current.tremoloFreq,
+      instrumentParamsRef.current.tremoloDepth
+    ).toDestination()
+    tremoloEffect.current.set({
+      wet: instrumentParamsRef.current.effectWet,
+      spread: instrumentParamsRef.current.tremoloSpread,
+      type: instrumentParamsRef.current.tremoloType,
+    })
+    vibratoEffect.current = new Tone.Vibrato(
+      instrumentParamsRef.current.vibratoFreq,
+      instrumentParamsRef.current.vibratoDepth
+    ).toDestination()
+    vibratoEffect.current.set({
+      wet: instrumentParamsRef.current.effectWet,
+      type: instrumentParamsRef.current.vibratoType,
+    })
+    let effect
+    switch (instrumentParamsRef.current.effectType) {
+      case 'chorus':
+        effect = chorusEffect.current
+        chorusEffect.current.start()
+        break
+      case 'distortion':
+        effect = distortionEffect.current
+        break
+      case 'delay':
+        effect = delayEffect.current
+        break
+      case 'reverb':
+        effect = reverbEffect.current
+        break
+      case 'tremolo':
+        effect = tremoloEffect.current
+        break
+      case 'vibrato':
+        effect = vibratoEffect.current
+        break
+      default:
+        effect = null
+    }
+    if (effect) {
+      synthInstrument.current.connect(effect)
+      pianoInstrument.current.connect(effect)
+      marimbaInstrument.current.connect(effect)
+      drumsInstrument.current.connect(effect)
+    }
     switch (initInstrumentType.current) {
       case 'piano':
         instrument.current = pianoInstrument.current
@@ -457,6 +580,12 @@ export default function Channel({
       marimbaInstrument.current.dispose()
       pianoInstrument.current.dispose()
       drumsInstrument.current.dispose()
+      chorusEffect.current.dispose()
+      distortionEffect.current.dispose()
+      delayEffect.current.dispose()
+      reverbEffect.current.dispose()
+      tremoloEffect.current.dispose()
+      vibratoEffect.current.dispose()
     }
   }, [])
 
@@ -896,6 +1025,10 @@ export default function Channel({
           setInstrumentOn={setInstrumentOn}
           instrumentType={instrumentType}
           setInstrumentType={setInstrumentType}
+          instrumentParams={instrumentParams}
+          setInstrumentParams={setInstrumentParams}
+          instruments={{ synthInstrument, pianoInstrument, marimbaInstrument, drumsInstrument }}
+          effects={{ chorusEffect, distortionEffect, delayEffect, reverbEffect, tremoloEffect, vibratoEffect }}
         />
       </CSSTransition>
     ),
@@ -904,6 +1037,7 @@ export default function Channel({
       customMidiOutChannel,
       hideModal,
       instrumentOn,
+      instrumentParams,
       instrumentType,
       midiHold,
       midiOutChannel,
@@ -992,6 +1126,7 @@ export default function Channel({
         midiHold,
         customMidiOutChannel,
         midiOutChannel,
+        instrumentParams,
       }
       setChannelState(id.current, state)
     }, debounceTime)
@@ -1001,6 +1136,7 @@ export default function Channel({
     color,
     customMidiOutChannel,
     instrumentOn,
+    instrumentParams,
     instrumentType,
     key,
     keyArpInc1,
@@ -1277,4 +1413,126 @@ Channel.propTypes = {
   hotkeyRestart: PropTypes.bool,
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
+}
+
+function updateInstruments(
+  synthInstrument,
+  samplerInstruments,
+  chorusEffect,
+  distortionEffect,
+  delayEffect,
+  reverbEffect,
+  tremoloEffect,
+  vibratoEffect,
+  instrumentType,
+  instrumentParams
+) {
+  synthInstrument.set({
+    portamento: instrumentParams.portamento,
+    oscillator: {
+      type: SAMPLER_INSTRUMENTS.includes(instrumentType) ? 'triangle' : instrumentType,
+      modulationType: instrumentParams.modulationType,
+      harmonicity: instrumentParams.harmonicity,
+      spread: instrumentParams.fatSpread,
+      count: instrumentParams.fatCount,
+      width: instrumentParams.pulseWidth,
+      modulationFrequency: instrumentParams.pwmFreq,
+    },
+    envelope: {
+      attack: instrumentParams.envAttack,
+      decay: instrumentParams.envDecay,
+      sustain: instrumentParams.envSustain,
+      release: instrumentParams.envRelease,
+    },
+    filter: {
+      Q: instrumentParams.resonance,
+      rolloff: instrumentParams.rolloff,
+    },
+    filterEnvelope: {
+      baseFrequency: instrumentParams.cutoff,
+      attack: instrumentParams.filterAttack,
+      decay: instrumentParams.filterDecay,
+      sustain: instrumentParams.filterSustain,
+      release: instrumentParams.filterRelease,
+      octaves: instrumentParams.filterAmount,
+    },
+  })
+  chorusEffect.set({
+    wet: instrumentParams.effectWet,
+    depth: instrumentParams.chorusDepth,
+    delayTime: instrumentParams.chorusDelayTime,
+    frequency: instrumentParams.chorusFreq,
+    spread: instrumentParams.chorusSpread,
+    type: instrumentParams.chorusType,
+  })
+  distortionEffect.set({
+    wet: instrumentParams.effectWet,
+    distortion: instrumentParams.distortion,
+  })
+  delayEffect.set({
+    wet: instrumentParams.effectWet,
+    delayTime: instrumentParams.delayTime,
+    feedback: instrumentParams.delayFeedback,
+  })
+  reverbEffect.set({
+    wet: instrumentParams.effectWet,
+    decay: instrumentParams.reverbDecay,
+    preDelay: instrumentParams.reverbPreDelay,
+  })
+  tremoloEffect.set({
+    wet: instrumentParams.effectWet,
+    depth: instrumentParams.tremoloDepth,
+    frequency: instrumentParams.tremoloFreq,
+    spread: instrumentParams.tremoloSpread,
+    type: instrumentParams.tremoloType,
+  })
+  vibratoEffect.set({
+    wet: instrumentParams.effectWet,
+    depth: instrumentParams.vibratoDepth,
+    frequency: instrumentParams.vibratoFreq,
+    type: instrumentParams.vibratoType,
+  })
+  let effect
+  switch (instrumentParams.effectType) {
+    case 'chorus':
+      effect = chorusEffect
+      chorusEffect.start()
+      break
+    case 'distortion':
+      effect = distortionEffect
+      break
+    case 'delay':
+      effect = delayEffect
+      break
+    case 'reverb':
+      effect = reverbEffect
+      break
+    case 'tremolo':
+      effect = tremoloEffect
+      break
+    case 'vibrato':
+      effect = vibratoEffect
+      break
+    default:
+      effect = null
+  }
+  if (effect) {
+    synthInstrument.connect(effect)
+  } else {
+    synthInstrument.toDestination()
+  }
+  if (effect !== 'chorus') {
+    chorusEffect.stop()
+  }
+  samplerInstruments.forEach((sampler) => {
+    sampler.set({
+      attack: instrumentParams.samplerAttack,
+      release: instrumentParams.samplerRelease,
+    })
+    if (effect) {
+      sampler.connect(effect)
+    } else {
+      sampler.toDestination()
+    }
+  })
 }

@@ -63,9 +63,16 @@ export default function LinearKnob({
     return Object.assign({ width: 50, height: 50, position: 'relative', overflow: 'hidden' }, style)
   }, [style])
 
+  const knobHTML = useMemo(() => {
+    if (svg) {
+      return parse(svg.innerHTML)
+    }
+    return null
+  }, [svg])
+
   return (
     <div className={className} style={knobStyle} draggable="false" {...drag()}>
-      {svg && parse(svg.innerHTML)}
+      {knobHTML}
     </div>
   )
 }

@@ -66,10 +66,17 @@ export default function usePresets(
             const presetChannel = currentPreset[param][i]
             for (const channelParam in channel) {
               if (channel.hasOwnProperty(channelParam) && channelParam !== 'id') {
-                // compare arrays
                 if (['key', 'seqSteps', 'keybdPitches'].some((s) => s === channelParam)) {
+                  // compare arrays
                   for (let j = 0; j < channel[channelParam].length; j++) {
                     if (channel[channelParam][j] !== presetChannel[channelParam][j]) {
+                      return true
+                    }
+                  }
+                } else if (channelParam === 'instrumentParams') {
+                  // compare objects
+                  for (const key in channel[channelParam]) {
+                    if (channel[channelParam][key] !== presetChannel[channelParam][key]) {
                       return true
                     }
                   }
@@ -249,8 +256,52 @@ export default function usePresets(
       ) {
         return false
       }
-      return true
+      if (
+        invalidProp(channel.instrumentParams, 'portamento', 'number') ||
+        invalidProp(channel.instrumentParams, 'modulationType', 'string') ||
+        invalidProp(channel.instrumentParams, 'harmonicity', 'number') ||
+        invalidProp(channel.instrumentParams, 'fatSpread', 'number') ||
+        invalidProp(channel.instrumentParams, 'fatCount', 'number') ||
+        invalidProp(channel.instrumentParams, 'pulseWidth', 'number') ||
+        invalidProp(channel.instrumentParams, 'pwmFreq', 'number') ||
+        invalidProp(channel.instrumentParams, 'envAttack', 'number') ||
+        invalidProp(channel.instrumentParams, 'envDecay', 'number') ||
+        invalidProp(channel.instrumentParams, 'envSustain', 'number') ||
+        invalidProp(channel.instrumentParams, 'envRelease', 'number') ||
+        invalidProp(channel.instrumentParams, 'cutoff', 'number') ||
+        invalidProp(channel.instrumentParams, 'resonance', 'number') ||
+        invalidProp(channel.instrumentParams, 'rolloff', 'number') ||
+        invalidProp(channel.instrumentParams, 'filterAttack', 'number') ||
+        invalidProp(channel.instrumentParams, 'filterDecay', 'number') ||
+        invalidProp(channel.instrumentParams, 'filterSustain', 'number') ||
+        invalidProp(channel.instrumentParams, 'filterRelease', 'number') ||
+        invalidProp(channel.instrumentParams, 'filterAmount', 'number') ||
+        invalidProp(channel.instrumentParams, 'samplerAttack', 'number') ||
+        invalidProp(channel.instrumentParams, 'samplerRelease', 'number') ||
+        invalidProp(channel.instrumentParams, 'effectType', 'string') ||
+        invalidProp(channel.instrumentParams, 'effectWet', 'number') ||
+        invalidProp(channel.instrumentParams, 'chorusDepth', 'number') ||
+        invalidProp(channel.instrumentParams, 'chorusDelayTime', 'number') ||
+        invalidProp(channel.instrumentParams, 'chorusFreq', 'number') ||
+        invalidProp(channel.instrumentParams, 'chorusSpread', 'number') ||
+        invalidProp(channel.instrumentParams, 'chorusType', 'string') ||
+        invalidProp(channel.instrumentParams, 'distortion', 'number') ||
+        invalidProp(channel.instrumentParams, 'delayTime', 'number') ||
+        invalidProp(channel.instrumentParams, 'delayFeedback', 'number') ||
+        invalidProp(channel.instrumentParams, 'reverbDecay', 'number') ||
+        invalidProp(channel.instrumentParams, 'reverbPreDelay', 'number') ||
+        invalidProp(channel.instrumentParams, 'tremoloDepth', 'number') ||
+        invalidProp(channel.instrumentParams, 'tremoloFreq', 'number') ||
+        invalidProp(channel.instrumentParams, 'tremoloSpread', 'number') ||
+        invalidProp(channel.instrumentParams, 'tremoloType', 'string') ||
+        invalidProp(channel.instrumentParams, 'vibratoDepth', 'number') ||
+        invalidProp(channel.instrumentParams, 'vibratoFreq', 'number') ||
+        invalidProp(channel.instrumentParams, 'vibratoType', 'string')
+      ) {
+        return false
+      }
     }
+    return true
   }, [])
 
   const importPresets = useCallback(
