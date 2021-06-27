@@ -11,4 +11,29 @@
     pointer-events: none;
     cursor: auto;
   }
+  .controls-row {
+    border-top: 1px solid $lightMediumGray;
+  }
+  .controls-module {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    border-right: 1px solid $lightMediumGray;
+    &:last-of-type {
+      border-right: none;
+    }
+  }
+  .controls-label {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+  .effects-controls {
+    position: relative;
+  }
+  .knob-container {
+    margin-top: 0;
+  }
 }

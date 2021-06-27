@@ -1006,6 +1006,18 @@ export default function Channel({
     openInstrumentModal
   )
 
+  const instruments = useMemo(() => ({ synthInstrument, pianoInstrument, marimbaInstrument, drumsInstrument }), [])
+  const effects = useMemo(
+    () => ({
+      chorusEffect,
+      distortionEffect,
+      delayEffect,
+      reverbEffect,
+      tremoloEffect,
+      vibratoEffect,
+    }),
+    []
+  )
   const modalEl = useMemo(
     () => (
       <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>
@@ -1027,22 +1039,30 @@ export default function Channel({
           setInstrumentType={setInstrumentType}
           instrumentParams={instrumentParams}
           setInstrumentParams={setInstrumentParams}
-          instruments={{ synthInstrument, pianoInstrument, marimbaInstrument, drumsInstrument }}
-          effects={{ chorusEffect, distortionEffect, delayEffect, reverbEffect, tremoloEffect, vibratoEffect }}
+          instruments={instruments}
+          effects={effects}
+          grabbing={grabbing}
+          setGrabbing={setGrabbing}
+          linearKnobs={linearKnobs}
         />
       </CSSTransition>
     ),
     [
       channelNum,
       customMidiOutChannel,
+      effects,
+      grabbing,
       hideModal,
       instrumentOn,
       instrumentParams,
       instrumentType,
+      instruments,
+      linearKnobs,
       midiHold,
       midiOutChannel,
       modalContent,
       modalType,
+      setGrabbing,
       showModal,
       theme,
     ]

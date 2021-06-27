@@ -68,7 +68,7 @@ export default function LinearKnob({
       return parse(svg.innerHTML)
     }
     return null
-  }, [svg])
+  }, [value, svg, forceUpdate])
 
   return (
     <div className={className} style={knobStyle} draggable="false" {...drag()}>

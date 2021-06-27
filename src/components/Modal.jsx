@@ -34,6 +34,8 @@ export default function Modal({
   setInstrumentParams,
   instruments,
   effects,
+  grabbing,
+  setGrabbing,
 }) {
   const modalTypeRef = useRef()
 
@@ -94,6 +96,9 @@ export default function Modal({
                 instruments={instruments}
                 effects={effects}
                 theme={theme}
+                grabbing={grabbing}
+                setGrabbing={setGrabbing}
+                linearKnobs={linearKnobs}
               />
             )}
           </div>
@@ -131,4 +136,6 @@ Modal.propTypes = {
   setInstrumentParams: PropTypes.func,
   instruments: PropTypes.object,
   effects: PropTypes.object,
+  grabbing: PropTypes.bool,
+  setGrabbing: PropTypes.func,
 }
