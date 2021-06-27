@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Instrument from './Instrument'
 import { SAMPLER_INSTRUMENTS } from '../globals'
@@ -60,83 +60,194 @@ export default function InstrumentModal({
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
   const [vibratoType, setVibratoType] = useState(instrumentParams.vibratoType)
 
+  const instrumentParamsDebounce = useRef()
+  const updateInstrumentParams = useCallback(() => {
+    clearTimeout(instrumentParamsDebounce.current)
+    const debounceTime = 200
+    instrumentParamsDebounce.current = setTimeout(() => {
+      setInstrumentParams({
+        portamento,
+        modulationType,
+        harmonicity,
+        fatSpread,
+        fatCount,
+        pulseWidth,
+        pwmFreq,
+        envAttack,
+        envDecay,
+        envSustain,
+        envRelease,
+        cutoff,
+        resonance,
+        rolloff,
+        filterAttack,
+        filterDecay,
+        filterSustain,
+        filterRelease,
+        filterAmount,
+        samplerAttack,
+        samplerRelease,
+        effectType,
+        effectWet,
+        chorusDepth,
+        chorusDelayTime,
+        chorusFreq,
+        chorusSpread,
+        chorusType,
+        distortion,
+        delayTime,
+        delayFeedback,
+        reverbDecay,
+        reverbPreDelay,
+        tremoloDepth,
+        tremoloFreq,
+        tremoloSpread,
+        tremoloType,
+        vibratoDepth,
+        vibratoFreq,
+        vibratoType,
+      })
+    }, debounceTime)
+  }, [
+    chorusDelayTime,
+    chorusDepth,
+    chorusFreq,
+    chorusSpread,
+    chorusType,
+    cutoff,
+    delayFeedback,
+    delayTime,
+    distortion,
+    effectType,
+    effectWet,
+    envAttack,
+    envDecay,
+    envRelease,
+    envSustain,
+    fatCount,
+    fatSpread,
+    filterAmount,
+    filterAttack,
+    filterDecay,
+    filterRelease,
+    filterSustain,
+    harmonicity,
+    modulationType,
+    portamento,
+    pulseWidth,
+    pwmFreq,
+    resonance,
+    reverbDecay,
+    reverbPreDelay,
+    rolloff,
+    samplerAttack,
+    samplerRelease,
+    setInstrumentParams,
+    tremoloDepth,
+    tremoloFreq,
+    tremoloSpread,
+    tremoloType,
+    vibratoDepth,
+    vibratoFreq,
+    vibratoType,
+  ])
+
   // update synth params
 
   useEffect(() => {
     instruments.synthInstrument.current.portamento = portamento
-  }, [instruments.synthInstrument, portamento])
+    updateInstrumentParams()
+  }, [instruments.synthInstrument, portamento, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.oscillator.modulationType = modulationType
-  }, [instruments.synthInstrument, modulationType])
+    updateInstrumentParams()
+  }, [instruments.synthInstrument, modulationType, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.oscillator.set({ harmonicity })
-  }, [harmonicity, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [harmonicity, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.oscillator.spread = fatSpread
-  }, [fatSpread, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [fatSpread, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.oscillator.count = fatCount
-  }, [fatCount, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [fatCount, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.oscillator.set({ width: pulseWidth })
-  }, [instruments.synthInstrument, pulseWidth])
+    updateInstrumentParams()
+  }, [instruments.synthInstrument, pulseWidth, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.oscillator.set({ modulationFrequency: pwmFreq })
-  }, [instruments.synthInstrument, pwmFreq])
+    updateInstrumentParams()
+  }, [instruments.synthInstrument, pwmFreq, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.envelope.attack = envAttack
-  }, [envAttack, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [envAttack, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.envelope.decay = envDecay
-  }, [envDecay, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [envDecay, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.envelope.sustain = envSustain
-  }, [envSustain, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [envSustain, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.envelope.release = envRelease
-  }, [envRelease, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [envRelease, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filter.set({ Q: resonance })
-  }, [instruments.synthInstrument, resonance])
+    updateInstrumentParams()
+  }, [instruments.synthInstrument, resonance, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filter.rolloff = rolloff
-  }, [instruments.synthInstrument, rolloff])
+    updateInstrumentParams()
+  }, [instruments.synthInstrument, rolloff, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filterEnvelope.baseFrequency = cutoff
-  }, [cutoff, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [cutoff, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filterEnvelope.attack = filterAttack
-  }, [filterAttack, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [filterAttack, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filterEnvelope.decay = filterDecay
-  }, [filterDecay, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [filterDecay, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filterEnvelope.sustain = filterSustain
-  }, [filterSustain, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [filterSustain, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filterEnvelope.release = filterRelease
-  }, [filterRelease, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [filterRelease, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.filterEnvelope.octaves = filterAmount
-  }, [filterAmount, instruments.synthInstrument])
+    updateInstrumentParams()
+  }, [filterAmount, instruments.synthInstrument, updateInstrumentParams])
 
   // update sampler params
 
@@ -144,13 +255,27 @@ export default function InstrumentModal({
     instruments.pianoInstrument.current.attack = samplerAttack
     instruments.marimbaInstrument.current.attack = samplerAttack
     instruments.drumsInstrument.current.attack = samplerAttack
-  }, [instruments.drumsInstrument, instruments.marimbaInstrument, instruments.pianoInstrument, samplerAttack])
+    updateInstrumentParams()
+  }, [
+    instruments.drumsInstrument,
+    instruments.marimbaInstrument,
+    instruments.pianoInstrument,
+    samplerAttack,
+    updateInstrumentParams,
+  ])
 
   useEffect(() => {
     instruments.pianoInstrument.current.release = samplerRelease
     instruments.marimbaInstrument.current.release = samplerRelease
     instruments.drumsInstrument.current.release = samplerRelease
-  }, [instruments.drumsInstrument, instruments.marimbaInstrument, instruments.pianoInstrument, samplerRelease])
+    updateInstrumentParams()
+  }, [
+    instruments.drumsInstrument,
+    instruments.marimbaInstrument,
+    instruments.pianoInstrument,
+    samplerRelease,
+    updateInstrumentParams,
+  ])
 
   // update effect params
 
@@ -194,6 +319,7 @@ export default function InstrumentModal({
       instruments.marimbaInstrument.current.toDestination()
       instruments.drumsInstrument.current.toDestination()
     }
+    updateInstrumentParams()
   }, [
     effectType,
     effects.chorusEffect,
@@ -206,81 +332,100 @@ export default function InstrumentModal({
     instruments.marimbaInstrument,
     instruments.pianoInstrument,
     instruments.synthInstrument,
+    updateInstrumentParams,
   ])
 
   useEffect(() => {
     Object.values(effects).forEach((effect) => {
       effect.current.set({ wet: effectWet })
     })
-  }, [effectWet, effects])
+    updateInstrumentParams()
+  }, [effectWet, effects, updateInstrumentParams])
 
   useEffect(() => {
     effects.chorusEffect.current.depth = chorusDepth
-  }, [chorusDepth, effects.chorusEffect])
+    updateInstrumentParams()
+  }, [chorusDepth, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.chorusEffect.current.delayTime = chorusDelayTime
-  }, [chorusDelayTime, effects.chorusEffect])
+    updateInstrumentParams()
+  }, [chorusDelayTime, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.chorusEffect.current.set({ frequency: chorusFreq })
-  }, [chorusFreq, effects.chorusEffect])
+    updateInstrumentParams()
+  }, [chorusFreq, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.chorusEffect.current.spread = chorusSpread
-  }, [chorusSpread, effects.chorusEffect])
+    updateInstrumentParams()
+  }, [chorusSpread, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.chorusEffect.current.type = chorusType
-  }, [chorusType, effects.chorusEffect])
+    updateInstrumentParams()
+  }, [chorusType, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.distortionEffect.current.distortion = distortion
-  }, [distortion, effects.distortionEffect])
+    updateInstrumentParams()
+  }, [distortion, effects.distortionEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.delayEffect.current.set({ delayTime })
-  }, [delayTime, effects.delayEffect])
+    updateInstrumentParams()
+  }, [delayTime, effects.delayEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.delayEffect.current.set({ feedback: delayFeedback })
-  }, [delayFeedback, effects.delayEffect])
+    updateInstrumentParams()
+  }, [delayFeedback, effects.delayEffect, updateInstrumentParams])
 
   useEffect(() => {
     effects.reverbEffect.current.decay = reverbDecay
-  }, [effects.reverbEffect, reverbDecay])
+    updateInstrumentParams()
+  }, [effects.reverbEffect, reverbDecay, updateInstrumentParams])
 
   useEffect(() => {
     effects.reverbEffect.current.preDelay = reverbPreDelay
-  }, [effects.reverbEffect, reverbPreDelay])
+    updateInstrumentParams()
+  }, [effects.reverbEffect, reverbPreDelay, updateInstrumentParams])
 
   useEffect(() => {
     effects.tremoloEffect.current.set({ depth: tremoloDepth })
-  }, [effects.tremoloEffect, tremoloDepth])
+    updateInstrumentParams()
+  }, [effects.tremoloEffect, tremoloDepth, updateInstrumentParams])
 
   useEffect(() => {
     effects.tremoloEffect.current.set({ frequency: tremoloFreq })
-  }, [effects.tremoloEffect, tremoloFreq])
+    updateInstrumentParams()
+  }, [effects.tremoloEffect, tremoloFreq, updateInstrumentParams])
 
   useEffect(() => {
     effects.tremoloEffect.current.spread = tremoloSpread
-  }, [effects.tremoloEffect, tremoloSpread])
+    updateInstrumentParams()
+  }, [effects.tremoloEffect, tremoloSpread, updateInstrumentParams])
 
   useEffect(() => {
     effects.tremoloEffect.current.type = tremoloType
-  }, [effects.tremoloEffect, tremoloType])
+    updateInstrumentParams()
+  }, [effects.tremoloEffect, tremoloType, updateInstrumentParams])
 
   useEffect(() => {
     effects.vibratoEffect.current.set({ depth: vibratoDepth })
-  }, [effects.vibratoEffect, vibratoDepth])
+    updateInstrumentParams()
+  }, [effects.vibratoEffect, updateInstrumentParams, vibratoDepth])
 
   useEffect(() => {
     effects.vibratoEffect.current.set({ frequency: vibratoFreq })
-  }, [effects.vibratoEffect, vibratoFreq])
+    updateInstrumentParams()
+  }, [effects.vibratoEffect, updateInstrumentParams, vibratoFreq])
 
   useEffect(() => {
     effects.vibratoEffect.current.type = vibratoType
-  }, [effects.vibratoEffect, vibratoType])
+    updateInstrumentParams()
+  }, [effects.vibratoEffect, updateInstrumentParams, vibratoType])
 
   const samplerInstrument = useMemo(() => SAMPLER_INSTRUMENTS.includes(instrumentType), [instrumentType])
 
