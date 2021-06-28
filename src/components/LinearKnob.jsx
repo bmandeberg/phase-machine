@@ -18,21 +18,12 @@ export default function LinearKnob({
   rotateDegrees,
 }) {
   const [svg, setSVG] = useState()
-  const [forceUpdate, setForceUpdate] = useState(false)
 
   useEffect(() => {
     const container = document.createElement('div')
     container.innerHTML = skin.svg
     setSVG(container)
   }, [skin])
-
-  useEffect(() => {
-    if (svg) {
-      const rotation = rotateDegrees + ((value - min) / (max - min)) * clampMax
-      svg.querySelector('#knob').setAttribute('transform', `rotate(${rotation}, ${skin.knobX}, ${skin.knobY})`)
-      setForceUpdate((forceUpdate) => !forceUpdate)
-    }
-  }, [clampMax, max, min, rotateDegrees, skin, svg, value])
 
   const valueRef = useRef()
   const drag = useGesture({
@@ -65,10 +56,12 @@ export default function LinearKnob({
 
   const knobHTML = useMemo(() => {
     if (svg) {
+      const rotation = rotateDegrees + ((value - min) / (max - min)) * clampMax
+      svg.querySelector('#knob').setAttribute('transform', `rotate(${rotation}, ${skin.knobX}, ${skin.knobY})`)
       return parse(svg.innerHTML)
     }
     return null
-  }, [value, svg, forceUpdate])
+  }, [svg, rotateDegrees, value, min, max, clampMax, skin])
 
   return (
     <div className={className} style={knobStyle} draggable="false" {...drag()}>
