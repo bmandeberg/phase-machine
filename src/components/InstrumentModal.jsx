@@ -55,7 +55,6 @@ export default function InstrumentModal({
   const [chorusDelayTime, setChorusDelayTime] = useState(instrumentParams.chorusDelayTime)
   const [chorusFreq, setChorusFreq] = useState(instrumentParams.chorusFreq)
   const [chorusSpread, setChorusSpread] = useState(instrumentParams.chorusSpread)
-  const [chorusType, setChorusType] = useState(instrumentParams.chorusType)
   const [distortion, setDistortion] = useState(instrumentParams.distortion)
   const [syncDelayTime, setSyncDelayTime] = useState(false)
   const [delayTime, setDelayTime] = useState(instrumentParams.delayTime)
@@ -64,7 +63,6 @@ export default function InstrumentModal({
   const [reverbPreDelay, setReverbPreDelay] = useState(instrumentParams.reverbPreDelay)
   const [vibratoDepth, setVibratoDepth] = useState(instrumentParams.vibratoDepth)
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
-  const [vibratoType, setVibratoType] = useState(instrumentParams.vibratoType)
 
   const effectRef = useRef()
 
@@ -300,11 +298,6 @@ export default function InstrumentModal({
   }, [chorusSpread, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
-    effects.chorusEffect.current.type = chorusType
-    updateInstrumentParams('chorusType', chorusType)
-  }, [chorusType, effects.chorusEffect, updateInstrumentParams])
-
-  useEffect(() => {
     effects.distortionEffect.current.distortion = distortion
     updateInstrumentParams('distortion', distortion)
   }, [distortion, effects.distortionEffect, updateInstrumentParams])
@@ -338,11 +331,6 @@ export default function InstrumentModal({
     effects.vibratoEffect.current.set({ frequency: vibratoFreq })
     updateInstrumentParams('vibratoFreq', vibratoFreq)
   }, [effects.vibratoEffect, updateInstrumentParams, vibratoFreq])
-
-  useEffect(() => {
-    effects.vibratoEffect.current.type = vibratoType
-    updateInstrumentParams('vibratoType', vibratoType)
-  }, [effects.vibratoEffect, updateInstrumentParams, vibratoType])
 
   const samplerInstrument = useMemo(() => SAMPLER_INSTRUMENTS.includes(instrumentType), [instrumentType])
 
@@ -759,13 +747,6 @@ export default function InstrumentModal({
                   linearKnobs={linearKnobs}
                   theme={theme}
                 />
-                <Dropdn
-                  className="instrument-item"
-                  label="Modulation"
-                  options={SIGNAL_TYPES}
-                  setValue={setChorusType}
-                  value={chorusType}
-                />
                 <RotaryKnob
                   className="instrument-item"
                   min={0}
@@ -922,13 +903,6 @@ export default function InstrumentModal({
                   mute={false}
                   linearKnobs={linearKnobs}
                   theme={theme}
-                />
-                <Dropdn
-                  className="instrument-item"
-                  label="Modulation"
-                  options={SIGNAL_TYPES}
-                  setValue={setVibratoType}
-                  value={vibratoType}
                 />
               </div>
             )}

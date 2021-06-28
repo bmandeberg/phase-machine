@@ -283,15 +283,13 @@ export default function usePresets(
         invalidProp(channel.instrumentParams, 'chorusDelayTime', 'number') ||
         invalidProp(channel.instrumentParams, 'chorusFreq', 'number') ||
         invalidProp(channel.instrumentParams, 'chorusSpread', 'number') ||
-        invalidProp(channel.instrumentParams, 'chorusType', 'string') ||
         invalidProp(channel.instrumentParams, 'distortion', 'number') ||
         invalidProp(channel.instrumentParams, 'delayTime', 'number') ||
         invalidProp(channel.instrumentParams, 'delayFeedback', 'number') ||
         invalidProp(channel.instrumentParams, 'reverbDecay', 'number') ||
         invalidProp(channel.instrumentParams, 'reverbPreDelay', 'number') ||
         invalidProp(channel.instrumentParams, 'vibratoDepth', 'number') ||
-        invalidProp(channel.instrumentParams, 'vibratoFreq', 'number') ||
-        invalidProp(channel.instrumentParams, 'vibratoType', 'string')
+        invalidProp(channel.instrumentParams, 'vibratoFreq', 'number')
       ) {
         return false
       }

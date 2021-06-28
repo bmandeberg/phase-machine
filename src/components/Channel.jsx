@@ -501,7 +501,6 @@ export default function Channel({
     chorusEffect.current.set({
       wet: instrumentParamsRef.current.effectWet,
       spread: instrumentParamsRef.current.chorusSpread,
-      type: instrumentParamsRef.current.chorusType,
     })
     distortionEffect.current = new Tone.Distortion(instrumentParamsRef.current.distortion).toDestination()
     distortionEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
@@ -521,7 +520,6 @@ export default function Channel({
     ).toDestination()
     vibratoEffect.current.set({
       wet: instrumentParamsRef.current.effectWet,
-      type: instrumentParamsRef.current.vibratoType,
     })
     let effect
     switch (instrumentParamsRef.current.effectType) {
@@ -1498,7 +1496,6 @@ function updateInstruments(
     delayTime: instrumentParams.chorusDelayTime,
     frequency: instrumentParams.chorusFreq,
     spread: instrumentParams.chorusSpread,
-    type: instrumentParams.chorusType,
   })
   distortionEffect.set({
     wet: instrumentParams.effectWet,
@@ -1518,7 +1515,6 @@ function updateInstruments(
     wet: instrumentParams.effectWet,
     depth: instrumentParams.vibratoDepth,
     frequency: instrumentParams.vibratoFreq,
-    type: instrumentParams.vibratoType,
   })
   let effect
   switch (instrumentParams.effectType) {

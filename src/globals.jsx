@@ -515,7 +515,6 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
     chorusDelayTime: 2.5,
     chorusFreq: 4,
     chorusSpread: 0,
-    chorusType: 'sine',
     distortion: 1,
     delayTime: 0.25,
     delayFeedback: 0.5,
@@ -523,7 +522,6 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
     reverbPreDelay: 0.01,
     vibratoDepth: 0.1,
     vibratoFreq: 5,
-    vibratoType: 'sine',
   },
 })
 
