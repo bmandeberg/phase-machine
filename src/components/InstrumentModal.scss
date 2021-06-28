@@ -1,6 +1,11 @@
 @import '../sass-globals.scss';
 
 .instrument-modal {
+  width: 644px;
+  height: 400px;
+  .instrument-controls {
+    margin-top: 20px;
+  }
   .instrument {
     margin-top: 0;
   }
@@ -15,19 +20,38 @@
     border-top: 1px solid $lightMediumGray;
   }
   .controls-module {
+    padding-top: 25px;
+    padding-left: 10px;
+    padding-bottom: 5px;
     position: relative;
     display: inline-block;
     vertical-align: top;
     border-right: 1px solid $lightMediumGray;
+    &:first-of-type {
+      padding-left: 0;
+      padding-right: 5px;
+      .controls-label {
+        left: 0;
+      }
+    }
     &:last-of-type {
       border-right: none;
     }
+  }
+  .controls-aux {
+    display: inline-block;
+    vertical-align: top;
+  }
+  .instrument-item {
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: top;
   }
   .controls-label {
     position: absolute;
     top: 5px;
     left: 5px;
-    font-size: 14px;
+    font-size: 16px;
     text-transform: uppercase;
   }
   .effects-controls {
@@ -35,5 +59,29 @@
   }
   .knob-container {
     margin-top: 0;
+  }
+  .dropdown-container {
+    margin-top: 13px;
+    min-width: 66px;
+  }
+  .num-input {
+    margin-top: 13px !important;
+    .num-input-label {
+      display: block !important;
+      margin-top: 13px;
+    }
+  }
+  .switch-container {
+    margin-top: 12px;
+  }
+  .envelope-controls {
+    .knob-container {
+      width: 66px;
+    }
+  }
+  .effects-controls {
+    .knob-container {
+      min-width: 62px;
+    }
   }
 }

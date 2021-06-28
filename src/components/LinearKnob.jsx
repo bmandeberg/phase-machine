@@ -24,7 +24,7 @@ export default function LinearKnob({
     const container = document.createElement('div')
     container.innerHTML = skin.svg
     setSVG(container)
-  }, [rotateDegrees, skin])
+  }, [skin])
 
   useEffect(() => {
     if (svg) {

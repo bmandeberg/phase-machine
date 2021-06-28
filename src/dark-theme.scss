@@ -102,6 +102,12 @@ $headerDarkBlue: #0f182d;
     }
   }
 
+  .instrument-modal {
+    .controls-row, .controls-module {
+      border-color: $darkMediumGray;
+    }
+  }
+
   .switch-label {
     &.selected {
       color: $darkGreen;

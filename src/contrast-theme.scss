@@ -100,6 +100,12 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     border-right: 1px solid $darkBackground;
   }
 
+  .instrument-modal {
+    .controls-row, .controls-module {
+      border-color: $lightMediumGray;
+    }
+  }
+
   .switch-label {
     &.selected {
       color: $green;

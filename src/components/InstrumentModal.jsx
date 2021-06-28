@@ -2,8 +2,14 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Instrument from './Instrument'
 import RotaryKnob from './RotaryKnob'
-import { SAMPLER_INSTRUMENTS } from '../globals'
+import Dropdn from './Dropdn'
+import NumInput from './NumInput'
+import Switch from 'react-switch'
+import { SAMPLER_INSTRUMENTS, SIGNAL_TYPES, EFFECTS, themedSwitch, RATES } from '../globals'
+import * as Tone from 'tone'
 import './InstrumentModal.scss'
+
+const rolloffOptions = ['-12', '-24', '-48', '-96']
 
 export default function InstrumentModal({
   instrumentOn,
@@ -33,7 +39,7 @@ export default function InstrumentModal({
   const [envRelease, setEnvRelease] = useState(instrumentParams.envRelease)
   const [cutoff, setCutoff] = useState(instrumentParams.cutoff)
   const [resonance, setResonance] = useState(instrumentParams.resonance)
-  const [rolloff, setRollof] = useState(instrumentParams.rolloff)
+  const [rolloff, setRolloff] = useState(instrumentParams.rolloff)
   const [filterAttack, setFilterAttack] = useState(instrumentParams.filterAttack)
   const [filterDecay, setFilterDecay] = useState(instrumentParams.filterDecay)
   const [filterSustain, setFilterSustain] = useState(instrumentParams.filterSustain)
@@ -63,6 +69,26 @@ export default function InstrumentModal({
   const [vibratoDepth, setVibratoDepth] = useState(instrumentParams.vibratoDepth)
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
   const [vibratoType, setVibratoType] = useState(instrumentParams.vibratoType)
+
+  const rolloffString = useMemo(() => `${rolloff}`, [rolloff])
+  const updateRolloff = useCallback((r) => {
+    setRolloff(+r)
+  }, [])
+
+  const setSyncedDelay = useCallback((rate) => {
+    setDelayTime(Tone.Transport.toSeconds(rate))
+  }, [])
+  const syncedDelayOptions = useMemo(() => {
+    return RATES.filter((rate) => Tone.Transport.toSeconds(rate) <= 1)
+  }, [])
+  const syncedDelay = useMemo(() => {
+    for (let i = 0; i < RATES.length; i++) {
+      if (delayTime === Tone.Transport.toSeconds(RATES[i])) {
+        return RATES[i]
+      }
+    }
+    return null
+  }, [delayTime])
 
   const instrumentParamsDebounce = useRef()
   const updateInstrumentParams = useCallback(
@@ -353,6 +379,11 @@ export default function InstrumentModal({
 
   const samplerInstrument = useMemo(() => SAMPLER_INSTRUMENTS.includes(instrumentType), [instrumentType])
 
+  const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
+  const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
+  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
+  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+
   return (
     <div className="instrument-modal">
       <div className="instrument-type">
@@ -375,6 +406,7 @@ export default function InstrumentModal({
               <div className="controls-module">
                 <p className="controls-label">Oscillator</p>
                 <RotaryKnob
+                  className="instrument-item"
                   min={0}
                   max={1}
                   value={portamento}
@@ -387,24 +419,605 @@ export default function InstrumentModal({
                   linearKnobs={linearKnobs}
                   theme={theme}
                 />
+                {(instrumentType.startsWith('am') || instrumentType.startsWith('fm')) && (
+                  <div className="controls-aux">
+                    <Dropdn
+                      className="instrument-item"
+                      label="Modulation"
+                      options={SIGNAL_TYPES}
+                      setValue={setModulationType}
+                      value={modulationType}
+                    />
+                    <RotaryKnob
+                      className="instrument-item"
+                      min={0}
+                      max={2}
+                      value={harmonicity}
+                      setValue={setHarmonicity}
+                      label="Harmonicity"
+                      setGrabbing={setGrabbing}
+                      grabbing={grabbing}
+                      inline={false}
+                      mute={false}
+                      linearKnobs={linearKnobs}
+                      theme={theme}
+                    />
+                  </div>
+                )}
+                {instrumentType.startsWith('fat') && (
+                  <div className="controls-aux">
+                    <RotaryKnob
+                      className="instrument-item"
+                      min={10}
+                      max={40}
+                      value={fatSpread}
+                      setValue={setFatSpread}
+                      label="Spread"
+                      setGrabbing={setGrabbing}
+                      grabbing={grabbing}
+                      inline={false}
+                      mute={false}
+                      linearKnobs={linearKnobs}
+                      theme={theme}
+                    />
+                    <NumInput
+                      className="instrument-item"
+                      value={fatCount}
+                      setValue={setFatCount}
+                      label="# Osc"
+                      min={2}
+                      max={5}
+                      inline={false}
+                      short={false}
+                    />
+                  </div>
+                )}
+                {instrumentType === 'pulse' && (
+                  <div className="controls-aux">
+                    <RotaryKnob
+                      className="instrument-item"
+                      min={-0.5}
+                      max={0.5}
+                      value={pulseWidth}
+                      setValue={setPulseWidth}
+                      label="Pulse Width"
+                      setGrabbing={setGrabbing}
+                      grabbing={grabbing}
+                      inline={false}
+                      mute={false}
+                      linearKnobs={linearKnobs}
+                      theme={theme}
+                    />
+                  </div>
+                )}
+                {instrumentType === 'pwm' && (
+                  <div className="controls-aux">
+                    <RotaryKnob
+                      className="instrument-item"
+                      min={0.1}
+                      max={5}
+                      value={pwmFreq}
+                      setValue={setPwmFreq}
+                      label="PWM Freq"
+                      setGrabbing={setGrabbing}
+                      grabbing={grabbing}
+                      inline={false}
+                      mute={false}
+                      linearKnobs={linearKnobs}
+                      theme={theme}
+                    />
+                  </div>
+                )}
               </div>
-              <div className="controls-module">
-                <p className="controls-label">Filter</p>
+              <div className="controls-module envelope-controls">
+                <p className="controls-label">Envelope</p>
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={envAttack}
+                  setValue={setEnvAttack}
+                  label="Attack"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={envDecay}
+                  setValue={setEnvDecay}
+                  label="Decay"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={envSustain}
+                  setValue={setEnvSustain}
+                  label="Sustain"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={4}
+                  value={envRelease}
+                  setValue={setEnvRelease}
+                  label="Release"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
               </div>
             </div>
             <div className="controls-row">
               <div className="controls-module">
-                <p className="controls-label">Envelope</p>
+                <p className="controls-label">Filter</p>
+                <RotaryKnob
+                  className="instrument-item"
+                  min={100}
+                  max={6000}
+                  value={cutoff}
+                  setValue={setCutoff}
+                  label="Cutoff"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={10}
+                  value={resonance}
+                  setValue={setResonance}
+                  label="Resonance"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <Dropdn
+                  className="instrument-item"
+                  label="Rolloff"
+                  options={rolloffOptions}
+                  setValue={updateRolloff}
+                  value={rolloffString}
+                />
               </div>
-              <div className="controls-module">
+              <div className="controls-module envelope-controls">
                 <p className="controls-label">Filter Envelope</p>
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={filterAttack}
+                  setValue={setFilterAttack}
+                  label="Attack"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={filterDecay}
+                  setValue={setFilterDecay}
+                  label="Decay"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={filterSustain}
+                  setValue={setFilterSustain}
+                  label="Sustain"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={4}
+                  value={filterRelease}
+                  setValue={setFilterRelease}
+                  label="Release"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={1}
+                  max={5}
+                  value={filterAmount}
+                  setValue={setFilterAmount}
+                  label="Amount"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
               </div>
             </div>
           </div>
         )}
-        {samplerInstrument && <div className="sampler-controls"></div>}
-        <div className="effects-controls">
-          <p className="controls-label">Effects</p>
+        {samplerInstrument && (
+          <div className="sampler-controls">
+            <div className="controls-row">
+              <div className="controls-module">
+                <p className="controls-label">Envelope</p>
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={samplerAttack}
+                  setValue={setSamplerAttack}
+                  label="Attack"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={samplerRelease}
+                  setValue={setSamplerRelease}
+                  label="Release"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="controls-row">
+          <div className="controls-module effects-controls">
+            <p className="controls-label">Effects</p>
+            <Dropdn
+              className="instrument-item"
+              label="Effect"
+              options={EFFECTS}
+              setValue={setEffectType}
+              value={effectType}
+            />
+            {effectType !== 'none' && (
+              <RotaryKnob
+                className="instrument-item"
+                min={0}
+                max={1}
+                value={effectWet}
+                setValue={setEffectWet}
+                label="Amount"
+                setGrabbing={setGrabbing}
+                grabbing={grabbing}
+                inline={false}
+                mute={false}
+                linearKnobs={linearKnobs}
+                theme={theme}
+              />
+            )}
+            {effectType === 'chorus' && (
+              <div className="controls-aux">
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={chorusDepth}
+                  setValue={setChorusDepth}
+                  label="Depth"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0.1}
+                  max={10}
+                  value={chorusDelayTime}
+                  setValue={setChorusDelayTime}
+                  label="Delay"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={1}
+                  max={20}
+                  value={chorusFreq}
+                  setValue={setChorusFreq}
+                  label="Freq"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <Dropdn
+                  className="instrument-item"
+                  label="Modulation"
+                  options={SIGNAL_TYPES}
+                  setValue={setChorusType}
+                  value={chorusType}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={180}
+                  value={chorusSpread}
+                  setValue={setChorusSpread}
+                  label="Spread"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+              </div>
+            )}
+            {effectType === 'distortion' && (
+              <div className="controls-aux">
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={distortion}
+                  setValue={setDistortion}
+                  label="Distortion"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+              </div>
+            )}
+            {effectType === 'delay' && (
+              <div className="controls-aux">
+                <div className="switch-container instrument-item">
+                  <Switch
+                    className="switch"
+                    onChange={setSyncDelayTime}
+                    checked={syncDelayTime}
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    offColor={offColor}
+                    onColor={onColor}
+                    offHandleColor={offHandleColor}
+                    onHandleColor={onHandleColor}
+                    width={48}
+                    height={24}
+                  />
+                  <p className="switch-label">Sync</p>
+                </div>
+                {!syncDelayTime && (
+                  <RotaryKnob
+                    className="instrument-item"
+                    min={0}
+                    max={1}
+                    value={delayTime}
+                    setValue={setDelayTime}
+                    label="Time"
+                    setGrabbing={setGrabbing}
+                    grabbing={grabbing}
+                    inline={false}
+                    mute={false}
+                    linearKnobs={linearKnobs}
+                    theme={theme}
+                  />
+                )}
+                {syncDelayTime && (
+                  <Dropdn
+                    className="instrument-item"
+                    label="Time"
+                    options={syncedDelayOptions}
+                    setValue={setSyncedDelay}
+                    value={syncedDelay}
+                    placeholder="Select Rate"
+                    noTextTransform
+                  />
+                )}
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={delayFeedback}
+                  setValue={setDelayFeedback}
+                  label="Feedback"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+              </div>
+            )}
+            {effectType === 'reverb' && (
+              <div className="controls-aux">
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={4}
+                  value={reverbDecay}
+                  setValue={setReverbDecay}
+                  label="Decay"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={0.5}
+                  value={reverbPreDelay}
+                  setValue={setReverbPreDelay}
+                  label="Decay"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+              </div>
+            )}
+            {effectType === 'tremolo' && (
+              <div className="controls-aux">
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={tremoloDepth}
+                  setValue={setTremoloDepth}
+                  label="Depth"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={1}
+                  max={20}
+                  value={tremoloFreq}
+                  setValue={setTremoloFreq}
+                  label="Freq"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <Dropdn
+                  className="instrument-item"
+                  label="Modulation"
+                  options={SIGNAL_TYPES}
+                  setValue={setTremoloType}
+                  value={tremoloType}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={180}
+                  value={tremoloSpread}
+                  setValue={setTremoloSpread}
+                  label="Spread"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+              </div>
+            )}
+            {effectType === 'vibrato' && (
+              <div className="controls-aux">
+                <RotaryKnob
+                  className="instrument-item"
+                  min={0}
+                  max={1}
+                  value={vibratoDepth}
+                  setValue={setVibratoDepth}
+                  label="Depth"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <RotaryKnob
+                  className="instrument-item"
+                  min={1}
+                  max={20}
+                  value={vibratoFreq}
+                  setValue={setVibratoFreq}
+                  label="Freq"
+                  setGrabbing={setGrabbing}
+                  grabbing={grabbing}
+                  inline={false}
+                  mute={false}
+                  linearKnobs={linearKnobs}
+                  theme={theme}
+                />
+                <Dropdn
+                  className="instrument-item"
+                  label="Modulation"
+                  options={SIGNAL_TYPES}
+                  setValue={setVibratoType}
+                  value={vibratoType}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
