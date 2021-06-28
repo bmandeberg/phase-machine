@@ -351,7 +351,7 @@ export const MAX_CHANNELS = 8
 
 export const SAMPLER_INSTRUMENTS = ['drums', 'piano', 'marimba']
 
-export const EFFECTS = ['none', 'chorus', 'distortion', 'delay', 'reverb', 'tremolo', 'vibrato']
+export const EFFECTS = ['none', 'chorus', 'distortion', 'delay', 'reverb', 'vibrato']
 
 export const BLANK_PITCH_CLASSES = () => [
   false,
@@ -521,10 +521,6 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
     delayFeedback: 0.5,
     reverbDecay: 1.5,
     reverbPreDelay: 0.01,
-    tremoloDepth: 0.75,
-    tremoloFreq: 9,
-    tremoloSpread: 0,
-    tremoloType: 'sine',
     vibratoDepth: 0.1,
     vibratoFreq: 5,
     vibratoType: 'sine',

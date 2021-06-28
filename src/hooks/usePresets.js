@@ -289,10 +289,6 @@ export default function usePresets(
         invalidProp(channel.instrumentParams, 'delayFeedback', 'number') ||
         invalidProp(channel.instrumentParams, 'reverbDecay', 'number') ||
         invalidProp(channel.instrumentParams, 'reverbPreDelay', 'number') ||
-        invalidProp(channel.instrumentParams, 'tremoloDepth', 'number') ||
-        invalidProp(channel.instrumentParams, 'tremoloFreq', 'number') ||
-        invalidProp(channel.instrumentParams, 'tremoloSpread', 'number') ||
-        invalidProp(channel.instrumentParams, 'tremoloType', 'string') ||
         invalidProp(channel.instrumentParams, 'vibratoDepth', 'number') ||
         invalidProp(channel.instrumentParams, 'vibratoFreq', 'number') ||
         invalidProp(channel.instrumentParams, 'vibratoType', 'string')

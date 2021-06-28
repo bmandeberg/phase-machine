@@ -302,7 +302,6 @@ export default function Channel({
           distortionEffect.current,
           delayEffect.current,
           reverbEffect.current,
-          tremoloEffect.current,
           vibratoEffect.current,
           channelPreset.instrumentType,
           channelPreset.instrumentParams,
@@ -369,7 +368,6 @@ export default function Channel({
   const distortionEffect = useRef()
   const delayEffect = useRef()
   const reverbEffect = useRef()
-  const tremoloEffect = useRef()
   const vibratoEffect = useRef()
 
   useEffect(() => {
@@ -517,15 +515,6 @@ export default function Channel({
       wet: instrumentParamsRef.current.effectWet,
       preDelay: instrumentParamsRef.current.reverbPreDelay,
     })
-    tremoloEffect.current = new Tone.Tremolo(
-      instrumentParamsRef.current.tremoloFreq,
-      instrumentParamsRef.current.tremoloDepth
-    ).toDestination()
-    tremoloEffect.current.set({
-      wet: instrumentParamsRef.current.effectWet,
-      spread: instrumentParamsRef.current.tremoloSpread,
-      type: instrumentParamsRef.current.tremoloType,
-    })
     vibratoEffect.current = new Tone.Vibrato(
       instrumentParamsRef.current.vibratoFreq,
       instrumentParamsRef.current.vibratoDepth
@@ -548,9 +537,6 @@ export default function Channel({
         break
       case 'reverb':
         effect = reverbEffect.current
-        break
-      case 'tremolo':
-        effect = tremoloEffect.current
         break
       case 'vibrato':
         effect = vibratoEffect.current
@@ -593,7 +579,6 @@ export default function Channel({
       distortionEffect.current.dispose()
       delayEffect.current.dispose()
       reverbEffect.current.dispose()
-      tremoloEffect.current.dispose()
       vibratoEffect.current.dispose()
     }
   }, [])
@@ -629,9 +614,6 @@ export default function Channel({
         break
       case 'reverb':
         effectRef.current = reverbEffect.current
-        break
-      case 'tremolo':
-        effectRef.current = tremoloEffect.current
         break
       case 'vibrato':
         effectRef.current = vibratoEffect.current
@@ -1047,7 +1029,6 @@ export default function Channel({
       distortionEffect,
       delayEffect,
       reverbEffect,
-      tremoloEffect,
       vibratoEffect,
     }),
     []
@@ -1476,7 +1457,6 @@ function updateInstruments(
   distortionEffect,
   delayEffect,
   reverbEffect,
-  tremoloEffect,
   vibratoEffect,
   instrumentType,
   instrumentParams,
@@ -1534,13 +1514,6 @@ function updateInstruments(
     decay: instrumentParams.reverbDecay,
     preDelay: instrumentParams.reverbPreDelay,
   })
-  tremoloEffect.set({
-    wet: instrumentParams.effectWet,
-    depth: instrumentParams.tremoloDepth,
-    frequency: instrumentParams.tremoloFreq,
-    spread: instrumentParams.tremoloSpread,
-    type: instrumentParams.tremoloType,
-  })
   vibratoEffect.set({
     wet: instrumentParams.effectWet,
     depth: instrumentParams.vibratoDepth,
@@ -1561,9 +1534,6 @@ function updateInstruments(
       break
     case 'reverb':
       effect = reverbEffect
-      break
-    case 'tremolo':
-      effect = tremoloEffect
       break
     case 'vibrato':
       effect = vibratoEffect

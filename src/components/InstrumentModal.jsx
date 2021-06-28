@@ -62,10 +62,6 @@ export default function InstrumentModal({
   const [delayFeedback, setDelayFeedback] = useState(instrumentParams.delayFeedback)
   const [reverbDecay, setReverbDecay] = useState(instrumentParams.reverbDecay)
   const [reverbPreDelay, setReverbPreDelay] = useState(instrumentParams.reverbPreDelay)
-  const [tremoloDepth, setTremoloDepth] = useState(instrumentParams.tremoloDepth)
-  const [tremoloFreq, setTremoloFreq] = useState(instrumentParams.tremoloFreq)
-  const [tremoloSpread, setTremoloSpread] = useState(instrumentParams.tremoloSpread)
-  const [tremoloType, setTremoloType] = useState(instrumentParams.tremoloType)
   const [vibratoDepth, setVibratoDepth] = useState(instrumentParams.vibratoDepth)
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
   const [vibratoType, setVibratoType] = useState(instrumentParams.vibratoType)
@@ -251,9 +247,6 @@ export default function InstrumentModal({
       case 'reverb':
         effect = effects.reverbEffect.current
         break
-      case 'tremolo':
-        effect = effects.tremoloEffect.current
-        break
       case 'vibrato':
         effect = effects.vibratoEffect.current
         break
@@ -335,26 +328,6 @@ export default function InstrumentModal({
     effects.reverbEffect.current.preDelay = reverbPreDelay
     updateInstrumentParams('reverbPreDelay', reverbPreDelay)
   }, [effects.reverbEffect, reverbPreDelay, updateInstrumentParams])
-
-  useEffect(() => {
-    effects.tremoloEffect.current.set({ depth: tremoloDepth })
-    updateInstrumentParams('tremoloDepth', tremoloDepth)
-  }, [effects.tremoloEffect, tremoloDepth, updateInstrumentParams])
-
-  useEffect(() => {
-    effects.tremoloEffect.current.set({ frequency: tremoloFreq })
-    updateInstrumentParams('tremoloFreq', tremoloFreq)
-  }, [effects.tremoloEffect, tremoloFreq, updateInstrumentParams])
-
-  useEffect(() => {
-    effects.tremoloEffect.current.spread = tremoloSpread
-    updateInstrumentParams('tremoloSpread', tremoloSpread)
-  }, [effects.tremoloEffect, tremoloSpread, updateInstrumentParams])
-
-  useEffect(() => {
-    effects.tremoloEffect.current.type = tremoloType
-    updateInstrumentParams('tremoloType', tremoloType)
-  }, [effects.tremoloEffect, tremoloType, updateInstrumentParams])
 
   useEffect(() => {
     effects.vibratoEffect.current.set({ depth: vibratoDepth })
@@ -911,59 +884,6 @@ export default function InstrumentModal({
                   value={reverbPreDelay}
                   setValue={setReverbPreDelay}
                   label="Decay"
-                  setGrabbing={setGrabbing}
-                  grabbing={grabbing}
-                  inline={false}
-                  mute={false}
-                  linearKnobs={linearKnobs}
-                  theme={theme}
-                />
-              </div>
-            )}
-            {effectType === 'tremolo' && (
-              <div className="controls-aux">
-                <RotaryKnob
-                  className="instrument-item"
-                  min={0}
-                  max={1}
-                  value={tremoloDepth}
-                  setValue={setTremoloDepth}
-                  label="Depth"
-                  setGrabbing={setGrabbing}
-                  grabbing={grabbing}
-                  inline={false}
-                  mute={false}
-                  linearKnobs={linearKnobs}
-                  theme={theme}
-                />
-                <RotaryKnob
-                  className="instrument-item"
-                  min={1}
-                  max={20}
-                  value={tremoloFreq}
-                  setValue={setTremoloFreq}
-                  label="Freq"
-                  setGrabbing={setGrabbing}
-                  grabbing={grabbing}
-                  inline={false}
-                  mute={false}
-                  linearKnobs={linearKnobs}
-                  theme={theme}
-                />
-                <Dropdn
-                  className="instrument-item"
-                  label="Modulation"
-                  options={SIGNAL_TYPES}
-                  setValue={setTremoloType}
-                  value={tremoloType}
-                />
-                <RotaryKnob
-                  className="instrument-item"
-                  min={0}
-                  max={180}
-                  value={tremoloSpread}
-                  setValue={setTremoloSpread}
-                  label="Stereo"
                   setGrabbing={setGrabbing}
                   grabbing={grabbing}
                   inline={false}
