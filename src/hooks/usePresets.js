@@ -1,5 +1,4 @@
 import { useEffect, useCallback, useMemo } from 'react'
-import { isArray } from 'tone'
 import { v4 as uuid } from 'uuid'
 import { PRESET_HOLD_TIME } from '../globals'
 

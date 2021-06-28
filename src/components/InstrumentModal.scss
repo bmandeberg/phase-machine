@@ -2,7 +2,7 @@
 
 .instrument-modal {
   width: 644px;
-  height: 400px;
+  height: 410px;
   .instrument-controls {
     margin-top: 20px;
   }
@@ -22,7 +22,7 @@
   .controls-module {
     padding-top: 25px;
     padding-left: 10px;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
     position: relative;
     display: inline-block;
     vertical-align: top;
@@ -53,6 +53,7 @@
     left: 5px;
     font-size: 16px;
     text-transform: uppercase;
+    color: $lightTextGray;
   }
   .effects-controls {
     position: relative;
@@ -80,6 +81,7 @@
     }
   }
   .effects-controls {
+    padding-bottom: 0;
     .knob-container {
       min-width: 62px;
     }

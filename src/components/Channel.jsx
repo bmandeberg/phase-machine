@@ -131,6 +131,7 @@ export default function Channel({
   // instrument params
   const [instrumentParams, setInstrumentParams] = useState(initState.instrumentParams)
   const instrumentParamsRef = useRef(instrumentParams)
+  const effectRef = useRef()
 
   const [modalContent, setModalContent] = useState(false)
   const showModal = useCallback(() => {
@@ -169,8 +170,8 @@ export default function Channel({
   }, [])
 
   const seqOpposite = useCallback(() => {
-    setSeqSteps((seqSteps) => seqSteps.map((step) => !step))
-  }, [])
+    setSeqSteps((seqSteps) => seqSteps.map((step, i) => (i < seqLength ? !step : step)))
+  }, [seqLength])
 
   // MIDI
 
@@ -304,7 +305,8 @@ export default function Channel({
           tremoloEffect.current,
           vibratoEffect.current,
           channelPreset.instrumentType,
-          channelPreset.instrumentParams
+          channelPreset.instrumentParams,
+          effectRef.current
         )
       }
     }
@@ -400,7 +402,7 @@ export default function Channel({
         release: instrumentParamsRef.current.filterRelease,
         octaves: instrumentParamsRef.current.filterAmount,
       },
-    }).toDestination()
+    })
     pianoInstrument.current = new Tone.Sampler({
       urls: {
         C2: 'Ensoniq-SQ-2-Piano-C2.mp3',
@@ -408,7 +410,7 @@ export default function Channel({
         C7: 'Ensoniq-SQ-2-Piano-C7.mp3',
       },
       baseUrl: window.location.origin + '/samples/piano/',
-    }).toDestination()
+    })
     pianoInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
@@ -418,7 +420,7 @@ export default function Channel({
         C4: 'Roland-SC-88-Marimba-C4.mp3',
       },
       baseUrl: window.location.origin + '/samples/marimba/',
-    }).toDestination()
+    })
     marimbaInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
@@ -488,7 +490,7 @@ export default function Channel({
         C6: 'Korg-N1R-Metronome-Bell.mp3',
       },
       baseUrl: window.location.origin + '/samples/drums/',
-    }).toDestination()
+    })
     drumsInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
@@ -557,10 +559,17 @@ export default function Channel({
         effect = null
     }
     if (effect) {
+      effectRef.current = effect
       synthInstrument.current.connect(effect)
       pianoInstrument.current.connect(effect)
       marimbaInstrument.current.connect(effect)
       drumsInstrument.current.connect(effect)
+    } else {
+      effectRef.current = Tone.getDestination()
+      synthInstrument.current.toDestination()
+      pianoInstrument.current.toDestination()
+      marimbaInstrument.current.toDestination()
+      drumsInstrument.current.toDestination()
     }
     switch (initInstrumentType.current) {
       case 'piano':
@@ -606,6 +615,31 @@ export default function Channel({
         instrument.current.oscillator.type = instrumentType
     }
   }, [instrumentType])
+
+  useEffect(() => {
+    switch (instrumentParams.effectType) {
+      case 'chorus':
+        effectRef.current = chorusEffect.current
+        break
+      case 'distortion':
+        effectRef.current = distortionEffect.current
+        break
+      case 'delay':
+        effectRef.current = delayEffect.current
+        break
+      case 'reverb':
+        effectRef.current = reverbEffect.current
+        break
+      case 'tremolo':
+        effectRef.current = tremoloEffect.current
+        break
+      case 'vibrato':
+        effectRef.current = vibratoEffect.current
+        break
+      default:
+        effectRef.current = Tone.getDestination()
+    }
+  }, [instrumentParams])
 
   const openInstrumentModal = useCallback(() => {
     setModalType('instrument')
@@ -1445,7 +1479,8 @@ function updateInstruments(
   tremoloEffect,
   vibratoEffect,
   instrumentType,
-  instrumentParams
+  instrumentParams,
+  currentEffect
 ) {
   synthInstrument.set({
     portamento: instrumentParams.portamento,
@@ -1535,6 +1570,12 @@ function updateInstruments(
       break
     default:
       effect = null
+  }
+  if (currentEffect) {
+    synthInstrument.disconnect(currentEffect)
+    samplerInstruments.forEach((sampler) => {
+      sampler.disconnect(currentEffect)
+    })
   }
   if (effect) {
     synthInstrument.connect(effect)

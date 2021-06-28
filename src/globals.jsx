@@ -490,19 +490,19 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
   instrumentParams: {
     portamento: 0,
     modulationType: 'square',
-    harmonicity: 1, // use set()
+    harmonicity: 1,
     fatSpread: 20,
     fatCount: 3,
     pulseWidth: 0.2,
-    pwmFreq: 0.4, // 0.1 - 5
+    pwmFreq: 0.4,
     envAttack: 0.05,
     envDecay: 0.1,
     envSustain: 0.9,
     envRelease: 1,
     cutoff: 3000,
     resonance: 1,
-    rolloff: -12, // -24, -48, -96
-    filterAttack: 0,
+    rolloff: -24,
+    filterAttack: 0.05,
     filterDecay: 0.2,
     filterSustain: 0.5,
     filterRelease: 2,
@@ -516,7 +516,7 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
     chorusFreq: 4,
     chorusSpread: 0,
     chorusType: 'sine',
-    distortion: 0.8,
+    distortion: 1,
     delayTime: 0.25,
     delayFeedback: 0.5,
     reverbDecay: 1.5,

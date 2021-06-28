@@ -70,6 +70,8 @@ export default function InstrumentModal({
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
   const [vibratoType, setVibratoType] = useState(instrumentParams.vibratoType)
 
+  const effectRef = useRef()
+
   const rolloffString = useMemo(() => `${rolloff}`, [rolloff])
   const updateRolloff = useCallback((r) => {
     setRolloff(+r)
@@ -258,32 +260,24 @@ export default function InstrumentModal({
       default:
         effect = null
     }
+    if (effectRef.current) {
+      Object.values(instruments).forEach((instrument) => {
+        instrument.current.disconnect(effectRef.current)
+      })
+    }
     if (effect) {
-      instruments.synthInstrument.current.connect(effect)
-      instruments.pianoInstrument.current.connect(effect)
-      instruments.marimbaInstrument.current.connect(effect)
-      instruments.drumsInstrument.current.connect(effect)
+      effectRef.current = effect
+      Object.values(instruments).forEach((instrument) => {
+        instrument.current.connect(effect)
+      })
     } else {
-      instruments.synthInstrument.current.toDestination()
-      instruments.pianoInstrument.current.toDestination()
-      instruments.marimbaInstrument.current.toDestination()
-      instruments.drumsInstrument.current.toDestination()
+      effectRef.current = Tone.getDestination()
+      Object.values(instruments).forEach((instrument) => {
+        instrument.current.toDestination()
+      })
     }
     updateInstrumentParams('effectType', effectType)
-  }, [
-    effectType,
-    effects.chorusEffect,
-    effects.delayEffect,
-    effects.distortionEffect,
-    effects.reverbEffect,
-    effects.tremoloEffect,
-    effects.vibratoEffect,
-    instruments.drumsInstrument,
-    instruments.marimbaInstrument,
-    instruments.pianoInstrument,
-    instruments.synthInstrument,
-    updateInstrumentParams,
-  ])
+  }, [effectType, effects, instruments, updateInstrumentParams])
 
   useEffect(() => {
     Object.values(effects).forEach((effect) => {
@@ -435,6 +429,7 @@ export default function InstrumentModal({
                       value={harmonicity}
                       setValue={setHarmonicity}
                       label="Harmonicity"
+                      detent
                       setGrabbing={setGrabbing}
                       grabbing={grabbing}
                       inline={false}
@@ -452,7 +447,7 @@ export default function InstrumentModal({
                       max={40}
                       value={fatSpread}
                       setValue={setFatSpread}
-                      label="Spread"
+                      label="Detune"
                       setGrabbing={setGrabbing}
                       grabbing={grabbing}
                       inline={false}
@@ -574,8 +569,8 @@ export default function InstrumentModal({
                 <p className="controls-label">Filter</p>
                 <RotaryKnob
                   className="instrument-item"
-                  min={100}
-                  max={6000}
+                  min={10}
+                  max={5000}
                   value={cutoff}
                   setValue={setCutoff}
                   label="Cutoff"
@@ -589,7 +584,7 @@ export default function InstrumentModal({
                 <RotaryKnob
                   className="instrument-item"
                   min={0}
-                  max={10}
+                  max={15}
                   value={resonance}
                   setValue={setResonance}
                   label="Resonance"
@@ -804,7 +799,7 @@ export default function InstrumentModal({
                   max={180}
                   value={chorusSpread}
                   setValue={setChorusSpread}
-                  label="Spread"
+                  label="Stereo"
                   setGrabbing={setGrabbing}
                   grabbing={grabbing}
                   inline={false}
@@ -819,7 +814,7 @@ export default function InstrumentModal({
                 <RotaryKnob
                   className="instrument-item"
                   min={0}
-                  max={1}
+                  max={3}
                   value={distortion}
                   setValue={setDistortion}
                   label="Distortion"
@@ -968,7 +963,7 @@ export default function InstrumentModal({
                   max={180}
                   value={tremoloSpread}
                   setValue={setTremoloSpread}
-                  label="Spread"
+                  label="Stereo"
                   setGrabbing={setGrabbing}
                   grabbing={grabbing}
                   inline={false}

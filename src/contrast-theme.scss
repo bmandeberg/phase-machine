@@ -104,6 +104,9 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     .controls-row, .controls-module {
       border-color: $lightMediumGray;
     }
+    .controls-label {
+      color: $darkerMediumGray;
+    }
   }
 
   .switch-label {

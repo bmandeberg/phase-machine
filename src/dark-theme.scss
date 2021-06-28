@@ -106,6 +106,9 @@ $headerDarkBlue: #0f182d;
     .controls-row, .controls-module {
       border-color: $darkMediumGray;
     }
+    .controls-label {
+      color: lighten($darkMediumGray, 10%);
+    }
   }
 
   .switch-label {
