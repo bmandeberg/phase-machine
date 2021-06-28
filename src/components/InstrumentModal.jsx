@@ -530,7 +530,7 @@ export default function InstrumentModal({
                 <p className="controls-label">Filter</p>
                 <RotaryKnob
                   className="instrument-item"
-                  min={10}
+                  min={20}
                   max={5000}
                   value={cutoff}
                   setValue={setCutoff}
@@ -541,6 +541,7 @@ export default function InstrumentModal({
                   mute={false}
                   linearKnobs={linearKnobs}
                   theme={theme}
+                  logarithmic
                 />
                 <RotaryKnob
                   className="instrument-item"
@@ -718,6 +719,7 @@ export default function InstrumentModal({
                   mute={false}
                   linearKnobs={linearKnobs}
                   theme={theme}
+                  logarithmic
                 />
                 <RotaryKnob
                   className="instrument-item"
@@ -746,6 +748,7 @@ export default function InstrumentModal({
                   mute={false}
                   linearKnobs={linearKnobs}
                   theme={theme}
+                  logarithmic
                 />
                 <RotaryKnob
                   className="instrument-item"
@@ -903,6 +906,7 @@ export default function InstrumentModal({
                   mute={false}
                   linearKnobs={linearKnobs}
                   theme={theme}
+                  logarithmic
                 />
               </div>
             )}

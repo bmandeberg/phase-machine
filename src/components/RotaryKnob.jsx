@@ -1,10 +1,11 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { KNOB_MAX } from '../globals'
 import Key from './Key'
 import { Knob } from 'react-rotary-knob'
 import LinearKnob from './LinearKnob'
+import { expInterpolate } from '../math'
 import './RotaryKnob.scss'
 
 const AXIS_LINE_SIZE = 270
@@ -36,16 +37,20 @@ export default function RotaryKnob({
   linearKnobs,
   theme,
   rangeMode,
+  logarithmic,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
 
+  const [internalValue, setInternalValue] = useState(logarithmic ? expInterpolate(minVal, maxVal, value, true) : value)
+
   const updateValue = useCallback(
     (val) => {
+      let newValue
       if (axisKnob) {
         const roundedVal = Math.round(val) % 24
         if (roundedVal !== value) {
-          setValue(roundedVal)
+          newValue = roundedVal
         }
       } else {
         const mid = (maxVal - minVal) / 2 + minVal
@@ -54,21 +59,26 @@ export default function RotaryKnob({
         let distance = Math.abs(val - value)
         if (!linearKnobs && distance > maxDistance) {
           if (val - value > 0 && value !== minVal) {
-            setValue(minVal)
+            newValue = minVal
           } else if (val - value < 0 && value !== maxVal) {
-            setValue(maxVal)
+            newValue = maxVal
           }
           return
         } else {
           if (detent && val > mid - range * 0.05 && val < mid + range * 0.05) {
-            setValue(mid)
+            newValue = mid
           } else {
-            setValue(val)
+            newValue = val
           }
         }
       }
+      setInternalValue(newValue)
+      if (logarithmic) {
+        newValue = expInterpolate(minVal, maxVal, newValue)
+      }
+      setValue(newValue)
     },
-    [axisKnob, value, setValue, maxVal, minVal, linearKnobs, detent]
+    [axisKnob, logarithmic, setValue, value, maxVal, minVal, linearKnobs, detent]
   )
 
   const startTurningKnob = useCallback(() => {
@@ -409,7 +419,7 @@ export default function RotaryKnob({
           className={activeClass}
           min={minVal}
           max={maxVal}
-          value={value}
+          value={internalValue}
           onChange={updateValue}
           skin={activeSkin}
           unlockDistance={30}
@@ -424,7 +434,7 @@ export default function RotaryKnob({
           className={activeClass}
           min={minVal}
           max={maxVal}
-          value={value}
+          value={internalValue}
           onChange={updateValue}
           skin={activeSkin}
           unlockDistance={30}
@@ -467,4 +477,5 @@ RotaryKnob.propTypes = {
   linearKnobs: PropTypes.bool,
   theme: PropTypes.string,
   rangeMode: PropTypes.bool,
+  logarithmic: PropTypes.bool,
 }

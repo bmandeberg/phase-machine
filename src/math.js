@@ -70,6 +70,11 @@ export function scaleToRange(num, inMin, inMax, outMin, outMax) {
   return ((num - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
 }
 
+export function expInterpolate(min, max, value, invert = false) {
+  const exp = invert ? 1/Math.E : Math.E
+  return (max - min) * Math.pow((value - min) / (max - min), exp) + min
+}
+
 export function constrain(n, min, max) {
   return Math.min(Math.max(n, min), max)
 }
