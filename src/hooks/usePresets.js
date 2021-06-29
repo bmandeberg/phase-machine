@@ -199,7 +199,11 @@ export default function usePresets(
 
   const validPreset = useCallback((preset) => {
     function invalidProp(obj, prop, type) {
-      return !obj.hasOwnProperty(prop) || typeof obj[prop] !== type
+      const typeCheck = typeof obj[prop] !== type
+      return (
+        !obj.hasOwnProperty(prop) ||
+        (type === 'number' ? typeCheck && obj[prop] !== null : typeCheck)
+      )
     }
     if (
       invalidProp(preset, 'name', 'string') ||
