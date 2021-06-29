@@ -139,6 +139,9 @@ export default function useUI(
     [channelNum, color, drag, draggingChannel]
   )
 
+  const channelNumNormal = useMemo(() => channelNumEl(false), [channelNumEl])
+  const channelNumAux = useMemo(() => channelNumEl(true), [channelNumEl])
+
   const duplicateDeleteEl = useMemo(() => {
     return (
       <div className="duplicate-delete">
@@ -266,6 +269,9 @@ export default function useUI(
       updateAxis,
     ]
   )
+
+  const axisNormal = useMemo(() => axisEl(false), [axisEl])
+  const axisClock = useMemo(() => axisEl(true), [axisEl])
 
   const flipOppositeEl = useMemo(() => {
     return (
@@ -415,6 +421,9 @@ export default function useUI(
     [grabbing, keySustain, linearKnobs, muted, setGrabbing, setKeySustain, theme]
   )
 
+  const keySustainNormal = useMemo(() => keySustainEl(false), [keySustainEl])
+  const keySustainVertical = useMemo(() => keySustainEl(true), [keySustainEl])
+
   const keySwingEl = useCallback(
     (vertical) => {
       return (
@@ -446,6 +455,9 @@ export default function useUI(
     [grabbing, keySwing, keySwingLength, linearKnobs, mute, setGrabbing, setKeySwing, setKeySwingLength, theme]
   )
 
+  const keySwingNormal = useMemo(() => keySwingEl(false), [keySwingEl])
+  const keySwingVertical = useMemo(() => keySwingEl(true), [keySwingEl])
+
   const seqLengthEl = useCallback(
     (inline) => {
       return (
@@ -464,6 +476,9 @@ export default function useUI(
     [seqLength, setSeqLength]
   )
 
+  const seqLengthNormal = useMemo(() => seqLengthEl(false), [seqLengthEl])
+  const seqLengthInline = useMemo(() => seqLengthEl(true), [seqLengthEl])
+
   const seqRateEl = useCallback(
     (inline) => {
       return (
@@ -480,6 +495,9 @@ export default function useUI(
     },
     [seqRate, setSeqRate]
   )
+
+  const seqRateNormal = useMemo(() => seqRateEl(false), [seqRateEl])
+  const seqRateInline = useMemo(() => seqRateEl(true), [seqRateEl])
 
   const seqArpModeEl = useCallback(
     (inline) => {
@@ -501,6 +519,9 @@ export default function useUI(
     },
     [arpModes, seqArpInc1, seqArpInc2, seqArpMode, setSeqArpInc1, setSeqArpInc2, setSeqArpMode]
   )
+
+  const seqArpModeNormal = useMemo(() => seqArpModeEl(false), [seqArpModeEl])
+  const seqArpModeInline = useMemo(() => seqArpModeEl(true), [seqArpModeEl])
 
   const seqSwingEl = useCallback(
     (inline) => {
@@ -534,6 +555,9 @@ export default function useUI(
     [grabbing, linearKnobs, mute, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength, theme]
   )
 
+  const seqSwingNormal = useMemo(() => seqSwingEl(false), [seqSwingEl])
+  const seqSwingInline = useMemo(() => seqSwingEl(true), [seqSwingEl])
+
   const seqSustainEl = useCallback(
     (inline) => {
       return (
@@ -554,6 +578,9 @@ export default function useUI(
     },
     [grabbing, linearKnobs, mute, seqSustain, setGrabbing, setSeqSustain, theme]
   )
+
+  const seqSustainNormal = useMemo(() => seqSustainEl(false), [seqSustainEl])
+  const seqSustainInline = useMemo(() => seqSustainEl(true), [seqSustainEl])
 
   const legatoEl = useCallback(
     (inline) => {
@@ -578,6 +605,9 @@ export default function useUI(
     },
     [legato, offColor, offHandleColor, onColor, onHandleColor, setLegato]
   )
+
+  const legatoNormal = useMemo(() => legatoEl(false), [legatoEl])
+  const legatoInline = useMemo(() => legatoEl(true), [legatoEl])
 
   const seqRestartEl = useMemo(() => {
     return (
@@ -615,27 +645,41 @@ export default function useUI(
     [instrumentOn, instrumentType, mute, openInstrumentModal, setInstrumentOn, setInstrumentType, theme]
   )
 
+  const instrumentNormal = useMemo(() => instrumentEl(false), [instrumentEl])
+  const instrumentSmall = useMemo(() => instrumentEl(true), [instrumentEl])
+
   return {
-    channelNumEl,
+    channelNumNormal,
+    channelNumAux,
     duplicateDeleteEl,
     keyEl,
     muteSoloEl,
     velocityEl,
     shiftEl,
-    axisEl,
+    axisNormal,
+    axisClock,
     flipOppositeEl,
     pianoEl,
     keyRateEl,
     keyArpModeEl,
-    keySustainEl,
-    keySwingEl,
-    seqLengthEl,
-    seqRateEl,
-    seqArpModeEl,
-    seqSwingEl,
-    seqSustainEl,
-    legatoEl,
-    instrumentEl,
+    keySustainNormal,
+    keySustainVertical,
+    keySwingNormal,
+    keySwingVertical,
+    seqLengthNormal,
+    seqLengthInline,
+    seqRateNormal,
+    seqRateInline,
+    seqArpModeNormal,
+    seqArpModeInline,
+    seqSwingNormal,
+    seqSwingInline,
+    seqSustainNormal,
+    seqSustainInline,
+    legatoNormal,
+    legatoInline,
+    instrumentNormal,
+    instrumentSmall,
     keyViewTypeEl,
     seqRestartEl,
     seqOppositeEl,

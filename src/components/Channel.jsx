@@ -152,6 +152,10 @@ export default function Channel({
 
   const [modalType, setModalType] = useState('')
 
+  const toggleDrawerOpen = useCallback(() => {
+    setDrawerOpen((drawerOpen) => !drawerOpen)
+  }, [])
+
   const emptyKey = useMemo(() => {
     return !key.some((p) => p)
   }, [key])
@@ -897,26 +901,37 @@ export default function Channel({
   // ui elements
 
   const {
-    channelNumEl,
+    channelNumNormal,
+    channelNumAux,
     duplicateDeleteEl,
     keyEl,
     muteSoloEl,
     velocityEl,
     shiftEl,
-    axisEl,
+    axisNormal,
+    axisClock,
     flipOppositeEl,
     pianoEl,
     keyRateEl,
     keyArpModeEl,
-    keySustainEl,
-    keySwingEl,
-    seqLengthEl,
-    seqRateEl,
-    seqArpModeEl,
-    seqSwingEl,
-    seqSustainEl,
-    legatoEl,
-    instrumentEl,
+    keySustainNormal,
+    keySustainVertical,
+    keySwingNormal,
+    keySwingVertical,
+    seqLengthNormal,
+    seqLengthInline,
+    seqRateNormal,
+    seqRateInline,
+    seqArpModeNormal,
+    seqArpModeInline,
+    seqSwingNormal,
+    seqSwingInline,
+    seqSustainNormal,
+    seqSustainInline,
+    legatoNormal,
+    legatoInline,
+    instrumentNormal,
+    instrumentSmall,
     keyViewTypeEl,
     seqRestartEl,
     seqOppositeEl,
@@ -1121,6 +1136,9 @@ export default function Channel({
     [channelNum, color, dragRow, dragTarget, numChannels]
   )
 
+  const dragTargetHorizontal = useMemo(() => dragTargetUI(true), [dragTargetUI])
+  const dragTargetBox = useMemo(() => dragTargetUI(false), [dragTargetUI])
+
   // watch and update state, with debounce
 
   const channelStateDebounce = useRef()
@@ -1245,7 +1263,7 @@ export default function Channel({
         appear={true}
         classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
         <div className={classNames('channel channel-horizontal', { mute: muted })}>
-          {channelNumEl(false)}
+          {channelNumNormal}
           {duplicateDeleteEl}
           <div className="channel-primary">
             {muteSoloEl}
@@ -1256,7 +1274,7 @@ export default function Channel({
           {keyEl}
           <div className="transformations">
             {rangeMode && shiftEl}
-            {rangeMode && axisEl(false)}
+            {rangeMode && axisNormal}
             {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
             {!rangeMode && midiInputModeEl}
@@ -1265,12 +1283,12 @@ export default function Channel({
           {pianoEl}
           {keyRateEl}
           {keyArpModeEl}
-          {keySustainEl(false)}
-          {keySwingEl(false)}
+          {keySustainNormal}
+          {keySustainNormal}
           <div
             style={{ top: numChannels * CHANNEL_HEIGHT }}
             className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
-            {channelNumEl(true)}
+            {channelNumAux}
             <Sequencer
               className="channel-module"
               seqSteps={seqSteps}
@@ -1279,20 +1297,20 @@ export default function Channel({
               playingStep={playingStep}
               showStepNumbers={showStepNumbers}>
               <div className="sequencer-controls">
-                {seqLengthEl(true)}
-                {seqRateEl(true)}
-                {seqArpModeEl(true)}
-                {seqSustainEl(true)}
-                {seqSwingEl(true)}
-                {legatoEl(true)}
+                {seqLengthInline}
+                {seqRateInline}
+                {seqArpModeInline}
+                {seqSustainInline}
+                {seqSwingInline}
+                {legatoInline}
                 {seqRestartEl}
                 {seqOppositeEl}
               </div>
             </Sequencer>
             <div className="channel-module border"></div>
-            {instrumentEl(false)}
+            {instrumentNormal}
           </div>
-          {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
+          {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}
           {modalEl}
         </div>
       </CSSTransition>
@@ -1305,7 +1323,7 @@ export default function Channel({
         appear={true}
         classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
         <div className={classNames('channel channel-horizontal', { mute: muted })}>
-          {channelNumEl(false)}
+          {channelNumNormal}
           {duplicateDeleteEl}
           <div className="channel-primary">
             {muteSoloEl}
@@ -1316,7 +1334,7 @@ export default function Channel({
           {keyEl}
           <div className="transformations">
             {rangeMode && shiftEl}
-            {rangeMode && axisEl(false)}
+            {rangeMode && axisNormal}
             {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
             {!rangeMode && midiInputModeEl}
@@ -1325,8 +1343,8 @@ export default function Channel({
           {pianoEl}
           {keyRateEl}
           {keyArpModeEl}
-          {keySustainEl(false)}
-          {keySwingEl(false)}
+          {keySustainNormal}
+          {keySustainNormal}
           <div className="channel-module border"></div>
           <Sequencer
             className="channel-module"
@@ -1336,19 +1354,19 @@ export default function Channel({
             playingStep={playingStep}
             showStepNumbers={showStepNumbers}>
             <div className="sequencer-controls">
-              {seqLengthEl(true)}
-              {seqRateEl(true)}
-              {seqArpModeEl(true)}
-              {seqSustainEl(true)}
-              {seqSwingEl(true)}
-              {legatoEl(true)}
+              {seqLengthInline}
+              {seqRateInline}
+              {seqArpModeInline}
+              {seqSustainInline}
+              {seqSwingInline}
+              {legatoInline}
               {seqRestartEl}
               {seqOppositeEl}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>
-          {instrumentEl(false)}
-          {draggingChannel && dragTarget !== channelNum && dragTargetUI(true)}
+          {instrumentNormal}
+          {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}
           {modalEl}
         </div>
       </CSSTransition>
@@ -1362,7 +1380,7 @@ export default function Channel({
         classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
         <div className={classNames('channel channel-clock', { mute: muted })}>
           <div className="channel-clock-top">
-            {channelNumEl(false)}
+            {channelNumNormal}
             {duplicateDeleteEl}
             <div className="channel-primary">
               {muteSoloEl}
@@ -1378,20 +1396,18 @@ export default function Channel({
               {/* {keyViewTypeEl} */}
             </div>
             {rangeMode && <img className="arrow-clock" src={arrowClockGraphic} alt="" />}
-            {axisEl(true)}
+            {axisClock}
             <div className="channel-vertical">
               {keyArpModeEl}
               <div>
                 {keyRateEl}
-                {keySustainEl(true)}
+                {keySustainVertical}
               </div>
-              {keySwingEl(true)}
+              {keySustainVertical}
             </div>
             <div
               className={classNames('channel-drawer-control', { 'drawer-open': drawerOpen })}
-              onClick={() => {
-                setDrawerOpen((drawerOpen) => !drawerOpen)
-              }}>
+              onClick={toggleDrawerOpen}>
               <div className="arrow-down"></div>
             </div>
           </div>
@@ -1408,17 +1424,17 @@ export default function Channel({
                 showStepNumbers={showStepNumbers}
               />
               <div className="sequencer-controls">
-                {seqLengthEl(false)}
-                {seqRateEl(false)}
-                {seqArpModeEl(false)}
-                {seqSustainEl(false)}
-                {seqSwingEl(false)}
-                {legatoEl(false)}
-                {instrumentEl(true)}
+                {seqLengthNormal}
+                {seqRateNormal}
+                {seqArpModeNormal}
+                {seqSustainNormal}
+                {seqSwingNormal}
+                {legatoNormal}
+                {instrumentSmall}
               </div>
             </div>
           </CSSTransition>
-          {draggingChannel && dragTarget !== channelNum && dragTargetUI(false)}
+          {draggingChannel && dragTarget !== channelNum && dragTargetBox}
           {modalEl}
         </div>
       </CSSTransition>
