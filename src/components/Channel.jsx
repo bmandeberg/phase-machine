@@ -14,6 +14,7 @@ import {
   handleArpMode,
   noteString,
   convertMidiNumber,
+  OCTAVES,
 } from '../globals'
 import { pitchesInRange, constrain } from '../math'
 import classNames from 'classnames'
@@ -217,14 +218,16 @@ export default function Channel({
         }
       } else {
         const noteNumber = convertMidiNumber(midiNoteOn.note.number)
-        if (midiHoldRef.current || !keybdPitchesRef.current.includes(noteNumber)) {
-          setKeybdPitches((keybdPitches) => {
-            const keybdPitchesCopy = keybdPitches.slice()
-            keybdPitchesCopy.push(noteNumber)
-            return keybdPitchesCopy.sort()
-          })
-        } else {
-          setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+        if (noteNumber >= 0 && noteNumber < OCTAVES * 12) {
+          if (midiHoldRef.current || !keybdPitchesRef.current.includes(noteNumber)) {
+            setKeybdPitches((keybdPitches) => {
+              const keybdPitchesCopy = keybdPitches.slice()
+              keybdPitchesCopy.push(noteNumber)
+              return keybdPitchesCopy.sort()
+            })
+          } else {
+            setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+          }
         }
       }
     }
@@ -241,7 +244,9 @@ export default function Channel({
         })
       } else {
         const noteNumber = convertMidiNumber(midiNoteOff.note.number)
-        setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+        if (noteNumber >= 0 && noteNumber < OCTAVES * 12) {
+          setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+        }
       }
     }
   }, [midiNoteOff])
