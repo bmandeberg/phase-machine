@@ -85,9 +85,7 @@ export default function Presets({
   }, [theme])
 
   const doSave = useCallback(() => {
-    console.log('hey')
     if (!(!presetDirty && !preset.placeholder)) {
-      console.log('ho')
       savePreset()
     }
   }, [preset.placeholder, presetDirty, savePreset])

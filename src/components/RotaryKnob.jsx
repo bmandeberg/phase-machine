@@ -48,7 +48,7 @@ export default function RotaryKnob({
     (val) => {
       let newValue
       if (axisKnob) {
-        const roundedVal = Math.round(val) % 24
+        const roundedVal = Math.round(val) % 12
         if (roundedVal !== value) {
           newValue = roundedVal
         }
@@ -72,11 +72,13 @@ export default function RotaryKnob({
           }
         }
       }
-      setInternalValue(newValue)
-      if (logarithmic) {
-        newValue = expInterpolate(minVal, maxVal, newValue)
+      if (newValue != null) {
+        setInternalValue(newValue)
+        if (logarithmic) {
+          newValue = expInterpolate(minVal, maxVal, newValue)
+        }
+        setValue(newValue)
       }
-      setValue(newValue)
     },
     [axisKnob, logarithmic, setValue, value, maxVal, minVal, linearKnobs, detent]
   )
