@@ -4,6 +4,7 @@ import Switch from 'react-switch'
 import Dropdn from '../components/Dropdn'
 import MultiSelect from './MultiSelect'
 import { THEMES, themedSwitch } from '../globals'
+import classNames from 'classnames'
 import './Settings.scss'
 
 export default function Settings({
@@ -13,6 +14,8 @@ export default function Settings({
   setLinearKnobs,
   hotkeyRestart,
   setHotkeyRestart,
+  defaultChannelModeKeybd,
+  setDefaultChannelModeKeybd,
   theme,
   setTheme,
   presets,
@@ -25,6 +28,14 @@ export default function Settings({
     },
     [setLinearKnobs]
   )
+
+  const setRangeModeDefault = useCallback(() => {
+    setDefaultChannelModeKeybd(false)
+  }, [setDefaultChannelModeKeybd])
+
+  const setKeybdModeDefault = useCallback(() => {
+    setDefaultChannelModeKeybd(true)
+  }, [setDefaultChannelModeKeybd])
 
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
@@ -93,6 +104,34 @@ export default function Settings({
           height={24}
         />
       </div>
+      <div className="settings-item">
+        <p className="settings-label">Default channel mode</p>
+        <div className="switch-container inline">
+          <p
+            onClick={setRangeModeDefault}
+            className={classNames('switch-label label-left', { selected: !defaultChannelModeKeybd })}>
+            Range
+          </p>
+          <Switch
+            className="switch"
+            onChange={setDefaultChannelModeKeybd}
+            checked={defaultChannelModeKeybd}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            offColor={offColor}
+            onColor={onColor}
+            offHandleColor={onHandleColor}
+            onHandleColor={onHandleColor}
+            width={48}
+            height={24}
+          />
+          <p
+            onClick={setKeybdModeDefault}
+            className={classNames('switch-label', { selected: defaultChannelModeKeybd })}>
+            Keybd
+          </p>
+        </div>
+      </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Knob type</p>
         <Dropdn
@@ -139,6 +178,8 @@ Settings.propTypes = {
   setLinearKnobs: PropTypes.func,
   hotkeyRestart: PropTypes.bool,
   setHotkeyRestart: PropTypes.func,
+  defaultChannelModeKeybd: PropTypes.bool,
+  setDefaultChannelModeKeybd: PropTypes.func,
   theme: PropTypes.string,
   setTheme: PropTypes.func,
   presets: PropTypes.array,

@@ -62,6 +62,7 @@ export default function Channel({
   hotkeyRestart,
   midiNoteOn,
   midiNoteOff,
+  defaultChannelModeKeybd,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
@@ -1451,6 +1452,7 @@ Channel.propTypes = {
   hotkeyRestart: PropTypes.bool,
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
+  defaultChannelModeKeybd: PropTypes.bool,
 }
 
 function updateInstruments(

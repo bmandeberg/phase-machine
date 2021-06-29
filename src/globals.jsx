@@ -450,7 +450,7 @@ export function convertMidiNumber(midiNumber) {
   return midiNumber - 24
 }
 
-export const BLANK_CHANNEL = (channelNum, color) => ({
+export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   id: uuid(),
   color,
   channelNum,
@@ -481,7 +481,7 @@ export const BLANK_CHANNEL = (channelNum, color) => ({
   legato: false,
   instrumentOn: true,
   instrumentType: 'triangle',
-  rangeMode: true,
+  rangeMode,
   keybdPitches: [],
   midiIn: false,
   midiHold: false,
@@ -532,5 +532,5 @@ export const DEFAULT_PRESET = {
   placeholder: false,
   numChannels: 1,
   channelSync: false,
-  channels: [BLANK_CHANNEL(0, CHANNEL_COLORS[0])],
+  channels: [BLANK_CHANNEL(0, CHANNEL_COLORS[0], true)],
 }

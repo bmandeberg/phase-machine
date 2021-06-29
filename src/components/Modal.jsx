@@ -14,6 +14,8 @@ export default function Modal({
   setLinearKnobs,
   hotkeyRestart,
   setHotkeyRestart,
+  defaultChannelModeKeybd,
+  setDefaultChannelModeKeybd,
   theme,
   setTheme,
   midiHold,
@@ -66,6 +68,8 @@ export default function Modal({
                 setLinearKnobs={setLinearKnobs}
                 hotkeyRestart={hotkeyRestart}
                 setHotkeyRestart={setHotkeyRestart}
+                defaultChannelModeKeybd={defaultChannelModeKeybd}
+                setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
                 theme={theme}
                 setTheme={setTheme}
                 presets={presets}
@@ -117,6 +121,8 @@ Modal.propTypes = {
   setLinearKnobs: PropTypes.func,
   hotkeyRestart: PropTypes.bool,
   setHotkeyRestart: PropTypes.func,
+  defaultChannelModeKeybd: PropTypes.bool,
+  setDefaultChannelModeKeybd: PropTypes.func,
   theme: PropTypes.string,
   setTheme: PropTypes.func,
   midiHold: PropTypes.bool,

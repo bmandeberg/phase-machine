@@ -1,5 +1,5 @@
 .settings {
-  width: 220px;
+  width: 280px;
   .settings-item {
     margin-top: 10px;
     .settings-label, .instrument-switch {
@@ -7,7 +7,7 @@
       vertical-align: middle;
       height: 24px;
     }
-    .instrument-switch {
+    .instrument-switch, .switch-container {
       float: right;
       margin-top: -2px;
     }
@@ -34,6 +34,19 @@
       width: 100%;
       min-height: 75px;
       resize: vertical;
+    }
+    .switch-container {
+      height: 24px;
+      .switch-label {
+        font-size: 16px;
+        display: inline-block;
+        vertical-align: middle;
+        cursor: pointer;
+        &.label-left {
+          margin-left: 0;
+          margin-right: 8px;
+        }
+      }
     }
   }
 }

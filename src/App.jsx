@@ -74,6 +74,10 @@ export default function App() {
 
   const [hotkeyRestart, setHotkeyRestart] = useState(JSON.parse(window.localStorage.getItem('hotkeyRestart')) ?? true)
 
+  const [defaultChannelModeKeybd, setDefaultChannelModeKeybd] = useState(
+    JSON.parse(window.localStorage.getItem('defaultChannelModeKeybd')) ?? false
+  )
+
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
   }, [showStepNumbers])
@@ -89,6 +93,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('hotkeyRestart', hotkeyRestart)
   }, [hotkeyRestart])
+
+  useEffect(() => {
+    window.localStorage.setItem('defaultChannelModeKeybd', defaultChannelModeKeybd)
+  }, [defaultChannelModeKeybd])
 
   useEffect(() => {
     window.localStorage.setItem('view', view)
@@ -243,7 +251,9 @@ export default function App() {
       const currentChannelsLength = uiStateCopy.channels.length
       if (numChannels > currentChannelsLength) {
         for (let i = 0; i < numChannels - currentChannelsLength; i++) {
-          uiStateCopy.channels.push(BLANK_CHANNEL(uiStateCopy.channels.length, getChannelColor(uiStateCopy.channels)))
+          uiStateCopy.channels.push(
+            BLANK_CHANNEL(uiStateCopy.channels.length, getChannelColor(uiStateCopy.channels), !defaultChannelModeKeybd)
+          )
         }
       } else {
         uiStateCopy.channels = uiStateCopy.channels.slice(0, numChannels)
@@ -253,7 +263,7 @@ export default function App() {
       }
       return uiStateCopy
     })
-  }, [getChannelColor, numChannels, setUIState])
+  }, [defaultChannelModeKeybd, getChannelColor, numChannels, setUIState])
 
   const duplicateChannel = useCallback(
     (id) => {
@@ -334,11 +344,13 @@ export default function App() {
           hotkeyRestart={hotkeyRestart}
           midiNoteOn={midiNoteOn}
           midiNoteOff={midiNoteOff}
+          defaultChannelModeKeybd={defaultChannelModeKeybd}
         />
       )),
     [
       changeChannelOrder,
       currentPreset.channels,
+      defaultChannelModeKeybd,
       deleteChannel,
       duplicateChannel,
       grabbing,
@@ -424,6 +436,8 @@ export default function App() {
           setLinearKnobs={setLinearKnobs}
           hotkeyRestart={hotkeyRestart}
           setHotkeyRestart={setHotkeyRestart}
+          defaultChannelModeKeybd={defaultChannelModeKeybd}
+          setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
           theme={theme}
           setTheme={setTheme}
           presets={presets}
