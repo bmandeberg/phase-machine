@@ -130,7 +130,8 @@ export default class Header extends React.Component {
             className="aux-item header-settings"
             onClick={() => {
               this.props.setModalType('settings')
-            }}></div>
+            }}
+            title="Settings"></div>
         </div>
       </div>
     )

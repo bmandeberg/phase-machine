@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Dropdn from './Dropdn'
@@ -20,46 +20,59 @@ import saveIconDisabledDark from '../assets/save-icon-disabled-dark.svg'
 import edited from '../assets/edit-tag.svg'
 import './Presets.scss'
 
-export default function Presets(props) {
+export default function Presets({
+  className,
+  preset,
+  presetOptions,
+  setPresetName,
+  setPreset,
+  presetDirty,
+  hotkey,
+  presetHotkey,
+  savePreset,
+  newPreset,
+  deletePreset,
+  theme,
+}) {
   const inputPadding = useMemo(() => {
     let padding = 2
-    if (props.presetDirty) {
+    if (presetDirty) {
       padding += 17
     }
-    if (props.presetHotkey !== null) {
+    if (presetHotkey !== null) {
       padding += 17
     }
     return padding
-  }, [props.presetHotkey, props.presetDirty])
+  }, [presetDirty, presetHotkey])
 
   const activeTrashIcon = useMemo(() => {
-    switch (props.theme) {
+    switch (theme) {
       case 'light':
-        return props.preset.placeholder ? trashIconDisabled : trashIcon
+        return preset.placeholder ? trashIconDisabled : trashIcon
       case 'dark':
-        return props.preset.placeholder ? trashIconDisabledBlue : trashIconBlue
+        return preset.placeholder ? trashIconDisabledBlue : trashIconBlue
       case 'contrast':
-        return props.preset.placeholder ? trashIconDisabledDark : trashIconDark
+        return preset.placeholder ? trashIconDisabledDark : trashIconDark
       default:
-        return props.preset.placeholder ? trashIconDisabled : trashIcon
+        return preset.placeholder ? trashIconDisabled : trashIcon
     }
-  }, [props.preset.placeholder, props.theme])
+  }, [preset.placeholder, theme])
 
   const activeSaveIcon = useMemo(() => {
-    switch (props.theme) {
+    switch (theme) {
       case 'light':
-        return props.presetDirty || props.preset.placeholder ? saveIcon : saveIconDisabled
+        return presetDirty || preset.placeholder ? saveIcon : saveIconDisabled
       case 'dark':
-        return props.presetDirty || props.preset.placeholder ? saveIconBlue : saveIconDisabledBlue
+        return presetDirty || preset.placeholder ? saveIconBlue : saveIconDisabledBlue
       case 'contrast':
-        return props.presetDirty || props.preset.placeholder ? saveIconDark : saveIconDisabledDark
+        return presetDirty || preset.placeholder ? saveIconDark : saveIconDisabledDark
       default:
-        return props.presetDirty || props.preset.placeholder ? saveIcon : saveIconDisabled
+        return presetDirty || preset.placeholder ? saveIcon : saveIconDisabled
     }
-  }, [props.preset.placeholder, props.presetDirty, props.theme])
+  }, [preset.placeholder, presetDirty, theme])
 
   const activeAddIcon = useMemo(() => {
-    switch (props.theme) {
+    switch (theme) {
       case 'light':
         return addIcon
       case 'dark':
@@ -69,47 +82,52 @@ export default function Presets(props) {
       default:
         return addIcon
     }
-  }, [props.theme])
+  }, [theme])
+
+  const doSave = useCallback(() => {
+    console.log('hey')
+    if (!(!presetDirty && !preset.placeholder)) {
+      console.log('ho')
+      savePreset()
+    }
+  }, [preset.placeholder, presetDirty, savePreset])
+
+  const doDelete = useCallback(() => {
+    if (!preset.placeholder) {
+      deletePreset()
+    }
+  }, [deletePreset, preset.placeholder])
 
   return (
-    <div className={classNames('presets-container', props.className)}>
+    <div className={classNames('presets-container', className)}>
       <div className="presets">
-        <input
-          type="text"
-          value={props.preset.name}
-          onChange={props.setPresetName}
-          style={{ paddingRight: inputPadding }}
-        />
+        <input type="text" value={preset.name} onChange={setPresetName} style={{ paddingRight: inputPadding }} />
         <div className="preset-tags">
-          {(props.presetDirty || props.preset.placeholder) && <img className="preset-edited" src={edited} alt="" />}
-          {props.presetHotkey !== null && (
+          {(presetDirty || preset.placeholder) && <img className="preset-edited" src={edited} alt="" />}
+          {presetHotkey !== null && (
             <div className="preset-hotkey">
-              <p>{props.presetHotkey}</p>
+              <p>{presetHotkey}</p>
             </div>
           )}
         </div>
-        <Dropdn
-          options={props.presetOptions}
-          value={props.preset.id}
-          placeholder="New Preset"
-          setValue={props.setPreset}
-          small
-        />
+        <Dropdn options={presetOptions} value={preset.id} placeholder="New Preset" setValue={setPreset} small />
         <div className="preset-dummy"></div>
         <div
           className={classNames('preset-action preset-save', {
-            disabled: !props.presetDirty && !props.preset.placeholder,
+            disabled: !presetDirty && !preset.placeholder,
           })}
-          onClick={props.savePreset}>
+          onClick={doSave}
+          title="Save Preset">
           <img src={activeSaveIcon} alt="Save" />
         </div>
         <div
-          className={classNames('preset-action preset-delete', { disabled: props.preset.placeholder })}
-          onClick={props.deletePreset}>
+          className={classNames('preset-action preset-delete', { disabled: preset.placeholder })}
+          onClick={doDelete}
+          title="Delete Preset">
           <img src={activeTrashIcon} alt="Delete" />
         </div>
-        <div className="preset-action preset-new" onClick={props.newPreset}>
-          <img src={activeAddIcon} alt="New" />
+        <div className="preset-action preset-new" onClick={newPreset} title="Duplicate Preset">
+          <img src={activeAddIcon} alt="Duplicate" />
         </div>
       </div>
       <p className="presets-label no-select">Preset</p>

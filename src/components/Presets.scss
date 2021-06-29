@@ -51,7 +51,7 @@
       background-color: $darkerLightOrange;
     }
     &.disabled {
-      pointer-events: none;
+      cursor: auto;
       background-color: $darkLightOrange;
     }
   }
