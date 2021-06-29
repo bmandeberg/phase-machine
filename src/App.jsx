@@ -127,6 +127,7 @@ export default function App() {
     }
     WebMidi.enable((err) => {
       if (err) {
+        console.log(err)
         alert('Unable to enable Web MIDI 😢')
       } else {
         WebMidi.addListener('connected', connectMidi)
