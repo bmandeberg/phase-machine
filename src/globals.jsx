@@ -57,13 +57,6 @@ export const RATES = [
   '64n',
   '64n.',
   '64t',
-  '128n',
-  '128n.',
-  '128t',
-  '256n',
-  '256n.',
-  '256t',
-  '0',
 ]
 
 function themedIcon(icon, theme) {
