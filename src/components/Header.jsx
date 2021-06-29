@@ -91,13 +91,12 @@ export default class Header extends React.Component {
           deletePreset={this.props.deletePreset}
           theme={this.props.theme}
         />
-        <Dropdn
+        <RadioButtons
           className="header-item"
           label="View"
           options={VIEWS}
-          setValue={this.props.setView}
-          value={this.props.view}
-          small
+          selected={this.props.view}
+          setSelected={this.props.setView}
         />
         <Dropdn
           className="header-item"
