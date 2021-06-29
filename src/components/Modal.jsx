@@ -46,6 +46,18 @@ export default function Modal({
   }, [setModalType])
 
   useEffect(() => {
+    function keydown(e) {
+      if (e.key === 'Escape') {
+        closeModal()
+      }
+    }
+    window.addEventListener('keydown', keydown)
+    return () => {
+      window.removeEventListener('keydown', keydown)
+    }
+  }, [closeModal])
+
+  useEffect(() => {
     if (modalType) {
       modalTypeRef.current = modalType
     }
