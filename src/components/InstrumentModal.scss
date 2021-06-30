@@ -46,6 +46,9 @@
     margin-right: 10px;
     display: inline-block;
     vertical-align: top;
+    &.fat-count {
+      margin-right: 11px;
+    }
   }
   .controls-label {
     position: absolute;

@@ -417,7 +417,7 @@ export default function InstrumentModal({
                       theme={theme}
                     />
                     <NumInput
-                      className="instrument-item"
+                      className="instrument-item fat-count"
                       value={fatCount}
                       setValue={setFatCount}
                       label="# Osc"
