@@ -867,7 +867,7 @@ export default function InstrumentModal({
                   max={0.5}
                   value={reverbPreDelay}
                   setValue={setReverbPreDelay}
-                  label="Decay"
+                  label="Pre Delay"
                   setGrabbing={setGrabbing}
                   grabbing={grabbing}
                   inline={false}
