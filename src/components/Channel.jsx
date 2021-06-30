@@ -128,7 +128,10 @@ export default function Channel({
   const [midiHold, setMidiHold] = useState(initState.midiHold)
   const midiHoldRef = useRef()
   const [customMidiOutChannel, setCustomMidiOutChannel] = useState(false)
+  const customMidiOutChannelRef = useRef(customMidiOutChannel)
   const [midiOutChannel, setMidiOutChannel] = useState(1)
+  const midiOutChannelRef = useRef(midiOutChannel)
+  const midiOutRef = useRef(midiOut)
 
   // instrument params
   const [instrumentParams, setInstrumentParams] = useState(initState.instrumentParams)
@@ -148,8 +151,6 @@ export default function Channel({
   const hotkeyRestartRef = useRef(hotkeyRestart)
 
   const channelNumRef = useRef(channelNum)
-  const midiOutRef = useRef(midiOut)
-
   const [modalType, setModalType] = useState('')
 
   const toggleDrawerOpen = useCallback(() => {
@@ -579,6 +580,16 @@ export default function Channel({
         instrument.current = synthInstrument.current
     }
     return () => {
+      if (notePlaying.current && noteIndex.current !== undefined) {
+        Tone.context.clearTimeout(noteOffTimeout.current)
+        instrument.current.triggerRelease()
+        const channel = customMidiOutChannelRef.current ? midiOutChannelRef.current : channelNumRef.current + 1
+        const note = noteString(noteIndex.current)
+        const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
+        if (midiOutObj) {
+          midiOutObj.stopNote(note, channel)
+        }
+      }
       synthInstrument.current.dispose()
       marimbaInstrument.current.dispose()
       pianoInstrument.current.dispose()
@@ -677,14 +688,16 @@ export default function Channel({
 
   // note off when changing channel number
   useEffect(() => {
-    if (notePlaying.current && noteIndex.current !== undefined) {
+    if (notePlaying.current && noteIndex.current !== undefined && channelNumRef.current !== channelNum) {
       const channel = customMidiOutChannel ? midiOutChannel : channelNumRef.current + 1
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
       noteOff(channel, note, midiOutObj, true, null)
+      channelNumRef.current = channelNum
     }
-    channelNumRef.current = channelNum
     midiOutRef.current = midiOut
+    customMidiOutChannelRef.current = customMidiOutChannel
+    midiOutChannelRef.current = midiOutChannel
   }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel, noteOff])
 
   // loop events
