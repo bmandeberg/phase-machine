@@ -1284,7 +1284,7 @@ export default function Channel({
           {keyRateEl}
           {keyArpModeEl}
           {keySustainNormal}
-          {keySustainNormal}
+          {keySwingNormal}
           <div
             style={{ top: numChannels * CHANNEL_HEIGHT }}
             className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
@@ -1344,7 +1344,7 @@ export default function Channel({
           {keyRateEl}
           {keyArpModeEl}
           {keySustainNormal}
-          {keySustainNormal}
+          {keySwingNormal}
           <div className="channel-module border"></div>
           <Sequencer
             className="channel-module"
@@ -1403,7 +1403,7 @@ export default function Channel({
                 {keyRateEl}
                 {keySustainVertical}
               </div>
-              {keySustainVertical}
+              {keySwingVertical}
             </div>
             <div
               className={classNames('channel-drawer-control', { 'drawer-open': drawerOpen })}
