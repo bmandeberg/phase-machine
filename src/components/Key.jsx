@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { whiteKey, blackKeyLeft, blackKeyRight } from '../globals'
 import pitchClassesCircle from '../assets/pitch-classes-circle.svg'
@@ -34,15 +34,9 @@ export default function Key({
 
   const selectedKeyVisible = useCallback((i) => showKeyPreview && keyPreview[i], [keyPreview, showKeyPreview])
 
-  return (
-    <div
-      className={classNames('key', className, {
-        'piano-keys': pianoKeys,
-        clock: !pianoKeys,
-        'to-top': turningAxisKnob,
-      })}>
-      {!pianoKeys && <img className="pitch-class-labels no-select" src={pitchClassesCircle} alt="" />}
-      {[...Array(12)].map((d, i) => (
+  const pitchClasses = useMemo(
+    () =>
+      [...Array(12)].map((d, i) => (
         <div
           key={i}
           className={classNames('pitch-class', {
@@ -59,9 +53,25 @@ export default function Key({
             transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : null,
           }}
           onClick={() => togglePitchClass(i)}></div>
-      ))}
-      {pianoKeys &&
-        [...Array(12)].map((d, i) => <SelectedKey key={i} visible={selectedKeyVisible(i)} {...SELECTED_KEYS[i]} />)}
+      )),
+    [keyPreview, musicalKey, mute, pianoKeys, playingPitchClass, rangeMode, showKeyPreview, togglePitchClass]
+  )
+
+  const selectedKeys = useMemo(
+    () => [...Array(12)].map((d, i) => <SelectedKey key={i} visible={selectedKeyVisible(i)} {...SELECTED_KEYS[i]} />),
+    [selectedKeyVisible]
+  )
+
+  return (
+    <div
+      className={classNames('key', className, {
+        'piano-keys': pianoKeys,
+        clock: !pianoKeys,
+        'to-top': turningAxisKnob,
+      })}>
+      {!pianoKeys && <img className="pitch-class-labels no-select" src={pitchClassesCircle} alt="" />}
+      {pitchClasses}
+      {pianoKeys && selectedKeys}
     </div>
   )
 }

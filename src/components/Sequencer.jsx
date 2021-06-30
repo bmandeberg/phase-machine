@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { MAX_SEQUENCE_LENGTH } from '../globals'
@@ -31,22 +31,26 @@ export default function Sequencer({
     })
   }, [seqLength, setSeqSteps])
 
+  const steps = useMemo(
+    () =>
+      [...Array(MAX_SEQUENCE_LENGTH)].map((d, i) => (
+        <div
+          className={classNames('sequence-step', {
+            selected: seqSteps[i],
+            playing: playingStep === i,
+            hidden: i >= seqLength,
+          })}
+          onClick={() => updateSeq(i)}
+          key={i}>
+          {showStepNumbers && i + 1}
+        </div>
+      )),
+    [playingStep, seqLength, seqSteps, showStepNumbers, updateSeq]
+  )
+
   return (
     <div className={classNames('sequencer', className)}>
-      <div className="sequencer-container">
-        {[...Array(MAX_SEQUENCE_LENGTH)].map((d, i) => (
-          <div
-            className={classNames('sequence-step', {
-              selected: seqSteps[i],
-              playing: playingStep === i,
-              hidden: i >= seqLength,
-            })}
-            onClick={() => updateSeq(i)}
-            key={i}>
-            {showStepNumbers && i + 1}
-          </div>
-        ))}
-      </div>
+      <div className="sequencer-container">{steps}</div>
       {children}
     </div>
   )

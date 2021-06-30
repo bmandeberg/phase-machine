@@ -49,6 +49,10 @@ export default class Header extends React.Component {
     }
   }
 
+  openSettings() {
+    this.props.setModalType('settings')
+  }
+
   render() {
     return (
       <div id="header">
@@ -126,12 +130,7 @@ export default class Header extends React.Component {
           />
         )}
         <div className="header-aux">
-          <div
-            className="aux-item header-settings"
-            onClick={() => {
-              this.props.setModalType('settings')
-            }}
-            title="Settings"></div>
+          <div className="aux-item header-settings" onClick={this.openSettings.bind(this)} title="Settings"></div>
         </div>
       </div>
     )

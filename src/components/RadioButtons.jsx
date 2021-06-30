@@ -1,22 +1,26 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './RadioButtons.scss'
 
-export default function RadioButtons(props) {
+export default function RadioButtons({ className, options, selected, setSelected, label }) {
+  const optionsEls = useMemo(
+    () =>
+      options.map((option) => (
+        <div
+          className={classNames('radio-button no-select', { 'radio-button-selected': selected === option })}
+          onClick={() => setSelected(option)}
+          key={option}>
+          {option}
+        </div>
+      )),
+    [options, selected, setSelected]
+  )
+
   return (
-    <div className={classNames('radio-buttons-container', props.className)}>
-      <div className="radio-buttons">
-        {props.options.map((option) => (
-          <div
-            className={classNames('radio-button no-select', { 'radio-button-selected': props.selected === option })}
-            onClick={() => props.setSelected(option)}
-            key={option}>
-            {option}
-          </div>
-        ))}
-      </div>
-      <p className="radio-buttons radio-buttons-label no-select">{props.label}</p>
+    <div className={classNames('radio-buttons-container', className)}>
+      <div className="radio-buttons">{optionsEls}</div>
+      <p className="radio-buttons radio-buttons-label no-select">{label}</p>
     </div>
   )
 }

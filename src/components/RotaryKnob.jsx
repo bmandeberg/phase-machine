@@ -9,6 +9,7 @@ import { expInterpolate } from '../math'
 import './RotaryKnob.scss'
 
 const AXIS_LINE_SIZE = 270
+const RANDOM_RANGE = 10000000
 
 export default function RotaryKnob({
   value,
@@ -182,11 +183,11 @@ export default function RotaryKnob({
   }, [theme])
 
   const skin = useMemo(() => {
-    const st0 = Math.round(Math.random() * 100000)
-    const st1 = Math.round(Math.random() * 100000)
-    const st2 = Math.round(Math.random() * 100000)
-    const st3 = Math.round(Math.random() * 100000)
-    const st4 = Math.round(Math.random() * 100000)
+    const st0 = Math.round(Math.random() * RANDOM_RANGE)
+    const st1 = Math.round(Math.random() * RANDOM_RANGE)
+    const st2 = Math.round(Math.random() * RANDOM_RANGE)
+    const st3 = Math.round(Math.random() * RANDOM_RANGE)
+    const st4 = Math.round(Math.random() * RANDOM_RANGE)
     return {
       knobX: 55,
       knobY: 55.5,
@@ -226,12 +227,12 @@ export default function RotaryKnob({
   }, [knobColor, knobIndicator, knobInnerStroke, knobOuterStroke, knobTicks])
 
   const detentSkin = useMemo(() => {
-    const st0 = Math.round(Math.random() * 100000)
-    const st1 = Math.round(Math.random() * 100000)
-    const st2 = Math.round(Math.random() * 100000)
-    const st3 = Math.round(Math.random() * 100000)
-    const st4 = Math.round(Math.random() * 100000)
-    const st5 = Math.round(Math.random() * 100000)
+    const st0 = Math.round(Math.random() * RANDOM_RANGE)
+    const st1 = Math.round(Math.random() * RANDOM_RANGE)
+    const st2 = Math.round(Math.random() * RANDOM_RANGE)
+    const st3 = Math.round(Math.random() * RANDOM_RANGE)
+    const st4 = Math.round(Math.random() * RANDOM_RANGE)
+    const st5 = Math.round(Math.random() * RANDOM_RANGE)
     return {
       knobX: 55,
       knobY: 55.5,
@@ -272,10 +273,10 @@ export default function RotaryKnob({
   }, [knobColor, knobIndicator, knobInnerStroke, knobOuterStroke, knobTicks])
 
   const axisSkin = useMemo(() => {
-    const st0 = Math.round(Math.random() * 100000)
-    const st1 = Math.round(Math.random() * 100000)
-    const st2 = Math.round(Math.random() * 100000)
-    const st3 = Math.round(Math.random() * 100000)
+    const st0 = Math.round(Math.random() * RANDOM_RANGE)
+    const st1 = Math.round(Math.random() * RANDOM_RANGE)
+    const st2 = Math.round(Math.random() * RANDOM_RANGE)
+    const st3 = Math.round(Math.random() * RANDOM_RANGE)
     return {
       knobX: 42,
       knobY: 42,

@@ -111,9 +111,9 @@ export default function Piano({
     [rangeMode, setKeybdPitches]
   )
 
-  return (
-    <div className="piano channel-module">
-      {[...Array(12 * OCTAVES)].map((d, i) => (
+  const pianoKeys = useMemo(
+    () =>
+      [...Array(12 * OCTAVES)].map((d, i) => (
         <div
           key={i}
           onClick={() => selectNote(i)}
@@ -132,7 +132,13 @@ export default function Piano({
             interactive: !rangeMode,
             playing: (!rangeMode || noteOn) && playingNote === i,
           })}></div>
-      ))}
+      )),
+    [keybdPitches, mute, noteOn, playingNote, rangeEnd, rangeMode, rangeStart, selectNote]
+  )
+
+  return (
+    <div className="piano channel-module">
+      {pianoKeys}
       {rangeMode && (
         <svg
           style={{ left: pxStart.px - 2 }}
