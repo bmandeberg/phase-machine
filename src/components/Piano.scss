@@ -8,6 +8,7 @@
   white-space: nowrap;
   overflow: visible;
   .piano-note {
+    @extend .no-select;
     pointer-events: none;
     width: 10px;
     height: 57px;

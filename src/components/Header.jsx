@@ -56,10 +56,10 @@ export default class Header extends React.Component {
   render() {
     return (
       <div id="header">
-        <img id="logo" src={this.props.theme === 'dark' ? logoDark : logo} alt="Phase Machine" />
+        <img id="logo" className="no-select" src={this.props.theme === 'dark' ? logoDark : logo} alt="Phase Machine" />
         <img
           id="play-stop"
-          className="header-item"
+          className="header-item no-select"
           src={this.props.playing ? stop : this.props.theme === 'dark' ? playDark : play}
           alt="PLAY"
           onClick={this.playStop.bind(this)}

@@ -97,6 +97,7 @@
     margin-left: 2px;
   }
   .preset-hotkey {
+    @extend .no-select;
     width: 15px;
     height: 15px;
     background-color: $blue;

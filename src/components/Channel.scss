@@ -61,6 +61,7 @@
     margin-right: 16px;
   }
   .arrow-small {
+    @extend .no-select;
     width: 18px;
     position: absolute;
     left: 550px;
@@ -133,6 +134,7 @@
     margin-left: 37px;
   }
   .arrow-clock {
+    @extend .no-select;
     position: absolute;
     top: 156px;
     left: 192px;
@@ -431,6 +433,7 @@
 }
 
 .switch-label {
+  @extend .no-select;
   &.selected {
     color: darken($green, 10%);
   }
