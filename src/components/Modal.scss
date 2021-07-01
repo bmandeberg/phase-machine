@@ -36,6 +36,7 @@ $modalHeaderHeight: 50px;
       letter-spacing: 0.01em;
       p,
       .modal-close {
+        @extend .no-select;
         display: inline-block;
         vertical-align: top;
       }
@@ -67,6 +68,7 @@ $modalHeaderHeight: 50px;
           margin-top: 0;
         }
         .modal-label {
+          @extend .no-select;
           display: inline-block;
           vertical-align: middle;
           height: 24px;

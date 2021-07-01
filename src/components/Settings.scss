@@ -1,7 +1,12 @@
+@import '../sass-globals.scss';
+
 .settings {
   width: 280px;
   .settings-item {
     margin-top: 10px;
+    p {
+      @extend .no-select;
+    }
     .settings-label, .instrument-switch {
       display: inline-block;
       vertical-align: middle;
