@@ -158,7 +158,7 @@ export default function Piano({
         <div
           {...dragRangeLeft()}
           style={{ left: pxStart.px - 6, width: pxStart.boundaryType ? 14 : 10 }}
-          className="range-resize"></div>
+          className="range-resize no-select"></div>
       )}
       {rangeMode && (
         <div
@@ -167,18 +167,18 @@ export default function Piano({
             left: pxStart.px + (pxStart.boundaryType ? 8 : 4),
             width: pxEnd.px - pxStart.px - 10 - (pxStart.boundaryType ? 4 : 0) - (pxEnd.boundaryType ? 4 : 0),
           }}
-          className={classNames('range-drag', { grabbing, resizing })}></div>
+          className={classNames('range-drag no-select', { grabbing, resizing })}></div>
       )}
       {rangeMode && (
         <div
           {...dragRangeRight()}
           style={{ left: pxEnd.px - (pxEnd.boundaryType ? 10 : 6), width: pxEnd.boundaryType ? 14 : 10 }}
-          className="range-resize"></div>
+          className="range-resize no-select"></div>
       )}
       {rangeMode && (
         <svg
           style={{ left: pxStart.px - 2 }}
-          className={classNames('piano-range piano-range-glow', { 'show-range-glow': changingRange })}
+          className={classNames('piano-range piano-range-glow no-select', { 'show-range-glow': changingRange })}
           width={pxEnd.px - pxStart.px + 2}
           height="99"
           xmlns="http://www.w3.org/2000/svg">

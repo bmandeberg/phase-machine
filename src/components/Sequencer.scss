@@ -13,6 +13,7 @@
 }
 
 .sequence-step {
+  @extend .no-select;
   width: 22px;
   height: 22px;
   border-radius: 24px;
