@@ -1,5 +1,8 @@
 @import '../sass-globals.scss';
 
+$modalTopMargin: 12vh;
+$modalHeaderHeight: 50px;
+
 .modal-container {
   position: fixed;
   display: none;
@@ -14,7 +17,7 @@
   pointer-events: none;
   .modal-buffer {
     height: 0%;
-    margin-top: 120px;
+    margin-top: $modalTopMargin;
   }
   .modal-window {
     background-color: #ffffff;
@@ -54,6 +57,8 @@
       padding: 20px;
       box-sizing: border-box;
       font-size: 18px;
+      max-height: calc(100vh - #{$modalTopMargin} - #{$modalHeaderHeight} - 2vh);
+      overflow-y: auto;
       .modal-item {
         margin-top: 10px;
         &:first-of-type {
@@ -84,7 +89,7 @@
     transition: opacity $transitionTime;
     .modal-buffer {
       transition: margin-top $transitionTime;
-      margin-top: 100px;
+      margin-top: $modalTopMargin;
     }
   }
   &.show-enter-done {
@@ -92,7 +97,7 @@
     opacity: 1;
     pointer-events: auto;
     .modal-buffer {
-      margin-top: 100px;
+      margin-top: $modalTopMargin;
     }
   }
   &.show-exit {
@@ -100,7 +105,7 @@
     opacity: 1;
     pointer-events: none;
     .modal-buffer {
-      margin-top: 100px;
+      margin-top: $modalTopMargin;
     }
   }
   &.show-exit-active {

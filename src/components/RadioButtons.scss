@@ -1,6 +1,7 @@
 @import '../sass-globals.scss';
 
 .radio-buttons {
+  white-space: nowrap;
   .radio-button {
     height: 21px;
     display: inline-block;

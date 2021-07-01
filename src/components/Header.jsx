@@ -96,14 +96,22 @@ export default class Header extends React.Component {
           theme={this.props.theme}
         />
         <RadioButtons
-          className="header-item"
+          className="header-item view-buttons"
           label="View"
           options={VIEWS}
           selected={this.props.view}
           setSelected={this.props.setView}
         />
         <Dropdn
-          className="header-item"
+          className="header-item view-dropdown"
+          label="View"
+          options={VIEWS}
+          setValue={this.props.setView}
+          value={this.props.view}
+          small
+        />
+        <Dropdn
+          className="header-item midi-dropdown"
           label="MIDI Out"
           options={this.props.midiOuts}
           setValue={this.props.setMidiOut}
@@ -112,7 +120,7 @@ export default class Header extends React.Component {
           small
         />
         <Dropdn
-          className="header-item"
+          className="header-item midi-dropdown"
           label="MIDI In"
           options={this.props.midiIns}
           setValue={this.props.setMidiIn}

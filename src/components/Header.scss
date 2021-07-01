@@ -50,3 +50,34 @@ $margin: 12px;
 .header-item {
   margin-right: $margin;
 }
+
+.view-dropdown {
+  display: none;
+}
+
+@media screen and (max-width: 1025px) {
+  .view-buttons {
+    display: none;
+  }
+  .view-dropdown {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 943px) {
+  .midi-dropdown {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 695px) {
+  .presets-container {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 485px) {
+  .view-dropdown {
+    display: none;
+  }
+}
