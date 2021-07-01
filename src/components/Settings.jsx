@@ -178,7 +178,7 @@ export default function Settings({
       </div>
       <div className="settings-item">
         <div onClick={clearLocalStorage} className="button red-button">
-          Clear Presets and Settings
+          Delete Presets and Settings
         </div>
       </div>
     </div>
