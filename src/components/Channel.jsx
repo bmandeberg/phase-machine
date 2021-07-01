@@ -701,7 +701,7 @@ export default function Channel({
 
   // play note
   const playNote = useCallback(
-    (time, interval) => {
+    (time) => {
       const note = noteString(noteIndex.current)
       if (!note) return
       const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
@@ -726,7 +726,7 @@ export default function Channel({
       playingNoteRef.current = noteIndex.current
       // schedule note-off if we are not legato or if the next step is off
       if (!legato || !seqSteps[nextStep.current]) {
-        const sustainTime = Math.max(sustain * interval, 0.08)
+        const sustainTime = Math.max(sustain * Tone.Transport.toSeconds(keyRate), 0.08)
         Tone.context.clearTimeout(noteOffTimeout.current)
         noteOffTimeout.current = Tone.context.setTimeout(() => {
           noteOff(channel, note, midiOutObj, false, null)
@@ -744,6 +744,7 @@ export default function Channel({
       noteOff,
       velocity,
       sustain,
+      keyRate,
     ]
   )
 
@@ -753,14 +754,14 @@ export default function Channel({
     if (!muted && !emptyKey && seqSteps[currentStep.current]) {
       if (playNoteBuffer.current.seq && (!legato || !seqSteps[prevStep.current] || !notePlaying.current)) {
         notePlayed = true
-        playNote(playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME, playNoteBuffer.current.seq.interval)
+        playNote(playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME)
       }
       if (
         !notePlayed &&
         playNoteBuffer.current.key &&
         (!notePlaying.current || !(legato && prevNoteIndex.current === noteIndex.current))
       ) {
-        playNote(playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME, playNoteBuffer.current.key.interval)
+        playNote(playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME)
       }
     }
     playNoteBuffer.current = { seq: null, key: null }
