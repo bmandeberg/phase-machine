@@ -44,6 +44,9 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     &.green-button {
       color: $darkBackground;
     }
+    &.red-button {
+      color: $darkBackground;
+    }
   }
 
   .mute-solo {

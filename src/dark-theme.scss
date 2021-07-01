@@ -48,6 +48,9 @@ $headerDarkBlue: #0f182d;
         background-color: $darkGreenActive;
       }
     }
+    &.red-button {
+      color: $darkBackground;
+    }
   }
 
   .mute-solo {
@@ -103,7 +106,8 @@ $headerDarkBlue: #0f182d;
   }
 
   .instrument-modal {
-    .controls-row, .controls-module {
+    .controls-row,
+    .controls-module {
       border-color: $darkMediumGray;
     }
     .controls-label {
@@ -633,7 +637,8 @@ $headerDarkBlue: #0f182d;
 
   .split-button {
     background-color: $darkMediumGray;
-    .split-button-action, .split-button-content {
+    .split-button-action,
+    .split-button-content {
       &:hover {
         background-color: $darkMediumGrayHover;
       }

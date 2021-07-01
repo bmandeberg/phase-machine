@@ -107,6 +107,16 @@ body {
       background-color: $greenActive;
     }
   }
+  &.red-button {
+    background-color: $red;
+    color: #ffffff;
+    &:hover {
+      background-color: $redHover;
+    }
+    &:active {
+      background-color: $redActive;
+    }
+  }
 }
 
 #header-border {

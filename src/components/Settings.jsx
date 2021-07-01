@@ -70,6 +70,14 @@ export default function Settings({
     )
   }, [presets, selectedPresets])
 
+  const clearLocalStorage = useCallback(() => {
+    const confirmClear = window.confirm('Are you sure you want to delete all presets and settings ⁉️')
+    if (confirmClear) {
+      localStorage.clear()
+      window.location.reload()
+    }
+  }, [])
+
   return (
     <div className="settings">
       <div className="settings-item">
@@ -167,6 +175,11 @@ export default function Settings({
             Import Presets
           </div>
         )}
+      </div>
+      <div className="settings-item">
+        <div onClick={clearLocalStorage} className="button red-button">
+          Clear Presets and Settings
+        </div>
       </div>
     </div>
   )
