@@ -100,6 +100,9 @@ export default function App() {
 
   useEffect(() => {
     window.localStorage.setItem('view', view)
+    setTimeout(() => {
+      document.activeElement.blur()
+    }, 500)
   }, [view])
 
   // init MIDI
