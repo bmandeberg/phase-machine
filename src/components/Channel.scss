@@ -436,6 +436,12 @@
   }
 }
 
+.stacked-buttons {
+  .button:first-of-type {
+    margin-bottom: 8px;
+  }
+}
+
 .mute {
   $muteTransitionTime: $transitionTime / 2;
   $muteGray: #d8d8d8;

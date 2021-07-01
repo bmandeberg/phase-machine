@@ -8,7 +8,7 @@ export default function FlipOpposite({ flip, previewFlip, opposite, previewOppos
   }, [setShowKeyPreview])
 
   return (
-    <div className="flip-opposite channel-module">
+    <div className="flip-opposite channel-module stacked-buttons">
       <div className="button" onClick={opposite} onMouseOver={previewOpposite} onMouseOut={hideKeyPreview}>
         Opposite
       </div>

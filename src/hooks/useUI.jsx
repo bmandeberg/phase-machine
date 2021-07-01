@@ -601,7 +601,7 @@ export default function useUI(
 
   const seqOppositeRestartEl = useMemo(() => {
     return (
-      <div className="restart-opposite">
+      <div className="restart-opposite stacked-buttons">
         <div className="button seq-button" onClick={seqRestart}>
           Restart
         </div>
