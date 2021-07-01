@@ -55,6 +55,12 @@ $margin: 12px;
   display: none;
 }
 
+@media screen and (max-width: 1182px) {
+  .scroll-to {
+    display: none;
+  }
+}
+
 @media screen and (max-width: 1025px) {
   .view-buttons {
     display: none;

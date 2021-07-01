@@ -130,7 +130,7 @@ export default class Header extends React.Component {
         />
         {this.props.view === 'horizontal' && (
           <RadioButtons
-            className="header-item"
+            className="header-item scroll-to"
             label="Scroll To"
             options={SECTIONS}
             selected={this.props.scrollTo}
