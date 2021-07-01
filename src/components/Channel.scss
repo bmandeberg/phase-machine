@@ -99,6 +99,10 @@
       background-color: $yellow;
     }
   }
+  .seq-button {
+    margin-top: 14px;
+    display: inline-block;
+  }
 }
 
 .channel-clock {
@@ -150,6 +154,8 @@
   .piano {
     margin-top: 16px;
     margin-right: 0;
+  }
+  .restart-opposite {
   }
   .channel-drawer-control {
     $arrow-size: 8px;
@@ -252,7 +258,7 @@
         margin-right: 0;
       }
       .button {
-        margin-top: 8px;
+        margin-top: 12px;
       }
     }
     .piano-drawer-border {
@@ -572,9 +578,4 @@
       background-size: 13px 14px;
     }
   }
-}
-
-.seq-button {
-  margin-top: 14px;
-  display: inline-block;
 }

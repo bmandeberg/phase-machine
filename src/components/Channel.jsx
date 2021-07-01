@@ -946,6 +946,7 @@ export default function Channel({
     keyViewTypeEl,
     seqRestartEl,
     seqOppositeEl,
+    seqOppositeRestartEl,
     notesModeEl,
     midiEl,
     clearResetEl,
@@ -1434,6 +1435,7 @@ export default function Channel({
                 {seqMovementNormal}
                 {seqSwingNormal}
                 {legatoNormal}
+                {seqOppositeRestartEl}
                 {instrumentSmall}
               </div>
             </div>

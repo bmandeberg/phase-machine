@@ -599,6 +599,19 @@ export default function useUI(
     )
   }, [seqOpposite])
 
+  const seqOppositeRestartEl = useMemo(() => {
+    return (
+      <div className="restart-opposite">
+        <div className="button seq-button" onClick={seqRestart}>
+          Restart
+        </div>
+        <div className="button seq-button" onClick={seqOpposite}>
+          Opposite
+        </div>
+      </div>
+    )
+  }, [seqOpposite, seqRestart])
+
   const instrumentEl = useCallback(
     (small) => {
       return (
@@ -655,6 +668,7 @@ export default function useUI(
     keyViewTypeEl,
     seqRestartEl,
     seqOppositeEl,
+    seqOppositeRestartEl,
     notesModeEl,
     midiEl,
     clearResetEl,
