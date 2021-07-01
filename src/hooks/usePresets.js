@@ -200,10 +200,7 @@ export default function usePresets(
   const validPreset = useCallback((preset) => {
     function invalidProp(obj, prop, type) {
       const typeCheck = typeof obj[prop] !== type
-      return (
-        !obj.hasOwnProperty(prop) ||
-        (type === 'number' ? typeCheck && obj[prop] !== null : typeCheck)
-      )
+      return !obj.hasOwnProperty(prop) || (type === 'number' ? typeCheck && obj[prop] !== null : typeCheck)
     }
     if (
       invalidProp(preset, 'name', 'string') ||
@@ -227,10 +224,10 @@ export default function usePresets(
         invalidProp(channel, 'key', 'object') ||
         channel.key.length !== 12 ||
         invalidProp(channel, 'keyRate', 'string') ||
-        invalidProp(channel, 'keyArpMode', 'string') ||
+        invalidProp(channel, 'keyMovement', 'string') ||
         invalidProp(channel, 'keyArpInc1', 'number') ||
         invalidProp(channel, 'keyArpInc2', 'number') ||
-        invalidProp(channel, 'keySustain', 'number') ||
+        invalidProp(channel, 'sustain', 'number') ||
         invalidProp(channel, 'keySwing', 'number') ||
         invalidProp(channel, 'keySwingLength', 'number') ||
         invalidProp(channel, 'mute', 'boolean') ||
@@ -242,12 +239,11 @@ export default function usePresets(
         invalidProp(channel, 'seqSteps', 'object') ||
         invalidProp(channel, 'seqLength', 'number') ||
         invalidProp(channel, 'seqRate', 'string') ||
-        invalidProp(channel, 'seqArpMode', 'string') ||
+        invalidProp(channel, 'seqMovement', 'string') ||
         invalidProp(channel, 'seqArpInc1', 'number') ||
         invalidProp(channel, 'seqArpInc2', 'number') ||
         invalidProp(channel, 'seqSwing', 'number') ||
         invalidProp(channel, 'seqSwingLength', 'number') ||
-        invalidProp(channel, 'seqSustain', 'number') ||
         invalidProp(channel, 'legato', 'boolean') ||
         invalidProp(channel, 'instrumentOn', 'boolean') ||
         invalidProp(channel, 'instrumentType', 'string') ||

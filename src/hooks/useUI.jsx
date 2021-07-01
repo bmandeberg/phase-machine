@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react'
-import { RATES, ARP_MODES, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN, themedSwitch } from '../globals'
+import { RATES, MOVEMENTS, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN, themedSwitch } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
@@ -61,14 +61,14 @@ export default function useUI(
   setResizing,
   setKeyRate,
   keyRate,
-  setKeyArpMode,
-  keyArpMode,
+  setKeyMovement,
+  keyMovement,
   keyArpInc1,
   setKeyArpInc1,
   keyArpInc2,
   setKeyArpInc2,
-  keySustain,
-  setKeySustain,
+  sustain,
+  setSustain,
   keySwing,
   setKeySwing,
   keySwingLength,
@@ -77,8 +77,8 @@ export default function useUI(
   setSeqLength,
   setSeqRate,
   seqRate,
-  setSeqArpMode,
-  seqArpMode,
+  setSeqMovement,
+  seqMovement,
   seqArpInc1,
   setSeqArpInc1,
   seqArpInc2,
@@ -87,8 +87,6 @@ export default function useUI(
   setSeqSwing,
   seqSwingLength,
   setSeqSwingLength,
-  seqSustain,
-  setSeqSustain,
   setLegato,
   legato,
   instrumentOn,
@@ -381,24 +379,24 @@ export default function useUI(
     )
   }, [keyRate, setKeyRate])
 
-  const arpModes = useMemo(() => Object.keys(ARP_MODES), [])
+  const movements = useMemo(() => Object.keys(MOVEMENTS), [])
 
-  const keyArpModeEl = useMemo(() => {
+  const keyMovementEl = useMemo(() => {
     return (
       <Dropdn
-        className="channel-module key-arp-mode"
-        label="Arp Mode"
-        options={arpModes}
-        setValue={setKeyArpMode}
-        value={keyArpMode}
-        showNumInputs={keyArpMode === '+/-'}
+        className="channel-module key-movement"
+        label="Movement"
+        options={movements}
+        setValue={setKeyMovement}
+        value={keyMovement}
+        showNumInputs={keyMovement === '+/-'}
         num1={keyArpInc1}
         setNum1={setKeyArpInc1}
         num2={keyArpInc2}
         setNum2={setKeyArpInc2}
       />
     )
-  }, [arpModes, keyArpInc1, keyArpInc2, keyArpMode, setKeyArpInc1, setKeyArpInc2, setKeyArpMode])
+  }, [movements, keyArpInc1, keyArpInc2, keyMovement, setKeyArpInc1, setKeyArpInc2, setKeyMovement])
 
   const keySustainEl = useCallback(
     (vertical) => {
@@ -406,8 +404,8 @@ export default function useUI(
         <RotaryKnob
           min={SUSTAIN_MIN}
           className="channel-module key-sustain"
-          value={keySustain}
-          setValue={setKeySustain}
+          value={sustain}
+          setValue={setSustain}
           label="Sustain"
           setGrabbing={setGrabbing}
           grabbing={grabbing}
@@ -418,11 +416,11 @@ export default function useUI(
         />
       )
     },
-    [grabbing, keySustain, linearKnobs, muted, setGrabbing, setKeySustain, theme]
+    [grabbing, sustain, linearKnobs, muted, setGrabbing, setSustain, theme]
   )
 
-  const keySustainNormal = useMemo(() => keySustainEl(false), [keySustainEl])
-  const keySustainVertical = useMemo(() => keySustainEl(true), [keySustainEl])
+  const sustainNormal = useMemo(() => keySustainEl(false), [keySustainEl])
+  const sustainVertical = useMemo(() => keySustainEl(true), [keySustainEl])
 
   const keySwingEl = useCallback(
     (vertical) => {
@@ -499,17 +497,17 @@ export default function useUI(
   const seqRateNormal = useMemo(() => seqRateEl(false), [seqRateEl])
   const seqRateInline = useMemo(() => seqRateEl(true), [seqRateEl])
 
-  const seqArpModeEl = useCallback(
+  const seqMovementEl = useCallback(
     (inline) => {
       return (
         <Dropdn
-          className="channel-module seq-arp-mode"
-          label="Seq Mode"
-          options={arpModes}
-          setValue={setSeqArpMode}
-          value={seqArpMode}
+          className="channel-module seq-movement"
+          label="Movement"
+          options={movements}
+          setValue={setSeqMovement}
+          value={seqMovement}
           inline={inline}
-          showNumInputs={seqArpMode === '+/-'}
+          showNumInputs={seqMovement === '+/-'}
           num1={seqArpInc1}
           setNum1={setSeqArpInc1}
           num2={seqArpInc2}
@@ -517,11 +515,11 @@ export default function useUI(
         />
       )
     },
-    [arpModes, seqArpInc1, seqArpInc2, seqArpMode, setSeqArpInc1, setSeqArpInc2, setSeqArpMode]
+    [movements, seqArpInc1, seqArpInc2, seqMovement, setSeqArpInc1, setSeqArpInc2, setSeqMovement]
   )
 
-  const seqArpModeNormal = useMemo(() => seqArpModeEl(false), [seqArpModeEl])
-  const seqArpModeInline = useMemo(() => seqArpModeEl(true), [seqArpModeEl])
+  const seqMovementNormal = useMemo(() => seqMovementEl(false), [seqMovementEl])
+  const seqMovementInline = useMemo(() => seqMovementEl(true), [seqMovementEl])
 
   const seqSwingEl = useCallback(
     (inline) => {
@@ -557,30 +555,6 @@ export default function useUI(
 
   const seqSwingNormal = useMemo(() => seqSwingEl(false), [seqSwingEl])
   const seqSwingInline = useMemo(() => seqSwingEl(true), [seqSwingEl])
-
-  const seqSustainEl = useCallback(
-    (inline) => {
-      return (
-        <RotaryKnob
-          min={SUSTAIN_MIN}
-          className="channel-module"
-          value={seqSustain}
-          setValue={setSeqSustain}
-          label="Sustain"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          inline={inline}
-          mute={mute}
-          linearKnobs={linearKnobs}
-          theme={theme}
-        />
-      )
-    },
-    [grabbing, linearKnobs, mute, seqSustain, setGrabbing, setSeqSustain, theme]
-  )
-
-  const seqSustainNormal = useMemo(() => seqSustainEl(false), [seqSustainEl])
-  const seqSustainInline = useMemo(() => seqSustainEl(true), [seqSustainEl])
 
   const legatoEl = useCallback(
     (inline) => {
@@ -661,21 +635,19 @@ export default function useUI(
     flipOppositeEl,
     pianoEl,
     keyRateEl,
-    keyArpModeEl,
-    keySustainNormal,
-    keySustainVertical,
+    keyMovementEl,
+    sustainNormal,
+    sustainVertical,
     keySwingNormal,
     keySwingVertical,
     seqLengthNormal,
     seqLengthInline,
     seqRateNormal,
     seqRateInline,
-    seqArpModeNormal,
-    seqArpModeInline,
+    seqMovementNormal,
+    seqMovementInline,
     seqSwingNormal,
     seqSwingInline,
-    seqSustainNormal,
-    seqSustainInline,
     legatoNormal,
     legatoInline,
     instrumentNormal,

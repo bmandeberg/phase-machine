@@ -62,18 +62,17 @@ export default function Channel({
   hotkeyRestart,
   midiNoteOn,
   midiNoteOff,
-  defaultChannelModeKeybd,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
   const [key, setKey] = useState(initState.key)
   const keyRef = useRef()
   const [keyRate, setKeyRate] = useState(initState.keyRate)
-  const [keyArpMode, setKeyArpMode] = useState(initState.keyArpMode)
+  const [keyMovement, setKeyMovement] = useState(initState.keyMovement)
   const [keyArpInc1, setKeyArpInc1] = useState(initState.keyArpInc1)
   const [keyArpInc2, setKeyArpInc2] = useState(initState.keyArpInc2)
   const keyArpUtil = useRef(false)
-  const [keySustain, setKeySustain] = useState(initState.keySustain)
+  const [sustain, setSustain] = useState(initState.sustain)
   const [keySwing, setKeySwing] = useState(initState.keySwing)
   const [keySwingLength, setKeySwingLength] = useState(initState.keySwingLength)
   const [keyPreview, setKeyPreview] = useState(BLANK_PITCH_CLASSES())
@@ -101,13 +100,12 @@ export default function Channel({
   const currentStep = useRef(0)
   const nextStep = useRef()
   const [seqRate, setSeqRate] = useState(initState.seqRate)
-  const [seqArpMode, setSeqArpMode] = useState(initState.seqArpMode)
+  const [seqMovement, setSeqMovement] = useState(initState.seqMovement)
   const [seqArpInc1, setSeqArpInc1] = useState(initState.seqArpInc1)
   const [seqArpInc2, setSeqArpInc2] = useState(initState.seqArpInc2)
   const seqArpUtil = useRef(false)
   const [seqSwing, setSeqSwing] = useState(initState.seqSwing)
   const [seqSwingLength, setSeqSwingLength] = useState(initState.seqSwingLength)
-  const [seqSustain, setSeqSustain] = useState(initState.seqSustain)
   const [legato, setLegato] = useState(initState.legato)
   const [instrumentOn, setInstrumentOn] = useState(initState.instrumentOn)
   const [instrumentType, setInstrumentType] = useState(initState.instrumentType)
@@ -274,10 +272,10 @@ export default function Channel({
         setVelocity(channelPreset.velocity)
         setKey(channelPreset.key.slice())
         setKeyRate(channelPreset.keyRate)
-        setKeyArpMode(channelPreset.keyArpMode)
+        setKeyMovement(channelPreset.keyMovement)
         setKeyArpInc1(channelPreset.keyArpInc1)
         setKeyArpInc2(channelPreset.keyArpInc2)
-        setKeySustain(channelPreset.keySustain)
+        setSustain(channelPreset.sustain)
         setKeySwing(channelPreset.keySwing)
         setKeySwingLength(channelPreset.keySwingLength)
         setMute(channelPreset.mute)
@@ -289,12 +287,11 @@ export default function Channel({
         setSeqSteps(channelPreset.seqSteps.slice())
         setSeqLength(channelPreset.seqLength)
         setSeqRate(channelPreset.seqRate)
-        setSeqArpMode(channelPreset.seqArpMode)
+        setSeqMovement(channelPreset.seqMovement)
         setSeqArpInc1(channelPreset.seqArpInc1)
         setSeqArpInc2(channelPreset.seqArpInc2)
         setSeqSwing(channelPreset.seqSwing)
         setSeqSwingLength(channelPreset.seqSwingLength)
-        setSeqSustain(channelPreset.seqSustain)
         setLegato(channelPreset.legato)
         setInstrumentOn(channelPreset.instrumentOn)
         setInstrumentType(channelPreset.instrumentType)
@@ -704,7 +701,7 @@ export default function Channel({
 
   // play note
   const playNote = useCallback(
-    (time, interval, sustain) => {
+    (time, interval) => {
       const note = noteString(noteIndex.current)
       if (!note) return
       const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
@@ -736,7 +733,18 @@ export default function Channel({
         }, time - Tone.immediate() + sustainTime)
       }
     },
-    [customMidiOutChannel, midiOutChannel, channelNum, midiOut, instrumentOn, legato, seqSteps, noteOff, velocity]
+    [
+      customMidiOutChannel,
+      midiOutChannel,
+      channelNum,
+      midiOut,
+      instrumentOn,
+      legato,
+      seqSteps,
+      noteOff,
+      velocity,
+      sustain,
+    ]
   )
 
   const clearPlayNoteBuffer = useCallback(() => {
@@ -745,26 +753,18 @@ export default function Channel({
     if (!muted && !emptyKey && seqSteps[currentStep.current]) {
       if (playNoteBuffer.current.seq && (!legato || !seqSteps[prevStep.current] || !notePlaying.current)) {
         notePlayed = true
-        playNote(
-          playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME,
-          playNoteBuffer.current.seq.interval,
-          seqSustain
-        )
+        playNote(playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME, playNoteBuffer.current.seq.interval)
       }
       if (
         !notePlayed &&
         playNoteBuffer.current.key &&
         (!notePlaying.current || !(legato && prevNoteIndex.current === noteIndex.current))
       ) {
-        playNote(
-          playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME,
-          playNoteBuffer.current.key.interval,
-          keySustain
-        )
+        playNote(playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME, playNoteBuffer.current.key.interval)
       }
     }
     playNoteBuffer.current = { seq: null, key: null }
-  }, [emptyKey, keySustain, legato, muted, playNote, seqSteps, seqSustain])
+  }, [emptyKey, legato, muted, playNote, seqSteps])
 
   const loadPlayNoteBuffer = useCallback(
     (type, time, interval) => {
@@ -786,7 +786,7 @@ export default function Channel({
       }
       setPlayingStep(currentStep.current)
       nextStep.current = handleArpMode(
-        seqArpMode,
+        seqMovement,
         seqLength,
         constrain(currentStep.current, 0, seqLength - 1),
         seqArpUtil,
@@ -797,7 +797,7 @@ export default function Channel({
         loadPlayNoteBuffer('seq', time, interval)
       }
     },
-    [emptyKey, loadPlayNoteBuffer, muted, seqArpInc1, seqArpInc2, seqArpMode, seqLength]
+    [emptyKey, loadPlayNoteBuffer, muted, seqArpInc1, seqArpInc2, seqMovement, seqLength]
   )
   useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
@@ -819,7 +819,7 @@ export default function Channel({
           }
           noteIndex.current =
             pitchRange[
-              handleArpMode(keyArpMode, pitchRange.length, currentPitchIndex, keyArpUtil, keyArpInc1, keyArpInc2)
+              handleArpMode(keyMovement, pitchRange.length, currentPitchIndex, keyArpUtil, keyArpInc1, keyArpInc2)
             ]
         } else {
           noteIndex.current = pitchRange[0]
@@ -835,7 +835,7 @@ export default function Channel({
       key,
       keyArpInc1,
       keyArpInc2,
-      keyArpMode,
+      keyMovement,
       keybdPitches,
       loadPlayNoteBuffer,
       muted,
@@ -926,21 +926,19 @@ export default function Channel({
     flipOppositeEl,
     pianoEl,
     keyRateEl,
-    keyArpModeEl,
-    keySustainNormal,
-    keySustainVertical,
+    keyMovementEl,
+    sustainNormal,
+    sustainVertical,
     keySwingNormal,
     keySwingVertical,
     seqLengthNormal,
     seqLengthInline,
     seqRateNormal,
     seqRateInline,
-    seqArpModeNormal,
-    seqArpModeInline,
+    seqMovementNormal,
+    seqMovementInline,
     seqSwingNormal,
     seqSwingInline,
-    seqSustainNormal,
-    seqSustainInline,
     legatoNormal,
     legatoInline,
     instrumentNormal,
@@ -996,14 +994,14 @@ export default function Channel({
     setResizing,
     setKeyRate,
     keyRate,
-    setKeyArpMode,
-    keyArpMode,
+    setKeyMovement,
+    keyMovement,
     keyArpInc1,
     setKeyArpInc1,
     keyArpInc2,
     setKeyArpInc2,
-    keySustain,
-    setKeySustain,
+    sustain,
+    setSustain,
     keySwing,
     setKeySwing,
     keySwingLength,
@@ -1012,8 +1010,8 @@ export default function Channel({
     setSeqLength,
     setSeqRate,
     seqRate,
-    setSeqArpMode,
-    seqArpMode,
+    setSeqMovement,
+    seqMovement,
     seqArpInc1,
     setSeqArpInc1,
     seqArpInc2,
@@ -1022,8 +1020,6 @@ export default function Channel({
     setSeqSwing,
     seqSwingLength,
     setSeqSwingLength,
-    seqSustain,
-    setSeqSustain,
     setLegato,
     legato,
     instrumentOn,
@@ -1166,10 +1162,10 @@ export default function Channel({
         velocity,
         key,
         keyRate,
-        keyArpMode,
+        keyMovement,
         keyArpInc1,
         keyArpInc2,
-        keySustain,
+        sustain,
         keySwing,
         keySwingLength,
         mute,
@@ -1181,12 +1177,11 @@ export default function Channel({
         seqSteps,
         seqLength,
         seqRate,
-        seqArpMode,
+        seqMovement,
         seqArpInc1,
         seqArpInc2,
         seqSwing,
         seqSwingLength,
-        seqSustain,
         legato,
         instrumentOn,
         instrumentType,
@@ -1211,9 +1206,9 @@ export default function Channel({
     key,
     keyArpInc1,
     keyArpInc2,
-    keyArpMode,
+    keyMovement,
     keyRate,
-    keySustain,
+    sustain,
     keySwing,
     keySwingLength,
     keybdPitches,
@@ -1227,11 +1222,10 @@ export default function Channel({
     rangeStart,
     seqArpInc1,
     seqArpInc2,
-    seqArpMode,
+    seqMovement,
     seqLength,
     seqRate,
     seqSteps,
-    seqSustain,
     seqSwing,
     seqSwingLength,
     setChannelState,
@@ -1295,8 +1289,8 @@ export default function Channel({
           </div>
           {pianoEl}
           {keyRateEl}
-          {keyArpModeEl}
-          {keySustainNormal}
+          {keyMovementEl}
+          {sustainNormal}
           {keySwingNormal}
           <div
             style={{ top: numChannels * CHANNEL_HEIGHT }}
@@ -1312,8 +1306,7 @@ export default function Channel({
               <div className="sequencer-controls">
                 {seqLengthInline}
                 {seqRateInline}
-                {seqArpModeInline}
-                {seqSustainInline}
+                {seqMovementInline}
                 {seqSwingInline}
                 {legatoInline}
                 {seqRestartEl}
@@ -1355,8 +1348,8 @@ export default function Channel({
           </div>
           {pianoEl}
           {keyRateEl}
-          {keyArpModeEl}
-          {keySustainNormal}
+          {keyMovementEl}
+          {sustainNormal}
           {keySwingNormal}
           <div className="channel-module border"></div>
           <Sequencer
@@ -1369,8 +1362,7 @@ export default function Channel({
             <div className="sequencer-controls">
               {seqLengthInline}
               {seqRateInline}
-              {seqArpModeInline}
-              {seqSustainInline}
+              {seqMovementInline}
               {seqSwingInline}
               {legatoInline}
               {seqRestartEl}
@@ -1411,10 +1403,10 @@ export default function Channel({
             {rangeMode && <img className="arrow-clock" src={arrowClockGraphic} alt="" />}
             {axisClock}
             <div className="channel-vertical">
-              {keyArpModeEl}
+              {keyMovementEl}
               <div>
                 {keyRateEl}
-                {keySustainVertical}
+                {sustainVertical}
               </div>
               {keySwingVertical}
             </div>
@@ -1439,8 +1431,7 @@ export default function Channel({
               <div className="sequencer-controls">
                 {seqLengthNormal}
                 {seqRateNormal}
-                {seqArpModeNormal}
-                {seqSustainNormal}
+                {seqMovementNormal}
                 {seqSwingNormal}
                 {legatoNormal}
                 {instrumentSmall}
@@ -1481,7 +1472,6 @@ Channel.propTypes = {
   hotkeyRestart: PropTypes.bool,
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
-  defaultChannelModeKeybd: PropTypes.bool,
 }
 
 function updateInstruments(

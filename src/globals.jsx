@@ -295,7 +295,7 @@ export const INSTRUMENT_TYPES = {
   drums: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drums', theme)} alt="" />,
 }
 
-export const ARP_MODES = {
+export const MOVEMENTS = {
   up: (length, i) => (i < length - 1 ? i + 1 : 0),
   'up/down': (length, i, descending) => {
     if ((i === 0 && descending.current) || (i === length - 1 && !descending.current)) {
@@ -316,22 +316,22 @@ export function handleArpMode(mode, length, i, util, inc1, inc2) {
   let nextPitchIndex = 0
   switch (mode) {
     case 'up':
-      nextPitchIndex = ARP_MODES['up'](length, i)
+      nextPitchIndex = MOVEMENTS['up'](length, i)
       break
     case 'up/down':
-      nextPitchIndex = ARP_MODES['up/down'](length, i, util)
+      nextPitchIndex = MOVEMENTS['up/down'](length, i, util)
       break
     case 'down':
-      nextPitchIndex = ARP_MODES['down'](length, i)
+      nextPitchIndex = MOVEMENTS['down'](length, i)
       break
     case '+/-':
-      nextPitchIndex = ARP_MODES['+/-'](length, i, inc1, inc2, util)
+      nextPitchIndex = MOVEMENTS['+/-'](length, i, inc1, inc2, util)
       break
     case 'random':
-      nextPitchIndex = ARP_MODES['random'](length)
+      nextPitchIndex = MOVEMENTS['random'](length)
       break
     default:
-      console.log('UNRECOGNIZED ARP MODE')
+      console.log('UNRECOGNIZED MOVEMENT')
   }
   return nextPitchIndex
 }
@@ -450,10 +450,10 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   velocity: KNOB_MAX,
   key: [...Array(12)].map(() => false),
   keyRate: DEFAULT_TIME_DIVISION,
-  keyArpMode: Object.keys(ARP_MODES)[0],
+  keyMovement: Object.keys(MOVEMENTS)[0],
   keyArpInc1: 2,
   keyArpInc2: -1,
-  keySustain: (KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN,
+  sustain: (KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN,
   keySwing: KNOB_MAX / 2,
   keySwingLength: 2,
   mute: false,
@@ -465,12 +465,11 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   seqSteps: [...Array(MAX_SEQUENCE_LENGTH)].map(() => false),
   seqLength: 16,
   seqRate: DEFAULT_TIME_DIVISION,
-  seqArpMode: Object.keys(ARP_MODES)[0],
+  seqMovement: Object.keys(MOVEMENTS)[0],
   seqArpInc1: 2,
   seqArpInc2: -1,
   seqSwing: KNOB_MAX / 2,
   seqSwingLength: 2,
-  seqSustain: (KNOB_MAX - SUSTAIN_MIN) / 2 + SUSTAIN_MIN,
   legato: false,
   instrumentOn: true,
   instrumentType: 'triangle',
