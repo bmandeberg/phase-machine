@@ -106,7 +106,7 @@ export default function Channel({
   const seqArpUtil = useRef(false)
   const [seqSwing, setSeqSwing] = useState(initState.seqSwing)
   const [seqSwingLength, setSeqSwingLength] = useState(initState.seqSwingLength)
-  const [legato, setLegato] = useState(initState.legato)
+  const [hold, setHold] = useState(initState.hold)
   const [instrumentOn, setInstrumentOn] = useState(initState.instrumentOn)
   const [instrumentType, setInstrumentType] = useState(initState.instrumentType)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -292,7 +292,7 @@ export default function Channel({
         setSeqArpInc2(channelPreset.seqArpInc2)
         setSeqSwing(channelPreset.seqSwing)
         setSeqSwingLength(channelPreset.seqSwingLength)
-        setLegato(channelPreset.legato)
+        setHold(channelPreset.hold)
         setInstrumentOn(channelPreset.instrumentOn)
         setInstrumentType(channelPreset.instrumentType)
         setRangeMode(channelPreset.rangeMode)
@@ -724,8 +724,8 @@ export default function Channel({
       setPlayingNote(noteIndex.current)
       notePlaying.current = true
       playingNoteRef.current = noteIndex.current
-      // schedule note-off if we are not legato or if the next step is off
-      if (!legato || !seqSteps[nextStep.current]) {
+      // schedule note-off if we are not hold or if the next step is off
+      if (!hold || !seqSteps[nextStep.current]) {
         const sustainTime = Math.max(sustain * Tone.Transport.toSeconds(keyRate), 0.08)
         Tone.context.clearTimeout(noteOffTimeout.current)
         noteOffTimeout.current = Tone.context.setTimeout(() => {
@@ -739,7 +739,7 @@ export default function Channel({
       channelNum,
       midiOut,
       instrumentOn,
-      legato,
+      hold,
       seqSteps,
       noteOff,
       velocity,
@@ -752,20 +752,20 @@ export default function Channel({
     // play note
     let notePlayed = false
     if (!muted && !emptyKey && seqSteps[currentStep.current]) {
-      if (playNoteBuffer.current.seq && (!legato || !seqSteps[prevStep.current] || !notePlaying.current)) {
+      if (playNoteBuffer.current.seq && (!hold || !seqSteps[prevStep.current] || !notePlaying.current)) {
         notePlayed = true
         playNote(playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME)
       }
       if (
         !notePlayed &&
         playNoteBuffer.current.key &&
-        (!notePlaying.current || !(legato && prevNoteIndex.current === noteIndex.current))
+        (!notePlaying.current || !(hold && prevNoteIndex.current === noteIndex.current))
       ) {
         playNote(playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME)
       }
     }
     playNoteBuffer.current = { seq: null, key: null }
-  }, [emptyKey, legato, muted, playNote, seqSteps])
+  }, [emptyKey, hold, muted, playNote, seqSteps])
 
   const loadPlayNoteBuffer = useCallback(
     (type, time, interval) => {
@@ -940,8 +940,8 @@ export default function Channel({
     seqMovementInline,
     seqSwingNormal,
     seqSwingInline,
-    legatoNormal,
-    legatoInline,
+    holdNormal,
+    holdInline,
     instrumentNormal,
     instrumentSmall,
     keyViewTypeEl,
@@ -1022,8 +1022,8 @@ export default function Channel({
     setSeqSwing,
     seqSwingLength,
     setSeqSwingLength,
-    setLegato,
-    legato,
+    setHold,
+    hold,
     instrumentOn,
     setInstrumentOn,
     instrumentType,
@@ -1184,7 +1184,7 @@ export default function Channel({
         seqArpInc2,
         seqSwing,
         seqSwingLength,
-        legato,
+        hold,
         instrumentOn,
         instrumentType,
         rangeMode,
@@ -1214,7 +1214,7 @@ export default function Channel({
     keySwing,
     keySwingLength,
     keybdPitches,
-    legato,
+    hold,
     midiHold,
     midiIn,
     midiOutChannel,
@@ -1310,7 +1310,7 @@ export default function Channel({
                 {seqRateInline}
                 {seqMovementInline}
                 {seqSwingInline}
-                {legatoInline}
+                {holdInline}
                 {seqRestartEl}
                 {seqOppositeEl}
               </div>
@@ -1366,7 +1366,7 @@ export default function Channel({
               {seqRateInline}
               {seqMovementInline}
               {seqSwingInline}
-              {legatoInline}
+              {holdInline}
               {seqRestartEl}
               {seqOppositeEl}
             </div>
@@ -1435,7 +1435,7 @@ export default function Channel({
                 {seqRateNormal}
                 {seqMovementNormal}
                 {seqSwingNormal}
-                {legatoNormal}
+                {holdNormal}
                 {seqOppositeRestartEl}
                 {instrumentSmall}
               </div>

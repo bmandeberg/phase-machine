@@ -470,7 +470,7 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   seqArpInc2: -1,
   seqSwing: KNOB_MAX / 2,
   seqSwingLength: 2,
-  legato: false,
+  hold: false,
   instrumentOn: true,
   instrumentType: 'triangle',
   rangeMode,

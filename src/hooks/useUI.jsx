@@ -87,8 +87,8 @@ export default function useUI(
   setSeqSwing,
   seqSwingLength,
   setSeqSwingLength,
-  setLegato,
-  legato,
+  setHold,
+  hold,
   instrumentOn,
   setInstrumentOn,
   instrumentType,
@@ -556,14 +556,14 @@ export default function useUI(
   const seqSwingNormal = useMemo(() => seqSwingEl(false), [seqSwingEl])
   const seqSwingInline = useMemo(() => seqSwingEl(true), [seqSwingEl])
 
-  const legatoEl = useCallback(
+  const holdEl = useCallback(
     (inline) => {
       return (
         <div className={classNames('switch-container channel-module', { inline })}>
           <Switch
             className="switch"
-            onChange={setLegato}
-            checked={legato}
+            onChange={setHold}
+            checked={hold}
             uncheckedIcon={false}
             checkedIcon={false}
             offColor={offColor}
@@ -573,15 +573,15 @@ export default function useUI(
             width={48}
             height={24}
           />
-          <p className="switch-label">Legato</p>
+          <p className="switch-label">Hold</p>
         </div>
       )
     },
-    [legato, offColor, offHandleColor, onColor, onHandleColor, setLegato]
+    [hold, offColor, offHandleColor, onColor, onHandleColor, setHold]
   )
 
-  const legatoNormal = useMemo(() => legatoEl(false), [legatoEl])
-  const legatoInline = useMemo(() => legatoEl(true), [legatoEl])
+  const holdNormal = useMemo(() => holdEl(false), [holdEl])
+  const holdInline = useMemo(() => holdEl(true), [holdEl])
 
   const seqRestartEl = useMemo(() => {
     return (
@@ -661,8 +661,8 @@ export default function useUI(
     seqMovementInline,
     seqSwingNormal,
     seqSwingInline,
-    legatoNormal,
-    legatoInline,
+    holdNormal,
+    holdInline,
     instrumentNormal,
     instrumentSmall,
     keyViewTypeEl,

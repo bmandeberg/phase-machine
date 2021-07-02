@@ -244,7 +244,7 @@ export default function usePresets(
         invalidProp(channel, 'seqArpInc2', 'number') ||
         invalidProp(channel, 'seqSwing', 'number') ||
         invalidProp(channel, 'seqSwingLength', 'number') ||
-        invalidProp(channel, 'legato', 'boolean') ||
+        invalidProp(channel, 'hold', 'boolean') ||
         invalidProp(channel, 'instrumentOn', 'boolean') ||
         invalidProp(channel, 'instrumentType', 'string') ||
         invalidProp(channel, 'rangeMode', 'boolean') ||
