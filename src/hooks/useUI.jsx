@@ -290,7 +290,7 @@ export default function useUI(
 
   const clearResetEl = useMemo(
     () => (
-      <div className="clear-reset channel-module">
+      <div className="clear-reset channel-module stacked-buttons">
         <div onClick={clearNotes} className="button">
           Clear
         </div>
