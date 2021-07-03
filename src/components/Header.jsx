@@ -117,6 +117,7 @@ export default class Header extends React.Component {
           setValue={this.props.setMidiOut}
           value={this.props.midiOut}
           placeholder="No MIDI Out"
+          noOptions="MIDI only works in Google Chrome"
           small
         />
         <Dropdown
@@ -126,6 +127,7 @@ export default class Header extends React.Component {
           setValue={this.props.setMidiIn}
           value={this.props.midiIn}
           placeholder="No MIDI In"
+          noOptions="MIDI only works in Google Chrome"
           small
         />
         {this.props.view === 'horizontal' && (
@@ -155,6 +157,7 @@ Header.propTypes = {
   midiIn: PropTypes.string,
   setMidiOut: PropTypes.func,
   setMidiIn: PropTypes.func,
+  midiEnabled: PropTypes.bool,
   numChannels: PropTypes.number,
   setNumChannels: PropTypes.func,
   VIEWS: PropTypes.array,

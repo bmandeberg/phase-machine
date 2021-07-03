@@ -29,6 +29,7 @@ export default function Dropdown({
   setValue,
   value,
   placeholder,
+  noOptions,
   small,
   noTextTransform,
   capitalize,
@@ -98,22 +99,26 @@ export default function Dropdown({
 
   const optionEls = useMemo(
     () =>
-      options.map((option) => {
-        const optionValue = typeof option === 'object' ? option.value : option
-        const optionLabel = typeof option === 'object' ? option.label : option
-        return (
-          <div
-            key={uuid()}
-            onClick={() => {
-              setValue(optionValue)
-              setOpen(false)
-            }}
-            className={classNames('dropdown-option', { selected: optionValue === value })}>
-            {optionLabel}
-          </div>
-        )
-      }),
-    [options, setValue, value]
+      options.length ? (
+        options.map((option) => {
+          const optionValue = typeof option === 'object' ? option.value : option
+          const optionLabel = typeof option === 'object' ? option.label : option
+          return (
+            <div
+              key={uuid()}
+              onClick={() => {
+                setValue(optionValue)
+                setOpen(false)
+              }}
+              className={classNames('dropdown-option', { selected: optionValue === value })}>
+              {optionLabel}
+            </div>
+          )
+        })
+      ) : (
+        <div className="no-options">{noOptions || 'No options found'}</div>
+      ),
+    [noOptions, options, setValue, value]
   )
 
   const menuWrapperStyle = useMemo(() => {
@@ -170,6 +175,7 @@ Dropdown.propTypes = {
   setValue: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   placeholder: PropTypes.string,
+  noOptions: PropTypes.string,
   small: PropTypes.bool,
   noTextTransform: PropTypes.bool,
   capitalize: PropTypes.bool,

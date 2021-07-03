@@ -36,6 +36,7 @@ export default function App() {
   const viewRef = useRef()
   viewRef.current = view
 
+  const [midiEnabled, setMidiEnabled] = useState(false)
   const [midiOut, setMidiOut] = useState(null)
   const midiOutRef = useRef()
   const [midiOuts, setMidiOuts] = useState([])
@@ -131,8 +132,8 @@ export default function App() {
     WebMidi.enable((err) => {
       if (err) {
         console.log(err)
-        alert('Unable to enable Web MIDI 😢')
       } else {
+        setMidiEnabled(true)
         WebMidi.addListener('connected', connectMidi)
         WebMidi.addListener('disconnected', disconnectMidi)
       }
@@ -399,6 +400,7 @@ export default function App() {
         midiIn={midiIn}
         setMidiOut={setMidiOut}
         setMidiIn={setMidiIn}
+        midiEnabled={midiEnabled}
         numChannels={numChannels}
         setNumChannels={setNumChannels}
         view={view}
