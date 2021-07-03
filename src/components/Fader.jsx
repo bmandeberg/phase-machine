@@ -76,13 +76,15 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     },
   })
 
+  const faderStyle = useMemo(() => ({ top: FADER_HEIGHT * (1 - value) - 1 }), [value])
+
   return (
     <div className={classNames('fader channel-module', className)} onClick={faderClick}>
       <img src={faderSlotGraphic} alt="" className="fader-slot" />
       <img
         src={faderKnobGraphic}
         alt=""
-        style={{ top: FADER_HEIGHT * (1 - value) - 1 }}
+        style={faderStyle}
         {...drag()}
         className={classNames('fader-knob', { grabbing })}
         draggable="false"

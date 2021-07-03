@@ -62,6 +62,11 @@ export default function Key({
     [selectedKeyVisible]
   )
 
+  const pitchClassLabels = useMemo(
+    () => <img className="pitch-class-labels no-select" src={pitchClassesCircle} alt="" />,
+    []
+  )
+
   return (
     <div
       className={classNames('key', className, {
@@ -69,7 +74,7 @@ export default function Key({
         clock: !pianoKeys,
         'to-top': turningAxisKnob,
       })}>
-      {!pianoKeys && <img className="pitch-class-labels no-select" src={pitchClassesCircle} alt="" />}
+      {!pianoKeys && pitchClassLabels}
       {pitchClasses}
       {pianoKeys && selectedKeys}
     </div>
@@ -90,8 +95,8 @@ Key.propTypes = {
 }
 
 function SelectedKey({ left, type, visible }) {
-  if (type === 0) {
-    return (
+  const type0 = useMemo(
+    () => (
       <svg
         style={{ left }}
         className={classNames('piano-key-selected', { visible })}
@@ -105,9 +110,11 @@ function SelectedKey({ left, type, visible }) {
         </defs>
         <path d="M0 0 V 64 H 23 v -24 h -11 V 0 Z" clipPath="url(#key-1-clip)" />
       </svg>
-    )
-  } else if (type === 1) {
-    return (
+    ),
+    [left, visible]
+  )
+  const type1 = useMemo(
+    () => (
       <svg
         style={{ left }}
         className={classNames('piano-key-selected', { visible })}
@@ -116,9 +123,11 @@ function SelectedKey({ left, type, visible }) {
         xmlns="http://www.w3.org/2000/svg">
         <rect x="0" y="0" width="16" height="38" />
       </svg>
-    )
-  } else if (type === 2) {
-    return (
+    ),
+    [left, visible]
+  )
+  const type2 = useMemo(
+    () => (
       <svg
         style={{ left }}
         className={classNames('piano-key-selected', { visible })}
@@ -132,9 +141,11 @@ function SelectedKey({ left, type, visible }) {
         </defs>
         <path d="M0 40 V 64 H 23 V 40 H 16 V 0 H 7 V 40 Z" clipPath="url(#key-3-clip)" />
       </svg>
-    )
-  } else if (type === 3) {
-    return (
+    ),
+    [left, visible]
+  )
+  const type3 = useMemo(
+    () => (
       <svg
         style={{ left }}
         className={classNames('piano-key-selected', { visible })}
@@ -148,9 +159,11 @@ function SelectedKey({ left, type, visible }) {
         </defs>
         <path d="M0 40 V 64 H 23 V 0 H 11 V 40 Z" clipPath="url(#key-4-clip)" />
       </svg>
-    )
-  } else if (type === 4) {
-    return (
+    ),
+    [left, visible]
+  )
+  const type4 = useMemo(
+    () => (
       <svg
         style={{ left }}
         className={classNames('piano-key-selected', { visible })}
@@ -164,9 +177,11 @@ function SelectedKey({ left, type, visible }) {
         </defs>
         <path d="M0 40 V 64 H 23 V 40 H 14 V 0 H 7 V 40 Z" clipPath="url(#key-5-clip)" />
       </svg>
-    )
-  } else if (type === 5) {
-    return (
+    ),
+    [left, visible]
+  )
+  const type5 = useMemo(
+    () => (
       <svg
         style={{ left }}
         className={classNames('piano-key-selected', { visible })}
@@ -180,9 +195,26 @@ function SelectedKey({ left, type, visible }) {
         </defs>
         <path d="M0 40 V 64 H 23 V 40 H 16 V 0 H 9 V 40 Z" clipPath="url(#key-6-clip)" />
       </svg>
-    )
+    ),
+    [left, visible]
+  )
+
+  switch (type) {
+    case 0:
+      return type0
+    case 1:
+      return type1
+    case 2:
+      return type2
+    case 3:
+      return type3
+    case 4:
+      return type4
+    case 5:
+      return type5
+    default:
+      return null
   }
-  return null
 }
 SelectedKey.propTypes = {
   left: PropTypes.number,

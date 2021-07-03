@@ -21,16 +21,22 @@ export default function MIDIModal({
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
 
+  const midiChannel = useMemo(() => <p className="channel-num">{channelNum + 1}</p>, [channelNum])
+  const customInput = useMemo(
+    () => (
+      <div className="modal-param">
+        <NumInput value={midiOutChannel} setValue={setMidiOutChannel} min={1} max={16} />
+      </div>
+    ),
+    [midiOutChannel, setMidiOutChannel]
+  )
+
   return (
     <div className="midi-modal">
       <div className="modal-item modal-num-input">
         <p className="modal-label">MIDI Output Channel</p>
-        {!customMidiOutChannel && <p className="channel-num">{channelNum + 1}</p>}
-        {customMidiOutChannel && (
-          <div className="modal-param">
-            <NumInput value={midiOutChannel} setValue={setMidiOutChannel} min={1} max={16} />
-          </div>
-        )}
+        {!customMidiOutChannel && midiChannel}
+        {customMidiOutChannel && customInput}
       </div>
       <div className="modal-item">
         <p className="modal-label">Custom Output Channel</p>

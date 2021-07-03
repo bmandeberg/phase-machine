@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './MultiSelect.scss'
@@ -49,6 +49,9 @@ export default function MultiSelect({ options, setValues, values, placeholder })
     e.stopPropagation()
   }, [])
 
+  const placeholderEl = useMemo(() => <p className="multi-select-placeholder">{placeholder}</p>, [placeholder])
+  const noOptionsEl = useMemo(() => <div className="multi-select-option">No options</div>, [])
+
   return (
     <div ref={multiSelectRef} className="multi-select">
       <div onClick={toggleDropdown} className="multi-select-control">
@@ -61,7 +64,7 @@ export default function MultiSelect({ options, setValues, values, placeholder })
               </div>
             </div>
           ))}
-          {!values.length && <p className="multi-select-placeholder">{placeholder}</p>}
+          {!values.length && placeholderEl}
         </div>
         <div onClick={toggleDropdown} className="multi-select-arrow-container">
           <div className="multi-select-arrow"></div>
@@ -73,7 +76,7 @@ export default function MultiSelect({ options, setValues, values, placeholder })
             {option}
           </div>
         ))}
-        {!options.length && <div className="multi-select-option">No options</div>}
+        {!options.length && noOptionsEl}
       </div>
     </div>
   )

@@ -355,9 +355,132 @@ export default function RotaryKnob({
   const clampMax = useMemo(() => (axisKnob ? 360 : 270), [axisKnob])
   const rotateDegrees = useMemo(() => (axisKnob ? 0 : -135), [axisKnob])
 
+  const axisKnobHelper = useMemo(
+    () => (
+      <div className="axis-knob-helper">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          style={{
+            transform: `rotate(${value * 15}deg)`,
+            left: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 149 : 21),
+            top: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 114 : 21),
+          }}
+          className="axis-line"
+          width={AXIS_LINE_SIZE}
+          height={AXIS_LINE_SIZE}>
+          <defs>
+            <filter id="filter">
+              <feGaussianBlur stdDeviation="15" />
+            </filter>
+            <mask id="mask">
+              <ellipse
+                cx={AXIS_LINE_SIZE / 2}
+                cy={AXIS_LINE_SIZE / 2}
+                rx={AXIS_LINE_SIZE / 2 - 40}
+                ry={AXIS_LINE_SIZE / 2 - 40}
+                fill="white"
+                filter="url(#filter)"></ellipse>
+            </mask>
+          </defs>
+          <rect x="0" y="0" width={AXIS_LINE_SIZE / 2} height={AXIS_LINE_SIZE} fill="transparent" mask="url(#mask)" />
+        </svg>
+        {!axisKnobLarge && (
+          <Key
+            musicalKey={musicalKey}
+            setKey={setKey}
+            playingPitchClass={playingPitchClass}
+            setPlayingPitchClass={setPlayingPitchClass}
+            className="axis-knob-supplemental"
+            keyPreview={keyPreview}
+            showKeyPreview={showKeyPreview}
+          />
+        )}
+      </div>
+    ),
+    [axisKnobLarge, keyPreview, musicalKey, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, value]
+  )
+  const axisKey = useMemo(
+    () => (
+      <Key
+        musicalKey={musicalKey}
+        setKey={setKey}
+        playingPitchClass={playingPitchClass}
+        turningAxisKnob={turningAxisKnob}
+        keyPreview={keyPreview}
+        showKeyPreview={showKeyPreview}
+        rangeMode={rangeMode}
+      />
+    ),
+    [keyPreview, musicalKey, playingPitchClass, rangeMode, setKey, showKeyPreview, turningAxisKnob]
+  )
+  const linearKnob = useMemo(
+    () => (
+      <LinearKnob
+        className={activeClass}
+        min={minVal}
+        max={maxVal}
+        value={internalValue}
+        onChange={updateValue}
+        skin={activeSkin}
+        unlockDistance={30}
+        style={knobSize}
+        onStart={onStart}
+        onEnd={onEnd}
+        clampMax={clampMax}
+        rotateDegrees={rotateDegrees}
+      />
+    ),
+    [
+      activeClass,
+      activeSkin,
+      clampMax,
+      internalValue,
+      knobSize,
+      maxVal,
+      minVal,
+      onEnd,
+      onStart,
+      rotateDegrees,
+      updateValue,
+    ]
+  )
+  const relativeCircularKnob = useMemo(
+    () => (
+      <Knob
+        className={activeClass}
+        min={minVal}
+        max={maxVal}
+        value={internalValue}
+        onChange={updateValue}
+        skin={activeSkin}
+        unlockDistance={30}
+        preciseMode={false}
+        style={knobSize}
+        onStart={onStart}
+        onEnd={onEnd}
+        clampMax={clampMax}
+        rotateDegrees={rotateDegrees}
+      />
+    ),
+    [
+      activeClass,
+      activeSkin,
+      clampMax,
+      internalValue,
+      knobSize,
+      maxVal,
+      minVal,
+      onEnd,
+      onStart,
+      rotateDegrees,
+      updateValue,
+    ]
+  )
+  const knobStyle = useMemo(() => ({ marginLeft: squeeze && -squeeze }), [squeeze])
+
   return (
     <div
-      style={{ marginLeft: squeeze && -squeeze }}
+      style={knobStyle}
       className={classNames('knob-container', className, {
         'axis-knob': axisKnob,
         'axis-knob-large': axisKnobLarge,
@@ -365,90 +488,9 @@ export default function RotaryKnob({
         'inline-knob': inline,
         'hidden-knob': axisKnob && !rangeMode,
       })}>
-      {axisKnob && (
-        <div className="axis-knob-helper">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            style={{
-              transform: `rotate(${value * 15}deg)`,
-              left: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 149 : 21),
-              top: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 114 : 21),
-            }}
-            className="axis-line"
-            width={AXIS_LINE_SIZE}
-            height={AXIS_LINE_SIZE}>
-            <defs>
-              <filter id="filter">
-                <feGaussianBlur stdDeviation="15" />
-              </filter>
-              <mask id="mask">
-                <ellipse
-                  cx={AXIS_LINE_SIZE / 2}
-                  cy={AXIS_LINE_SIZE / 2}
-                  rx={AXIS_LINE_SIZE / 2 - 40}
-                  ry={AXIS_LINE_SIZE / 2 - 40}
-                  fill="white"
-                  filter="url(#filter)"></ellipse>
-              </mask>
-            </defs>
-            <rect x="0" y="0" width={AXIS_LINE_SIZE / 2} height={AXIS_LINE_SIZE} fill="transparent" mask="url(#mask)" />
-          </svg>
-          {!axisKnobLarge && (
-            <Key
-              musicalKey={musicalKey}
-              setKey={setKey}
-              playingPitchClass={playingPitchClass}
-              setPlayingPitchClass={setPlayingPitchClass}
-              className="axis-knob-supplemental"
-              keyPreview={keyPreview}
-              showKeyPreview={showKeyPreview}
-            />
-          )}
-        </div>
-      )}
-      {axisKnobLarge && (
-        <Key
-          musicalKey={musicalKey}
-          setKey={setKey}
-          playingPitchClass={playingPitchClass}
-          turningAxisKnob={turningAxisKnob}
-          keyPreview={keyPreview}
-          showKeyPreview={showKeyPreview}
-          rangeMode={rangeMode}
-        />
-      )}
-      {linearKnobs ? (
-        <LinearKnob
-          className={activeClass}
-          min={minVal}
-          max={maxVal}
-          value={internalValue}
-          onChange={updateValue}
-          skin={activeSkin}
-          unlockDistance={30}
-          style={knobSize}
-          onStart={onStart}
-          onEnd={onEnd}
-          clampMax={clampMax}
-          rotateDegrees={rotateDegrees}
-        />
-      ) : (
-        <Knob
-          className={activeClass}
-          min={minVal}
-          max={maxVal}
-          value={internalValue}
-          onChange={updateValue}
-          skin={activeSkin}
-          unlockDistance={30}
-          preciseMode={false}
-          style={knobSize}
-          onStart={onStart}
-          onEnd={onEnd}
-          clampMax={clampMax}
-          rotateDegrees={rotateDegrees}
-        />
-      )}
+      {axisKnob && axisKnobHelper}
+      {axisKnobLarge && axisKey}
+      {linearKnobs ? linearKnob : relativeCircularKnob}
       <div className="knob-label no-select">{axisKnob ? 'Axis' : label}</div>
     </div>
   )

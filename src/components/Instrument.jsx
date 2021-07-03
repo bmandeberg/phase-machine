@@ -44,11 +44,34 @@ export default function Instrument({
   const splitButtonRight = useCallback(() => incrementInstrument(true), [incrementInstrument])
   const splitButtonLeft = useCallback(() => incrementInstrument(false), [incrementInstrument])
 
+  const switchLabelOff = useMemo(() => <p className="switch-label">Off</p>, [])
+  const switchLabelOn = useMemo(() => <p className="switch-label">On</p>, [])
+  const switchLabel = useMemo(() => <div className="instrument-label">Instrument</div>, [])
+  const instrButton = useMemo(
+    () => (
+      <div onClick={openInstrumentModal} className="button">
+        Instr
+      </div>
+    ),
+    [openInstrumentModal]
+  )
+  const instrSplitButton = useMemo(
+    () => (
+      <SplitButton
+        content={splitButtonContent}
+        rightAction={splitButtonRight}
+        leftAction={splitButtonLeft}
+        contentAction={openInstrumentModal}
+      />
+    ),
+    [openInstrumentModal, splitButtonContent, splitButtonLeft, splitButtonRight]
+  )
+
   return (
     <div className={classNames('instrument', className)}>
       <div className="instrument-switch-container">
         <div>
-          {!small && <p className="switch-label">Off</p>}
+          {!small && switchLabelOff}
           <Switch
             className="instrument-switch"
             onChange={setInstrumentOn}
@@ -62,22 +85,11 @@ export default function Instrument({
             width={48}
             height={24}
           />
-          {!small && <p className="switch-label">On</p>}
+          {!small && switchLabelOn}
         </div>
-        {!small && <div className="instrument-label">Instrument</div>}
+        {!small && switchLabel}
       </div>
-      {small ? (
-        <div onClick={openInstrumentModal} className="button">
-          Instr
-        </div>
-      ) : (
-        <SplitButton
-          content={splitButtonContent}
-          rightAction={splitButtonRight}
-          leftAction={splitButtonLeft}
-          contentAction={openInstrumentModal}
-        />
-      )}
+      {small ? instrButton : instrSplitButton}
     </div>
   )
 }

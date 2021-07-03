@@ -127,6 +127,19 @@ export default function Dropdown({
   }, [container, menuAbove, menuHeight, scrollTop])
   const menuStyle = useMemo(() => (container ? { width: dropdownWidth } : null), [container, dropdownWidth])
 
+  const dropdownLabel = useMemo(() => <p className="dropdown-label no-select">{label}</p>, [label])
+  const numInputs = useMemo(
+    () => (
+      <div className="dropdown-num-inputs-wrapper">
+        <div className="dropdown-num-inputs">
+          <NumInput value={num1} setValue={setNum1} />
+          <NumInput value={num2} setValue={setNum2} />
+        </div>
+      </div>
+    ),
+    [num1, num2, setNum1, setNum2]
+  )
+
   return (
     <div
       ref={dropdownRef}
@@ -156,15 +169,8 @@ export default function Dropdown({
         </div>
         <div className="dropdown-min-width">{longestText(options)}</div>
       </div>
-      {label && <p className="dropdown-label no-select">{label}</p>}
-      {setNum1 && (
-        <div className="dropdown-num-inputs-wrapper">
-          <div className="dropdown-num-inputs">
-            <NumInput value={num1} setValue={setNum1} />
-            <NumInput value={num2} setValue={setNum2} />
-          </div>
-        </div>
-      )}
+      {label && dropdownLabel}
+      {setNum1 && numInputs}
     </div>
   )
 }

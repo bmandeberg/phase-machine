@@ -96,17 +96,24 @@ export default function Presets({
     }
   }, [deletePreset, preset.placeholder])
 
+  const presetEdited = useMemo(() => <img className="preset-edited" src={edited} alt="" />, [])
+  const presetHotkeyEl = useMemo(
+    () => (
+      <div className="preset-hotkey">
+        <p>{presetHotkey}</p>
+      </div>
+    ),
+    [presetHotkey]
+  )
+  const inputStyle = useMemo(() => ({ paddingRight: inputPadding }), [inputPadding])
+
   return (
     <div className={classNames('presets-container', className)}>
       <div className="presets">
-        <input type="text" value={preset.name} onChange={setPresetName} style={{ paddingRight: inputPadding }} />
+        <input type="text" value={preset.name} onChange={setPresetName} style={inputStyle} />
         <div className="preset-tags">
-          {(presetDirty || preset.placeholder) && <img className="preset-edited" src={edited} alt="" />}
-          {presetHotkey !== null && (
-            <div className="preset-hotkey">
-              <p>{presetHotkey}</p>
-            </div>
-          )}
+          {(presetDirty || preset.placeholder) && presetEdited}
+          {presetHotkey !== null && presetHotkeyEl}
         </div>
         <Dropdown
           options={presetOptions}

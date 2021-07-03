@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect } from 'react'
+import React, { useCallback, useRef, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import Settings from './Settings'
 import MIDIModal from './MIDIModal'
@@ -63,6 +63,97 @@ export default function Modal({
     }
   }, [modalType])
 
+  const settingsEl = useMemo(
+    () => (
+      <Settings
+        showStepNumbers={showStepNumbers}
+        setShowStepNumbers={setShowStepNumbers}
+        linearKnobs={linearKnobs}
+        setLinearKnobs={setLinearKnobs}
+        hotkeyRestart={hotkeyRestart}
+        setHotkeyRestart={setHotkeyRestart}
+        defaultChannelModeKeybd={defaultChannelModeKeybd}
+        setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
+        theme={theme}
+        setTheme={setTheme}
+        presets={presets}
+        importPresets={importPresets}
+        modalType={modalType}
+      />
+    ),
+    [
+      defaultChannelModeKeybd,
+      hotkeyRestart,
+      importPresets,
+      linearKnobs,
+      modalType,
+      presets,
+      setDefaultChannelModeKeybd,
+      setHotkeyRestart,
+      setLinearKnobs,
+      setShowStepNumbers,
+      setTheme,
+      showStepNumbers,
+      theme,
+    ]
+  )
+  const midiEl = useMemo(
+    () => (
+      <MIDIModal
+        midiHold={midiHold}
+        setMidiHold={setMidiHold}
+        customMidiOutChannel={customMidiOutChannel}
+        setCustomMidiOutChannel={setCustomMidiOutChannel}
+        channelNum={channelNum}
+        theme={theme}
+        midiOutChannel={midiOutChannel}
+        setMidiOutChannel={setMidiOutChannel}
+      />
+    ),
+    [
+      channelNum,
+      customMidiOutChannel,
+      midiHold,
+      midiOutChannel,
+      setCustomMidiOutChannel,
+      setMidiHold,
+      setMidiOutChannel,
+      theme,
+    ]
+  )
+  const instrumentEl = useMemo(
+    () => (
+      <InstrumentModal
+        instrumentOn={instrumentOn}
+        setInstrumentOn={setInstrumentOn}
+        instrumentType={instrumentType}
+        setInstrumentType={setInstrumentType}
+        instrumentParams={instrumentParams}
+        setInstrumentParams={setInstrumentParams}
+        instruments={instruments}
+        effects={effects}
+        theme={theme}
+        grabbing={grabbing}
+        setGrabbing={setGrabbing}
+        linearKnobs={linearKnobs}
+      />
+    ),
+    [
+      effects,
+      grabbing,
+      instrumentOn,
+      instrumentParams,
+      instrumentType,
+      instruments,
+      linearKnobs,
+      setGrabbing,
+      setInstrumentOn,
+      setInstrumentParams,
+      setInstrumentType,
+      theme,
+    ]
+  )
+
   return (
     <div className="modal-container">
       <div className="modal-buffer">
@@ -72,51 +163,9 @@ export default function Modal({
             <div className="modal-close" onClick={closeModal}></div>
           </div>
           <div className="modal-content">
-            {modalTypeRef.current === 'settings' && modalContent && (
-              <Settings
-                showStepNumbers={showStepNumbers}
-                setShowStepNumbers={setShowStepNumbers}
-                linearKnobs={linearKnobs}
-                setLinearKnobs={setLinearKnobs}
-                hotkeyRestart={hotkeyRestart}
-                setHotkeyRestart={setHotkeyRestart}
-                defaultChannelModeKeybd={defaultChannelModeKeybd}
-                setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
-                theme={theme}
-                setTheme={setTheme}
-                presets={presets}
-                importPresets={importPresets}
-                modalType={modalType}
-              />
-            )}
-            {modalTypeRef.current === 'MIDI' && modalContent && (
-              <MIDIModal
-                midiHold={midiHold}
-                setMidiHold={setMidiHold}
-                customMidiOutChannel={customMidiOutChannel}
-                setCustomMidiOutChannel={setCustomMidiOutChannel}
-                channelNum={channelNum}
-                theme={theme}
-                midiOutChannel={midiOutChannel}
-                setMidiOutChannel={setMidiOutChannel}
-              />
-            )}
-            {modalTypeRef.current === 'instrument' && modalContent && (
-              <InstrumentModal
-                instrumentOn={instrumentOn}
-                setInstrumentOn={setInstrumentOn}
-                instrumentType={instrumentType}
-                setInstrumentType={setInstrumentType}
-                instrumentParams={instrumentParams}
-                setInstrumentParams={setInstrumentParams}
-                instruments={instruments}
-                effects={effects}
-                theme={theme}
-                grabbing={grabbing}
-                setGrabbing={setGrabbing}
-                linearKnobs={linearKnobs}
-              />
-            )}
+            {modalTypeRef.current === 'settings' && modalContent && settingsEl}
+            {modalTypeRef.current === 'MIDI' && modalContent && midiEl}
+            {modalTypeRef.current === 'instrument' && modalContent && instrumentEl}
           </div>
         </div>
       </div>

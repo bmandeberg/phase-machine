@@ -1268,8 +1268,8 @@ export default function Channel({
 
   // return based on view
 
-  if (view === 'stacked') {
-    return (
+  const stackedView = useMemo(
+    () => (
       <CSSTransition
         timeout={400}
         in={true}
@@ -1326,9 +1326,52 @@ export default function Channel({
           {modalEl}
         </div>
       </CSSTransition>
-    )
-  } else if (view === 'horizontal') {
-    return (
+    ),
+    [
+      arrowSmallGraphic,
+      axisNormal,
+      channelNum,
+      channelNumAux,
+      channelNumNormal,
+      clearResetEl,
+      dragTarget,
+      dragTargetHorizontal,
+      draggingChannel,
+      duplicateDeleteEl,
+      flipOppositeEl,
+      holdInline,
+      instrumentNormal,
+      keyEl,
+      keyMovementEl,
+      keyRateEl,
+      keySwingNormal,
+      midiEl,
+      midiInputModeEl,
+      modalEl,
+      muteSoloEl,
+      muted,
+      notesModeEl,
+      numChannels,
+      pianoEl,
+      playingStep,
+      rangeMode,
+      seqLength,
+      seqLengthInline,
+      seqMovementInline,
+      seqOppositeEl,
+      seqRateInline,
+      seqRestartEl,
+      seqSteps,
+      seqSwingInline,
+      shiftEl,
+      showStepNumbers,
+      sustainNormal,
+      velocityEl,
+    ]
+  )
+
+  const horizontalView = useMemo(
+    () => (
       <CSSTransition
         timeout={400}
         in={true}
@@ -1381,9 +1424,50 @@ export default function Channel({
           {modalEl}
         </div>
       </CSSTransition>
-    )
-  } else if (view === 'clock') {
-    return (
+    ),
+    [
+      arrowSmallGraphic,
+      axisNormal,
+      channelNum,
+      channelNumNormal,
+      clearResetEl,
+      dragTarget,
+      dragTargetHorizontal,
+      draggingChannel,
+      duplicateDeleteEl,
+      flipOppositeEl,
+      holdInline,
+      instrumentNormal,
+      keyEl,
+      keyMovementEl,
+      keyRateEl,
+      keySwingNormal,
+      midiEl,
+      midiInputModeEl,
+      modalEl,
+      muteSoloEl,
+      muted,
+      notesModeEl,
+      pianoEl,
+      playingStep,
+      rangeMode,
+      seqLength,
+      seqLengthInline,
+      seqMovementInline,
+      seqOppositeEl,
+      seqRateInline,
+      seqRestartEl,
+      seqSteps,
+      seqSwingInline,
+      shiftEl,
+      showStepNumbers,
+      sustainNormal,
+      velocityEl,
+    ]
+  )
+
+  const clockView = useMemo(
+    () => (
       <CSSTransition
         timeout={400}
         in={true}
@@ -1449,9 +1533,58 @@ export default function Channel({
           {modalEl}
         </div>
       </CSSTransition>
-    )
+    ),
+    [
+      arrowClockGraphic,
+      axisClock,
+      channelNum,
+      channelNumNormal,
+      clearResetEl,
+      dragTarget,
+      dragTargetBox,
+      draggingChannel,
+      drawerOpen,
+      duplicateDeleteEl,
+      flipOppositeEl,
+      holdNormal,
+      instrumentSmall,
+      keyMovementEl,
+      keyRateEl,
+      keySwingVertical,
+      midiEl,
+      midiInputModeEl,
+      modalEl,
+      muteSoloEl,
+      muted,
+      notesModeEl,
+      pianoEl,
+      playingStep,
+      rangeMode,
+      seqLength,
+      seqLengthNormal,
+      seqMovementNormal,
+      seqOppositeRestartEl,
+      seqRateNormal,
+      seqSteps,
+      seqSwingNormal,
+      shiftEl,
+      showStepNumbers,
+      sustainVertical,
+      toggleDrawerOpen,
+      velocityEl,
+    ]
+  )
+
+  switch (view) {
+    case 'stacked':
+      return stackedView
+    case 'horizontal':
+      return horizontalView
+    case 'clock':
+      return clockView
+    default:
+      return null
   }
-  return null
 }
 Channel.propTypes = {
   numChannels: PropTypes.number,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import NumericInput from 'react-numeric-input'
@@ -75,19 +75,23 @@ export default function NumInput({
     }
   }, [hidePreview, preview, setShowKeyPreview, showPreview, showPreviewBack, showPreviewForward])
 
+  const numInputButton = useMemo(
+    () => (
+      <div className="button" onClick={buttonAction} onMouseOver={showPreview} onMouseOut={hidePreview}>
+        {buttonText}
+      </div>
+    ),
+    [buttonAction, buttonText, hidePreview, showPreview]
+  )
+  const numInputLabel = useMemo(() => <p className="num-input-label no-select">{label}</p>, [label])
+
   return (
     <div
       ref={input}
       className={classNames('num-input', className, { 'small-input': small, 'inline-input': inline, short, disabled })}>
       {/* eslint-disable-next-line */}
       <NumericInput min={min} max={max} value={value} onChange={setValue} style={false} strict />
-      {buttonText && buttonAction ? (
-        <div className="button" onClick={buttonAction} onMouseOver={showPreview} onMouseOut={hidePreview}>
-          {buttonText}
-        </div>
-      ) : (
-        <p className="num-input-label no-select">{label}</p>
-      )}
+      {buttonText && buttonAction ? numInputButton : numInputLabel}
     </div>
   )
 }

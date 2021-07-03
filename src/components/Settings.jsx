@@ -78,6 +78,23 @@ export default function Settings({
     }
   }, [])
 
+  const copyPresetsEl = useMemo(
+    () => (
+      <div onClick={copyPresets} className="presets-action button green-button">
+        Copy Presets to clipboard
+      </div>
+    ),
+    [copyPresets]
+  )
+  const importPresetsEl = useMemo(
+    () => (
+      <div onClick={() => importPresets(presetsJSON)} className="presets-action button green-button">
+        Import Presets
+      </div>
+    ),
+    [importPresets, presetsJSON]
+  )
+
   return (
     <div className="settings">
       <div className="settings-item">
@@ -161,20 +178,12 @@ export default function Settings({
           setValues={setSelectedPresets}
           placeholder="Select Presets"
         />
-        {selectedPresets.length > 0 && (
-          <div onClick={copyPresets} className="presets-action button green-button">
-            Copy Presets to clipboard
-          </div>
-        )}
+        {selectedPresets.length > 0 && copyPresetsEl}
       </div>
       <div className="settings-item">
         <p>Import Presets</p>
         <textarea value={presetsJSON} onChange={updatePresetsJSON} />
-        {presetsJSON.length > 0 && (
-          <div onClick={() => importPresets(presetsJSON)} className="presets-action button green-button">
-            Import Presets
-          </div>
-        )}
+        {presetsJSON.length > 0 && importPresetsEl}
       </div>
       <div className="settings-item">
         <div onClick={clearLocalStorage} className="button red-button">
