@@ -381,6 +381,7 @@ export default function Channel({
   useEffect(() => {
     synthInstrument.current = new Tone.MonoSynth({
       portamento: instrumentParamsRef.current.portamento,
+      volume: -6,
       oscillator: {
         type: SAMPLER_INSTRUMENTS.includes(initInstrumentType.current) ? 'triangle' : initInstrumentType.current,
         modulationType: instrumentParamsRef.current.modulationType,
@@ -420,6 +421,7 @@ export default function Channel({
     pianoInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
+      volume: -6,
     })
     marimbaInstrument.current = new Tone.Sampler({
       urls: {
@@ -430,6 +432,7 @@ export default function Channel({
     marimbaInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
+      volume: -6,
     })
     drumsInstrument.current = new Tone.Sampler({
       urls: {
@@ -500,6 +503,7 @@ export default function Channel({
     drumsInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
+      volume: -6,
     })
     chorusEffect.current = new Tone.Chorus(
       instrumentParamsRef.current.chorusFreq,
