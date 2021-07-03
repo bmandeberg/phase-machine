@@ -81,7 +81,7 @@ export default function Dropdown({
     const dropdownDimensions = dropdownRef.current.getBoundingClientRect()
     setMenuAbove(
       dropdownDimensions.top + DROPDOWN_HEIGHT + menuHeight > window.innerHeight &&
-        dropdownDimensions.top - DROPDOWN_HEIGHT - menuHeight > 0
+        dropdownDimensions.top - DROPDOWN_HEIGHT > window.innerHeight - dropdownDimensions.top + DROPDOWN_HEIGHT
     )
     setOpen((open) => !open)
   }, [menuHeight, open])
