@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Instrument from './Instrument'
 import RotaryKnob from './RotaryKnob'
-import Dropdn from './Dropdn'
+import Dropdown from './Dropdown'
 import NumInput from './NumInput'
 import Switch from 'react-switch'
 import { SAMPLER_INSTRUMENTS, SIGNAL_TYPES, EFFECTS, themedSwitch, RATES } from '../globals'
@@ -376,7 +376,7 @@ export default function InstrumentModal({
                 />
                 {(instrumentType.startsWith('am') || instrumentType.startsWith('fm')) && (
                   <div className="controls-aux">
-                    <Dropdn
+                    <Dropdown
                       className="instrument-item"
                       label="Modulation"
                       options={SIGNAL_TYPES}
@@ -557,7 +557,7 @@ export default function InstrumentModal({
                   linearKnobs={linearKnobs}
                   theme={theme}
                 />
-                <Dropdn
+                <Dropdown
                   className="instrument-item"
                   label="Rolloff"
                   options={rolloffOptions}
@@ -681,12 +681,13 @@ export default function InstrumentModal({
         <div className="controls-row">
           <div className="controls-module effects-controls">
             <p className="controls-label">Effects</p>
-            <Dropdn
+            <Dropdown
               className="instrument-item"
               label="Effect"
               options={EFFECTS}
               setValue={setEffectType}
               value={effectType}
+              container=".modal-content"
             />
             {effectType !== 'none' && (
               <RotaryKnob
@@ -819,7 +820,7 @@ export default function InstrumentModal({
                   />
                 )}
                 {syncDelayTime && (
-                  <Dropdn
+                  <Dropdown
                     className="instrument-item"
                     label="Time"
                     options={syncedDelayOptions}

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Switch from 'react-switch'
-import Dropdn from '../components/Dropdn'
+import Dropdown from '../components/Dropdown'
 import MultiSelect from './MultiSelect'
 import { THEMES, themedSwitch } from '../globals'
 import classNames from 'classnames'
@@ -142,7 +142,7 @@ export default function Settings({
       </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Knob type</p>
-        <Dropdn
+        <Dropdown
           options={['Linear', 'Relative Circular']}
           value={knobsDropdownValue}
           setValue={setKnobType}
@@ -151,7 +151,7 @@ export default function Settings({
       </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Theme</p>
-        <Dropdn options={THEMES} value={theme} setValue={setTheme} capitalize />
+        <Dropdown options={THEMES} value={theme} setValue={setTheme} capitalize />
       </div>
       <div className="settings-item">
         <p>Export Presets</p>

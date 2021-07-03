@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import Dropdn from './Dropdn'
+import Dropdown from './Dropdown'
 import addIcon from '../assets/plus-icon-orange.svg'
 import addIconBlue from '../assets/plus-icon-blue.svg'
 import addIconDark from '../assets/plus-icon-dark.svg'
@@ -108,7 +108,14 @@ export default function Presets({
             </div>
           )}
         </div>
-        <Dropdn options={presetOptions} value={preset.id} placeholder="New Preset" setValue={setPreset} small />
+        <Dropdown
+          options={presetOptions}
+          value={preset.id}
+          placeholder="New Preset"
+          setValue={setPreset}
+          noTextTransform
+          small
+        />
         <div className="preset-dummy"></div>
         <div
           className={classNames('preset-action preset-save', {

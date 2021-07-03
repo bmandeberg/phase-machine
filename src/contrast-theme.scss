@@ -513,19 +513,19 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
   }
 
-  .Dropdown-root {
-    &.is-open .Dropdown-arrow {
+  .dropdown-root {
+    &.open .dropdown-arrow {
       border-color: transparent transparent $darkTextGray !important;
     }
   }
 
-  .Dropdown-control {
+  .dropdown-control {
     background-color: $lightMediumGray;
     border: 1px solid $lightMediumGray;
     color: $darkTextGray;
   }
 
-  .Dropdown-arrow-wrapper {
+  .dropdown-arrow-wrapper {
     border: 1px solid $lightMediumGray;
     border-left-color: $darkBackground;
     background-color: $lightMediumGray;
@@ -537,41 +537,41 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
   }
 
-  .Dropdown-arrow {
+  .dropdown-arrow {
     border-color: $darkTextGray transparent transparent;
   }
 
-  .Dropdown-menu {
+  .dropdown-menu {
     background-color: $darkBackground;
     border: 1px solid $lightMediumGray;
   }
 
-  .Dropdown-menu .Dropdown-group > .Dropdown-title {
+  .dropdown-menu .dropdown-group > .dropdown-title {
     color: $lightMediumGray;
   }
 
-  .Dropdown-option {
+  .dropdown-option {
     color: $lightMediumGray;
   }
 
-  .Dropdown-option:hover,
-  .Dropdown-option.is-selected {
+  .dropdown-option:hover,
+  .dropdown-option.selected {
     background-color: $green;
     color: $darkBackground;
   }
 
-  .Dropdown-noresults {
+  .dropdown-noresults {
     color: $lightMediumGray;
   }
 
   .dropdown-container {
     &.small-dropdown {
-      .Dropdown-control {
+      .dropdown-control {
         background-color: $blue;
         border: 1px solid $blue;
         color: $headerDarkBlue;
       }
-      .Dropdown-arrow-wrapper {
+      .dropdown-arrow-wrapper {
         border: 1px solid $blue;
         border-left-color: $headerDarkBlue;
         background-color: $blue;
@@ -582,23 +582,23 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
           background-color: $blueActive;
         }
       }
-      .Dropdown-arrow {
+      .dropdown-arrow {
         border-color: $headerDarkBlue transparent transparent;
       }
-      .Dropdown-root.is-open .Dropdown-arrow {
+      .dropdown-root.open .dropdown-arrow {
         border-color: transparent transparent $headerDarkBlue !important;
       }
-      .Dropdown-menu {
+      .dropdown-menu {
         border: 1px solid $blue;
       }
-      .Dropdown-option:hover,
-      .Dropdown-option.is-selected {
+      .dropdown-option:hover,
+      .dropdown-option.selected {
         background-color: $green;
         color: $darkBackground;
       }
     }
     &.dropdown-num-inputs-container {
-      .Dropdown-arrow-wrapper {
+      .dropdown-arrow-wrapper {
         z-index: 1;
       }
     }
@@ -628,10 +628,10 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       background-color: $blue;
       color: $darkBackground;
     }
-    .Dropdown-arrow-wrapper {
+    .dropdown-arrow-wrapper {
       border-left-color: $blue !important;
     }
-    .Dropdown-control {
+    .dropdown-control {
       border-right-color: $headerDarkBlue !important;
     }
   }
@@ -827,18 +827,18 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       }
     }
 
-    .Dropdown-control,
-    .Dropdown-arrow-wrapper {
+    .dropdown-control,
+    .dropdown-arrow-wrapper {
       border-color: $muteGray;
       background-color: $muteGray;
     }
 
-    .Dropdown-menu {
+    .dropdown-menu {
       border: 1px solid $muteGray;
       color: $muteGray;
     }
 
-    .Dropdown-arrow-wrapper {
+    .dropdown-arrow-wrapper {
       border-left-color: $darkMuteBackground;
       &:hover {
         background-color: $muteGrayHover;

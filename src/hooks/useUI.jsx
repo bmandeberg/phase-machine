@@ -3,7 +3,7 @@ import { RATES, MOVEMENTS, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN, t
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
-import Dropdn from '../components/Dropdn'
+import Dropdown from '../components/Dropdown'
 import Key from '../components/Key'
 import MuteSolo from '../components/MuteSolo'
 import MIDI from '../components/MIDI'
@@ -366,9 +366,9 @@ export default function useUI(
     )
   }, [keyViewType, setKeyViewType])
 
-  const keyRateEl = useMemo(() => {
-    return (
-      <Dropdn
+  const keyRateEl = useMemo(
+    () => (
+      <Dropdown
         className="channel-module key-rate"
         label="Rate"
         options={RATES}
@@ -376,14 +376,15 @@ export default function useUI(
         value={keyRate}
         noTextTransform
       />
-    )
-  }, [keyRate, setKeyRate])
+    ),
+    [keyRate, setKeyRate]
+  )
 
   const movements = useMemo(() => Object.keys(MOVEMENTS), [])
 
   const keyMovementEl = useMemo(() => {
     return (
-      <Dropdn
+      <Dropdown
         className="channel-module key-movement"
         label="Movement"
         options={movements}
@@ -480,7 +481,7 @@ export default function useUI(
   const seqRateEl = useCallback(
     (inline) => {
       return (
-        <Dropdn
+        <Dropdown
           className="channel-module"
           label="Rate"
           options={RATES}
@@ -500,7 +501,7 @@ export default function useUI(
   const seqMovementEl = useCallback(
     (inline) => {
       return (
-        <Dropdn
+        <Dropdown
           className="channel-module seq-movement"
           label="Movement"
           options={movements}

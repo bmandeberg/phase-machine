@@ -4,7 +4,7 @@ import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import { VIEWS, SECTIONS, MAX_CHANNELS } from '../globals'
 import NumInput from './NumInput'
-import Dropdn from './Dropdn'
+import Dropdown from './Dropdown'
 import Presets from './Presets'
 import RadioButtons from './RadioButtons'
 import logo from '../assets/logo.svg'
@@ -102,7 +102,7 @@ export default class Header extends React.Component {
           selected={this.props.view}
           setSelected={this.props.setView}
         />
-        <Dropdn
+        <Dropdown
           className="header-item view-dropdown"
           label="View"
           options={VIEWS}
@@ -110,7 +110,7 @@ export default class Header extends React.Component {
           value={this.props.view}
           small
         />
-        <Dropdn
+        <Dropdown
           className="header-item midi-dropdown"
           label="MIDI Out"
           options={this.props.midiOuts}
@@ -119,7 +119,7 @@ export default class Header extends React.Component {
           placeholder="No MIDI Out"
           small
         />
-        <Dropdn
+        <Dropdown
           className="header-item midi-dropdown"
           label="MIDI In"
           options={this.props.midiIns}
