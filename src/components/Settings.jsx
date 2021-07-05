@@ -172,18 +172,18 @@ export default function Settings({
       </div>
       <div className="settings-item">
         <p>Export Presets</p>
+        {selectedPresets.length > 0 && copyPresetsEl}
         <MultiSelect
           options={presetNames}
           values={selectedPresets}
           setValues={setSelectedPresets}
           placeholder="Select Presets"
         />
-        {selectedPresets.length > 0 && copyPresetsEl}
       </div>
       <div className="settings-item">
         <p>Import Presets</p>
-        <textarea value={presetsJSON} onChange={updatePresetsJSON} />
         {presetsJSON.length > 0 && importPresetsEl}
+        <textarea value={presetsJSON} onChange={updatePresetsJSON} />
       </div>
       <div className="settings-item">
         <div onClick={clearLocalStorage} className="button red-button">
