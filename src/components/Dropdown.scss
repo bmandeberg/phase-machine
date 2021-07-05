@@ -7,6 +7,9 @@
     border-color: transparent transparent $darkGray !important;
     border-width: 0px 7px 5px !important;
   }
+  .wave-title {
+    margin-top: 0 !important;
+  }
 }
 
 .dropdown-control {
@@ -268,6 +271,11 @@
       .dropdown-num-inputs {
         left: 0;
       }
+    }
+  }
+  &.graphic-options {
+    .dropdown-option {
+      color: $darkGray;
     }
   }
 }

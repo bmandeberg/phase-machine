@@ -8,7 +8,10 @@ import './Dropdown.scss'
 const DROPDOWN_HEIGHT = 28
 const OPTION_HEIGHT = 27
 
-function longestText(options) {
+function longestText(options, graphicOptions) {
+  if (graphicOptions) {
+    return '--------'
+  }
   if (options.length) {
     let longestOption = ''
     for (let i = 0; i < options.length; i++) {
@@ -49,6 +52,11 @@ export default function Dropdown({
   const menuRef = useRef()
   const containerRef = useRef(container)
 
+  const graphicOptions = useMemo(
+    () => options.length && typeof options[0] === 'object' && React.isValidElement(options[0].label),
+    [options]
+  )
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -86,16 +94,26 @@ export default function Dropdown({
     setOpen((open) => !open)
   }, [menuHeight, open])
 
+  const selectedIndex = useMemo(
+    () => options.findIndex((option) => (typeof option === 'object' ? option.value === value : option === value)),
+    [options, value]
+  )
+
+  const displayValue = useMemo(
+    () =>
+      selectedIndex !== -1 && typeof options[selectedIndex] === 'object'
+        ? options[selectedIndex].label
+        : options[selectedIndex],
+    [options, selectedIndex]
+  )
+
   useEffect(() => {
     if (open) {
-      const selectedIndex = options.findIndex((option) =>
-        typeof option === 'object' ? option.value === value : option === value
-      )
       if (selectedIndex !== -1) {
         menuRef.current.scroll({ top: selectedIndex * OPTION_HEIGHT })
       }
     }
-  }, [open, options, value])
+  }, [open, selectedIndex])
 
   const optionEls = useMemo(
     () =>
@@ -150,11 +168,12 @@ export default function Dropdown({
         'inline-dropdown': inline,
         'dropdown-num-inputs-container': setNum1,
         'show-dropdown-num-inputs': showNumInputs,
+        'graphic-options': graphicOptions,
       })}>
       <div className="dropdown">
         <div className={classNames('dropdown-root', { open })}>
           <div onClick={toggleOpen} className="dropdown-control">
-            <div className={classNames('dropdown-placeholder', { selected: value })}>{value || placeholder}</div>
+            <div className={classNames('dropdown-placeholder', { selected: value })}>{displayValue || placeholder}</div>
             <div className="dropdown-arrow-wrapper">
               <span className="dropdown-arrow"></span>
             </div>
@@ -167,7 +186,7 @@ export default function Dropdown({
             </div>
           </div>
         </div>
-        <div className="dropdown-min-width">{longestText(options)}</div>
+        <div className="dropdown-min-width">{longestText(options, graphicOptions)}</div>
       </div>
       {label && dropdownLabel}
       {setNum1 && numInputs}

@@ -3,8 +3,11 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Switch from 'react-switch'
 import SplitButton from './SplitButton'
+import Dropdown from './Dropdown'
 import { INSTRUMENT_TYPES, themedSwitch } from '../globals'
 import './Instrument.scss'
+
+const instrumentTypes = Object.keys(INSTRUMENT_TYPES)
 
 export default function Instrument({
   className,
@@ -20,7 +23,6 @@ export default function Instrument({
 }) {
   const incrementInstrument = useCallback(
     (next) => {
-      const instrumentTypes = Object.keys(INSTRUMENT_TYPES)
       const instrumentIndex = instrumentTypes.indexOf(instrumentType)
       if (instrumentIndex !== -1) {
         let nextIndex = instrumentIndex + (next ? 1 : -1)
@@ -35,6 +37,15 @@ export default function Instrument({
     [instrumentType, setInstrumentType]
   )
 
+  const instrumentOptions = useMemo(
+    () =>
+      instrumentTypes.map((instr) => ({
+        value: instr,
+        label: INSTRUMENT_TYPES[instr](theme),
+      })),
+    [theme]
+  )
+
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
@@ -47,25 +58,42 @@ export default function Instrument({
   const switchLabelOff = useMemo(() => <p className="switch-label">Off</p>, [])
   const switchLabelOn = useMemo(() => <p className="switch-label">On</p>, [])
   const switchLabel = useMemo(() => <div className="instrument-label">Instrument</div>, [])
-  const instrButton = useMemo(
-    () => (
-      <div onClick={openInstrumentModal} className="button">
-        Instr
-      </div>
-    ),
-    [openInstrumentModal]
-  )
-  const instrSplitButton = useMemo(
-    () => (
-      <SplitButton
-        content={splitButtonContent}
-        rightAction={splitButtonRight}
-        leftAction={splitButtonLeft}
-        contentAction={openInstrumentModal}
-      />
-    ),
-    [openInstrumentModal, splitButtonContent, splitButtonLeft, splitButtonRight]
-  )
+  const instrumentSelector = useMemo(() => {
+    if (inModal) {
+      return (
+        <Dropdown
+          className="instrument-item"
+          options={instrumentOptions}
+          setValue={setInstrumentType}
+          value={instrumentType}
+        />
+      )
+    } else if (small) {
+      return (
+        <div onClick={openInstrumentModal} className="button">
+          Instr
+        </div>
+      )
+    } else
+      return (
+        <SplitButton
+          content={splitButtonContent}
+          rightAction={splitButtonRight}
+          leftAction={splitButtonLeft}
+          contentAction={openInstrumentModal}
+        />
+      )
+  }, [
+    inModal,
+    instrumentOptions,
+    instrumentType,
+    openInstrumentModal,
+    setInstrumentType,
+    small,
+    splitButtonContent,
+    splitButtonLeft,
+    splitButtonRight,
+  ])
 
   return (
     <div className={classNames('instrument', className)}>
@@ -89,7 +117,7 @@ export default function Instrument({
         </div>
         {!small && switchLabel}
       </div>
-      {small ? instrButton : instrSplitButton}
+      {instrumentSelector}
     </div>
   )
 }

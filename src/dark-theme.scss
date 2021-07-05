@@ -11,6 +11,7 @@ $darkGreen: #00c591;
 $darkGreenHover: lighten($darkGreen, 6%);
 $darkGreenActive: darken($darkGreen, 5%);
 $darkDarkGreen: darken($darkGreen, 10%);
+$darkestGreen: darken($darkGreen, 30%);
 $darkDarkOrange: #9e5302;
 $splitButtonAction: #313139;
 $headerBlue: #17326d;
@@ -135,9 +136,9 @@ $headerDarkBlue: #0f182d;
       text-shadow: 0 0 5px $darkBackground;
     }
     &.channel-in-active {
-      background-color: darken($darkGreen, 30%);
+      background-color: $darkestGreen;
       .channel-horizontal {
-        background-color: darken($darkGreen, 30%);
+        background-color: $darkestGreen;
       }
     }
   }
@@ -601,6 +602,14 @@ $headerDarkBlue: #0f182d;
         z-index: 1;
       }
     }
+    &.graphic-options {
+      .dropdown-option {
+        color: $darkLightGray;
+        &:hover, &.selected {
+          background-color: lighten($darkestGreen, 10%);
+        }
+      }
+    }
   }
 
   .presets {
@@ -763,7 +772,7 @@ $headerDarkBlue: #0f182d;
       }
     }
     &.channel-in-active {
-      background-color: darken($darkGreen, 30%);
+      background-color: $darkestGreen;
     }
   }
 

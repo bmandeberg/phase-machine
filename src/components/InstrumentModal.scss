@@ -6,9 +6,6 @@
   .instrument-controls {
     margin-top: 20px;
   }
-  .instrument {
-    margin-top: 0;
-  }
   .instrument-label {
     display: none;
   }
@@ -68,6 +65,13 @@
   .dropdown-container {
     margin-top: 13px;
     min-width: 66px;
+  }
+  .instrument {
+    margin-top: 0;
+    height: 28px;
+    .dropdown-container {
+      margin-top: 0;
+    }
   }
   .num-input {
     margin-top: 13px !important;

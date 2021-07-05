@@ -602,6 +602,17 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         z-index: 1;
       }
     }
+    &.graphic-options {
+      .dropdown-option {
+        background-color: $lightMediumGray;
+        &:hover, &.selected {
+          background-color: $green;
+        }
+        .wave-title {
+          background-color: transparent;
+        }
+      }
+    }
   }
 
   .presets {
