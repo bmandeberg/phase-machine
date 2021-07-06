@@ -88,11 +88,29 @@ $margin: 12px;
   .midi-dropdown {
     display: none;
   }
+  .header-about {
+    display: inline-block !important;
+  }
+}
+
+@media screen and (max-width: 727px) {
+  .header-about {
+    display: none !important;
+  }
 }
 
 @media screen and (max-width: 695px) {
   .presets-container {
     display: none;
+  }
+  .header-about {
+    display: inline-block !important;
+  }
+}
+
+@media screen and (max-width: 519px) {
+  .header-about {
+    display: none !important;
   }
 }
 
