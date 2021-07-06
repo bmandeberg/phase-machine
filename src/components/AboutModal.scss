@@ -1,7 +1,7 @@
 @import '../sass-globals.scss';
 
 .about-container {
-  width: 95vw;
+  min-width: 95vw;
   .about-filter {
     margin-bottom: 20px;
   }
