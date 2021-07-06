@@ -122,6 +122,9 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
 
   .about-section {
     border-color: $pitchClassGray;
+    .about-section-title {
+      color: #ffffff;
+    }
   }
 
   .switch-label {

@@ -125,6 +125,9 @@ $headerDarkBlue: #0f182d;
 
   .about-section {
     border-color: $darkMediumGray;
+    .about-section-title {
+      color: $lightGray;
+    }
   }
 
   .switch-label {
