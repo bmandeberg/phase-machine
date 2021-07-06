@@ -114,7 +114,7 @@ export default function Settings({
         />
       </div>
       <div className="settings-item">
-        <p className="settings-label">Hotkey Restart Sequencer</p>
+        <p className="settings-label">Hotkey restart sequence</p>
         <Switch
           className="instrument-switch"
           onChange={setHotkeyRestart}

@@ -30,6 +30,13 @@ $headerDarkBlue: #0f182d;
     box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
   }
 
+  input {
+    background-color: $darkDarkGray;
+    color: $darkLightGray;
+    border: 1px solid $darkMediumGray;
+    box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+  }
+
   .button {
     background-color: $darkMediumGray;
     color: $darkLightGray;
@@ -114,6 +121,10 @@ $headerDarkBlue: #0f182d;
     .controls-label {
       color: lighten($darkMediumGray, 10%);
     }
+  }
+
+  .about-section {
+    border-color: $darkMediumGray;
   }
 
   .switch-label {
@@ -295,6 +306,14 @@ $headerDarkBlue: #0f182d;
         background-size: 22px;
         &:hover {
           background: url('./assets/gear-hover-blue.png');
+          background-size: 22px;
+        }
+      }
+      .header-about {
+        background: url('./assets/question-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/question-blue-hover.png');
           background-size: 22px;
         }
       }
@@ -605,7 +624,8 @@ $headerDarkBlue: #0f182d;
     &.graphic-options {
       .dropdown-option {
         color: $darkLightGray;
-        &:hover, &.selected {
+        &:hover,
+        &.selected {
           background-color: lighten($darkestGreen, 10%);
         }
       }

@@ -18,6 +18,9 @@ $modalHeaderHeight: 50px;
   .modal-buffer {
     height: 0%;
     margin-top: $modalTopMargin;
+    &.small-buffer {
+      margin-top: 1vw;
+    }
   }
   .modal-window {
     background-color: #ffffff;
@@ -60,8 +63,11 @@ $modalHeaderHeight: 50px;
       padding: 20px;
       box-sizing: border-box;
       font-size: 18px;
-      max-height: calc(100vh - #{$modalTopMargin} - #{$modalHeaderHeight} - 2vh);
+      max-height: calc(98vh - #{$modalTopMargin} - #{$modalHeaderHeight});
       overflow-y: auto;
+      &.full-modal {
+        max-height: calc(100vh - 2vw - #{$modalHeaderHeight});
+      }
       .modal-item {
         margin-top: 10px;
         &:first-of-type {
@@ -85,6 +91,9 @@ $modalHeaderHeight: 50px;
     pointer-events: none;
     .modal-buffer {
       margin-top: 120px;
+      &.small-buffer {
+        margin-top: 40px;
+      }
     }
   }
   &.show-enter-active {
@@ -94,6 +103,9 @@ $modalHeaderHeight: 50px;
     .modal-buffer {
       transition: margin-top $transitionTime;
       margin-top: $modalTopMargin;
+      &.small-buffer {
+        margin-top: 1vw;
+      }
     }
   }
   &.show-enter-done {
@@ -102,6 +114,9 @@ $modalHeaderHeight: 50px;
     pointer-events: auto;
     .modal-buffer {
       margin-top: $modalTopMargin;
+      &.small-buffer {
+        margin-top: 1vw;
+      }
     }
   }
   &.show-exit {
@@ -110,6 +125,9 @@ $modalHeaderHeight: 50px;
     pointer-events: none;
     .modal-buffer {
       margin-top: $modalTopMargin;
+      &.small-buffer {
+        margin-top: 1vw;
+      }
     }
   }
   &.show-exit-active {
@@ -120,6 +138,9 @@ $modalHeaderHeight: 50px;
     .modal-buffer {
       transition: margin-top $transitionTime;
       margin-top: 120px;
+      &.small-buffer {
+        margin-top: 40px;
+      }
     }
   }
   &.show-exit-done {
@@ -127,6 +148,9 @@ $modalHeaderHeight: 50px;
     pointer-events: none;
     .modal-buffer {
       margin-top: 120px;
+      &.small-buffer {
+        margin-top: 40px;
+      }
     }
   }
   .modal-num-input {

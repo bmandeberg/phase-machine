@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import Settings from './Settings'
 import MIDIModal from './MIDIModal'
 import InstrumentModal from './InstrumentModal'
+import AboutModal from './AboutModal'
+import classNames from 'classnames'
 import './Modal.scss'
 
 export default function Modal({
@@ -153,19 +155,21 @@ export default function Modal({
       theme,
     ]
   )
+  const aboutEl = useMemo(() => <AboutModal theme={theme} />, [theme])
 
   return (
     <div className="modal-container">
-      <div className="modal-buffer">
+      <div className={classNames('modal-buffer', { 'small-buffer': modalTypeRef.current === 'about' })}>
         <div className="modal-window">
           <div className="modal-header">
             <p>{modalTypeRef.current}</p>
             <div className="modal-close" onClick={closeModal}></div>
           </div>
-          <div className="modal-content">
+          <div className={classNames('modal-content', { 'full-modal': modalTypeRef.current === 'about' })}>
             {modalTypeRef.current === 'settings' && modalContent && settingsEl}
             {modalTypeRef.current === 'MIDI' && modalContent && midiEl}
             {modalTypeRef.current === 'instrument' && modalContent && instrumentEl}
+            {modalTypeRef.current === 'about' && modalContent && aboutEl}
           </div>
         </div>
       </div>

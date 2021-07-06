@@ -32,6 +32,13 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
   }
 
+  input {
+    background-color: $darkDarkGray;
+    color: $lightMediumGray;
+    border: 1px solid $lightMediumGray;
+    box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+  }
+
   .button {
     background-color: $lightMediumGray;
     color: $darkTextGray;
@@ -104,12 +111,17 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
   }
 
   .instrument-modal {
-    .controls-row, .controls-module {
-      border-color: $lightMediumGray;
+    .controls-row,
+    .controls-module {
+      border-color: $pitchClassGray;
     }
     .controls-label {
       color: $darkerMediumGray;
     }
+  }
+
+  .about-section {
+    border-color: $pitchClassGray;
   }
 
   .switch-label {
@@ -297,6 +309,14 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         background-size: 22px;
         &:hover {
           background: url('./assets/gear-hover-blue.png');
+          background-size: 22px;
+        }
+      }
+      .header-about {
+        background: url('./assets/question-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/question-blue-hover.png');
           background-size: 22px;
         }
       }
@@ -605,7 +625,8 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     &.graphic-options {
       .dropdown-option {
         background-color: $lightMediumGray;
-        &:hover, &.selected {
+        &:hover,
+        &.selected {
           background-color: $green;
         }
         .wave-title {
@@ -649,7 +670,8 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
 
   .split-button {
     background-color: $lightMediumGray;
-    .split-button-action, .split-button-content {
+    .split-button-action,
+    .split-button-content {
       &:hover {
         background-color: $lightMediumGrayHover;
       }

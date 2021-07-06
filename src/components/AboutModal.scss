@@ -1,0 +1,29 @@
+@import '../sass-globals.scss';
+
+.about-container {
+  width: 95vw;
+  .about-filter {
+    margin-bottom: 20px;
+  }
+}
+
+.about-section {
+  padding: 20px 0;
+  border-bottom: 1px solid $lightMediumGray;
+  &:first-of-type {
+    padding-top: 0;
+  }
+  &:last-of-type {
+    border-bottom: none;
+  }
+  .about-section-title {
+    font-size: 28px;
+  }
+  .about-section-image {
+    margin-top: 5px;
+  }
+  .about-section-text {
+    margin-top: 5px;
+    white-space: pre-wrap;
+  }
+}

@@ -13,6 +13,7 @@
 /dist/*
 !/dist/index.html
 !/dist/samples
+!/dist/images
 !/dist/favicon.ico
 
 # misc

@@ -39,6 +39,14 @@ $margin: 12px;
         background-size: 22px;
       }
     }
+    .header-about {
+      background: url('../assets/question-orange.png');
+      background-size: 22px;
+      &:hover {
+        background: url('../assets/question-orange-hover.png');
+        background-size: 22px;
+      }
+    }
   }
 }
 
@@ -55,18 +63,24 @@ $margin: 12px;
   display: none;
 }
 
-@media screen and (max-width: 1182px) {
+@media screen and (max-width: 1211px) {
   .scroll-to {
     display: none;
   }
 }
 
-@media screen and (max-width: 1025px) {
+@media screen and (max-width: 1057px) {
   .view-buttons {
     display: none;
   }
   .view-dropdown {
     display: block;
+  }
+}
+
+@media screen and (max-width: 977px) {
+  .header-about {
+    display: none !important;
   }
 }
 
