@@ -29,7 +29,7 @@ import { rangeWrapper } from './math'
 
 export const VIEWS = ['stacked', 'horizontal', 'clock']
 
-export const SECTIONS = ['key', 'piano', 'sequencer']
+export const SECTIONS = ['key', 'piano', 'sequence']
 
 export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9700', '#a825f4', '#00C591', '#EDDB00']
 
