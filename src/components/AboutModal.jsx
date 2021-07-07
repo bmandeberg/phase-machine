@@ -43,7 +43,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Settings Modal Window',
     img: {
       src: 'settings',
-      width: 658,
+      width: 663,
     },
     tags: [
       'settings',
