@@ -59,7 +59,7 @@ export default function Channel({
   container,
   changeChannelOrder,
   theme,
-  hotkeyRestart,
+  presetRestart,
   midiNoteOn,
   midiNoteOff,
 }) {
@@ -146,7 +146,7 @@ export default function Channel({
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
-  const hotkeyRestartRef = useRef(hotkeyRestart)
+  const presetRestartRef = useRef(presetRestart)
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState('')
@@ -164,8 +164,16 @@ export default function Channel({
   }, [channelNum])
 
   useEffect(() => {
-    hotkeyRestartRef.current = hotkeyRestart
-  }, [hotkeyRestart])
+    presetRestartRef.current = presetRestart
+  }, [presetRestart])
+
+  const keyRestart = useCallback(() => {
+    setPlayingNote(undefined)
+    setPlayingPitchClass(undefined)
+    playingNoteRef.current = undefined
+    noteIndex.current = undefined
+    prevNoteIndex.current = undefined
+  }, [])
 
   const seqRestart = useCallback(() => {
     prevStep.current = undefined
@@ -266,8 +274,9 @@ export default function Channel({
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else {
-        if (hotkeyRestartRef.current) {
+        if (presetRestartRef.current) {
           seqRestart()
+          keyRestart()
         }
         setVelocity(channelPreset.velocity)
         setKey(channelPreset.key.slice())
@@ -317,7 +326,7 @@ export default function Channel({
         )
       }
     }
-  }, [channelPreset, seqRestart])
+  }, [channelPreset, keyRestart, seqRestart])
 
   const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
 
@@ -894,8 +903,7 @@ export default function Channel({
     previewFlip,
     startChangingAxis,
     stopChangingAxis,
-    clearNotes,
-    restartNotes,
+    keyClear,
   } = useKeyManipulation(
     key,
     shiftAmt,
@@ -908,12 +916,7 @@ export default function Channel({
     axis,
     setGrabbing,
     setTurningAxisKnob,
-    setKeybdPitches,
-    setPlayingNote,
-    setPlayingPitchClass,
-    playingNoteRef,
-    noteIndex,
-    prevNoteIndex
+    setKeybdPitches
   )
 
   // ui elements
@@ -1050,8 +1053,8 @@ export default function Channel({
     setMidiIn,
     midiHold,
     setMidiHold,
-    clearNotes,
-    restartNotes,
+    keyClear,
+    keyRestart,
     openMidiModal,
     openInstrumentModal
   )
@@ -1609,7 +1612,7 @@ Channel.propTypes = {
   container: PropTypes.object,
   changeChannelOrder: PropTypes.func,
   theme: PropTypes.string,
-  hotkeyRestart: PropTypes.bool,
+  presetRestart: PropTypes.bool,
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
 }

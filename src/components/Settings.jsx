@@ -12,8 +12,8 @@ export default function Settings({
   setShowStepNumbers,
   linearKnobs,
   setLinearKnobs,
-  hotkeyRestart,
-  setHotkeyRestart,
+  presetRestart,
+  setPresetRestart,
   defaultChannelModeKeybd,
   setDefaultChannelModeKeybd,
   theme,
@@ -114,11 +114,11 @@ export default function Settings({
         />
       </div>
       <div className="settings-item">
-        <p className="settings-label">Hotkey restart sequence</p>
+        <p className="settings-label">Preset restart</p>
         <Switch
           className="instrument-switch"
-          onChange={setHotkeyRestart}
-          checked={hotkeyRestart}
+          onChange={setPresetRestart}
+          checked={presetRestart}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -198,8 +198,8 @@ Settings.propTypes = {
   setShowStepNumbers: PropTypes.func,
   linearKnobs: PropTypes.bool,
   setLinearKnobs: PropTypes.func,
-  hotkeyRestart: PropTypes.bool,
-  setHotkeyRestart: PropTypes.func,
+  presetRestart: PropTypes.bool,
+  setPresetRestart: PropTypes.func,
   defaultChannelModeKeybd: PropTypes.bool,
   setDefaultChannelModeKeybd: PropTypes.func,
   theme: PropTypes.string,

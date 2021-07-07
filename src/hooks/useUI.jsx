@@ -111,8 +111,8 @@ export default function useUI(
   setMidiIn,
   midiHold,
   setMidiHold,
-  clearNotes,
-  restartNotes,
+  keyClear,
+  keyRestart,
   openMidiModal,
   openInstrumentModal
 ) {
@@ -291,15 +291,15 @@ export default function useUI(
   const clearResetEl = useMemo(
     () => (
       <div className="clear-reset channel-module stacked-buttons">
-        <div onClick={clearNotes} className="button">
+        <div onClick={keyClear} className="button">
           Clear
         </div>
-        <div onClick={restartNotes} className="button">
+        <div onClick={keyRestart} className="button">
           Restart
         </div>
       </div>
     ),
-    [clearNotes, restartNotes]
+    [keyClear, keyRestart]
   )
 
   const midiInputModeEl = useMemo(

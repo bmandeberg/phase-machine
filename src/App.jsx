@@ -73,7 +73,7 @@ export default function App() {
 
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'dark')
 
-  const [hotkeyRestart, setHotkeyRestart] = useState(JSON.parse(window.localStorage.getItem('hotkeyRestart')) ?? true)
+  const [presetRestart, setPresetRestart] = useState(JSON.parse(window.localStorage.getItem('presetRestart')) ?? true)
 
   const [defaultChannelModeKeybd, setDefaultChannelModeKeybd] = useState(
     JSON.parse(window.localStorage.getItem('defaultChannelModeKeybd')) ?? false
@@ -92,8 +92,8 @@ export default function App() {
   }, [theme])
 
   useEffect(() => {
-    window.localStorage.setItem('hotkeyRestart', hotkeyRestart)
-  }, [hotkeyRestart])
+    window.localStorage.setItem('presetRestart', presetRestart)
+  }, [presetRestart])
 
   useEffect(() => {
     window.localStorage.setItem('defaultChannelModeKeybd', defaultChannelModeKeybd)
@@ -346,7 +346,7 @@ export default function App() {
           container={container}
           changeChannelOrder={changeChannelOrder}
           theme={theme}
-          hotkeyRestart={hotkeyRestart}
+          presetRestart={presetRestart}
           midiNoteOn={midiNoteOn}
           midiNoteOff={midiNoteOff}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
@@ -359,7 +359,7 @@ export default function App() {
       deleteChannel,
       duplicateChannel,
       grabbing,
-      hotkeyRestart,
+      presetRestart,
       linearKnobs,
       midiNoteOff,
       midiNoteOn,
@@ -440,8 +440,8 @@ export default function App() {
           setShowStepNumbers={setShowStepNumbers}
           linearKnobs={linearKnobs}
           setLinearKnobs={setLinearKnobs}
-          hotkeyRestart={hotkeyRestart}
-          setHotkeyRestart={setHotkeyRestart}
+          presetRestart={presetRestart}
+          setPresetRestart={setPresetRestart}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
           setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
           theme={theme}
