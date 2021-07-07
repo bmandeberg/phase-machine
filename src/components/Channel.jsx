@@ -721,7 +721,7 @@ export default function Channel({
           noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
         }
       }
-      if (instrumentOn) {
+      if (instrumentOn && (!SAMPLER_INSTRUMENTS.includes(instrumentType) || instrument.current.loaded)) {
         instrument.current.triggerAttack(note, time, velocity)
       }
       if (midiOutObj) {
@@ -746,6 +746,7 @@ export default function Channel({
       channelNum,
       midiOut,
       instrumentOn,
+      instrumentType,
       hold,
       seqSteps,
       noteOff,
