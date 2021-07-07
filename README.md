@@ -1,3 +1,7 @@
+# About the Phase Machine
+
+Coming soon
+
 # Running the server
 
 ```
@@ -7,19 +11,6 @@ yarn start
 the website URL will be http://localhost:8080/
 
 CTRL-C will stop the server
-
-also you should:
-```
-git pull
-```
-
-# Clearing your cache (presets)
-In Chrome, open the JavaScript console by pressing command option J, or selecting View > Developer > JavaScript Console
-
-Then in the console, type:
-```
-localStorage.clear()
-```
 
 # TODO
 List here:
