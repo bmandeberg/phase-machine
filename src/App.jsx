@@ -316,7 +316,7 @@ export default function App() {
 
   const channels = useMemo(
     () =>
-      uiState.channels.map((d, i) => (
+      uiState.channels.map((d) => (
         <Channel
           numChannels={numChannels}
           key={d.id}
