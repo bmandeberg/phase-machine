@@ -52,12 +52,14 @@ export default function Channel({
   linearKnobs,
   midiOut,
   setChannelState,
+  channelPreset,
   duplicateChannel,
   deleteChannel,
   initState,
   container,
   changeChannelOrder,
   theme,
+  hotkeyRestart,
   midiNoteOn,
   midiNoteOff,
 }) {
@@ -144,6 +146,7 @@ export default function Channel({
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
+  const hotkeyRestartRef = useRef(hotkeyRestart)
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState('')
@@ -159,6 +162,10 @@ export default function Channel({
   useEffect(() => {
     presetInitialized.current = false
   }, [channelNum])
+
+  useEffect(() => {
+    hotkeyRestartRef.current = hotkeyRestart
+  }, [hotkeyRestart])
 
   const seqRestart = useCallback(() => {
     prevStep.current = undefined
@@ -251,6 +258,66 @@ export default function Channel({
   const openMidiModal = useCallback(() => {
     setModalType('MIDI')
   }, [])
+
+  // set channel state when preset is changed
+
+  useEffect(() => {
+    if (channelPreset) {
+      if (!presetInitialized.current) {
+        presetInitialized.current = true
+      } else {
+        if (hotkeyRestartRef.current) {
+          seqRestart()
+        }
+        setVelocity(channelPreset.velocity)
+        setKey(channelPreset.key.slice())
+        setKeyRate(channelPreset.keyRate)
+        setKeyMovement(channelPreset.keyMovement)
+        setKeyArpInc1(channelPreset.keyArpInc1)
+        setKeyArpInc2(channelPreset.keyArpInc2)
+        setSustain(channelPreset.sustain)
+        setKeySwing(channelPreset.keySwing)
+        setKeySwingLength(channelPreset.keySwingLength)
+        setMute(channelPreset.mute)
+        setSolo(channelPreset.solo)
+        setShiftAmt(channelPreset.shiftAmt)
+        setAxis(channelPreset.axis)
+        setRangeStart(channelPreset.rangeStart)
+        setRangeEnd(channelPreset.rangeEnd)
+        setSeqSteps(channelPreset.seqSteps.slice())
+        setSeqLength(channelPreset.seqLength)
+        setSeqRate(channelPreset.seqRate)
+        setSeqMovement(channelPreset.seqMovement)
+        setSeqArpInc1(channelPreset.seqArpInc1)
+        setSeqArpInc2(channelPreset.seqArpInc2)
+        setSeqSwing(channelPreset.seqSwing)
+        setSeqSwingLength(channelPreset.seqSwingLength)
+        setHold(channelPreset.hold)
+        setInstrumentOn(channelPreset.instrumentOn)
+        setInstrumentType(channelPreset.instrumentType)
+        setRangeMode(channelPreset.rangeMode)
+        setKeybdPitches(channelPreset.keybdPitches)
+        setMidiIn(channelPreset.midiIn)
+        setMidiHold(channelPreset.midiHold)
+        setCustomMidiOutChannel(channelPreset.customMidiOutChannel)
+        setMidiOutChannel(channelPreset.midiOutChannel)
+        setInstrumentParams(channelPreset.instrumentParams)
+        setModalType(null)
+        updateInstruments(
+          synthInstrument.current,
+          [pianoInstrument.current, marimbaInstrument.current, drumsInstrument.current],
+          chorusEffect.current,
+          distortionEffect.current,
+          delayEffect.current,
+          reverbEffect.current,
+          vibratoEffect.current,
+          channelPreset.instrumentType,
+          channelPreset.instrumentParams,
+          effectRef.current
+        )
+      }
+    }
+  }, [channelPreset, seqRestart])
 
   const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
 
@@ -1535,12 +1602,130 @@ Channel.propTypes = {
   linearKnobs: PropTypes.bool,
   midiOut: PropTypes.string,
   setChannelState: PropTypes.func,
+  channelPreset: PropTypes.object,
   duplicateChannel: PropTypes.func,
   deleteChannel: PropTypes.func,
   initState: PropTypes.object,
   container: PropTypes.object,
   changeChannelOrder: PropTypes.func,
   theme: PropTypes.string,
+  hotkeyRestart: PropTypes.bool,
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
+}
+
+function updateInstruments(
+  synthInstrument,
+  samplerInstruments,
+  chorusEffect,
+  distortionEffect,
+  delayEffect,
+  reverbEffect,
+  vibratoEffect,
+  instrumentType,
+  instrumentParams,
+  currentEffect
+) {
+  synthInstrument.set({
+    portamento: instrumentParams.portamento,
+    oscillator: {
+      type: SAMPLER_INSTRUMENTS.includes(instrumentType) ? 'triangle' : instrumentType,
+      modulationType: instrumentParams.modulationType,
+      harmonicity: instrumentParams.harmonicity,
+      spread: instrumentParams.fatSpread,
+      count: instrumentParams.fatCount,
+      width: instrumentParams.pulseWidth,
+      modulationFrequency: instrumentParams.pwmFreq,
+    },
+    envelope: {
+      attack: instrumentParams.envAttack,
+      decay: instrumentParams.envDecay,
+      sustain: instrumentParams.envSustain,
+      release: instrumentParams.envRelease,
+    },
+    filter: {
+      Q: instrumentParams.resonance,
+      rolloff: instrumentParams.rolloff,
+    },
+    filterEnvelope: {
+      baseFrequency: instrumentParams.cutoff,
+      attack: instrumentParams.filterAttack,
+      decay: instrumentParams.filterDecay,
+      sustain: instrumentParams.filterSustain,
+      release: instrumentParams.filterRelease,
+      octaves: instrumentParams.filterAmount,
+    },
+  })
+  chorusEffect.set({
+    wet: instrumentParams.effectWet,
+    depth: instrumentParams.chorusDepth,
+    delayTime: instrumentParams.chorusDelayTime,
+    frequency: instrumentParams.chorusFreq,
+    spread: instrumentParams.chorusSpread,
+  })
+  distortionEffect.set({
+    wet: instrumentParams.effectWet,
+    distortion: instrumentParams.distortion,
+  })
+  delayEffect.set({
+    wet: instrumentParams.effectWet,
+    delayTime: instrumentParams.delayTime,
+    feedback: instrumentParams.delayFeedback,
+  })
+  reverbEffect.set({
+    wet: instrumentParams.effectWet,
+    decay: instrumentParams.reverbDecay,
+    preDelay: instrumentParams.reverbPreDelay,
+  })
+  vibratoEffect.set({
+    wet: instrumentParams.effectWet,
+    depth: instrumentParams.vibratoDepth,
+    frequency: instrumentParams.vibratoFreq,
+  })
+  let effect
+  switch (instrumentParams.effectType) {
+    case 'chorus':
+      effect = chorusEffect
+      chorusEffect.start()
+      break
+    case 'distortion':
+      effect = distortionEffect
+      break
+    case 'delay':
+      effect = delayEffect
+      break
+    case 'reverb':
+      effect = reverbEffect
+      break
+    case 'vibrato':
+      effect = vibratoEffect
+      break
+    default:
+      effect = null
+  }
+  if (currentEffect) {
+    synthInstrument.disconnect(currentEffect)
+    samplerInstruments.forEach((sampler) => {
+      sampler.disconnect(currentEffect)
+    })
+  }
+  if (effect) {
+    synthInstrument.connect(effect)
+  } else {
+    synthInstrument.toDestination()
+  }
+  if (effect !== 'chorus') {
+    chorusEffect.stop()
+  }
+  samplerInstruments.forEach((sampler) => {
+    sampler.set({
+      attack: instrumentParams.samplerAttack,
+      release: instrumentParams.samplerRelease,
+    })
+    if (effect) {
+      sampler.connect(effect)
+    } else {
+      sampler.toDestination()
+    }
+  })
 }

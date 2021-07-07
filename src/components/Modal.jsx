@@ -14,6 +14,8 @@ export default function Modal({
   setShowStepNumbers,
   linearKnobs,
   setLinearKnobs,
+  hotkeyRestart,
+  setHotkeyRestart,
   defaultChannelModeKeybd,
   setDefaultChannelModeKeybd,
   theme,
@@ -70,6 +72,8 @@ export default function Modal({
         setShowStepNumbers={setShowStepNumbers}
         linearKnobs={linearKnobs}
         setLinearKnobs={setLinearKnobs}
+        hotkeyRestart={hotkeyRestart}
+        setHotkeyRestart={setHotkeyRestart}
         defaultChannelModeKeybd={defaultChannelModeKeybd}
         setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
         theme={theme}
@@ -81,11 +85,13 @@ export default function Modal({
     ),
     [
       defaultChannelModeKeybd,
+      hotkeyRestart,
       importPresets,
       linearKnobs,
       modalType,
       presets,
       setDefaultChannelModeKeybd,
+      setHotkeyRestart,
       setLinearKnobs,
       setShowStepNumbers,
       setTheme,
@@ -178,6 +184,8 @@ Modal.propTypes = {
   setShowStepNumbers: PropTypes.func,
   linearKnobs: PropTypes.bool,
   setLinearKnobs: PropTypes.func,
+  hotkeyRestart: PropTypes.bool,
+  setHotkeyRestart: PropTypes.func,
   defaultChannelModeKeybd: PropTypes.bool,
   setDefaultChannelModeKeybd: PropTypes.func,
   theme: PropTypes.string,
