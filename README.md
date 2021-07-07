@@ -2,15 +2,18 @@
 
 Coming soon
 
+# Initializing repo after clone
+
+```
+yarn install
+```
+
 # Running the server
 
 ```
-cd [path/to/your/folder]
 yarn start
 ```
 the website URL will be http://localhost:8080/
-
-CTRL-C will stop the server
 
 # TODO
 List here:
