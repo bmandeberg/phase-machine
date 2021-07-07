@@ -125,6 +125,26 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     .about-section-title {
       color: #ffffff;
     }
+    .about-section-warning-container {
+      .about-section-warning {
+        background-color: darken($red, 50%);
+        color: lighten($red, 10%);
+        .about-section-warning-icon {
+          background: transparent url('./assets/alert.png') center center;
+          background-size: auto 20px;
+        }
+      }
+    }
+    .about-section-tip-container {
+      .about-section-tip {
+        background-color: darken($green, 40%);
+        color: $green;
+        .about-section-tip-icon {
+          background: transparent url('./assets/lightbulb.png') center center;
+          background-size: auto 20px;
+        }
+      }
+    }
   }
 
   .switch-label {
