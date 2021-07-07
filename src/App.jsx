@@ -73,8 +73,6 @@ export default function App() {
 
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'dark')
 
-  const [hotkeyRestart, setHotkeyRestart] = useState(JSON.parse(window.localStorage.getItem('hotkeyRestart')) ?? true)
-
   const [defaultChannelModeKeybd, setDefaultChannelModeKeybd] = useState(
     JSON.parse(window.localStorage.getItem('defaultChannelModeKeybd')) ?? false
   )
@@ -90,10 +88,6 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('theme', theme)
   }, [theme])
-
-  useEffect(() => {
-    window.localStorage.setItem('hotkeyRestart', hotkeyRestart)
-  }, [hotkeyRestart])
 
   useEffect(() => {
     window.localStorage.setItem('defaultChannelModeKeybd', defaultChannelModeKeybd)
@@ -240,7 +234,8 @@ export default function App() {
       setNumChannels,
       setChannelSync,
       setPresets,
-      keydownTimer
+      keydownTimer,
+      playing
     )
 
   // channel management
@@ -339,14 +334,12 @@ export default function App() {
           linearKnobs={linearKnobs}
           midiOut={midiOut}
           setChannelState={setChannelState}
-          channelPreset={currentPreset.channels[i]}
           duplicateChannel={duplicateChannel}
           deleteChannel={deleteChannel}
           initState={d}
           container={container}
           changeChannelOrder={changeChannelOrder}
           theme={theme}
-          hotkeyRestart={hotkeyRestart}
           midiNoteOn={midiNoteOn}
           midiNoteOff={midiNoteOff}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
@@ -354,12 +347,10 @@ export default function App() {
       )),
     [
       changeChannelOrder,
-      currentPreset.channels,
       defaultChannelModeKeybd,
       deleteChannel,
       duplicateChannel,
       grabbing,
-      hotkeyRestart,
       linearKnobs,
       midiNoteOff,
       midiNoteOn,
@@ -440,8 +431,6 @@ export default function App() {
           setShowStepNumbers={setShowStepNumbers}
           linearKnobs={linearKnobs}
           setLinearKnobs={setLinearKnobs}
-          hotkeyRestart={hotkeyRestart}
-          setHotkeyRestart={setHotkeyRestart}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
           setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
           theme={theme}

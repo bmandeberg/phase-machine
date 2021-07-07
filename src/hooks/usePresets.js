@@ -1,5 +1,6 @@
-import { useEffect, useCallback, useMemo } from 'react'
+import { useEffect, useCallback, useMemo, useRef } from 'react'
 import { v4 as uuid } from 'uuid'
+import * as Tone from 'tone'
 import { PRESET_HOLD_TIME } from '../globals'
 
 export default function usePresets(
@@ -13,7 +14,8 @@ export default function usePresets(
   setNumChannels,
   setChannelSync,
   setPresets,
-  keydownTimer
+  keydownTimer,
+  playing
 ) {
   // state management for presets
 
@@ -331,6 +333,20 @@ export default function usePresets(
   useEffect(() => {
     window.localStorage.setItem('presets', JSON.stringify(presets))
   }, [presets])
+
+  // restart transport on preset change
+
+  const playingRef = useRef(playing)
+  useEffect(() => {
+    playingRef.current = playing
+  }, [playing])
+
+  useEffect(() => {
+    Tone.Transport.stop()
+    if (playingRef.current) {
+      Tone.Transport.start('+0', 0)
+    }
+  }, [currentPreset])
 
   // handle preset keypresses
 
