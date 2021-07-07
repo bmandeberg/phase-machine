@@ -59,7 +59,6 @@ export default function Channel({
   container,
   changeChannelOrder,
   theme,
-  presetRestart,
   midiNoteOn,
   midiNoteOff,
 }) {
@@ -146,7 +145,6 @@ export default function Channel({
 
   const playNoteBuffer = useRef({ seq: null, key: null })
   const presetInitialized = useRef(false)
-  const presetRestartRef = useRef(presetRestart)
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState('')
@@ -162,10 +160,6 @@ export default function Channel({
   useEffect(() => {
     presetInitialized.current = false
   }, [channelNum])
-
-  useEffect(() => {
-    presetRestartRef.current = presetRestart
-  }, [presetRestart])
 
   const keyRestart = useCallback(() => {
     setPlayingNote(undefined)
@@ -274,10 +268,10 @@ export default function Channel({
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else {
-        if (presetRestartRef.current) {
-          seqRestart()
-          keyRestart()
-        }
+        seqRestart()
+        keyRestart()
+        keyArpUtil.current = false
+        seqArpUtil.current = false
         setVelocity(channelPreset.velocity)
         setKey(channelPreset.key.slice())
         setKeyRate(channelPreset.keyRate)
@@ -1612,7 +1606,6 @@ Channel.propTypes = {
   container: PropTypes.object,
   changeChannelOrder: PropTypes.func,
   theme: PropTypes.string,
-  presetRestart: PropTypes.bool,
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
 }
