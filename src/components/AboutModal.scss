@@ -27,4 +27,50 @@
     margin-top: 5px;
     white-space: pre-wrap;
   }
+  .about-section-warning-container {
+    margin-top: 5px;
+    .about-section-warning {
+      display: inline-block;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: darken($red, 50%);
+      color: lighten($red, 10%);
+      .about-section-warning-icon {
+        display: inline-block;
+        vertical-align: top;
+        width: 23px;
+        height: 20px;
+        background: transparent url('../assets/alert.png') center center;
+        background-size: auto 20px;
+      }
+      .about-section-warning-content {
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 20px;
+      }
+    }
+  }
+  .about-section-tip-container {
+    margin-top: 5px;
+    .about-section-tip {
+      display: inline-block;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: darken($green, 40%);
+      color: $green;
+      .about-section-tip-icon {
+        display: inline-block;
+        vertical-align: top;
+        width: 20px;
+        height: 20px;
+        background: transparent url('../assets/lightbulb.png') center center;
+        background-size: auto 20px;
+      }
+      .about-section-tip-content {
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 20px;
+      }
+    }
+  }
 }

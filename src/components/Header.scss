@@ -32,18 +32,18 @@ $margin: 12px;
       cursor: pointer;
     }
     .header-settings {
-      background: url('../assets/gear.png');
+      background: transparent url('../assets/gear.png') center center;
       background-size: 22px;
       &:hover {
-        background: url('../assets/gear-hover.png');
+        background: transparent url('../assets/gear-hover.png') center center;
         background-size: 22px;
       }
     }
     .header-about {
-      background: url('../assets/question-orange.png');
+      background: transparent url('../assets/question-orange.png') center center;
       background-size: 22px;
       &:hover {
-        background: url('../assets/question-orange-hover.png');
+        background: transparent url('../assets/question-orange-hover.png') center center;
         background-size: 22px;
       }
     }

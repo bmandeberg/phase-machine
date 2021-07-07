@@ -35,8 +35,9 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
       'preset dirty',
       'preset hotkey',
     ],
-    warning:
+    warnings: [
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    ],
   },
   {
     title: 'Settings Modal Window',
@@ -91,6 +92,9 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
       width: 573,
     },
     tags: ['channel', 'midi', 'modal', 'MIDI Output Channel', 'Custom Output Channel', 'MIDI In Toggle/Hold'],
+    warnings: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    ],
   },
   {
     title: 'Key - Range Mode',
@@ -147,6 +151,16 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     tags: ['instrument', 'modal', 'on/off', 'type', 'instrument parameters', 'effects'],
   },
   {
+    title: 'Notes',
+    tips: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    ],
+    warnings: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    ],
+  },
+  {
     title: 'Inspiration',
     tags: ['about'],
     text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque a neque non nisi tincidunt consectetur id id tellus. Duis gravida lacinia mauris ut luctus. Pellentesque convallis mattis tellus, quis ultricies eros mollis tempor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In condimentum accumsan leo, nec elementum mi fermentum sit amet. Aenean vel sapien laoreet mauris viverra ultrices id sit amet nunc. Morbi erat turpis, luctus id venenatis sed, viverra quis turpis. Quisque consectetur mauris quis sem bibendum laoreet ac id enim. Aliquam sem sem, porttitor nec massa id, bibendum posuere justo.
@@ -180,6 +194,27 @@ export default function AboutModal({ theme }) {
               alt=""
             />
           )}
+          {section.warnings &&
+            section.warnings.map((warning, i) => (
+              <div key={uuid()} className="about-section-warning-container" style={i ? { marginTop: 10 } : null}>
+                <div className="about-section-warning">
+                  <div className="about-section-warning-icon"></div>
+                  <p className="about-section-warning-content">{warning}</p>
+                </div>
+              </div>
+            ))}
+          {section.tips &&
+            section.tips.map((tip, i) => (
+              <div
+                key={uuid()}
+                className="about-section-tip-container"
+                style={i || section.warnings ? { marginTop: 10 } : null}>
+                <div className="about-section-tip">
+                  <div className="about-section-tip-icon"></div>
+                  <p className="about-section-tip-content">{tip}</p>
+                </div>
+              </div>
+            ))}
         </div>
       )),
     [filter, theme]
