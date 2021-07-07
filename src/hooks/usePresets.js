@@ -13,7 +13,8 @@ export default function usePresets(
   setNumChannels,
   setChannelSync,
   setPresets,
-  keydownTimer
+  keydownTimer,
+  setRestartChannels
 ) {
   // state management for presets
 
@@ -100,13 +101,14 @@ export default function usePresets(
     (presetID) => {
       const preset = presets.find((p) => p.id === presetID)
       setCurrentPreset(deepStateCopy(preset))
+      setRestartChannels(true)
       setUIState(deepStateCopy(preset))
       setNumChannels(preset.numChannels)
       setChannelSync(preset.channelSync)
       // save in localStorage
       window.localStorage.setItem('activePreset', presetID)
     },
-    [deepStateCopy, presets, setChannelSync, setCurrentPreset, setNumChannels, setUIState]
+    [deepStateCopy, presets, setChannelSync, setCurrentPreset, setNumChannels, setRestartChannels, setUIState]
   )
 
   const dedupName = useCallback((name, id, presets) => {
@@ -144,6 +146,7 @@ export default function usePresets(
       }
       setUIState(deepStateCopy(uiStateCopy))
       setCurrentPreset(uiStateCopy)
+      setRestartChannels(false)
       setPresets((presets) => {
         const presetsCopy = presets.slice()
         const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
@@ -157,7 +160,7 @@ export default function usePresets(
       // save in localStorage
       window.localStorage.setItem('activePreset', uiStateCopy.id)
     },
-    [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setUIState, uiState]
+    [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setRestartChannels, setUIState, uiState]
   )
 
   const newPreset = useCallback(
@@ -169,12 +172,10 @@ export default function usePresets(
         id,
         hotkey,
       })
-      uiStateCopy.channels.forEach((channel) => {
-        channel.id = uuid()
-      })
       // sync state and presets
       setUIState(deepStateCopy(uiStateCopy))
       setCurrentPreset(uiStateCopy)
+      setRestartChannels(false)
       setPresets((presets) => {
         const presetsCopy = presets.slice()
         presetsCopy.push(uiStateCopy)
@@ -183,7 +184,17 @@ export default function usePresets(
       // save in localStorage
       window.localStorage.setItem('activePreset', uiStateCopy.id)
     },
-    [currentPreset.name, dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setUIState, uiState]
+    [
+      currentPreset.name,
+      dedupName,
+      deepStateCopy,
+      presets,
+      setCurrentPreset,
+      setPresets,
+      setRestartChannels,
+      setUIState,
+      uiState,
+    ]
   )
 
   const deletePreset = useCallback(() => {
@@ -196,9 +207,10 @@ export default function usePresets(
     setPresets((presets) => presets.filter((p) => p.id !== uiState.id))
     setUIState(deepStateCopy(uiStateCopy))
     setCurrentPreset(uiStateCopy)
+    setRestartChannels(false)
     // save in localStorage
     window.localStorage.removeItem('activePreset')
-  }, [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setUIState, uiState])
+  }, [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setRestartChannels, setUIState, uiState])
 
   const validPreset = useCallback((preset) => {
     function invalidProp(obj, prop, type) {

@@ -46,6 +46,7 @@ export default function App() {
   const [midiNoteOn, setMidiNoteOn] = useState(null)
   const [midiNoteOff, setMidiNoteOff] = useState(null)
 
+  const [restartChannels, setRestartChannels] = useState(true)
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(currentPreset.channelSync)
 
@@ -234,7 +235,8 @@ export default function App() {
       setNumChannels,
       setChannelSync,
       setPresets,
-      keydownTimer
+      keydownTimer,
+      setRestartChannels
     )
 
   // channel management
@@ -343,6 +345,7 @@ export default function App() {
           midiNoteOn={midiNoteOn}
           midiNoteOff={midiNoteOff}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
+          restartChannels={restartChannels}
         />
       )),
     [
@@ -360,6 +363,7 @@ export default function App() {
       numChannelsSoloed,
       playing,
       resizing,
+      restartChannels,
       setChannelState,
       showStepNumbers,
       tempo,

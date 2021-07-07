@@ -61,6 +61,7 @@ export default function Channel({
   theme,
   midiNoteOn,
   midiNoteOff,
+  restartChannels,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
@@ -268,8 +269,10 @@ export default function Channel({
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else {
-        seqRestart()
-        keyRestart()
+        if (restartChannels) {
+          seqRestart()
+          keyRestart()
+        }
         keyArpUtil.current = false
         seqArpUtil.current = false
         setVelocity(channelPreset.velocity)
@@ -320,7 +323,7 @@ export default function Channel({
         )
       }
     }
-  }, [channelPreset, keyRestart, seqRestart])
+  }, [channelPreset, restartChannels, keyRestart, seqRestart])
 
   const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
 
@@ -1620,6 +1623,7 @@ Channel.propTypes = {
   theme: PropTypes.string,
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
+  restartChannels: PropTypes.bool,
 }
 
 function updateInstruments(
