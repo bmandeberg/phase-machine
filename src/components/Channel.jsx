@@ -586,7 +586,9 @@ export default function Channel({
     return () => {
       if (notePlaying.current && noteIndex.current !== undefined) {
         Tone.context.clearTimeout(noteOffTimeout.current)
-        instrument.current.triggerRelease()
+        if (instrument.current) {
+          instrument.current.triggerRelease()
+        }
         const channel = customMidiOutChannelRef.current ? midiOutChannelRef.current : channelNumRef.current + 1
         const note = noteString(noteIndex.current)
         const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
@@ -603,11 +605,14 @@ export default function Channel({
       delayEffect.current.dispose()
       reverbEffect.current.dispose()
       vibratoEffect.current.dispose()
+      instrument.current = null
     }
   }, [])
 
   useEffect(() => {
-    instrument.current.triggerRelease()
+    if (instrument.current) {
+      instrument.current.triggerRelease()
+    }
     switch (instrumentType) {
       case 'piano':
         instrument.current = pianoInstrument.current
@@ -651,7 +656,9 @@ export default function Channel({
   }, [])
 
   const noteOff = useCallback((channel, note, midiOutObj, delay, offTime, clockOffset) => {
-    instrument.current.triggerRelease(offTime ?? undefined)
+    if (instrument.current) {
+      instrument.current.triggerRelease(offTime ?? undefined)
+    }
     if (midiOutObj) {
       const params = {}
       if (offTime) {
@@ -721,7 +728,11 @@ export default function Channel({
           noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
         }
       }
-      if (instrumentOn && (!SAMPLER_INSTRUMENTS.includes(instrumentType) || instrument.current.loaded)) {
+      if (
+        instrumentOn &&
+        instrument.current &&
+        (!SAMPLER_INSTRUMENTS.includes(instrumentType) || instrument.current.loaded)
+      ) {
         instrument.current.triggerAttack(note, time, velocity)
       }
       if (midiOutObj) {
