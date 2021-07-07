@@ -130,16 +130,16 @@ export default function Presets({
           })}
           onClick={doSave}
           title="Save Preset">
-          <img src={activeSaveIcon} alt="Save" />
+          <img src={activeSaveIcon} alt="Save" draggable="false" />
         </div>
         <div
           className={classNames('preset-action preset-delete', { disabled: preset.placeholder })}
           onClick={doDelete}
           title="Delete Preset">
-          <img src={activeTrashIcon} alt="Delete" />
+          <img src={activeTrashIcon} alt="Delete" draggable="false" />
         </div>
         <div className="preset-action preset-new" onClick={newPreset} title="Duplicate Preset">
-          <img src={activeAddIcon} alt="Duplicate" />
+          <img src={activeAddIcon} alt="Duplicate" draggable="false" />
         </div>
       </div>
       <p className="presets-label no-select">Preset</p>
