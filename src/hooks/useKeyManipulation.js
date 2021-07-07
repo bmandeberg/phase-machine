@@ -16,7 +16,12 @@ export default function useKeyManipulation(
   axis,
   setGrabbing,
   setTurningAxisKnob,
-  setKeybdPitches
+  setKeybdPitches,
+  setPlayingNote,
+  setPlayingPitchClass,
+  playingNoteRef,
+  noteIndex,
+  prevNoteIndex
 ) {
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -82,10 +87,18 @@ export default function useKeyManipulation(
     setShowKeyPreview(false)
   }, [setGrabbing, setShowKeyPreview, setTurningAxisKnob])
 
-  const keyClear = useCallback(() => {
+  const clearNotes = useCallback(() => {
     setKey(BLANK_PITCH_CLASSES())
     setKeybdPitches([])
   }, [setKey, setKeybdPitches])
+
+  const restartNotes = useCallback(() => {
+    setPlayingNote(undefined)
+    setPlayingPitchClass(undefined)
+    playingNoteRef.current = undefined
+    noteIndex.current = undefined
+    prevNoteIndex.current = undefined
+  }, [noteIndex, playingNoteRef, prevNoteIndex, setPlayingNote, setPlayingPitchClass])
 
   return {
     previewShift,
@@ -98,6 +111,7 @@ export default function useKeyManipulation(
     previewFlip,
     startChangingAxis,
     stopChangingAxis,
-    keyClear,
+    clearNotes,
+    restartNotes,
   }
 }
