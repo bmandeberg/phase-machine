@@ -169,6 +169,9 @@ export default function usePresets(
         id,
         hotkey,
       })
+      uiStateCopy.channels.forEach((channel) => {
+        channel.id = uuid()
+      })
       // sync state and presets
       setUIState(deepStateCopy(uiStateCopy))
       setCurrentPreset(uiStateCopy)
