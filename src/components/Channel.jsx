@@ -272,9 +272,9 @@ export default function Channel({
         if (restartChannels) {
           seqRestart()
           keyRestart()
+          keyArpUtil.current = false
+          seqArpUtil.current = false
         }
-        keyArpUtil.current = false
-        seqArpUtil.current = false
         setVelocity(channelPreset.velocity)
         setKey(channelPreset.key.slice())
         setKeyRate(channelPreset.keyRate)
