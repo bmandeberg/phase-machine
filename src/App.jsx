@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import classNames from 'classnames'

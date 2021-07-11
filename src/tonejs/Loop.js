@@ -1,5 +1,4 @@
 import { Bezier } from 'bezier-js'
-import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import { lerp, scaleToRange } from '../math'
 
