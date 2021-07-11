@@ -67,6 +67,7 @@ export default class Header extends React.Component {
           src={this.props.playing ? stop : this.props.theme === 'dark' ? playDark : play}
           alt="PLAY"
           onClick={this.playStop.bind(this)}
+          draggable="false"
         />
         <NumInput
           className="header-item"
