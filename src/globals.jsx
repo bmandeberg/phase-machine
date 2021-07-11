@@ -508,6 +508,7 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
     chorusFreq: 4,
     chorusSpread: 0,
     distortion: 1,
+    syncDelayTime: false,
     delayTime: 0.25,
     delayFeedback: 0.5,
     reverbDecay: 1.5,

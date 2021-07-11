@@ -56,7 +56,7 @@ export default function InstrumentModal({
   const [chorusFreq, setChorusFreq] = useState(instrumentParams.chorusFreq)
   const [chorusSpread, setChorusSpread] = useState(instrumentParams.chorusSpread)
   const [distortion, setDistortion] = useState(instrumentParams.distortion)
-  const [syncDelayTime, setSyncDelayTime] = useState(false)
+  const [syncDelayTime, setSyncDelayTime] = useState(instrumentParams.syncDelayTime)
   const [delayTime, setDelayTime] = useState(instrumentParams.delayTime)
   const [delayFeedback, setDelayFeedback] = useState(instrumentParams.delayFeedback)
   const [reverbDecay, setReverbDecay] = useState(instrumentParams.reverbDecay)
@@ -301,6 +301,10 @@ export default function InstrumentModal({
     effects.distortionEffect.current.distortion = distortion
     updateInstrumentParams('distortion', distortion)
   }, [distortion, effects.distortionEffect, updateInstrumentParams])
+
+  useEffect(() => {
+    updateInstrumentParams('syncDelayTime', syncDelayTime)
+  }, [syncDelayTime, updateInstrumentParams])
 
   useEffect(() => {
     effects.delayEffect.current.set({ delayTime })

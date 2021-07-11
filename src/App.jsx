@@ -21,7 +21,7 @@ if (!window.localStorage.getItem('presets')) {
 }
 
 export default function App() {
-  const [presets, setPresets] = useState(JSON.parse(window.localStorage.getItem('presets')))
+  const [presets, setPresets] = useState(initializePresets)
   const [currentPreset, setCurrentPreset] = useState(
     window.localStorage.getItem('activePreset')
       ? presets.find((p) => p.id === window.localStorage.getItem('activePreset'))
@@ -460,4 +460,37 @@ function deepStateCopy(state) {
   return Object.assign({}, state, {
     channels: state.channels.map((c) => channelCopy(c)),
   })
+}
+
+function initializePresets() {
+  const presets = JSON.parse(window.localStorage.getItem('presets'))
+  const examplePreset = DEFAULT_PRESET
+  const exampleChannel = examplePreset.channels[0]
+  let updated = false
+  presets.forEach((preset) => {
+    for (const prop in examplePreset) {
+      if (preset[prop] === undefined) {
+        preset[prop] = examplePreset[prop]
+        updated = true
+      }
+    }
+    preset.channels.forEach((channel) => {
+      for (const prop in exampleChannel) {
+        if (channel[prop] === undefined) {
+          channel[prop] = exampleChannel[prop]
+          updated = true
+        }
+      }
+      for (const prop in exampleChannel.instrumentParams) {
+        if (channel.instrumentParams[prop] === undefined) {
+          channel.instrumentParams[prop] = exampleChannel.instrumentParams[prop]
+          updated = true
+        }
+      }
+    })
+  })
+  if (updated) {
+    window.localStorage.setItem('presets', JSON.stringify(presets))
+  }
+  return presets
 }
