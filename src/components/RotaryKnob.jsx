@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { KNOB_MAX } from '../globals'
@@ -39,6 +39,7 @@ export default function RotaryKnob({
   theme,
   rangeMode,
   logarithmic,
+  updateOnce,
 }) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -83,6 +84,12 @@ export default function RotaryKnob({
     },
     [axisKnob, logarithmic, setValue, value, maxVal, minVal, linearKnobs, detent]
   )
+
+  useEffect(() => {
+    if (updateOnce) {
+      setInternalValue(logarithmic ? expInterpolate(minVal, maxVal, value, true) : value)
+    }
+  }, [logarithmic, maxVal, minVal, updateOnce, value])
 
   const startTurningKnob = useCallback(() => {
     setGrabbing(true)
@@ -523,4 +530,5 @@ RotaryKnob.propTypes = {
   theme: PropTypes.string,
   rangeMode: PropTypes.bool,
   logarithmic: PropTypes.bool,
+  updateOnce: PropTypes.bool,
 }

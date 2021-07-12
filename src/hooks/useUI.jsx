@@ -114,7 +114,8 @@ export default function useUI(
   keyClear,
   keyRestart,
   openMidiModal,
-  openInstrumentModal
+  openInstrumentModal,
+  updateOnce
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -245,6 +246,7 @@ export default function useUI(
           linearKnobs={linearKnobs}
           theme={theme}
           rangeMode={rangeMode}
+          updateOnce={updateOnce}
         />
       )
     },
@@ -265,6 +267,7 @@ export default function useUI(
       theme,
       turningAxisKnob,
       updateAxis,
+      updateOnce,
     ]
   )
 
@@ -414,10 +417,11 @@ export default function useUI(
           mute={muted}
           linearKnobs={linearKnobs}
           theme={theme}
+          updateOnce={updateOnce}
         />
       )
     },
-    [grabbing, sustain, linearKnobs, muted, setGrabbing, setSustain, theme]
+    [sustain, setSustain, setGrabbing, grabbing, muted, linearKnobs, theme, updateOnce]
   )
 
   const sustainNormal = useMemo(() => keySustainEl(false), [keySustainEl])
@@ -439,6 +443,7 @@ export default function useUI(
             mute={mute}
             linearKnobs={linearKnobs}
             theme={theme}
+            updateOnce={updateOnce}
           />
           <NumInput
             value={keySwingLength}
@@ -451,7 +456,18 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, keySwing, keySwingLength, linearKnobs, mute, setGrabbing, setKeySwing, setKeySwingLength, theme]
+    [
+      grabbing,
+      keySwing,
+      keySwingLength,
+      linearKnobs,
+      mute,
+      setGrabbing,
+      setKeySwing,
+      setKeySwingLength,
+      theme,
+      updateOnce,
+    ]
   )
 
   const keySwingNormal = useMemo(() => keySwingEl(false), [keySwingEl])
@@ -538,6 +554,7 @@ export default function useUI(
             mute={mute}
             linearKnobs={linearKnobs}
             theme={theme}
+            updateOnce={updateOnce}
           />
           <NumInput
             value={seqSwingLength}
@@ -551,7 +568,18 @@ export default function useUI(
         </div>
       )
     },
-    [grabbing, linearKnobs, mute, seqSwing, seqSwingLength, setGrabbing, setSeqSwing, setSeqSwingLength, theme]
+    [
+      grabbing,
+      linearKnobs,
+      mute,
+      seqSwing,
+      seqSwingLength,
+      setGrabbing,
+      setSeqSwing,
+      setSeqSwingLength,
+      theme,
+      updateOnce,
+    ]
   )
 
   const seqSwingNormal = useMemo(() => seqSwingEl(false), [seqSwingEl])

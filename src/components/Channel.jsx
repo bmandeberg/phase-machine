@@ -149,6 +149,8 @@ export default function Channel({
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState('')
 
+  const [updateOnce, setUpdateOnce] = useState(false)
+
   const toggleDrawerOpen = useCallback(() => {
     setDrawerOpen((drawerOpen) => !drawerOpen)
   }, [])
@@ -320,9 +322,16 @@ export default function Channel({
           channelPreset.instrumentParams,
           effectRef.current
         )
+        setUpdateOnce(true)
       }
     }
   }, [channelPreset, restartChannels, keyRestart, seqRestart])
+
+  useEffect(() => {
+    if (updateOnce) {
+      setUpdateOnce(false)
+    }
+  }, [updateOnce])
 
   const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
 
@@ -1064,7 +1073,8 @@ export default function Channel({
     keyClear,
     keyRestart,
     openMidiModal,
-    openInstrumentModal
+    openInstrumentModal,
+    updateOnce
   )
 
   const instruments = useMemo(() => ({ synthInstrument, pianoInstrument, marimbaInstrument, drumsInstrument }), [])
