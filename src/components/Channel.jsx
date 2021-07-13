@@ -14,8 +14,10 @@ import {
   noteString,
   convertMidiNumber,
   OCTAVES,
+  SUSTAIN_MIN,
+  KNOB_MAX,
 } from '../globals'
-import { pitchesInRange, constrain } from '../math'
+import { pitchesInRange, constrain, scaleToRange } from '../math'
 import classNames from 'classnames'
 import Sequencer from './Sequencer'
 import Modal from './Modal'
@@ -666,26 +668,29 @@ export default function Channel({
     setModalType('instrument')
   }, [])
 
-  const noteOff = useCallback((channel, note, midiOutObj, delay, offTime, clockOffset) => {
-    if (instrument.current) {
-      instrument.current.triggerRelease(offTime ?? undefined)
-    }
-    if (midiOutObj) {
-      const params = {}
-      if (offTime) {
-        params.time = offTime * 1000 + clockOffset
+  const noteOff = useCallback(
+    (channel, note, midiOutObj, delay, offTime, clockOffset) => {
+      if (instrument.current && !SAMPLER_INSTRUMENTS.includes(instrumentType)) {
+        instrument.current.triggerRelease(offTime ?? undefined)
       }
-      midiOutObj.stopNote(note, channel, params)
-    }
-    setNoteOn(false)
-    if (delay) {
-      Tone.context.setTimeout(() => {
+      if (midiOutObj) {
+        const params = {}
+        if (offTime) {
+          params.time = offTime * 1000 + clockOffset
+        }
+        midiOutObj.stopNote(note, channel, params)
+      }
+      setNoteOn(false)
+      if (delay) {
+        Tone.context.setTimeout(() => {
+          notePlaying.current = false
+        }, PLAY_NOTE_BUFFER_TIME)
+      } else {
         notePlaying.current = false
-      }, PLAY_NOTE_BUFFER_TIME)
-    } else {
-      notePlaying.current = false
-    }
-  }, [])
+      }
+    },
+    [instrumentType]
+  )
 
   // note off when stop playing
   useEffect(() => {
@@ -739,12 +744,18 @@ export default function Channel({
           noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
         }
       }
-      if (
-        instrumentOn &&
-        instrument.current &&
-        (!SAMPLER_INSTRUMENTS.includes(instrumentType) || instrument.current.loaded)
-      ) {
-        instrument.current.triggerAttack(note, time, velocity)
+      const isSamplerInstrument = SAMPLER_INSTRUMENTS.includes(instrumentType)
+      if (instrumentOn && instrument.current && (!isSamplerInstrument || instrument.current.loaded)) {
+        if (isSamplerInstrument) {
+          instrument.current.triggerAttackRelease(
+            note,
+            scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, 5),
+            time,
+            velocity
+          )
+        } else {
+          instrument.current.triggerAttack(note, time, velocity)
+        }
       }
       if (midiOutObj) {
         midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })

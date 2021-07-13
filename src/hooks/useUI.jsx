@@ -402,7 +402,7 @@ export default function useUI(
     )
   }, [movements, keyArpInc1, keyArpInc2, keyMovement, setKeyArpInc1, setKeyArpInc2, setKeyMovement])
 
-  const keySustainEl = useCallback(
+  const sustainEl = useCallback(
     (vertical) => {
       return (
         <RotaryKnob
@@ -424,8 +424,8 @@ export default function useUI(
     [sustain, setSustain, setGrabbing, grabbing, muted, linearKnobs, theme, updateOnce]
   )
 
-  const sustainNormal = useMemo(() => keySustainEl(false), [keySustainEl])
-  const sustainVertical = useMemo(() => keySustainEl(true), [keySustainEl])
+  const sustainNormal = useMemo(() => sustainEl(false), [sustainEl])
+  const sustainVertical = useMemo(() => sustainEl(true), [sustainEl])
 
   const keySwingEl = useCallback(
     (vertical) => {

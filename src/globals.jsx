@@ -500,7 +500,7 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
     filterRelease: 2,
     filterAmount: 3,
     samplerAttack: 0,
-    samplerRelease: 0.1,
+    samplerRelease: 1,
     effectType: EFFECTS[0],
     effectWet: 1,
     chorusDepth: 0.5,
