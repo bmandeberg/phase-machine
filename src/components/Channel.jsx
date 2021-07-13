@@ -880,11 +880,13 @@ export default function Channel({
           noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
         }
       }
+      const unheldNote = !hold || !seqSteps[nextStep.current]
+      const sampleMaxTime = 5
       if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
         if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
             note,
-            scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, 5),
+            unheldNote ? scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, sampleMaxTime) : sampleMaxTime,
             time,
             velocity
           )
@@ -900,7 +902,7 @@ export default function Channel({
       notePlaying.current = true
       playingNoteRef.current = noteIndex.current
       // schedule note-off if we are not hold or if the next step is off
-      if (!hold || !seqSteps[nextStep.current]) {
+      if (unheldNote) {
         const sustainTime = Math.max(sustain * Tone.Transport.toSeconds(keyRate), 0.08)
         Tone.context.clearTimeout(noteOffTimeout.current)
         noteOffTimeout.current = Tone.context.setTimeout(() => {
