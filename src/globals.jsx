@@ -292,7 +292,7 @@ export const SYNTH_TYPES = Object.assign({}, SIGNAL_TYPES, {
 
 export const INSTRUMENT_TYPES = {
   synth: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('synth', theme)} alt="" />,
-  bass: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('bass', theme)} alt="" />,
+  bass: (theme) => <img className="wave-icon" style={{ height: 28 }} src={themedIcon('bass', theme)} alt="" />,
   piano: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('piano', theme)} alt="" />,
   marimba: (theme) => <img className="wave-icon" style={{ height: 18 }} src={themedIcon('marimba', theme)} alt="" />,
   vibes: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('vibes', theme)} alt="" />,
