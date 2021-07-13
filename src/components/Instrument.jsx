@@ -62,7 +62,7 @@ export default function Instrument({
     if (inModal) {
       return (
         <Dropdown
-          className="instrument-item"
+          className="instrument-item instrument-dropdown"
           options={instrumentOptions}
           setValue={setInstrumentType}
           value={instrumentType}

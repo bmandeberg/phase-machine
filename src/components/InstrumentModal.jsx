@@ -5,11 +5,12 @@ import RotaryKnob from './RotaryKnob'
 import Dropdown from './Dropdown'
 import NumInput from './NumInput'
 import Switch from 'react-switch'
-import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES } from '../globals'
+import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES } from '../globals'
 import * as Tone from 'tone'
 import './InstrumentModal.scss'
 
 const rolloffOptions = ['-12', '-24', '-48', '-96']
+const oscModifiers = ['none', 'am', 'fm', 'fat']
 
 export default function InstrumentModal({
   instrumentOn,
@@ -26,6 +27,15 @@ export default function InstrumentModal({
   linearKnobs,
 }) {
   // synth
+  const [synthType, setSynthType] = useState(instrumentParams.synthType)
+  const [oscModifier, setOscModifier] = useState(() => {
+    for (let i = 1; i < oscModifiers.length; i++) {
+      if (instrumentParams.synthType.startsWith(oscModifiers[i])) {
+        return oscModifiers[i]
+      }
+    }
+    return oscModifiers[0]
+  })
   const [portamento, setPortamento] = useState(instrumentParams.portamento)
   const [modulationType, setModulationType] = useState(instrumentParams.modulationType)
   const [harmonicity, setHarmonicity] = useState(instrumentParams.harmonicity)
@@ -99,6 +109,10 @@ export default function InstrumentModal({
   )
 
   // update synth params
+
+  useEffect(() => {
+    updateInstrumentParams('synthType', synthType)
+  }, [instruments.synthInstrument, synthType, updateInstrumentParams])
 
   useEffect(() => {
     instruments.synthInstrument.current.portamento = portamento
@@ -336,6 +350,51 @@ export default function InstrumentModal({
     updateInstrumentParams('vibratoFreq', vibratoFreq)
   }, [effects.vibratoEffect, updateInstrumentParams, vibratoFreq])
 
+  const signalTypeOptions = useMemo(
+    () =>
+      Object.keys(SIGNAL_TYPES).map((instr) => ({
+        value: instr,
+        label: SIGNAL_TYPES[instr](theme),
+      })),
+    [theme]
+  )
+
+  const synthTypeOptions = useMemo(
+    () =>
+      Object.keys(SYNTH_TYPES).map((type) => ({
+        value: type,
+        label: SYNTH_TYPES[type](theme),
+      })),
+    [theme]
+  )
+  const synthBase = useMemo(() => {
+    for (let i = 1; i < oscModifiers.length; i++) {
+      if (synthType.startsWith(oscModifiers[i])) {
+        return synthType.substring(oscModifiers[i].length)
+      }
+    }
+    return synthType
+  }, [synthType])
+  const updateSynthType = useCallback(
+    (newType) => {
+      const updatedType =
+        oscModifier !== oscModifiers[0] && Object.keys(SIGNAL_TYPES).includes(newType) ? oscModifier + newType : newType
+      console.log(updatedType)
+      setSynthType(updatedType)
+      instruments.synthInstrument.current.oscillator.set({ harmonicity, type: updatedType })
+    },
+    [harmonicity, instruments.synthInstrument, oscModifier]
+  )
+  const updateOscModifier = useCallback(
+    (modifier) => {
+      const updatedModifier = modifier === oscModifiers[0] ? '' : modifier
+      setSynthType(updatedModifier + synthBase)
+      instruments.synthInstrument.current.oscillator.set({ harmonicity, type: updatedModifier + synthBase })
+      setOscModifier(modifier)
+    },
+    [harmonicity, instruments.synthInstrument, synthBase]
+  )
+
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
@@ -347,6 +406,22 @@ export default function InstrumentModal({
         <div className="controls-row">
           <div className="controls-module">
             <p className="controls-label">Oscillator</p>
+            <Dropdown
+              className="instrument-item"
+              label="Wave"
+              options={synthTypeOptions}
+              setValue={updateSynthType}
+              value={synthBase}
+            />
+            {Object.keys(SIGNAL_TYPES).includes(synthBase) && (
+              <Dropdown
+                className="instrument-item"
+                label="Modifier"
+                options={oscModifiers}
+                setValue={updateOscModifier}
+                value={oscModifier}
+              />
+            )}
             <RotaryKnob
               className="instrument-item"
               min={0}
@@ -361,14 +436,15 @@ export default function InstrumentModal({
               linearKnobs={linearKnobs}
               theme={theme}
             />
-            {(instrumentType.startsWith('am') || instrumentType.startsWith('fm')) && (
+            {(synthType.startsWith('am') || synthType.startsWith('fm')) && (
               <div className="controls-aux">
                 <Dropdown
                   className="instrument-item"
                   label="Modulation"
-                  options={SIGNAL_TYPES}
+                  options={signalTypeOptions}
                   setValue={setModulationType}
                   value={modulationType}
+                  minWidth={95}
                 />
                 <RotaryKnob
                   className="instrument-item"
@@ -387,7 +463,7 @@ export default function InstrumentModal({
                 />
               </div>
             )}
-            {instrumentType.startsWith('fat') && (
+            {synthType.startsWith('fat') && (
               <div className="controls-aux">
                 <RotaryKnob
                   className="instrument-item"
@@ -415,7 +491,7 @@ export default function InstrumentModal({
                 />
               </div>
             )}
-            {instrumentType === 'pulse' && (
+            {synthType === 'pulse' && (
               <div className="controls-aux">
                 <RotaryKnob
                   className="instrument-item"
@@ -433,7 +509,7 @@ export default function InstrumentModal({
                 />
               </div>
             )}
-            {instrumentType === 'pwm' && (
+            {synthType === 'pwm' && (
               <div className="controls-aux">
                 <RotaryKnob
                   className="instrument-item"
@@ -452,6 +528,8 @@ export default function InstrumentModal({
               </div>
             )}
           </div>
+        </div>
+        <div className="controls-row">
           <div className="controls-module envelope-controls">
             <p className="controls-label">Envelope</p>
             <RotaryKnob
@@ -643,17 +721,23 @@ export default function InstrumentModal({
       filterSustain,
       grabbing,
       harmonicity,
-      instrumentType,
       linearKnobs,
       modulationType,
+      oscModifier,
       portamento,
       pulseWidth,
       pwmFreq,
       resonance,
       rolloffString,
       setGrabbing,
+      signalTypeOptions,
+      synthBase,
+      synthType,
+      synthTypeOptions,
       theme,
+      updateOscModifier,
       updateRolloff,
+      updateSynthType,
     ]
   )
   const samplerInstrumentControls = useMemo(

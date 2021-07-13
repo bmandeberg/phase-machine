@@ -10,7 +10,7 @@ const OPTION_HEIGHT = 27
 
 function longestText(options, graphicOptions) {
   if (graphicOptions) {
-    return '--------'
+    return '-----'
   }
   if (options.length) {
     let longestOption = ''
@@ -43,6 +43,7 @@ export default function Dropdown({
   setNum2,
   showNumInputs,
   container,
+  minWidth,
 }) {
   const [open, setOpen] = useState(false)
   const [menuAbove, setMenuAbove] = useState(false)
@@ -169,7 +170,8 @@ export default function Dropdown({
         'dropdown-num-inputs-container': setNum1,
         'show-dropdown-num-inputs': showNumInputs,
         'graphic-options': graphicOptions,
-      })}>
+      })}
+      style={minWidth ? { minWidth } : null}>
       <div className="dropdown">
         <div className={classNames('dropdown-root', { open })}>
           <div onClick={toggleOpen} className="dropdown-control">
@@ -211,4 +213,5 @@ Dropdown.propTypes = {
   setNum2: PropTypes.func,
   showNumInputs: PropTypes.bool,
   container: PropTypes.string,
+  minWidth: PropTypes.number,
 }
