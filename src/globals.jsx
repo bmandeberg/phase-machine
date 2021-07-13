@@ -27,6 +27,18 @@ import darkPiano from './assets/samples-piano-dark.svg'
 import synth from './assets/samples-synth.svg'
 import lightSynth from './assets/samples-synth-light.svg'
 import darkSynth from './assets/samples-synth-dark.svg'
+import bass from './assets/samples-bass.svg'
+import lightBass from './assets/samples-bass-light.svg'
+import darkBass from './assets/samples-bass-dark.svg'
+import vibes from './assets/samples-vibes.svg'
+import lightVibes from './assets/samples-vibes-light.svg'
+import darkVibes from './assets/samples-vibes-dark.svg'
+import harp from './assets/samples-harp.svg'
+import lightHarp from './assets/samples-harp-light.svg'
+import darkHarp from './assets/samples-harp-dark.svg'
+import choral from './assets/samples-choral.svg'
+import lightChoral from './assets/samples-choral-light.svg'
+import darkChoral from './assets/samples-choral-dark.svg'
 
 import { rangeWrapper } from './math'
 
@@ -163,6 +175,50 @@ function themedIcon(icon, theme) {
         default:
           return synth
       }
+    case 'bass':
+      switch (theme) {
+        case 'light':
+          return bass
+        case 'dark':
+          return lightBass
+        case 'contrast':
+          return darkBass
+        default:
+          return bass
+      }
+    case 'vibes':
+      switch (theme) {
+        case 'light':
+          return vibes
+        case 'dark':
+          return lightVibes
+        case 'contrast':
+          return darkVibes
+        default:
+          return vibes
+      }
+    case 'harp':
+      switch (theme) {
+        case 'light':
+          return harp
+        case 'dark':
+          return lightHarp
+        case 'contrast':
+          return darkHarp
+        default:
+          return harp
+      }
+    case 'choral':
+      switch (theme) {
+        case 'light':
+          return choral
+        case 'dark':
+          return lightChoral
+        case 'contrast':
+          return darkChoral
+        default:
+          return choral
+      }
     default:
       return null
   }
@@ -236,8 +292,12 @@ export const SYNTH_TYPES = Object.assign({}, SIGNAL_TYPES, {
 
 export const INSTRUMENT_TYPES = {
   synth: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('synth', theme)} alt="" />,
+  bass: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('bass', theme)} alt="" />,
   piano: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('piano', theme)} alt="" />,
   marimba: (theme) => <img className="wave-icon" style={{ height: 18 }} src={themedIcon('marimba', theme)} alt="" />,
+  vibes: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('vibes', theme)} alt="" />,
+  harp: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('harp', theme)} alt="" />,
+  choral: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('choral', theme)} alt="" />,
   drums: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drums', theme)} alt="" />,
 }
 
@@ -287,8 +347,6 @@ export const KNOB_MAX = 1
 export const SUSTAIN_MIN = 0.2
 
 export const MAX_CHANNELS = 8
-
-export const SAMPLER_INSTRUMENTS = ['drums', 'piano', 'marimba']
 
 export const EFFECTS = ['none', 'chorus', 'distortion', 'delay', 'reverb', 'vibrato']
 

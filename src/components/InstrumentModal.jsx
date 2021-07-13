@@ -214,28 +214,24 @@ export default function InstrumentModal({
   useEffect(() => {
     instruments.pianoInstrument.current.attack = samplerAttack
     instruments.marimbaInstrument.current.attack = samplerAttack
+    instruments.bassInstrument.current.attack = samplerAttack
+    instruments.vibesInstrument.current.attack = samplerAttack
+    instruments.harpInstrument.current.attack = samplerAttack
+    instruments.choralInstrument.current.attack = samplerAttack
     instruments.drumsInstrument.current.attack = samplerAttack
     updateInstrumentParams('samplerAttack', samplerAttack)
-  }, [
-    instruments.drumsInstrument,
-    instruments.marimbaInstrument,
-    instruments.pianoInstrument,
-    samplerAttack,
-    updateInstrumentParams,
-  ])
+  }, [instruments, samplerAttack, updateInstrumentParams])
 
   useEffect(() => {
     instruments.pianoInstrument.current.release = samplerRelease
     instruments.marimbaInstrument.current.release = samplerRelease
+    instruments.bassInstrument.current.attack = samplerRelease
+    instruments.vibesInstrument.current.attack = samplerRelease
+    instruments.harpInstrument.current.attack = samplerRelease
+    instruments.choralInstrument.current.attack = samplerRelease
     instruments.drumsInstrument.current.release = samplerRelease
     updateInstrumentParams('samplerRelease', samplerRelease)
-  }, [
-    instruments.drumsInstrument,
-    instruments.marimbaInstrument,
-    instruments.pianoInstrument,
-    samplerRelease,
-    updateInstrumentParams,
-  ])
+  }, [instruments, samplerRelease, updateInstrumentParams])
 
   // update effect params
 

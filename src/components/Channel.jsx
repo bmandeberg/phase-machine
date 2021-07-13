@@ -313,7 +313,15 @@ export default function Channel({
         setModalType(null)
         updateInstruments(
           synthInstrument.current,
-          [pianoInstrument.current, marimbaInstrument.current, drumsInstrument.current],
+          [
+            pianoInstrument.current,
+            marimbaInstrument.current,
+            drumsInstrument.current,
+            bassInstrument.current,
+            vibesInstrument.current,
+            harpInstrument.current,
+            choralInstrument.current,
+          ],
           chorusEffect.current,
           distortionEffect.current,
           delayEffect.current,
@@ -387,6 +395,10 @@ export default function Channel({
   const drumsInstrument = useRef()
   const pianoInstrument = useRef()
   const marimbaInstrument = useRef()
+  const bassInstrument = useRef()
+  const vibesInstrument = useRef()
+  const harpInstrument = useRef()
+  const choralInstrument = useRef()
   const chorusEffect = useRef()
   const distortionEffect = useRef()
   const delayEffect = useRef()
@@ -427,9 +439,14 @@ export default function Channel({
     })
     pianoInstrument.current = new Tone.Sampler({
       urls: {
-        C2: 'Ensoniq-SQ-2-Piano-C2.mp3',
-        C4: 'Ensoniq-SQ-2-Piano-C4.mp3',
-        C7: 'Ensoniq-SQ-2-Piano-C7.mp3',
+        C1: 'Piano_C1.mp3',
+        C2: 'Piano_C2.mp3',
+        C3: 'Piano_C3.mp3',
+        C4: 'Piano_C4.mp3',
+        C5: 'Piano_C5.mp3',
+        C6: 'Piano_C6.mp3',
+        C7: 'Piano_C7.mp3',
+        C8: 'Piano_C8.mp3',
       },
       baseUrl: window.location.origin + '/samples/piano/',
     })
@@ -440,11 +457,90 @@ export default function Channel({
     })
     marimbaInstrument.current = new Tone.Sampler({
       urls: {
-        C4: 'Roland-SC-88-Marimba-C4.mp3',
+        // C1: 'Marimba_C1.mp3',
+        // C2: 'Marimba_C2.mp3',
+        // C3: 'Marimba_C3.mp3',
+        C4: 'Marimba_C4.mp3',
+        C5: 'Marimba_C5.mp3',
+        C6: 'Marimba_C6.mp3',
+        C7: 'Marimba_C7.mp3',
+        C8: 'Marimba_C8.mp3',
       },
       baseUrl: window.location.origin + '/samples/marimba/',
     })
     marimbaInstrument.current.set({
+      attack: instrumentParamsRef.current.samplerAttack,
+      release: instrumentParamsRef.current.samplerRelease,
+      volume: -6,
+    })
+    bassInstrument.current = new Tone.Sampler({
+      urls: {
+        C1: 'Bass_C1.mp3',
+        C2: 'Bass_C2.mp3',
+        C3: 'Bass_C3.mp3',
+        C4: 'Bass_C4.mp3',
+        C5: 'Bass_C5.mp3',
+        C6: 'Bass_C6.mp3',
+        C7: 'Bass_C7.mp3',
+        C8: 'Bass_C8.mp3',
+      },
+      baseUrl: window.location.origin + '/samples/bass/',
+    })
+    bassInstrument.current.set({
+      attack: instrumentParamsRef.current.samplerAttack,
+      release: instrumentParamsRef.current.samplerRelease,
+      volume: -6,
+    })
+    vibesInstrument.current = new Tone.Sampler({
+      urls: {
+        // C1: 'Vibraphone_C1.mp3',
+        // C2: 'Vibraphone_C2.mp3',
+        // C3: 'Vibraphone_C3.mp3',
+        C4: 'Vibraphone_C4.mp3',
+        C5: 'Vibraphone_C5.mp3',
+        C6: 'Vibraphone_C6.mp3',
+        C7: 'Vibraphone_C7.mp3',
+        C8: 'Vibraphone_C8.mp3',
+      },
+      baseUrl: window.location.origin + '/samples/vibes/',
+    })
+    vibesInstrument.current.set({
+      attack: instrumentParamsRef.current.samplerAttack,
+      release: instrumentParamsRef.current.samplerRelease,
+      volume: -6,
+    })
+    harpInstrument.current = new Tone.Sampler({
+      urls: {
+        C1: 'Harp_C1.mp3',
+        C2: 'Harp_C2.mp3',
+        C3: 'Harp_C3.mp3',
+        C4: 'Harp_C4.mp3',
+        C5: 'Harp_C5.mp3',
+        C6: 'Harp_C6.mp3',
+        C7: 'Harp_C7.mp3',
+        C8: 'Harp_C8.mp3',
+      },
+      baseUrl: window.location.origin + '/samples/harp/',
+    })
+    harpInstrument.current.set({
+      attack: instrumentParamsRef.current.samplerAttack,
+      release: instrumentParamsRef.current.samplerRelease,
+      volume: -6,
+    })
+    choralInstrument.current = new Tone.Sampler({
+      urls: {
+        C1: 'Choir_C1.mp3',
+        C2: 'Choir_C2.mp3',
+        C3: 'Choir_C3.mp3',
+        C4: 'Choir_C4.mp3',
+        C5: 'Choir_C5.mp3',
+        C6: 'Choir_C6.mp3',
+        C7: 'Choir_C7.mp3',
+        C8: 'Choir_C8.mp3',
+      },
+      baseUrl: window.location.origin + '/samples/choral/',
+    })
+    choralInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
       volume: -6,
@@ -574,12 +670,20 @@ export default function Channel({
       synthInstrument.current.connect(effect)
       pianoInstrument.current.connect(effect)
       marimbaInstrument.current.connect(effect)
+      bassInstrument.current.connect(effect)
+      vibesInstrument.current.connect(effect)
+      harpInstrument.current.connect(effect)
+      choralInstrument.current.connect(effect)
       drumsInstrument.current.connect(effect)
     } else {
       effectRef.current = Tone.getDestination()
       synthInstrument.current.toDestination()
       pianoInstrument.current.toDestination()
       marimbaInstrument.current.toDestination()
+      bassInstrument.current.toDestination()
+      vibesInstrument.current.toDestination()
+      harpInstrument.current.toDestination()
+      choralInstrument.current.toDestination()
       drumsInstrument.current.toDestination()
     }
     switch (initInstrumentType.current) {
@@ -589,8 +693,23 @@ export default function Channel({
       case 'marimba':
         instrument.current = marimbaInstrument.current
         break
+      case 'bass':
+        instrument.current = bassInstrument.current
+        break
+      case 'vibes':
+        instrument.current = vibesInstrument.current
+        break
+      case 'harp':
+        instrument.current = harpInstrument.current
+        break
+      case 'choral':
+        instrument.current = choralInstrument.current
+        break
       case 'drums':
         instrument.current = drumsInstrument.current
+        break
+      case 'synth':
+        instrument.current = synthInstrument.current
         break
       default:
         instrument.current = synthInstrument.current
@@ -611,6 +730,10 @@ export default function Channel({
       synthInstrument.current.dispose()
       marimbaInstrument.current.dispose()
       pianoInstrument.current.dispose()
+      bassInstrument.current.dispose()
+      vibesInstrument.current.dispose()
+      harpInstrument.current.dispose()
+      choralInstrument.current.dispose()
       drumsInstrument.current.dispose()
       chorusEffect.current.dispose()
       distortionEffect.current.dispose()
@@ -631,6 +754,18 @@ export default function Channel({
         break
       case 'marimba':
         instrument.current = marimbaInstrument.current
+        break
+      case 'bass':
+        instrument.current = bassInstrument.current
+        break
+      case 'vibes':
+        instrument.current = vibesInstrument.current
+        break
+      case 'harp':
+        instrument.current = harpInstrument.current
+        break
+      case 'choral':
+        instrument.current = choralInstrument.current
         break
       case 'drums':
         instrument.current = drumsInstrument.current
@@ -1088,7 +1223,19 @@ export default function Channel({
     updateOnce
   )
 
-  const instruments = useMemo(() => ({ synthInstrument, pianoInstrument, marimbaInstrument, drumsInstrument }), [])
+  const instruments = useMemo(
+    () => ({
+      synthInstrument,
+      pianoInstrument,
+      marimbaInstrument,
+      bassInstrument,
+      vibesInstrument,
+      harpInstrument,
+      choralInstrument,
+      drumsInstrument,
+    }),
+    []
+  )
   const effects = useMemo(
     () => ({
       chorusEffect,
