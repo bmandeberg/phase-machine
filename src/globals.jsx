@@ -24,6 +24,9 @@ import darkMarimba from './assets/samples-marimba-dark.svg'
 import piano from './assets/samples-piano.svg'
 import lightPiano from './assets/samples-piano-light.svg'
 import darkPiano from './assets/samples-piano-dark.svg'
+import synth from './assets/samples-synth.svg'
+import lightSynth from './assets/samples-synth-light.svg'
+import darkSynth from './assets/samples-synth-dark.svg'
 
 import { rangeWrapper } from './math'
 
@@ -149,6 +152,17 @@ function themedIcon(icon, theme) {
         default:
           return piano
       }
+    case 'synth':
+      switch (theme) {
+        case 'light':
+          return synth
+        case 'dark':
+          return lightSynth
+        case 'contrast':
+          return darkSynth
+        default:
+          return synth
+      }
     default:
       return null
   }
@@ -205,91 +219,23 @@ export function themedSwitch(component, theme, mute) {
   }
 }
 
-export const SIGNAL_TYPES = ['sine', 'square', 'triangle', 'sawtooth']
-
-export const INSTRUMENT_TYPES = {
+export const SIGNAL_TYPES = {
   sine: (theme) => <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />,
   square: (theme) => <img className="wave-icon" src={themedIcon('square', theme)} alt="" />,
   triangle: (theme) => <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />,
   sawtooth: (theme) => <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />,
+}
+export const SYNTH_TYPES = Object.assign({}, SIGNAL_TYPES, {
   pulse: (theme) => <img className="wave-icon" src={themedIcon('pulse', theme)} alt="" />,
   pwm: () => (
     <span className="wave-title" style={{ marginRight: 0 }}>
       pwm
     </span>
   ),
-  fmsine: (theme) => (
-    <div>
-      <span className="wave-title">fm</span>
-      <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />
-    </div>
-  ),
-  fmsquare: (theme) => (
-    <div>
-      <span className="wave-title">fm</span>
-      <img className="wave-icon" src={themedIcon('square', theme)} alt="" />
-    </div>
-  ),
-  fmtriangle: (theme) => (
-    <div>
-      <span className="wave-title">fm</span>
-      <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />
-    </div>
-  ),
-  fmsawtooth: (theme) => (
-    <div>
-      <span className="wave-title">fm</span>
-      <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />
-    </div>
-  ),
-  amsine: (theme) => (
-    <div>
-      <span className="wave-title">am</span>
-      <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />
-    </div>
-  ),
-  amsquare: (theme) => (
-    <div>
-      <span className="wave-title">am</span>
-      <img className="wave-icon" src={themedIcon('square', theme)} alt="" />
-    </div>
-  ),
-  amtriangle: (theme) => (
-    <div>
-      <span className="wave-title">am</span>
-      <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />
-    </div>
-  ),
-  amsawtooth: (theme) => (
-    <div>
-      <span className="wave-title">am</span>
-      <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />
-    </div>
-  ),
-  fatsine: (theme) => (
-    <div>
-      <span className="wave-title">fat</span>
-      <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />
-    </div>
-  ),
-  fatsquare: (theme) => (
-    <div>
-      <span className="wave-title">fat</span>
-      <img className="wave-icon" src={themedIcon('square', theme)} alt="" />
-    </div>
-  ),
-  fattriangle: (theme) => (
-    <div>
-      <span className="wave-title">fat</span>
-      <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />
-    </div>
-  ),
-  fatsawtooth: (theme) => (
-    <div>
-      <span className="wave-title">fat</span>
-      <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />
-    </div>
-  ),
+})
+
+export const INSTRUMENT_TYPES = {
+  synth: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('synth', theme)} alt="" />,
   piano: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('piano', theme)} alt="" />,
   marimba: (theme) => <img className="wave-icon" style={{ height: 18 }} src={themedIcon('marimba', theme)} alt="" />,
   drums: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drums', theme)} alt="" />,
@@ -472,7 +418,7 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   seqSwingLength: 2,
   hold: false,
   instrumentOn: true,
-  instrumentType: 'triangle',
+  instrumentType: 'synth',
   rangeMode,
   keybdPitches: [],
   midiIn: false,
@@ -480,6 +426,7 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   customMidiOutChannel: false,
   midiOutChannel: 1,
   instrumentParams: {
+    synthType: 'triangle',
     portamento: 0,
     modulationType: 'square',
     harmonicity: 1,

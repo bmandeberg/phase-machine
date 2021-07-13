@@ -9,7 +9,6 @@ import {
   CHANNEL_HEIGHT,
   PLAY_NOTE_BUFFER_TIME,
   MIDDLE_C,
-  SAMPLER_INSTRUMENTS,
   handleArpMode,
   noteString,
   convertMidiNumber,
@@ -399,7 +398,7 @@ export default function Channel({
       portamento: instrumentParamsRef.current.portamento,
       volume: -6,
       oscillator: {
-        type: SAMPLER_INSTRUMENTS.includes(initInstrumentType.current) ? 'triangle' : initInstrumentType.current,
+        type: initInstrumentType.current !== 'synth' ? 'triangle' : instrumentParamsRef.current.synthType,
         modulationType: instrumentParamsRef.current.modulationType,
         harmonicity: instrumentParamsRef.current.harmonicity,
         spread: instrumentParamsRef.current.fatSpread,
@@ -636,9 +635,11 @@ export default function Channel({
       case 'drums':
         instrument.current = drumsInstrument.current
         break
+      case 'synth':
+        instrument.current = synthInstrument.current
+        break
       default:
         instrument.current = synthInstrument.current
-        instrument.current.oscillator.type = instrumentType
     }
   }, [instrumentType])
 
@@ -670,7 +671,7 @@ export default function Channel({
 
   const noteOff = useCallback(
     (channel, note, midiOutObj, delay, offTime, clockOffset) => {
-      if (instrument.current && !SAMPLER_INSTRUMENTS.includes(instrumentType)) {
+      if (instrument.current && instrumentType === 'synth') {
         instrument.current.triggerRelease(offTime ?? undefined)
       }
       if (midiOutObj) {
@@ -744,9 +745,8 @@ export default function Channel({
           noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
         }
       }
-      const isSamplerInstrument = SAMPLER_INSTRUMENTS.includes(instrumentType)
-      if (instrumentOn && instrument.current && (!isSamplerInstrument || instrument.current.loaded)) {
-        if (isSamplerInstrument) {
+      if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
+        if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
             note,
             scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, 5),
@@ -1661,7 +1661,7 @@ function updateInstruments(
   synthInstrument.set({
     portamento: instrumentParams.portamento,
     oscillator: {
-      type: SAMPLER_INSTRUMENTS.includes(instrumentType) ? 'triangle' : instrumentType,
+      type: instrumentType !== 'synth' ? 'triangle' : instrumentParams.synthType,
       modulationType: instrumentParams.modulationType,
       harmonicity: instrumentParams.harmonicity,
       spread: instrumentParams.fatSpread,

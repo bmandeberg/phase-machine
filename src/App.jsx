@@ -5,7 +5,16 @@ import classNames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
 import { v4 as uuid } from 'uuid'
 import arrayMove from 'array-move'
-import { MAX_CHANNELS, VIEWS, SECTIONS, DEFAULT_PRESET, BLANK_CHANNEL, CHANNEL_COLORS } from './globals'
+import {
+  MAX_CHANNELS,
+  VIEWS,
+  SECTIONS,
+  DEFAULT_PRESET,
+  BLANK_CHANNEL,
+  CHANNEL_COLORS,
+  INSTRUMENT_TYPES,
+  SIGNAL_TYPES,
+} from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
@@ -474,6 +483,16 @@ function initializePresets() {
       }
     }
     preset.channels.forEach((channel) => {
+      if (!Object.keys(INSTRUMENT_TYPES).includes(channel.instrumentType)) {
+        channel.instrumentParams.synthType =
+          Object.keys(SIGNAL_TYPES).includes(channel.instrumentType) ||
+          channel.instrumentType.startsWith('fm') ||
+          channel.instrumentType.startsWith('am') ||
+          channel.instrumentType.startsWith('fat')
+            ? channel.instrumentType
+            : exampleChannel.instrumentParams.synthType
+        channel.instrumentType = 'synth'
+      }
       for (const prop in exampleChannel) {
         if (channel[prop] === undefined) {
           channel[prop] = exampleChannel[prop]

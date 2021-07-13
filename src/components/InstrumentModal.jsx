@@ -5,7 +5,7 @@ import RotaryKnob from './RotaryKnob'
 import Dropdown from './Dropdown'
 import NumInput from './NumInput'
 import Switch from 'react-switch'
-import { SAMPLER_INSTRUMENTS, SIGNAL_TYPES, EFFECTS, themedSwitch, RATES } from '../globals'
+import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES } from '../globals'
 import * as Tone from 'tone'
 import './InstrumentModal.scss'
 
@@ -335,8 +335,6 @@ export default function InstrumentModal({
     effects.vibratoEffect.current.set({ frequency: vibratoFreq })
     updateInstrumentParams('vibratoFreq', vibratoFreq)
   }, [effects.vibratoEffect, updateInstrumentParams, vibratoFreq])
-
-  const samplerInstrument = useMemo(() => SAMPLER_INSTRUMENTS.includes(instrumentType), [instrumentType])
 
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
@@ -970,8 +968,8 @@ export default function InstrumentModal({
         />
       </div>
       <div className="instrument-controls">
-        {!samplerInstrument && synthInstrumentControls}
-        {samplerInstrument && samplerInstrumentControls}
+        {instrumentType === 'synth' && synthInstrumentControls}
+        {instrumentType !== 'synth' && samplerInstrumentControls}
         <div className="controls-row">
           <div className="controls-module effects-controls">
             <p className="controls-label">Effects</p>
