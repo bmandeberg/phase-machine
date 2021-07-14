@@ -327,7 +327,6 @@ export default function Channel({
           delayEffect.current,
           reverbEffect.current,
           vibratoEffect.current,
-          channelPreset.instrumentType,
           channelPreset.instrumentParams,
           effectRef.current
         )
@@ -1803,7 +1802,6 @@ function updateInstruments(
   delayEffect,
   reverbEffect,
   vibratoEffect,
-  instrumentType,
   instrumentParams,
   currentEffect
 ) {
