@@ -7,6 +7,7 @@ import NumInput from './NumInput'
 import Switch from 'react-switch'
 import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES } from '../globals'
 import * as Tone from 'tone'
+import classNames from 'classnames'
 import './InstrumentModal.scss'
 
 const rolloffOptions = ['-12', '-24', '-48', '-96']
@@ -1033,7 +1034,7 @@ export default function InstrumentModal({
   )
 
   return (
-    <div className="instrument-modal">
+    <div className={classNames('instrument-modal', { short: instrumentType !== 'synth' })}>
       <div className="instrument-type">
         <Instrument
           className="modal-instrument"

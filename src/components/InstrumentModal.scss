@@ -3,6 +3,9 @@
 .instrument-modal {
   width: 637px;
   height: 490px;
+  &.short {
+    height: 260px;
+  }
   .instrument-controls {
     margin-top: 20px;
   }
