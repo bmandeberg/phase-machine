@@ -696,6 +696,9 @@ export default function Channel({
       wet: instrumentParamsRef.current.effectWet,
       spread: instrumentParamsRef.current.chorusSpread,
     })
+    if (instrumentParamsRef.current.effectType === 'chorus') {
+      chorusEffect.current.start()
+    }
     distortionEffect.current = new Tone.Distortion(instrumentParamsRef.current.distortion).toDestination()
     distortionEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
     delayEffect.current = new Tone.FeedbackDelay(
