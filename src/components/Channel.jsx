@@ -408,9 +408,9 @@ export default function Channel({
   useEffect(() => {
     synthInstrument.current = new Tone.MonoSynth({
       portamento: instrumentParamsRef.current.portamento,
-      volume: -6,
+      volume: -8,
       oscillator: {
-        type: initInstrumentType.current !== 'synth' ? 'triangle' : instrumentParamsRef.current.synthType,
+        type: instrumentParamsRef.current.synthType,
         modulationType: instrumentParamsRef.current.modulationType,
         harmonicity: instrumentParamsRef.current.harmonicity,
         spread: instrumentParamsRef.current.fatSpread,
@@ -453,7 +453,7 @@ export default function Channel({
     pianoInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
-      volume: -6,
+      volume: -5,
     })
     marimbaInstrument.current = new Tone.Sampler({
       urls: {
@@ -489,7 +489,7 @@ export default function Channel({
     bassInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
-      volume: -6,
+      volume: -4,
     })
     vibesInstrument.current = new Tone.Sampler({
       urls: {
@@ -507,7 +507,7 @@ export default function Channel({
     vibesInstrument.current.set({
       attack: instrumentParamsRef.current.samplerAttack,
       release: instrumentParamsRef.current.samplerRelease,
-      volume: -6,
+      volume: -4,
     })
     harpInstrument.current = new Tone.Sampler({
       urls: {
