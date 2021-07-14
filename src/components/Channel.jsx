@@ -1810,7 +1810,7 @@ function updateInstruments(
   synthInstrument.set({
     portamento: instrumentParams.portamento,
     oscillator: {
-      type: instrumentType !== 'synth' ? 'triangle' : instrumentParams.synthType,
+      type: instrumentParams.synthType,
       modulationType: instrumentParams.modulationType,
       harmonicity: instrumentParams.harmonicity,
       spread: instrumentParams.fatSpread,
