@@ -45,11 +45,11 @@ import { rangeWrapper } from './math'
 const uaParser = new UAParser()
 export const BROWSER = uaParser.getBrowser()
 const device = uaParser.getDevice()
-if (device.type === 'mobile') {
-  alert('Heads up - sounds can only play if your device is not on silent')
+if (device.type === 'mobile' || BROWSER.name.includes('Mobile')) {
+  alert('🗣 sounds can only play if your device is not on silent')
 }
 
-export const CHORUS_ENABLED = BROWSER.name !== 'Safari'
+export const CHORUS_ENABLED = !BROWSER.name.includes('Safari')
 
 export const VIEWS = ['stacked', 'horizontal', 'clock']
 
