@@ -5,7 +5,7 @@ import RotaryKnob from './RotaryKnob'
 import Dropdown from './Dropdown'
 import NumInput from './NumInput'
 import Switch from 'react-switch'
-import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES } from '../globals'
+import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES, CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
 import classNames from 'classnames'
 import './InstrumentModal.scss'
@@ -303,10 +303,12 @@ export default function InstrumentModal({
   // update effect params
 
   useEffect(() => {
-    if (effectType === 'chorus') {
-      effects.chorusEffect.current.start()
-    } else {
-      effects.chorusEffect.current.stop()
+    if (CHORUS_ENABLED) {
+      if (effectType === 'chorus') {
+        effects.chorusEffect.current.start()
+      } else {
+        effects.chorusEffect.current.stop()
+      }
     }
     let effect
     switch (effectType) {
@@ -328,6 +330,7 @@ export default function InstrumentModal({
       default:
         effect = Tone.getDestination()
     }
+    effect = effect || Tone.getDestination()
     if (effectRef.current) {
       Object.values(instruments).forEach((instrument) => {
         if (instrument.current) {
@@ -346,28 +349,38 @@ export default function InstrumentModal({
 
   useEffect(() => {
     Object.values(effects).forEach((effect) => {
-      effect.current.set({ wet: effectWet })
+      if (effect.current) {
+        effect.current.set({ wet: effectWet })
+      }
     })
     updateInstrumentParams('effectWet', effectWet)
   }, [effectWet, effects, updateInstrumentParams])
 
   useEffect(() => {
-    effects.chorusEffect.current.depth = chorusDepth
+    if (effects.chorusEffect.current) {
+      effects.chorusEffect.current.depth = chorusDepth
+    }
     updateInstrumentParams('chorusDepth', chorusDepth)
   }, [chorusDepth, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
-    effects.chorusEffect.current.delayTime = chorusDelayTime
+    if (effects.chorusEffect.current) {
+      effects.chorusEffect.current.delayTime = chorusDelayTime
+    }
     updateInstrumentParams('chorusDelayTime', chorusDelayTime)
   }, [chorusDelayTime, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
-    effects.chorusEffect.current.set({ frequency: chorusFreq })
+    if (effects.chorusEffect.current) {
+      effects.chorusEffect.current.set({ frequency: chorusFreq })
+    }
     updateInstrumentParams('chorusFreq', chorusFreq)
   }, [chorusFreq, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
-    effects.chorusEffect.current.spread = chorusSpread
+    if (effects.chorusEffect.current) {
+      effects.chorusEffect.current.spread = chorusSpread
+    }
     updateInstrumentParams('chorusSpread', chorusSpread)
   }, [chorusSpread, effects.chorusEffect, updateInstrumentParams])
 
@@ -860,69 +873,84 @@ export default function InstrumentModal({
     [effectWet, grabbing, linearKnobs, setGrabbing, theme]
   )
   const chorusControls = useMemo(
-    () => (
-      <div className="controls-aux">
-        <RotaryKnob
-          className="instrument-item"
-          min={0}
-          max={1}
-          value={chorusDepth}
-          setValue={setChorusDepth}
-          label="Depth"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          inline={false}
-          mute={false}
-          linearKnobs={linearKnobs}
-          theme={theme}
-          logarithmic
-        />
-        <RotaryKnob
-          className="instrument-item"
-          min={0.1}
-          max={10}
-          value={chorusDelayTime}
-          setValue={setChorusDelayTime}
-          label="Delay"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          inline={false}
-          mute={false}
-          linearKnobs={linearKnobs}
-          theme={theme}
-        />
-        <RotaryKnob
-          className="instrument-item"
-          min={1}
-          max={20}
-          value={chorusFreq}
-          setValue={setChorusFreq}
-          label="Freq"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          inline={false}
-          mute={false}
-          linearKnobs={linearKnobs}
-          theme={theme}
-          logarithmic
-        />
-        <RotaryKnob
-          className="instrument-item"
-          min={0}
-          max={180}
-          value={chorusSpread}
-          setValue={setChorusSpread}
-          label="Stereo"
-          setGrabbing={setGrabbing}
-          grabbing={grabbing}
-          inline={false}
-          mute={false}
-          linearKnobs={linearKnobs}
-          theme={theme}
-        />
-      </div>
-    ),
-    [chorusDelayTime, chorusDepth, chorusFreq, chorusSpread, grabbing, linearKnobs, setGrabbing, theme]
+    () =>
+      effects.chorusEffect.current ? (
+        <div className="controls-aux">
+          <RotaryKnob
+            className="instrument-item"
+            min={0}
+            max={1}
+            value={chorusDepth}
+            setValue={setChorusDepth}
+            label="Depth"
+            setGrabbing={setGrabbing}
+            grabbing={grabbing}
+            inline={false}
+            mute={false}
+            linearKnobs={linearKnobs}
+            theme={theme}
+            logarithmic
+          />
+          <RotaryKnob
+            className="instrument-item"
+            min={0.1}
+            max={10}
+            value={chorusDelayTime}
+            setValue={setChorusDelayTime}
+            label="Delay"
+            setGrabbing={setGrabbing}
+            grabbing={grabbing}
+            inline={false}
+            mute={false}
+            linearKnobs={linearKnobs}
+            theme={theme}
+          />
+          <RotaryKnob
+            className="instrument-item"
+            min={1}
+            max={20}
+            value={chorusFreq}
+            setValue={setChorusFreq}
+            label="Freq"
+            setGrabbing={setGrabbing}
+            grabbing={grabbing}
+            inline={false}
+            mute={false}
+            linearKnobs={linearKnobs}
+            theme={theme}
+            logarithmic
+          />
+          <RotaryKnob
+            className="instrument-item"
+            min={0}
+            max={180}
+            value={chorusSpread}
+            setValue={setChorusSpread}
+            label="Stereo"
+            setGrabbing={setGrabbing}
+            grabbing={grabbing}
+            inline={false}
+            mute={false}
+            linearKnobs={linearKnobs}
+            theme={theme}
+          />
+        </div>
+      ) : (
+        <div className="controls-aux">
+          <p className="effect-disabled">CHORUS DOESN'T WORK IN THIS BROWSER 😢</p>
+        </div>
+      ),
+    [
+      chorusDelayTime,
+      chorusDepth,
+      chorusFreq,
+      chorusSpread,
+      effects.chorusEffect,
+      grabbing,
+      linearKnobs,
+      setGrabbing,
+      theme,
+    ]
   )
   const distortionControls = useMemo(
     () => (
@@ -1125,7 +1153,7 @@ export default function InstrumentModal({
               value={effectType}
               container=".modal-content"
             />
-            {effectType !== 'none' && wetControl}
+            {effectType !== 'none' && effects[effectType + 'Effect'].current && wetControl}
             {effectType === 'chorus' && chorusControls}
             {effectType === 'distortion' && distortionControls}
             {effectType === 'delay' && delayControls}

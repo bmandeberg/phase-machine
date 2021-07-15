@@ -39,8 +39,9 @@ import darkHarp from './assets/samples-harp-dark.svg'
 import choral from './assets/samples-choral.svg'
 import lightChoral from './assets/samples-choral-light.svg'
 import darkChoral from './assets/samples-choral-dark.svg'
-
 import { rangeWrapper } from './math'
+
+export const CHORUS_ENABLED = false
 
 export const VIEWS = ['stacked', 'horizontal', 'clock']
 

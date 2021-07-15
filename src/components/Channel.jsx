@@ -15,6 +15,7 @@ import {
   OCTAVES,
   SUSTAIN_MIN,
   KNOB_MAX,
+  CHORUS_ENABLED,
 } from '../globals'
 import { pitchesInRange, constrain, scaleToRange } from '../math'
 import classNames from 'classnames'
@@ -134,7 +135,6 @@ export default function Channel({
   // instrument params
   const [instrumentParams, setInstrumentParams] = useState(initState.instrumentParams)
   const instrumentParamsRef = useRef(instrumentParams)
-  const effectRef = useRef()
 
   const [modalContent, setModalContent] = useState(false)
   const showModal = useCallback(() => {
@@ -287,7 +287,7 @@ export default function Channel({
       default:
         effect = Tone.getDestination()
     }
-    return effect
+    return effect || Tone.getDestination()
   }, [])
 
   useEffect(() => {
@@ -687,17 +687,19 @@ export default function Channel({
   }, [getCurrentEffect])
 
   useEffect(() => {
-    chorusEffect.current = new Tone.Chorus(
-      instrumentParamsRef.current.chorusFreq,
-      instrumentParamsRef.current.chorusDelayTime,
-      instrumentParamsRef.current.chorusDepth
-    ).toDestination()
-    chorusEffect.current.set({
-      wet: instrumentParamsRef.current.effectWet,
-      spread: instrumentParamsRef.current.chorusSpread,
-    })
-    if (instrumentParamsRef.current.effectType === 'chorus') {
-      chorusEffect.current.start()
+    if (CHORUS_ENABLED) {
+      chorusEffect.current = new Tone.Chorus(
+        instrumentParamsRef.current.chorusFreq,
+        instrumentParamsRef.current.chorusDelayTime,
+        instrumentParamsRef.current.chorusDepth
+      ).toDestination()
+      chorusEffect.current.set({
+        wet: instrumentParamsRef.current.effectWet,
+        spread: instrumentParamsRef.current.chorusSpread,
+      })
+      if (instrumentParamsRef.current.effectType === 'chorus') {
+        chorusEffect.current.start()
+      }
     }
     distortionEffect.current = new Tone.Distortion(instrumentParamsRef.current.distortion).toDestination()
     distortionEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
@@ -793,7 +795,9 @@ export default function Channel({
       if (drumsInstrument.current) {
         drumsInstrument.current.dispose()
       }
-      chorusEffect.current.dispose()
+      if (chorusEffect.current) {
+        chorusEffect.current.dispose()
+      }
       distortionEffect.current.dispose()
       delayEffect.current.dispose()
       reverbEffect.current.dispose()
@@ -1875,13 +1879,15 @@ function updateInstruments(
   instrumentParams,
   currentEffect
 ) {
-  chorusEffect.set({
-    wet: instrumentParams.effectWet,
-    depth: instrumentParams.chorusDepth,
-    delayTime: instrumentParams.chorusDelayTime,
-    frequency: instrumentParams.chorusFreq,
-    spread: instrumentParams.chorusSpread,
-  })
+  if (CHORUS_ENABLED) {
+    chorusEffect.set({
+      wet: instrumentParams.effectWet,
+      depth: instrumentParams.chorusDepth,
+      delayTime: instrumentParams.chorusDelayTime,
+      frequency: instrumentParams.chorusFreq,
+      spread: instrumentParams.chorusSpread,
+    })
+  }
   distortionEffect.set({
     wet: instrumentParams.effectWet,
     distortion: instrumentParams.distortion,
@@ -1905,7 +1911,7 @@ function updateInstruments(
   switch (instrumentParams.effectType) {
     case 'chorus':
       effect = chorusEffect
-      chorusEffect.start()
+      if (CHORUS_ENABLED) chorusEffect.start()
       break
     case 'distortion':
       effect = distortionEffect
@@ -1922,7 +1928,8 @@ function updateInstruments(
     default:
       effect = Tone.getDestination()
   }
-  if (effect !== 'chorus') {
+  effect = effect || Tone.getDestination()
+  if (CHORUS_ENABLED && instrumentParams.effectType !== 'chorus') {
     chorusEffect.stop()
   }
   if (synthInstrument) {

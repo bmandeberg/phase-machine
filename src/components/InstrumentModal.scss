@@ -41,6 +41,11 @@
   .controls-aux {
     display: inline-block;
     vertical-align: top;
+    .effect-disabled {
+      margin-top: 12px;
+      font-size: 19px;
+      color: $darkRed;
+    }
   }
   .instrument-item {
     margin-right: 10px;
