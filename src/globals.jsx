@@ -43,13 +43,13 @@ import darkChoral from './assets/samples-choral-dark.svg'
 import { rangeWrapper } from './math'
 
 const uaParser = new UAParser()
-const browser = uaParser.getBrowser()
+export const BROWSER = uaParser.getBrowser()
 const device = uaParser.getDevice()
 if (device.type === 'mobile') {
   alert('Heads up - sounds can only play if your device is not on silent')
 }
 
-export const CHORUS_ENABLED = browser.name !== 'Safari'
+export const CHORUS_ENABLED = BROWSER.name !== 'Safari'
 
 export const VIEWS = ['stacked', 'horizontal', 'clock']
 

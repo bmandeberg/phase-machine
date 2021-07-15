@@ -5,7 +5,7 @@ import RotaryKnob from './RotaryKnob'
 import Dropdown from './Dropdown'
 import NumInput from './NumInput'
 import Switch from 'react-switch'
-import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES, CHORUS_ENABLED } from '../globals'
+import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES, CHORUS_ENABLED, BROWSER } from '../globals'
 import * as Tone from 'tone'
 import classNames from 'classnames'
 import './InstrumentModal.scss'
@@ -937,7 +937,7 @@ export default function InstrumentModal({
         </div>
       ) : (
         <div className="controls-aux">
-          <p className="effect-disabled">CHORUS DOESN'T WORK IN THIS BROWSER 😢</p>
+          <p className="effect-disabled">Chorus doesn't work in {BROWSER.name} 😢</p>
         </div>
       ),
     [
