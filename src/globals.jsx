@@ -45,8 +45,7 @@ import { rangeWrapper } from './math'
 const uaParser = new UAParser()
 const browser = uaParser.getBrowser()
 const device = uaParser.getDevice()
-console.log(uaParser.getResult())
-if (device === 'mobile') {
+if (device.type === 'mobile') {
   alert('Heads up - sounds can only play if your device is not on silent')
 }
 
