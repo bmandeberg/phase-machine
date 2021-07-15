@@ -44,6 +44,11 @@ import { rangeWrapper } from './math'
 
 const uaParser = new UAParser()
 const browser = uaParser.getBrowser()
+const device = uaParser.getDevice()
+console.log(uaParser.getResult())
+if (device === 'mobile') {
+  alert('Heads up - sounds can only play if your device is not on silent')
+}
 
 export const CHORUS_ENABLED = browser.name !== 'Safari'
 
