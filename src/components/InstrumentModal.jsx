@@ -937,7 +937,7 @@ export default function InstrumentModal({
         </div>
       ) : (
         <div className="controls-aux">
-          <p className="effect-disabled">Chorus doesn't work in {BROWSER.name} 😢</p>
+          <p className="effect-disabled">Chorus doesn't work in Safari 😢</p>
         </div>
       ),
     [
