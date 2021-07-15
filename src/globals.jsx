@@ -1,5 +1,6 @@
 import React from 'react'
 import { v4 as uuid } from 'uuid'
+import UAParser from 'ua-parser-js'
 import sine from './assets/sine_wave.svg'
 import lightSine from './assets/sine_wave_light.svg'
 import darkSine from './assets/sine_wave_dark.svg'
@@ -41,7 +42,10 @@ import lightChoral from './assets/samples-choral-light.svg'
 import darkChoral from './assets/samples-choral-dark.svg'
 import { rangeWrapper } from './math'
 
-export const CHORUS_ENABLED = false
+const uaParser = new UAParser()
+const browser = uaParser.getBrowser()
+
+export const CHORUS_ENABLED = browser.name !== 'Safari'
 
 export const VIEWS = ['stacked', 'horizontal', 'clock']
 

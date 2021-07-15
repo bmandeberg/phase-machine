@@ -42,8 +42,9 @@
     display: inline-block;
     vertical-align: top;
     .effect-disabled {
-      margin-top: 12px;
+      margin-top: 13px;
       font-size: 19px;
+      line-height: 34px;
       color: $darkRed;
     }
   }
