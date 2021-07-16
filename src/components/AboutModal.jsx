@@ -14,7 +14,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Header',
     img: {
       src: 'header',
-      width: 1096,
+      width: 1105,
     },
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     tags: ['header', 'play/pause', 'channels', 'view', 'midi in', 'tempo', 'preset', 'midi out', 'settings'],
@@ -23,7 +23,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Preset',
     img: {
       src: 'preset',
-      width: 526,
+      width: 495,
     },
     tags: [
       'preset',
@@ -43,7 +43,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Settings Modal Window',
     img: {
       src: 'settings',
-      width: 663,
+      width: 667,
     },
     tags: [
       'settings',
@@ -71,7 +71,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Channel - Clock View',
     img: {
       src: 'clock',
-      width: 771,
+      width: 887,
     },
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
     tags: ['channel', 'clock', 'view', 'general', 'key', 'arpeggio', 'sequence', 'instrument'],
@@ -80,7 +80,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'General',
     img: {
       src: 'general',
-      width: 455,
+      width: 513,
     },
     tags: [
       'channel',
@@ -98,7 +98,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'MIDI Modal',
     img: {
       src: 'midi',
-      width: 573,
+      width: 687,
     },
     tags: ['channel', 'midi', 'modal', 'MIDI Output Channel', 'Custom Output Channel', 'MIDI In Toggle/Hold'],
     warnings: [
@@ -139,7 +139,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Arpeggio',
     img: {
       src: 'arpeggio',
-      width: 481,
+      width: 621,
     },
     tags: ['channel', 'arpeggio', 'rate', 'movement', 'sustain', 'swing', 'swing length'],
   },
@@ -147,7 +147,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Sequence',
     img: {
       src: 'sequence',
-      width: 1352,
+      width: 1341,
     },
     tags: ['channel', 'sequence', 'steps', 'rate', 'movement', 'swing', 'swing length', 'hold', 'restart', 'opposite'],
   },
@@ -155,7 +155,7 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
     title: 'Instrument Modal',
     img: {
       src: 'instrument',
-      width: 879,
+      width: 908,
     },
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
     tags: ['instrument', 'modal', 'on/off', 'type', 'instrument parameters', 'effects'],
@@ -166,7 +166,6 @@ Donec blandit eget nisi vitae tincidunt. Aliquam aliquet imperdiet sem, in lacin
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     ],
     warnings: [
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     ],
