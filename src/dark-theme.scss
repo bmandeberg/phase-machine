@@ -128,10 +128,17 @@ $headerDarkBlue: #0f182d;
     .about-section-title {
       color: $lightGray;
     }
+    .about-section-text {
+      a,
+      a:hover,
+      a:visited {
+        color: $darkLightGray;
+      }
+    }
     .about-section-warning-container {
       .about-section-warning {
         background-color: darken($red, 50%);
-        color: lighten($red, 10%);
+        color: lighten($red, 20%);
         .about-section-warning-icon {
           background: transparent url('./assets/alert.png') center center;
           background-size: auto 20px;
@@ -141,10 +148,17 @@ $headerDarkBlue: #0f182d;
     .about-section-tip-container {
       .about-section-tip {
         background-color: darken($green, 40%);
-        color: $green;
+        color: #87ff69;
         .about-section-tip-icon {
           background: transparent url('./assets/lightbulb.png') center center;
           background-size: auto 20px;
+        }
+        .about-section-tip-content {
+          a,
+          a:hover,
+          a:visited {
+            color: #87ff69;
+          }
         }
       }
     }
