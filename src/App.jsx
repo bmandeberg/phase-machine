@@ -10,6 +10,7 @@ import {
   VIEWS,
   SECTIONS,
   DEFAULT_PRESET,
+  DEFAULT_PRESETS,
   BLANK_CHANNEL,
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
@@ -24,8 +25,9 @@ import './contrast-theme.scss'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
-  window.localStorage.setItem('presets', JSON.stringify([DEFAULT_PRESET]))
-  window.localStorage.setItem('activePreset', DEFAULT_PRESET.id)
+  window.localStorage.setItem('presets', DEFAULT_PRESETS)
+  const defaultPresets = JSON.parse(DEFAULT_PRESETS)
+  window.localStorage.setItem('activePreset', defaultPresets[0].id)
 }
 
 export default function App() {
@@ -33,7 +35,7 @@ export default function App() {
   const [currentPreset, setCurrentPreset] = useState(
     window.localStorage.getItem('activePreset')
       ? presets.find((p) => p.id === window.localStorage.getItem('activePreset'))
-      : presets[presets.length - 1] || DEFAULT_PRESET
+      : presets[0] || DEFAULT_PRESET
   )
   const [uiState, setUIState] = useState(deepStateCopy(currentPreset))
 

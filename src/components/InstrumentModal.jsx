@@ -452,7 +452,6 @@ export default function InstrumentModal({
     (newType) => {
       const updatedType =
         oscModifier !== oscModifiers[0] && Object.keys(SIGNAL_TYPES).includes(newType) ? oscModifier + newType : newType
-      console.log(updatedType)
       setSynthType(updatedType)
       instruments.synthInstrument.current.oscillator.set({ harmonicity, type: updatedType })
     },

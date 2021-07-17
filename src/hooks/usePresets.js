@@ -226,7 +226,6 @@ export default function usePresets(
       invalidProp(preset, 'channelSync', 'boolean') ||
       invalidProp(preset, 'channels', 'object')
     ) {
-      console.log(invalidProp(preset, 'hotkey', 'number'))
       return false
     }
     for (let i = 0; i < preset.channels.length; i++) {
