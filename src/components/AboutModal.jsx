@@ -180,7 +180,9 @@ const ABOUT_SECTIONS = [
 
 This project is made possible by the excellent <a href="https://tonejs.github.io/">Tone.js</a> web audio framework.
 
-Please direct any questions, comments, or hate-mail to <a href="mailto:manberg@manberg.zone">manberg@manberg.zone</a>`,
+Please direct any questions, comments, or hate-mail to <a href="mailto:manberg@manberg.zone">manberg@manberg.zone</a>
+
+© 2021 Manberg LLC`,
   },
 ]
 
