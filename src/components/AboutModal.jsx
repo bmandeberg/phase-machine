@@ -111,7 +111,7 @@ const ABOUT_SECTIONS = [
       src: 'range',
       width: 1289,
     },
-    text: 'Available pitches are defined by selecting pitch classes and assigning a range across the keyboard. Transformations can be applied to the set of pitch classes. MIDI input notes will turn a pitch class on or off, e.g. pressing C4 will control the C pitch class.',
+    text: 'Available pitches are defined by selecting pitch classes and assigning a range across the keyboard. Transformations can be applied to the set of pitch classes. MIDI input notes will turn a pitch class on or off, e.g. pressing C4 will control the C pitch class. Generally, green means "on" or "selected", and orange means "playing".',
     tags: [
       'channel',
       'key',
@@ -132,7 +132,7 @@ const ABOUT_SECTIONS = [
       src: 'keybd',
       width: 1289,
     },
-    text: 'Available pitches are defined by selecting pitches directly on the Piano. This allows you to dial in exactly which pitches will be played by this Channel.',
+    text: 'Available pitches are defined by selecting pitches directly on the Piano. This allows you to dial in exactly which pitches will be played by this Channel. Generally, green means "on" or "selected", and orange means "playing".',
     tags: ['channel', 'key', 'keybd', 'channel mode', 'pitch classes', 'midi input mode', 'clear', 'restart', 'piano'],
   },
   {
@@ -150,7 +150,7 @@ const ABOUT_SECTIONS = [
       src: 'sequence',
       width: 1341,
     },
-    text: 'Triggers notes to be played, and allows notes from the Key/Arpeggio to play while a sequence step is on.',
+    text: 'Triggers notes to be played, and allows notes from the Key/Arpeggio to play while a sequence step is on.  Generally, green means "on" or "selected", and orange means "playing".',
     tags: ['channel', 'sequence', 'steps', 'rate', 'movement', 'swing', 'swing length', 'hold', 'restart', 'opposite'],
   },
   {
