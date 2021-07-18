@@ -180,6 +180,8 @@ const ABOUT_SECTIONS = [
 
 This project is made possible by the excellent <a href="https://tonejs.github.io/" target="_blank">Tone.js</a> web audio framework.
 
+The Phase Machine is an open-source project. Get the code at our <a href="https://github.com/bmandeberg/phase-machine" target="_blank">GitHub page</a>
+
 Please direct any questions, comments, or hate-mail to <a href="mailto:manberg@manberg.zone">manberg@manberg.zone</a>
 
 © 2021 Manberg LLC | <a href="/legal/phase_machine_cookie_policy.pdf" target="_blank">Cookie Policy</a> | <a href="/legal/phase_machine_privacy_policy.pdf" target="_blank">Privacy Policy</a> | <a href="/legal/phase_machine_terms_of_use.pdf" target="_blank">Terms Of Use</a>`,
