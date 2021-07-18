@@ -176,13 +176,13 @@ const ABOUT_SECTIONS = [
   },
   {
     tags: ['about'],
-    text: `The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-tonal_music_theory">post-tonal music theory</a>, specifically <a href="https://en.wikipedia.org/wiki/Set_theory_(music)">set theory</a>.
+    text: `The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-tonal_music_theory" target="_blank">post-tonal music theory</a>, specifically <a href="https://en.wikipedia.org/wiki/Set_theory_(music)" target="_blank">set theory</a>.
 
-This project is made possible by the excellent <a href="https://tonejs.github.io/">Tone.js</a> web audio framework.
+This project is made possible by the excellent <a href="https://tonejs.github.io/" target="_blank">Tone.js</a> web audio framework.
 
 Please direct any questions, comments, or hate-mail to <a href="mailto:manberg@manberg.zone">manberg@manberg.zone</a>
 
-© 2021 Manberg LLC`,
+© 2021 Manberg LLC | <a href="/legal/phase_machine_cookie_policy.pdf" target="_blank">Cookie Policy</a> | <a href="/legal/phase_machine_privacy_policy.pdf" target="_blank">Privacy Policy</a> | <a href="/legal/phase_machine_terms_of_use.pdf" target="_blank">Terms Of Use</a>`,
   },
 ]
 
