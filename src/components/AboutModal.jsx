@@ -166,7 +166,7 @@ const ABOUT_SECTIONS = [
     title: 'Notes',
     tips: [
       'If you are on a Mac, you can send MIDI from The Phase Machine to other applications on your computer, like a DAW, by configuring the IAC Driver in Audio MIDI Setup: https://support.apple.com/guide/audio-midi-setup/transfer-midi-information-between-apps-ams1013/mac',
-      'To clear your current patch, you can set the number of Channels to 0, and then reintroduce blank Channels.',
+      'To clear your current patch, you can set the number of Channels to 0, and then reintroduce blank Channels from the header.',
       "The Phase machine is not built for mobile, but it is still technically possible to use it on mobile. It's difficult to turn knobs and access interface features, but if you click and hold you'll be able to grab the knobs. It may select other things on the page, but after you're done turning the knob you can click elsewhere to deselect.",
     ],
     warnings: [
@@ -256,6 +256,6 @@ AboutModal.propTypes = {
 
 function parseLinks(text, type) {
   const className = `about-section-${type}-content`
-  const linkedContent = text.replaceAll(/(https?:.+)$/g, (match, p1) => `<a href="${p1}">${p1}</a>`)
+  const linkedContent = text.replaceAll(/(https?:.+)$/g, (match, p1) => `<a href="${p1}" target="_blank">${p1}</a>`)
   return <div className={className}>{parse(linkedContent)}</div>
 }
