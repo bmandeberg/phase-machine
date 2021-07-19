@@ -45,7 +45,7 @@ const ABOUT_SECTIONS = [
       src: 'settings',
       width: 811,
     },
-    text: 'Import/export presets, and other global preferences.',
+    text: 'Import/export presets, and set other global preferences.',
     tags: [
       'settings',
       'modal',
@@ -173,6 +173,7 @@ const ABOUT_SECTIONS = [
       'Beware! There is not yet any undo/redo, so things you do, presets or channels you delete, cannot be undone.',
       'The clock may drift if you navigate away from The Phase Machine while it is running. If you want your timing to be as consistent as possible, make sure The Phase Machine is focused while it is running.',
     ],
+    tags: ['notes'],
   },
   {
     tags: ['about'],
