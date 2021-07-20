@@ -83,7 +83,7 @@ const ABOUT_SECTIONS = [
       src: 'general',
       width: 585,
     },
-    text: 'Duplicate, delete, mute, or solo a channel. Also set MIDI routing and channel velocity/volume.',
+    text: 'Duplicate, delete, mute, or solo a channel. Also set MIDI routing and channel velocity/volume. Click and drag the Channel Number to rearrange channels.',
     tags: [
       'channel',
       'general',
