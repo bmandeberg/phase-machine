@@ -7,7 +7,7 @@ import './AboutModal.scss'
 const ABOUT_SECTIONS = [
   {
     title: 'The Phase Machine',
-    text: 'The Phase Machine is a musical sequencer and composition tool, comprising one or more channels, each of which is monophonic (can play one note at a time). Each channel defines its own musical Key, and has a Sequence and Arpeggio, which work together to choose and play a note. The Sequence and Arpeggio can have different rates and lengths, which can lead to their series of events becoming out of phase with each other, creating unique and shifting patterns of notes - hence The "Phase" Machine.',
+    text: 'The Phase Machine is a musical sequencer and composition tool. It can have one or more Channels, each of which is monophonic (can play one note at a time). Each Channel defines its own musical Key, and has a Sequence and Arpeggio, which work together to choose and play a note. The Sequence and Arpeggio can have different rates and lengths, which can lead to their series of events becoming out of phase with each other, creating unique and shifting patterns of notes - hence The "Phase" Machine.',
   },
   {
     title: 'Header',
