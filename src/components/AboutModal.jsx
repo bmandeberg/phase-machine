@@ -11,7 +11,9 @@ const ABOUT_SECTIONS = [
     
 The Key defines which pitches are available to a Channel. The Arpeggio cycles through those pitches to select the pitch that will be heard when a note is played. The Sequence defines when a note can be played. When the Sequence reaches a step that is on, a note is played at the current selected pitch. Also, when the Arpeggio selects a new pitch, a note is played if the current selected Sequence step is on.
     
-The Phase Machine can send MIDI notes when a note is played, and receive MIDI notes to define the Key for a Channel (MIDI only works in Google Chrome). Each Channel also has a customizable Instrument that can be heard in the browser. Presets can be saved, exported, and imported. For now, Presets are only saved locally in the browser, sort of like a cookie, so beware that clearing your browser cache will permanently delete any saved Presets (it is recommended to export your Presets beforehand).`,
+The Phase Machine can send MIDI notes when a note is played, and receive MIDI notes to define the Key for a Channel (MIDI only works in Google Chrome). Each Channel also has a customizable Instrument that can be heard in the browser. Presets can be saved, exported, and imported. For now, Presets are only saved locally in the browser, sort of like a cookie, so beware that clearing your browser cache will permanently delete any saved Presets (it is recommended to export your Presets beforehand).
+
+To share presets, ask questions, and post insights, you can use <a href="https://groups.google.com/g/phase-machine" target="_blank">the forum</a>`,
   },
   {
     title: 'Header',
