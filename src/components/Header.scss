@@ -99,9 +99,21 @@ $margin: 12px;
   }
 }
 
-@media screen and (max-width: 695px) {
+@media screen and (max-width: 693px) {
+  .view-dropdown {
+    display: none;
+  }
+  .header-about {
+    display: inline-block !important;
+  }
+}
+
+@media screen and (max-width: 627px) {
   .presets-container {
     display: none;
+  }
+  .view-dropdown {
+    display: block;
   }
   .header-about {
     display: inline-block !important;
