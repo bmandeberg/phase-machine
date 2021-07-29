@@ -32,16 +32,12 @@ if (!window.localStorage.getItem('presets')) {
 
 export default function App() {
   const [presets, setPresets] = useState(initializePresets)
-  const [currentPreset, setCurrentPreset] = useState(
-    window.localStorage.getItem('activePreset')
-      ? presets.find((p) => p.id === window.localStorage.getItem('activePreset'))
-      : presets[0] || DEFAULT_PRESET
-  )
-  const [uiState, setUIState] = useState(deepStateCopy(currentPreset))
+  const [currentPreset, setCurrentPreset] = useState(initialPreset)
+  const [uiState, setUIState] = useState(initializeUiState)
 
   const [tempo, setTempo] = useState(JSON.parse(window.localStorage.getItem('tempo')) ?? 120)
   const [playing, setPlaying] = useState(false)
-  const [numChannels, setNumChannels] = useState(currentPreset.numChannels)
+  const [numChannels, setNumChannels] = useState(uiState.numChannels)
   const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[0])
   const viewRef = useRef()
   viewRef.current = view
@@ -58,7 +54,7 @@ export default function App() {
 
   const [restartChannels, setRestartChannels] = useState(true)
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
-  const [channelSync, setChannelSync] = useState(currentPreset.channelSync)
+  const [channelSync, setChannelSync] = useState(uiState.channelSync)
 
   const [modalType, setModalType] = useState('')
   const [modalContent, setModalContent] = useState(false)
@@ -420,7 +416,7 @@ export default function App() {
         presetOptions={presetOptions}
         setPreset={setPreset}
         presetDirty={presetDirty}
-        presetHotkey={currentPreset.hotkey}
+        presetHotkey={uiState.hotkey}
         savePreset={savePreset}
         newPreset={newPreset}
         deletePreset={deletePreset}
@@ -513,4 +509,18 @@ function initializePresets() {
     window.localStorage.setItem('presets', JSON.stringify(presets))
   }
   return presets
+}
+
+function initialPreset() {
+  const presets = JSON.parse(window.localStorage.getItem('presets'))
+  return window.localStorage.getItem('activePreset')
+    ? presets.find((p) => p.id === window.localStorage.getItem('activePreset'))
+    : presets[0] || DEFAULT_PRESET
+}
+
+function initializeUiState() {
+  if (!window.localStorage.getItem('activePatch')) {
+    window.localStorage.setItem('activePatch', JSON.stringify(initialPreset()))
+  }
+  return JSON.parse(window.localStorage.getItem('activePatch'))
 }

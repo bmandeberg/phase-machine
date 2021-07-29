@@ -18,6 +18,10 @@ export default function usePresets(
 ) {
   // state management for presets
 
+  useEffect(() => {
+    window.localStorage.setItem('activePatch', JSON.stringify(uiState))
+  }, [uiState])
+
   const setChannelState = useCallback(
     (id, state) => {
       setUIState((uiState) => {
