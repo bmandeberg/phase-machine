@@ -353,7 +353,7 @@ export const MOVEMENTS = {
   down: (length, i) => (i === undefined ? length - 1 : i > 0 ? i - 1 : length - 1),
   '+/-': (length, i, inc1, inc2, doInc2) => {
     if (i === undefined) {
-      return inc1
+      i = 0
     }
     const index = rangeWrapper(i + (doInc2.current ? inc2 : inc1), length)
     doInc2.current = !doInc2.current
