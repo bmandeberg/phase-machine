@@ -1229,8 +1229,9 @@ export default function Channel({
       const pitchRange = rangeMode ? pitchesInRange(rangeStart, rangeEnd, key) : keybdPitches
       if (pitchRange.length) {
         prevNoteIndex.current = noteIndex.current
+        let currentPitchIndex
         if (noteIndex.current !== undefined) {
-          let currentPitchIndex = pitchRange.indexOf(noteIndex.current)
+          currentPitchIndex = pitchRange.indexOf(noteIndex.current)
           if (currentPitchIndex === -1) {
             currentPitchIndex = pitchRange.indexOf(
               pitchRange.reduce((acc, curr) =>
@@ -1238,13 +1239,11 @@ export default function Channel({
               )
             )
           }
-          noteIndex.current =
-            pitchRange[
-              handleArpMode(keyMovement, pitchRange.length, currentPitchIndex, keyArpUtil, keyArpInc1, keyArpInc2)
-            ]
-        } else {
-          noteIndex.current = pitchRange[0]
         }
+        noteIndex.current =
+          pitchRange[
+            handleArpMode(keyMovement, pitchRange.length, currentPitchIndex, keyArpUtil, keyArpInc1, keyArpInc2)
+          ]
         setPlayingPitchClass(noteIndex.current % 12)
         if (!emptyKey && !muted) {
           loadPlayNoteBuffer('key', time, interval)

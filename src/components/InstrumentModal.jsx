@@ -1016,6 +1016,7 @@ export default function InstrumentModal({
             value={syncedDelay}
             placeholder="Select Rate"
             noTextTransform
+            container=".modal-content"
           />
         )}
         <RotaryKnob

@@ -340,15 +340,21 @@ export const INSTRUMENT_TYPES = {
 }
 
 export const MOVEMENTS = {
-  up: (length, i) => (i < length - 1 ? i + 1 : 0),
+  up: (length, i) => (i === undefined ? 0 : i < length - 1 ? i + 1 : 0),
   'up/down': (length, i, descending) => {
+    if (i === undefined) {
+      return 0
+    }
     if ((i === 0 && descending.current) || (i === length - 1 && !descending.current)) {
       descending.current = !descending.current
     }
     return i + (descending.current ? -1 : 1)
   },
-  down: (length, i) => (i > 0 ? i - 1 : length - 1),
+  down: (length, i) => (i === undefined ? length - 1 : i > 0 ? i - 1 : length - 1),
   '+/-': (length, i, inc1, inc2, doInc2) => {
+    if (i === undefined) {
+      return inc1
+    }
     const index = rangeWrapper(i + (doInc2.current ? inc2 : inc1), length)
     doInc2.current = !doInc2.current
     return index
