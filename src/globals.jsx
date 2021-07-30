@@ -19,6 +19,9 @@ import darkPulse from './assets/pulse_wave_dark.svg'
 import drums from './assets/samples-drums.svg'
 import lightDrums from './assets/samples-drums-light.svg'
 import darkDrums from './assets/samples-drums-dark.svg'
+import drumMachine from './assets/samples-drum-machine.svg'
+import lightDrumMachine from './assets/samples-drum-machine-light.svg'
+import darkDrumMachine from './assets/samples-drum-machine-dark.svg'
 import marimba from './assets/samples-marimba.svg'
 import lightMarimba from './assets/samples-marimba-light.svg'
 import darkMarimba from './assets/samples-marimba-dark.svg'
@@ -150,6 +153,17 @@ function themedIcon(icon, theme) {
           return darkDrums
         default:
           return drums
+      }
+    case 'drum-machine':
+      switch (theme) {
+        case 'light':
+          return drumMachine
+        case 'dark':
+          return lightDrumMachine
+        case 'contrast':
+          return darkDrumMachine
+        default:
+          return drumMachine
       }
     case 'marimba':
       switch (theme) {
@@ -308,6 +322,9 @@ export const INSTRUMENT_TYPES = {
   harp: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('harp', theme)} alt="" />,
   choral: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('choral', theme)} alt="" />,
   drums: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drums', theme)} alt="" />,
+  'drum-machine': (theme) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drum-machine', theme)} alt="" />
+  ),
 }
 
 export const MOVEMENTS = {

@@ -341,6 +341,7 @@ export default function Channel({
             pianoInstrument.current,
             marimbaInstrument.current,
             drumsInstrument.current,
+            drumMachineInstrument.current,
             bassInstrument.current,
             vibesInstrument.current,
             harpInstrument.current,
@@ -416,6 +417,7 @@ export default function Channel({
   const instrument = useRef()
   const synthInstrument = useRef()
   const drumsInstrument = useRef()
+  const drumMachineInstrument = useRef()
   const pianoInstrument = useRef()
   const marimbaInstrument = useRef()
   const bassInstrument = useRef()
@@ -686,6 +688,118 @@ export default function Channel({
     }
   }, [getCurrentEffect])
 
+  const initDrumMachineInstrument = useCallback(() => {
+    if (!drumMachineInstrument.current) {
+      drumMachineInstrument.current = new Tone.Sampler({
+        urls: {
+          C1: 'korg_kr55_1.mp3',
+          Db1: 'korg_kr55_2.mp3',
+          D1: 'korg_kr55_3.mp3',
+          Eb1: 'korg_kr55_4.mp3',
+          E1: 'korg_kr55_5.mp3',
+          F1: 'korg_kr55_6.mp3',
+          Gb1: 'korg_kr55_7.mp3',
+          G1: 'korg_kr55_8.mp3',
+          Ab1: 'korg_kr55_9.mp3',
+          A1: 'korg_kr55_10.mp3',
+          Bb1: 'tr808_1.mp3',
+          B1: 'tr808_2.mp3',
+          C2: 'tr808_3.mp3',
+          Db2: 'tr808_4.mp3',
+          D2: 'tr808_5.mp3',
+          Eb2: 'tr808_6.mp3',
+          E2: 'tr808_7.mp3',
+          F2: 'tr808_8.mp3',
+          Gb2: 'tr808_9.mp3',
+          G2: 'tr808_10.mp3',
+          Ab2: 'tr808_11.mp3',
+          A2: 'tr808_12.mp3',
+          Bb2: 'tr808_13.mp3',
+          B2: 'tr808_14.mp3',
+          C3: 'tr808_15.mp3',
+          Db3: 'tr808_16.mp3',
+          D3: 'roland_cr80_1.mp3',
+          Eb3: 'roland_cr80_2.mp3',
+          E3: 'roland_cr80_3.mp3',
+          F3: 'roland_cr80_4.mp3',
+          Gb3: 'roland_cr80_5.mp3',
+          G3: 'roland_cr80_6.mp3',
+          Ab3: 'roland_cr80_7.mp3',
+          A3: 'roland_cr80_8.mp3',
+          Bb3: 'roland_cr80_9.mp3',
+          B3: 'roland_cr80_10.mp3',
+          C4: 'roland_cr80_11.mp3',
+          Db4: 'roland_cr80_12.mp3',
+          D4: 'roland_cr80_13.mp3',
+          Eb4: 'tr909_1.mp3',
+          E4: 'tr909_2.mp3',
+          F4: 'tr909_3.mp3',
+          Gb4: 'tr909_4.mp3',
+          G4: 'tr909_5.mp3',
+          Ab4: 'tr909_6.mp3',
+          A4: 'tr909_7.mp3',
+          Bb4: 'tr909_8.mp3',
+          B4: 'tr909_9.mp3',
+          C5: 'tr909_10.mp3',
+          Db5: 'tr909_11.mp3',
+          D5: 'tr909_12.mp3',
+          Eb5: 'tr909_13.mp3',
+          E5: 'tr909_14.mp3',
+          F5: 'tr909_15.mp3',
+          Gb5: 'tr909_16.mp3',
+          G5: 'tr909_17.mp3',
+          Ab5: 'tr909_18.mp3',
+          A5: 'tr909_19.mp3',
+          Bb5: 'tr909_20.mp3',
+          B5: 'alesis_hr16a_1.mp3',
+          C6: 'alesis_hr16a_2.mp3',
+          Db6: 'alesis_hr16a_3.mp3',
+          D6: 'alesis_hr16a_4.mp3',
+          Eb6: 'alesis_hr16a_5.mp3',
+          E6: 'alesis_hr16a_6.mp3',
+          F6: 'alesis_hr16a_7.mp3',
+          Gb6: 'alesis_hr16a_8.mp3',
+          G6: 'alesis_hr16a_9.mp3',
+          Ab6: 'alesis_hr16a_10.mp3',
+          A6: 'alesis_hr16a_11.mp3',
+          Bb6: 'alesis_hr16a_12.mp3',
+          B6: 'alesis_hr16a_13.mp3',
+          C7: 'alesis_hr16a_14.mp3',
+          Db7: 'alesis_hr16a_15.mp3',
+          D7: 'alesis_hr16a_16.mp3',
+          Eb7: 'alesis_hr16a_17.mp3',
+          E7: 'alesis_hr16a_18.mp3',
+          F7: 'alesis_hr16a_19.mp3',
+          Gb7: 'alesis_hr16a_20.mp3',
+          G7: 'alesis_hr16a_21.mp3',
+          Ab7: 'alesis_hr16a_22.mp3',
+          A7: 'alesis_hr16a_23.mp3',
+          Bb7: 'alesis_hr16a_24.mp3',
+          B7: 'alesis_hr16a_25.mp3',
+          C8: 'alesis_hr16a_26.mp3',
+          Db8: 'alesis_hr16a_27.mp3',
+          D8: 'alesis_hr16a_28.mp3',
+          Eb8: 'alesis_hr16a_29.mp3',
+          E8: 'alesis_hr16a_30.mp3',
+          F8: 'alesis_hr16a_31.mp3',
+          Gb8: 'alesis_hr16a_32.mp3',
+          G8: 'alesis_hr16a_33.mp3',
+          Ab8: 'alesis_hr16a_34.mp3',
+          A8: 'alesis_hr16a_35.mp3',
+          Bb8: 'alesis_hr16a_36.mp3',
+          B8: 'alesis_hr16a_37.mp3',
+        },
+        baseUrl: window.location.origin + '/samples/drum-machine/',
+      })
+      drumMachineInstrument.current.set({
+        attack: instrumentParamsRef.current.samplerAttack,
+        release: instrumentParamsRef.current.samplerRelease,
+        volume: -6,
+      })
+      drumMachineInstrument.current.connect(getCurrentEffect())
+    }
+  }, [getCurrentEffect])
+
   useEffect(() => {
     if (CHORUS_ENABLED) {
       chorusEffect.current = new Tone.Chorus(
@@ -749,6 +863,10 @@ export default function Channel({
         initDrumsInstrument()
         instrument.current = drumsInstrument.current
         break
+      case 'drum-machine':
+        initDrumMachineInstrument()
+        instrument.current = drumMachineInstrument.current
+        break
       case 'synth':
         initSynthInstrument()
         instrument.current = synthInstrument.current
@@ -795,6 +913,9 @@ export default function Channel({
       if (drumsInstrument.current) {
         drumsInstrument.current.dispose()
       }
+      if (drumMachineInstrument.current) {
+        drumMachineInstrument.current.dispose()
+      }
       if (chorusEffect.current) {
         chorusEffect.current.dispose()
       }
@@ -808,6 +929,7 @@ export default function Channel({
     getCurrentEffect,
     initBassInstrument,
     initChoralInstrument,
+    initDrumMachineInstrument,
     initDrumsInstrument,
     initHarpInstrument,
     initMarimbaInstrument,
@@ -853,6 +975,10 @@ export default function Channel({
         initDrumsInstrument()
         instrument.current = drumsInstrument.current
         break
+      case 'drum-machine':
+        initDrumMachineInstrument()
+        instrument.current = drumMachineInstrument.current
+        break
       case 'synth':
         initSynthInstrument()
         instrument.current = synthInstrument.current
@@ -864,6 +990,7 @@ export default function Channel({
   }, [
     initBassInstrument,
     initChoralInstrument,
+    initDrumMachineInstrument,
     initDrumsInstrument,
     initHarpInstrument,
     initMarimbaInstrument,
@@ -1308,6 +1435,7 @@ export default function Channel({
       harpInstrument,
       choralInstrument,
       drumsInstrument,
+      drumMachineInstrument,
     }),
     []
   )
