@@ -140,6 +140,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     },
     text: 'Available pitches are defined by selecting pitches directly on the Piano. This allows you to dial in exactly which pitches will be played by this Channel. Generally, green means "on" or "selected", and orange means "playing".',
     tags: ['channel', 'key', 'keybd', 'channel mode', 'pitch classes', 'midi input mode', 'clear', 'restart', 'piano'],
+    tips: ['To preview a note or sample, hold ALT (or OPTION) and click on a note in the Piano']
   },
   {
     title: 'Arpeggio',

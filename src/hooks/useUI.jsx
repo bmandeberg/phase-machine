@@ -115,7 +115,8 @@ export default function useUI(
   keyRestart,
   openMidiModal,
   openInstrumentModal,
-  updateOnce
+  updateOnce,
+  triggerNote
 ) {
   const channelNumEl = useCallback(
     (auxiliary) => {
@@ -333,6 +334,7 @@ export default function useUI(
         keybdPitches={keybdPitches}
         setKeybdPitches={setKeybdPitches}
         theme={theme}
+        triggerNote={triggerNote}
       />
     )
   }, [
@@ -352,6 +354,7 @@ export default function useUI(
     setRangeStart,
     setResizing,
     theme,
+    triggerNote,
   ])
 
   const keyViewTypeEl = useMemo(() => {

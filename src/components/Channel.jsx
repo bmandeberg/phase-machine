@@ -1126,6 +1126,48 @@ export default function Channel({
     ]
   )
 
+  // fire individual notes, like on an ALT+Click
+  const triggerNote = useCallback(
+    (i, callback) => {
+      const note = noteString(i)
+      if (!note) return
+      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
+      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+      const sampleMaxTime = 5
+      if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
+        if (instrumentType !== 'synth') {
+          instrument.current.triggerAttackRelease(note, sampleMaxTime, undefined, velocity)
+        } else {
+          instrument.current.triggerAttack(note, undefined, velocity)
+        }
+      }
+      if (midiOutObj) {
+        midiOutObj.playNote(note, channel, { velocity })
+      }
+      const sustainTime = Math.max(sustain * Tone.Transport.toSeconds(keyRate), 0.08)
+      Tone.context.setTimeout(() => {
+        if (instrument.current && instrumentType === 'synth') {
+          instrument.current.triggerRelease()
+        }
+        if (midiOutObj) {
+          midiOutObj.stopNote(note, channel)
+        }
+        callback()
+      }, sustainTime)
+    },
+    [
+      channelNum,
+      customMidiOutChannel,
+      instrumentOn,
+      instrumentType,
+      keyRate,
+      midiOut,
+      midiOutChannel,
+      sustain,
+      velocity,
+    ]
+  )
+
   const clearPlayNoteBuffer = useCallback(() => {
     // play note
     let notePlayed = false
@@ -1422,7 +1464,8 @@ export default function Channel({
     keyRestart,
     openMidiModal,
     openInstrumentModal,
-    updateOnce
+    updateOnce,
+    triggerNote
   )
 
   const instruments = useMemo(

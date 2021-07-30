@@ -9,7 +9,6 @@
   overflow: visible;
   .piano-note {
     @extend .no-select;
-    pointer-events: none;
     width: 10px;
     height: 57px;
     background-color: $lightTextGray;
@@ -49,7 +48,6 @@
     }
     &.interactive {
       cursor: pointer;
-      pointer-events: all;
       &:hover {
         background-color: $darkGrayHover;
       }

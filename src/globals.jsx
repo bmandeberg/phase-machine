@@ -52,6 +52,18 @@ if (device.type === 'mobile' || BROWSER.name.includes('Mobile')) {
   alert('🗣 sounds can only play if your device is not on silent')
 }
 
+export let ALT = false
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Alt') {
+    ALT = true
+  }
+})
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Alt') {
+    ALT = false
+  }
+})
+
 export const CHORUS_ENABLED = !BROWSER.name.includes('Safari')
 
 export const VIEWS = ['stacked', 'horizontal', 'clock']

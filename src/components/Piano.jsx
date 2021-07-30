@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain } from '../globals'
+import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain, ALT } from '../globals'
 import { useGesture } from 'react-use-gesture'
 import './Piano.scss'
 
@@ -26,7 +26,9 @@ export default function Piano({
   keybdPitches,
   setKeybdPitches,
   theme,
+  triggerNote,
 }) {
+  const [noteTriggered, setNoteTriggered] = useState(null)
   const [changingRange, setChangingRange] = useState(false)
   const [rangeStartReference, setRangeStartReference] = useState(rangeStart)
   const [rangeEndReference, setRangeEndReference] = useState(rangeEnd)
@@ -94,7 +96,7 @@ export default function Piano({
 
   const selectNote = useCallback(
     (noteIndex) => {
-      if (!rangeMode) {
+      if (!rangeMode && !ALT) {
         setKeybdPitches((keybdPitches) => {
           const keybdPitchesCopy = keybdPitches.slice()
           for (let i = 0; i < keybdPitches.length; i++) {
@@ -111,12 +113,25 @@ export default function Piano({
     [rangeMode, setKeybdPitches]
   )
 
+  const noteDown = useCallback(
+    (noteIndex) => {
+      if (ALT) {
+        triggerNote(noteIndex, () => {
+          setNoteTriggered(null)
+        })
+        setNoteTriggered(noteIndex)
+      }
+    },
+    [triggerNote]
+  )
+
   const pianoKeys = useMemo(
     () =>
       [...Array(12 * OCTAVES)].map((d, i) => (
         <div
           key={i}
           onClick={() => selectNote(i)}
+          onMouseDown={() => noteDown(i)}
           className={classNames('piano-note', {
             'white-key': whiteKey(i),
             'next-black-key-near': nextBlackKey.near(i),
@@ -130,10 +145,10 @@ export default function Piano({
             'in-range': !mute && (!rangeMode || (i >= rangeStart && i < rangeEnd)),
             selected: !rangeMode && keybdPitches.includes(i),
             interactive: !rangeMode,
-            playing: (!rangeMode || noteOn) && playingNote === i,
+            playing: ((!rangeMode || noteOn) && playingNote === i) || noteTriggered === i,
           })}></div>
       )),
-    [keybdPitches, mute, noteOn, playingNote, rangeEnd, rangeMode, rangeStart, selectNote]
+    [keybdPitches, mute, noteDown, noteOn, noteTriggered, playingNote, rangeEnd, rangeMode, rangeStart, selectNote]
   )
 
   const pianoRange = useMemo(
@@ -244,6 +259,7 @@ Piano.propTypes = {
   keybdPitches: PropTypes.array,
   setKeybdPitches: PropTypes.func,
   theme: PropTypes.string,
+  triggerNote: PropTypes.func,
 }
 
 function noteLeftBoundary(boundaryType, x, height) {
