@@ -19,7 +19,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     title: 'Header',
     img: {
       src: 'header',
-      width: 1109,
+      width: 1330,
     },
     text: 'Global controls.',
     tags: ['header', 'play/pause', 'channels', 'view', 'midi in', 'tempo', 'preset', 'midi out', 'settings'],
