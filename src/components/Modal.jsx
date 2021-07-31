@@ -38,6 +38,8 @@ export default function Modal({
   effects,
   grabbing,
   setGrabbing,
+  presetsRestartTransport,
+  setPresetsRestartTransport,
 }) {
   const modalTypeRef = useRef()
 
@@ -77,6 +79,8 @@ export default function Modal({
         presets={presets}
         importPresets={importPresets}
         modalType={modalType}
+        presetsRestartTransport={presetsRestartTransport}
+        setPresetsRestartTransport={setPresetsRestartTransport}
       />
     ),
     [
@@ -85,8 +89,10 @@ export default function Modal({
       linearKnobs,
       modalType,
       presets,
+      presetsRestartTransport,
       setDefaultChannelModeKeybd,
       setLinearKnobs,
+      setPresetsRestartTransport,
       setShowStepNumbers,
       setTheme,
       showStepNumbers,
@@ -201,4 +207,6 @@ Modal.propTypes = {
   effects: PropTypes.object,
   grabbing: PropTypes.bool,
   setGrabbing: PropTypes.func,
+  presetsRestartTransport: PropTypes.bool,
+  setPresetsRestartTransport: PropTypes.func,
 }

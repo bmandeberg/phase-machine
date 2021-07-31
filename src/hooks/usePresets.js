@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useMemo } from 'react'
 import { v4 as uuid } from 'uuid'
 import { PRESET_HOLD_TIME } from '../globals'
+import * as Tone from 'tone'
 
 export default function usePresets(
   setUIState,
@@ -14,7 +15,9 @@ export default function usePresets(
   setChannelSync,
   setPresets,
   keydownTimer,
-  setRestartChannels
+  setRestartChannels,
+  presetsRestartTransport,
+  playing
 ) {
   // state management for presets
 
@@ -109,10 +112,27 @@ export default function usePresets(
       setUIState(deepStateCopy(preset))
       setNumChannels(preset.numChannels)
       setChannelSync(preset.channelSync)
+      // restart transport if necessary
+      if (presetsRestartTransport) {
+        Tone.Transport.stop()
+        if (playing) {
+          Tone.Transport.start()
+        }
+      }
       // save in localStorage
       window.localStorage.setItem('activePreset', presetID)
     },
-    [deepStateCopy, presets, setChannelSync, setCurrentPreset, setNumChannels, setRestartChannels, setUIState]
+    [
+      deepStateCopy,
+      playing,
+      presets,
+      presetsRestartTransport,
+      setChannelSync,
+      setCurrentPreset,
+      setNumChannels,
+      setRestartChannels,
+      setUIState,
+    ]
   )
 
   const dedupName = useCallback((name, id, presets) => {

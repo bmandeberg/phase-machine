@@ -86,6 +86,7 @@ export default function App() {
   const container = useRef()
 
   // settings
+
   const [showStepNumbers, setShowStepNumbers] = useState(
     JSON.parse(window.localStorage.getItem('showStepNumbers')) ?? false
   )
@@ -96,6 +97,10 @@ export default function App() {
 
   const [defaultChannelModeKeybd, setDefaultChannelModeKeybd] = useState(
     JSON.parse(window.localStorage.getItem('defaultChannelModeKeybd')) ?? false
+  )
+
+  const [presetsRestartTransport, setPresetsRestartTransport] = useState(
+    JSON.parse(window.localStorage.getItem('presetsRestartTransport')) ?? true
   )
 
   useEffect(() => {
@@ -113,6 +118,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('defaultChannelModeKeybd', defaultChannelModeKeybd)
   }, [defaultChannelModeKeybd])
+
+  useEffect(() => {
+    window.localStorage.setItem('presetsRestartTransport', presetsRestartTransport)
+  }, [presetsRestartTransport])
 
   useEffect(() => {
     window.localStorage.setItem('view', view)
@@ -256,7 +265,9 @@ export default function App() {
       setChannelSync,
       setPresets,
       keydownTimer,
-      setRestartChannels
+      setRestartChannels,
+      presetsRestartTransport,
+      playing
     )
 
   // channel management
@@ -461,6 +472,8 @@ export default function App() {
           setLinearKnobs={setLinearKnobs}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
           setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
+          presetsRestartTransport={presetsRestartTransport}
+          setPresetsRestartTransport={setPresetsRestartTransport}
           theme={theme}
           setTheme={setTheme}
           presets={presets}
