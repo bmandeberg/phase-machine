@@ -140,7 +140,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     },
     text: 'Available pitches are defined by selecting pitches directly on the Piano. This allows you to dial in exactly which pitches will be played by this Channel. Generally, green means "on" or "selected", and orange means "playing".',
     tags: ['channel', 'key', 'keybd', 'channel mode', 'pitch classes', 'midi input mode', 'clear', 'restart', 'piano'],
-    tips: ['To preview a note or sample, hold ALT (or OPTION) and click on a note in the Piano']
+    tips: ['To preview a note or sample, hold ALT (or OPTION) and click on a note in the Piano'],
   },
   {
     title: 'Arpeggio',
@@ -186,7 +186,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     tags: ['about'],
     text: `The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-tonal_music_theory" target="_blank">post-tonal music theory</a>, specifically <a href="https://en.wikipedia.org/wiki/Set_theory_(music)" target="_blank">set theory</a>.
 
-This project is made possible by the excellent <a href="https://tonejs.github.io/" target="_blank">Tone.js</a> web audio framework.
+This project is made possible by the excellent <a href="https://tonejs.github.io/" target="_blank">Tone.js</a> web audio framework, and <a href="https://github.com/djipco/webmidi" target="_blank">WebMidi.js</a>.
 
 The Phase Machine is an open-source project. Get the code at our <a href="https://github.com/bmandeberg/phase-machine" target="_blank">GitHub page</a>
 
