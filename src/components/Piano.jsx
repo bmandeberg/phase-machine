@@ -228,8 +228,8 @@ export default function Piano({
     [changingRange, pxEnd, pxStart]
   )
   const pianoBorder = useMemo(
-    () => <div className={classNames('piano-border', { 'dark-border': !rangeMode })}></div>,
-    [rangeMode]
+    () => <div className={classNames('piano-border', { 'dark-border': !rangeMode && !mute })}></div>,
+    [mute, rangeMode]
   )
 
   return (

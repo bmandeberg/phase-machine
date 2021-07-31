@@ -418,7 +418,10 @@ $headerDarkBlue: #0f182d;
           }
         }
         &.interactive:hover {
-          background-color: $darkMediumGrayHover;
+          background-color: darken($inRangeColor, 5%);
+          &.mute {
+            background-color: lighten($darkMediumGray, 3%);
+          }
         }
       }
       &.selected {
