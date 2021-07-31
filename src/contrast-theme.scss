@@ -393,6 +393,9 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       }
       &.interactive:hover {
         background-color: $darkDarkGrayHover;
+        &.mute {
+          background-color: darken($darkMediumGray, 5%);
+        }
       }
       &.white-key {
         background-color: $pitchClassGray;
@@ -406,12 +409,18 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         }
         &.interactive:hover {
           background-color: $lightMediumGrayHover;
+          &.mute {
+            background-color: darken($pitchClassGray, 5%);
+          }
         }
       }
       &.selected {
         background-color: $darkGreen;
         &.interactive:hover {
           background-color: $darkGreenHover;
+          &.mute {
+            background-color: $darkGreenHover;
+          }
         }
       }
       &.playing,

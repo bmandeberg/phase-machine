@@ -392,6 +392,9 @@ $headerDarkBlue: #0f182d;
       }
       &.interactive:hover {
         background-color: $darkDarkGrayHover;
+        &.mute {
+          background-color: lighten($darkDarkGrayHover, 3%);
+        }
       }
       &.white-key {
         background-color: $darkMediumGray;
@@ -403,7 +406,7 @@ $headerDarkBlue: #0f182d;
           }
         }
         &.interactive:hover {
-          background-color: $inRangeColorHover;
+          background-color: $darkMediumGrayHover;
         }
       }
       &.selected {

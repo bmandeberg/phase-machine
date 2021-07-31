@@ -51,6 +51,9 @@
       &:hover {
         background-color: $darkGrayHover;
       }
+      &.mute:hover {
+        background-color: darken($lightTextGray, 5%);
+      }
     }
     &.white-key {
       width: 13px;
@@ -77,6 +80,9 @@
       &.interactive {
         &:hover {
           background-color: $lightGray;
+        }
+        &.mute:hover {
+          background-color: darken($lightGray, 5%);
         }
         &.selected:hover {
           background-color: $greenHover;
