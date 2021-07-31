@@ -69,6 +69,20 @@ export default function App() {
   const [resizing, setResizing] = useState(false)
   const keydownTimer = useRef(null)
 
+  const [resetTransport, setResetTransport] = useState(false)
+  useEffect(() => {
+    if (resetTransport) {
+      Tone.Transport.stop()
+      if (playing) {
+        Tone.Transport.start()
+      }
+      setResetTransport(false)
+    }
+  }, [playing, resetTransport])
+  const triggerTransportReset = useCallback(() => {
+    setResetTransport(true)
+  }, [])
+
   const container = useRef()
 
   // settings
@@ -352,6 +366,7 @@ export default function App() {
           midiNoteOff={midiNoteOff}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
           restartChannels={restartChannels}
+          resetTransport={resetTransport}
         />
       )),
     [
@@ -368,6 +383,7 @@ export default function App() {
       numChannels,
       numChannelsSoloed,
       playing,
+      resetTransport,
       resizing,
       restartChannels,
       setChannelState,
@@ -422,6 +438,7 @@ export default function App() {
         deletePreset={deletePreset}
         setModalType={setModalType}
         theme={theme}
+        triggerTransportReset={triggerTransportReset}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>

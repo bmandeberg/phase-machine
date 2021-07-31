@@ -63,6 +63,7 @@ export default function Channel({
   midiNoteOn,
   midiNoteOff,
   restartChannels,
+  resetTransport,
 }) {
   const id = useRef(initState.id)
   const [velocity, setVelocity] = useState(initState.velocity)
@@ -164,21 +165,6 @@ export default function Channel({
     presetInitialized.current = false
   }, [channelNum])
 
-  const keyRestart = useCallback(() => {
-    setPlayingNote(undefined)
-    setPlayingPitchClass(undefined)
-    playingNoteRef.current = undefined
-    noteIndex.current = undefined
-    prevNoteIndex.current = undefined
-  }, [])
-
-  const seqRestart = useCallback(() => {
-    prevStep.current = undefined
-    currentStep.current = 0
-    nextStep.current = undefined
-    setPlayingStep(null)
-  }, [])
-
   const seqOpposite = useCallback(() => {
     setSeqSteps((seqSteps) => seqSteps.map((step, i) => (i < seqLength ? !step : step)))
   }, [seqLength])
@@ -264,8 +250,6 @@ export default function Channel({
     setModalType('MIDI')
   }, [])
 
-  // set channel state when preset is changed
-
   const getCurrentEffect = useCallback(() => {
     let effect
     switch (instrumentParamsRef.current.effectType) {
@@ -289,76 +273,6 @@ export default function Channel({
     }
     return effect || Tone.getDestination()
   }, [])
-
-  useEffect(() => {
-    if (channelPreset) {
-      if (!presetInitialized.current) {
-        presetInitialized.current = true
-      } else {
-        if (restartChannels) {
-          seqRestart()
-          keyRestart()
-          keyArpUtil.current = false
-          seqArpUtil.current = false
-        }
-        setVelocity(channelPreset.velocity)
-        setKey(channelPreset.key.slice())
-        setKeyRate(channelPreset.keyRate)
-        setKeyMovement(channelPreset.keyMovement)
-        setKeyArpInc1(channelPreset.keyArpInc1)
-        setKeyArpInc2(channelPreset.keyArpInc2)
-        setSustain(channelPreset.sustain)
-        setKeySwing(channelPreset.keySwing)
-        setKeySwingLength(channelPreset.keySwingLength)
-        setMute(channelPreset.mute)
-        setSolo(channelPreset.solo)
-        setShiftAmt(channelPreset.shiftAmt)
-        setAxis(channelPreset.axis)
-        setRangeStart(channelPreset.rangeStart)
-        setRangeEnd(channelPreset.rangeEnd)
-        setSeqSteps(channelPreset.seqSteps.slice())
-        setSeqLength(channelPreset.seqLength)
-        setSeqRate(channelPreset.seqRate)
-        setSeqMovement(channelPreset.seqMovement)
-        setSeqArpInc1(channelPreset.seqArpInc1)
-        setSeqArpInc2(channelPreset.seqArpInc2)
-        setSeqSwing(channelPreset.seqSwing)
-        setSeqSwingLength(channelPreset.seqSwingLength)
-        setHold(channelPreset.hold)
-        setInstrumentOn(channelPreset.instrumentOn)
-        setInstrumentType(channelPreset.instrumentType)
-        setRangeMode(channelPreset.rangeMode)
-        setKeybdPitches(channelPreset.keybdPitches)
-        setMidiIn(channelPreset.midiIn)
-        setMidiHold(channelPreset.midiHold)
-        setCustomMidiOutChannel(channelPreset.customMidiOutChannel)
-        setMidiOutChannel(channelPreset.midiOutChannel)
-        setInstrumentParams(channelPreset.instrumentParams)
-        setModalType(null)
-        updateInstruments(
-          synthInstrument.current,
-          [
-            pianoInstrument.current,
-            marimbaInstrument.current,
-            drumsInstrument.current,
-            drumMachineInstrument.current,
-            bassInstrument.current,
-            vibesInstrument.current,
-            harpInstrument.current,
-            choralInstrument.current,
-          ],
-          chorusEffect.current,
-          distortionEffect.current,
-          delayEffect.current,
-          reverbEffect.current,
-          vibratoEffect.current,
-          channelPreset.instrumentParams,
-          getCurrentEffect()
-        )
-        setUpdateOnce(true)
-      }
-    }
-  }, [channelPreset, restartChannels, keyRestart, seqRestart, getCurrentEffect])
 
   useEffect(() => {
     if (updateOnce) {
@@ -1220,7 +1134,7 @@ export default function Channel({
     },
     [emptyKey, loadPlayNoteBuffer, muted, seqArpInc1, seqArpInc2, seqMovement, seqLength]
   )
-  useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
+  const seqLoop = useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
   // key loop
   const keyCallback = useCallback(
@@ -1264,7 +1178,105 @@ export default function Channel({
       rangeStart,
     ]
   )
-  useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
+  const keyLoop = useLoop(keyCallback, keyRate, tempo, keySwing, keySwingLength)
+
+  // force state updates
+
+  const keyRestart = useCallback(() => {
+    setPlayingNote(undefined)
+    setPlayingPitchClass(undefined)
+    playingNoteRef.current = undefined
+    noteIndex.current = undefined
+    prevNoteIndex.current = undefined
+    keyArpUtil.current = false
+    keyLoop.current.reset()
+  }, [keyLoop])
+
+  const seqRestart = useCallback(() => {
+    prevStep.current = undefined
+    currentStep.current = 0
+    nextStep.current = undefined
+    seqArpUtil.current = false
+    setPlayingStep(null)
+    seqLoop.current.reset()
+  }, [seqLoop])
+
+  useEffect(() => {
+    if (resetTransport) {
+      keyRestart()
+      seqRestart()
+    }
+  }, [keyRestart, resetTransport, seqRestart])
+
+  // set channel state when preset is changed
+
+  useEffect(() => {
+    if (channelPreset) {
+      if (!presetInitialized.current) {
+        presetInitialized.current = true
+      } else {
+        if (restartChannels) {
+          seqRestart()
+          keyRestart()
+        }
+        setVelocity(channelPreset.velocity)
+        setKey(channelPreset.key.slice())
+        setKeyRate(channelPreset.keyRate)
+        setKeyMovement(channelPreset.keyMovement)
+        setKeyArpInc1(channelPreset.keyArpInc1)
+        setKeyArpInc2(channelPreset.keyArpInc2)
+        setSustain(channelPreset.sustain)
+        setKeySwing(channelPreset.keySwing)
+        setKeySwingLength(channelPreset.keySwingLength)
+        setMute(channelPreset.mute)
+        setSolo(channelPreset.solo)
+        setShiftAmt(channelPreset.shiftAmt)
+        setAxis(channelPreset.axis)
+        setRangeStart(channelPreset.rangeStart)
+        setRangeEnd(channelPreset.rangeEnd)
+        setSeqSteps(channelPreset.seqSteps.slice())
+        setSeqLength(channelPreset.seqLength)
+        setSeqRate(channelPreset.seqRate)
+        setSeqMovement(channelPreset.seqMovement)
+        setSeqArpInc1(channelPreset.seqArpInc1)
+        setSeqArpInc2(channelPreset.seqArpInc2)
+        setSeqSwing(channelPreset.seqSwing)
+        setSeqSwingLength(channelPreset.seqSwingLength)
+        setHold(channelPreset.hold)
+        setInstrumentOn(channelPreset.instrumentOn)
+        setInstrumentType(channelPreset.instrumentType)
+        setRangeMode(channelPreset.rangeMode)
+        setKeybdPitches(channelPreset.keybdPitches)
+        setMidiIn(channelPreset.midiIn)
+        setMidiHold(channelPreset.midiHold)
+        setCustomMidiOutChannel(channelPreset.customMidiOutChannel)
+        setMidiOutChannel(channelPreset.midiOutChannel)
+        setInstrumentParams(channelPreset.instrumentParams)
+        setModalType(null)
+        updateInstruments(
+          synthInstrument.current,
+          [
+            pianoInstrument.current,
+            marimbaInstrument.current,
+            drumsInstrument.current,
+            drumMachineInstrument.current,
+            bassInstrument.current,
+            vibesInstrument.current,
+            harpInstrument.current,
+            choralInstrument.current,
+          ],
+          chorusEffect.current,
+          distortionEffect.current,
+          delayEffect.current,
+          reverbEffect.current,
+          vibratoEffect.current,
+          channelPreset.instrumentParams,
+          getCurrentEffect()
+        )
+        setUpdateOnce(true)
+      }
+    }
+  }, [channelPreset, restartChannels, keyRestart, seqRestart, getCurrentEffect])
 
   // manage key and notes for range and keybd modes
 
@@ -2036,6 +2048,7 @@ Channel.propTypes = {
   midiNoteOn: PropTypes.object,
   midiNoteOff: PropTypes.object,
   restartChannels: PropTypes.bool,
+  resetTransport: PropTypes.bool,
 }
 
 function updateInstruments(

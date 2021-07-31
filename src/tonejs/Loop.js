@@ -90,6 +90,12 @@ export default class Loop {
     this.loop.interval = this.interval * (this.swingEnable ? this.swingPhraseLength : 1)
   }
 
+  reset() {
+    this.swingIndex = 0
+    this.loop.stop()
+    this.loop.start(0)
+  }
+
   dispose() {
     this.loop.dispose()
   }

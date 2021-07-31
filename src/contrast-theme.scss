@@ -340,6 +340,18 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
   #header {
     background-color: $headerDarkBlue;
     color: $blue;
+    .button {
+      border: 1px solid $blue;
+      color: $headerDarkBlue;
+      background-color: $blue;
+      cursor: pointer;
+      &:hover {
+        background-color: $blueHover;
+      }
+      &:active {
+        background-color: $blueActive;
+      }
+    }
     .header-aux {
       .header-settings {
         background: url('./assets/gear-blue.png');

@@ -144,6 +144,9 @@ export default class Header extends React.Component {
             setSelected={this.props.setScrollTo}
           />
         )}
+        <div className="button global-reset" onClick={this.props.triggerTransportReset}>
+          Reset
+        </div>
         <div className="header-aux">
           <div className="aux-item header-about" onClick={this.openAbout.bind(this)} title="About"></div>
           <div className="aux-item header-settings" onClick={this.openSettings.bind(this)} title="Settings"></div>
@@ -185,4 +188,5 @@ Header.propTypes = {
   deletePreset: PropTypes.func,
   setModalType: PropTypes.func,
   theme: PropTypes.string,
+  triggerTransportReset: PropTypes.func,
 }

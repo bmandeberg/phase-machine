@@ -337,6 +337,18 @@ $headerDarkBlue: #0f182d;
   #header {
     background-color: $headerDarkBlue;
     color: $blue;
+    .button {
+      border: 1px solid $headerBlue;
+      color: $blue;
+      background-color: $headerBlue;
+      cursor: pointer;
+      &:hover {
+        background-color: $headerBlueHover;
+      }
+      &:active {
+        background-color: $headerBlueActive;
+      }
+    }
     .header-aux {
       .header-settings {
         background: url('./assets/gear-blue.png');
