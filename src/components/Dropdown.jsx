@@ -151,8 +151,8 @@ export default function Dropdown({
     () => (
       <div className="dropdown-num-inputs-wrapper">
         <div className="dropdown-num-inputs">
-          <NumInput value={num1} setValue={setNum1} />
-          <NumInput value={num2} setValue={setNum2} />
+          <NumInput value={num1} setValue={setNum1} min={-12} max={12} />
+          <NumInput value={num2} setValue={setNum2} min={-12} max={12} />
         </div>
       </div>
     ),
