@@ -99,7 +99,7 @@ export default function Channel({
   const [seqLength, setSeqLength] = useState(initState.seqLength)
   const [playingStep, setPlayingStep] = useState()
   const prevStep = useRef()
-  const currentStep = useRef(0)
+  const currentStep = useRef()
   const nextStep = useRef()
   const [seqRate, setSeqRate] = useState(initState.seqRate)
   const [seqMovement, setSeqMovement] = useState(initState.seqMovement)
@@ -1115,6 +1115,9 @@ export default function Channel({
   const seqCallback = useCallback(
     (time, interval) => {
       // console.log('SEQ', time, Tone.immediate())
+      if (currentStep.current === undefined) {
+        currentStep.current = handleArpMode(seqMovement, seqLength, undefined, seqArpUtil, seqArpInc1, seqArpInc2)
+      }
       prevStep.current = currentStep.current
       if (nextStep.current !== undefined) {
         currentStep.current = nextStep.current
@@ -1194,7 +1197,7 @@ export default function Channel({
 
   const seqRestart = useCallback(() => {
     prevStep.current = undefined
-    currentStep.current = 0
+    currentStep.current = undefined
     nextStep.current = undefined
     seqArpUtil.current = false
     setPlayingStep(null)
