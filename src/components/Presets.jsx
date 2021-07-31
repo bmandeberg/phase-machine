@@ -2,6 +2,7 @@ import React, { useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Dropdown from './Dropdown'
+import { BROWSER } from '../globals'
 import addIcon from '../assets/plus-icon-orange.svg'
 import addIconBlue from '../assets/plus-icon-blue.svg'
 import addIconDark from '../assets/plus-icon-dark.svg'
@@ -105,7 +106,10 @@ export default function Presets({
     ),
     [presetHotkey]
   )
-  const inputStyle = useMemo(() => ({ paddingRight: inputPadding }), [inputPadding])
+  const inputStyle = useMemo(
+    () => ({ paddingRight: inputPadding, lineHeight: BROWSER.name.includes('Safari') ? 18 + 'px' : 20 + 'px' }),
+    [inputPadding]
+  )
 
   return (
     <div className={classNames('presets-container', className)}>
