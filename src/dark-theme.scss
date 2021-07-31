@@ -703,9 +703,10 @@ $headerDarkBlue: #0f182d;
         background-color: #2a416b;
       }
     }
-    input {
+    input[type="text"] {
       background-color: $darkBackground;
       color: $darkLightGray;
+      border-color: $headerBlue;
     }
     .preset-hotkey {
       background-color: $blue;

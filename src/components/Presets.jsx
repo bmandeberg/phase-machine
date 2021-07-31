@@ -107,7 +107,7 @@ export default function Presets({
     [presetHotkey]
   )
   const inputStyle = useMemo(
-    () => ({ paddingRight: inputPadding, lineHeight: BROWSER.name.includes('Safari') ? 18 + 'px' : 20 + 'px' }),
+    () => ({ paddingRight: inputPadding, lineHeight: BROWSER.name.includes('Safari') ? 21 + 'px' : 22 + 'px' }),
     [inputPadding]
   )
 

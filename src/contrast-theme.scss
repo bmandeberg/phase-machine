@@ -710,9 +710,10 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         background-color: darken($blue, 10%);
       }
     }
-    input {
+    input[type='text'] {
       background-color: $darkBackground;
       color: $lightMediumGray;
+      border-color: $blue;
     }
     .preset-hotkey {
       background-color: $blue;
