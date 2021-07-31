@@ -64,6 +64,9 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
       'import presets',
       'delete presets settings',
     ],
+    tips: [
+      'If you want a smoother transition when going between Presets, you can turn off "Presets restart timeline". Also, Presets that are created from each other will transition between each other a bit better. Turning on "Presets restart timeline" may cause a time jump when selecting a new Preset, but it will preserve precise note positions and phases that can become unaligned when the timeline is not restarted.',
+    ],
   },
   {
     title: 'Channel - Stacked View',
