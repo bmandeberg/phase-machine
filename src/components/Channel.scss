@@ -45,8 +45,8 @@
   border-right: 1px solid $lightMediumGray;
   .channel-number-container {
     position: sticky;
-    left: 0;
-    z-index: 1999;
+    left: 18px;
+    z-index: 1998;
     height: 100%;
     box-sizing: border-box;
     .channel-number-background {
@@ -64,7 +64,7 @@
     @extend .no-select;
     width: 18px;
     position: absolute;
-    left: 550px;
+    left: 567px;
     top: 64px;
   }
   .flip-opposite {
@@ -114,6 +114,14 @@
   margin-top: -1px;
   margin-left: -1px;
   width: 656px;
+  .scribbler {
+    position: absolute;
+    top: 87px;
+    left: 16px;
+  }
+  .duplicate-delete {
+    left: 15px;
+  }
   .channel-primary {
     margin-right: 16px;
   }
@@ -156,8 +164,6 @@
   .piano {
     margin-top: 16px;
     margin-right: 0;
-  }
-  .restart-opposite {
   }
   .channel-drawer-control {
     $arrow-size: 8px;
@@ -450,7 +456,16 @@
   $muteGray: #d8d8d8;
   $muteGrayHover: lighten($muteGray, 3%);
   $muteBorder: #bbbbbb;
-  background-color: #f2f2f2;
+  $muteBackground: #f2f2f2;
+  background-color: $muteBackground;
+  .scribbler {
+    .scribbler-input-container {
+      background-color: $muteBackground;
+    }
+    input[type='text'] {
+      background-color: $muteGray;
+    }
+  }
   .button {
     background-color: $muteGray;
     transition: background-color $muteTransitionTime;
@@ -543,14 +558,48 @@
       height: 100%;
     }
     .channel-number {
-      text-shadow: 0 0 5px #f2f2f2;
+      text-shadow: 0 0 5px $muteBackground;
     }
+  }
+}
+
+.scribbler {
+  position: sticky;
+  left: 0;
+  z-index: 1999;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+  width: 18px;
+  height: 96px;
+  transform: rotate(270deg) translate(-39px, 39px);
+  .scribbler-input-container {
+    width: 90px;
+    padding-left: 6px;
+    background-color: #ffffff;
+    display: inline-block;
+  }
+  input[type='text'] {
+    height: 18px;
+    width: 84px;
+    padding: 0 4px;
+    padding-bottom: 2px;
+    border: none;
+    box-shadow: none;
+    background-color: $lightGray;
+    font-family: 'Marker', 'DIN Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+      'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    color: $darkGray;
+    text-align: center;
+    line-height: 18px;
+    text-transform: lowercase;
+    letter-spacing: 1px;
   }
 }
 
 .duplicate-delete {
   position: absolute;
-  left: 15px;
+  left: 33px;
   top: 43px;
   text-align: center;
   z-index: 2000;

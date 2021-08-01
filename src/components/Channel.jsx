@@ -66,6 +66,7 @@ export default function Channel({
   resetTransport,
 }) {
   const id = useRef(initState.id)
+  const [scribbler, setScribbler] = useState(initState.scribbler)
   const [velocity, setVelocity] = useState(initState.velocity)
   const [key, setKey] = useState(initState.key)
   const keyRef = useRef()
@@ -1222,6 +1223,7 @@ export default function Channel({
           seqRestart()
           keyRestart()
         }
+        setScribbler(channelPreset.scribbler)
         setVelocity(channelPreset.velocity)
         setKey(channelPreset.key.slice())
         setKeyRate(channelPreset.keyRate)
@@ -1380,9 +1382,12 @@ export default function Channel({
     midiEl,
     clearResetEl,
     midiInputModeEl,
+    scribblerEl,
   } = useUI(
     id.current,
     color,
+    scribbler,
+    setScribbler,
     channelNum,
     key,
     setKey,
@@ -1603,6 +1608,7 @@ export default function Channel({
       const state = {
         id: id.current,
         color,
+        scribbler,
         channelNum,
         velocity,
         key,
@@ -1677,6 +1683,7 @@ export default function Channel({
     shiftAmt,
     solo,
     velocity,
+    scribbler,
   ])
 
   const arrowSmallGraphic = useMemo(() => {
@@ -1715,6 +1722,7 @@ export default function Channel({
         appear={true}
         classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
         <div className={classNames('channel channel-horizontal', { mute: muted })}>
+          {scribblerEl}
           {channelNumNormal}
           {duplicateDeleteEl}
           <div className="channel-primary">
@@ -1740,6 +1748,7 @@ export default function Channel({
           <div
             style={{ top: numChannels * CHANNEL_HEIGHT }}
             className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
+            {scribblerEl}
             {channelNumAux}
             <Sequencer
               className="channel-module"
@@ -1794,6 +1803,7 @@ export default function Channel({
       pianoEl,
       playingStep,
       rangeMode,
+      scribblerEl,
       seqLength,
       seqLengthInline,
       seqMovementInline,
@@ -1817,6 +1827,7 @@ export default function Channel({
         appear={true}
         classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
         <div className={classNames('channel channel-horizontal', { mute: muted })}>
+          {scribblerEl}
           {channelNumNormal}
           {duplicateDeleteEl}
           <div className="channel-primary">
@@ -1890,6 +1901,7 @@ export default function Channel({
       pianoEl,
       playingStep,
       rangeMode,
+      scribblerEl,
       seqLength,
       seqLengthInline,
       seqMovementInline,
@@ -1914,6 +1926,7 @@ export default function Channel({
         classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
         <div className={classNames('channel channel-clock', { mute: muted })}>
           <div className="channel-clock-top">
+            {scribblerEl}
             {channelNumNormal}
             {duplicateDeleteEl}
             <div className="channel-primary">
@@ -1999,6 +2012,7 @@ export default function Channel({
       pianoEl,
       playingStep,
       rangeMode,
+      scribblerEl,
       seqLength,
       seqLengthNormal,
       seqMovementNormal,

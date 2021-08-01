@@ -171,6 +171,16 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     border-color: $pitchClassGray;
   }
 
+  .scribbler {
+    .scribbler-input-container {
+      background-color: $darkBackground;
+    }
+    input[type='text'] {
+      background-color: $darkDarkGray;
+      color: $lightMediumGray;
+    }
+  }
+
   .channel-horizontal {
     border-color: $pitchClassGray;
     .channel-number-background {
@@ -879,6 +889,15 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     $muteDarkGray: #17171e;
     background-color: $darkMuteBackground;
     color: $muteGray;
+
+    .scribbler {
+      .scribbler-input-container {
+        background-color: $darkMuteBackground;
+      }
+      input[type='text'] {
+        background-color: lighten($darkDarkGray, 10%);
+      }
+    }
 
     .button {
       background-color: $muteGray;

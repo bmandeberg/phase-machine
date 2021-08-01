@@ -20,6 +20,8 @@ import Switch from 'react-switch'
 export default function useUI(
   id,
   color,
+  scribbler,
+  setScribbler,
   channelNum,
   key,
   setKey,
@@ -118,6 +120,29 @@ export default function useUI(
   updateOnce,
   triggerNote
 ) {
+  const updateScribbler = useCallback(
+    (e) => {
+      setScribbler(e.target.value)
+    },
+    [setScribbler]
+  )
+  const scribblerEl = useMemo(() => {
+    const maxLength = 6
+    const fontSize = 16
+    return (
+      <div className="scribbler">
+        <div className="scribbler-input-container">
+          <input
+            type="text"
+            value={scribbler}
+            onChange={updateScribbler}
+            style={{ fontSize: scribbler.length < maxLength ? fontSize : fontSize - (scribbler.length - maxLength) }}
+          />
+        </div>
+      </div>
+    )
+  }, [scribbler, updateScribbler])
+
   const channelNumEl = useCallback(
     (auxiliary) => {
       return (
@@ -705,5 +730,6 @@ export default function useUI(
     midiEl,
     clearResetEl,
     midiInputModeEl,
+    scribblerEl,
   }
 }
