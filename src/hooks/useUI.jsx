@@ -132,8 +132,8 @@ export default function useUI(
     return (
       <div className="scribbler">
         <div className="scribbler-input-container">
-          <input
-            type="text"
+          <textarea
+            className="scribbler-input"
             value={scribbler}
             onChange={updateScribbler}
             style={{

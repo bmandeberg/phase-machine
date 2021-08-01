@@ -462,7 +462,7 @@
     .scribbler-input-container {
       background-color: $muteBackground;
     }
-    input[type='text'] {
+    .scribbler-input {
       background-color: $muteGray;
     }
   }
@@ -579,7 +579,7 @@
     background-color: #ffffff;
     display: inline-block;
   }
-  input[type='text'] {
+  .scribbler-input {
     height: 18px;
     width: 84px;
     padding: 0 4px;
@@ -591,9 +591,11 @@
       'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     color: $darkGray;
     text-align: center;
-    line-height: 18px;
+    line-height: 16px;
     text-transform: lowercase;
     letter-spacing: 1px;
+    resize: none;
+    overflow: hidden;
   }
 }
 

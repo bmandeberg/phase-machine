@@ -175,7 +175,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     .scribbler-input-container {
       background-color: $darkBackground;
     }
-    input[type='text'] {
+    .scribbler-input {
       background-color: $darkDarkGray;
       color: $lightMediumGray;
     }
@@ -894,7 +894,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       .scribbler-input-container {
         background-color: $darkMuteBackground;
       }
-      input[type='text'] {
+      .scribbler-input {
         background-color: lighten($darkDarkGray, 10%);
       }
     }

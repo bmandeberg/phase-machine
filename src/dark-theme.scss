@@ -178,7 +178,7 @@ $headerDarkBlue: #0f182d;
     .scribbler-input-container {
       background-color: $darkBackground;
     }
-    input[type='text'] {
+    .scribbler-input {
       background-color: $darkDarkGray;
       color: $darkLightGray;
     }
@@ -881,7 +881,7 @@ $headerDarkBlue: #0f182d;
       .scribbler-input-container {
         background-color: $darkMuteBackground;
       }
-      input[type='text'] {
+      .scribbler-input {
         background-color: lighten($darkDarkGray, 5%);
       }
     }
