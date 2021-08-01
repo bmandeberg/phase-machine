@@ -136,7 +136,10 @@ export default function useUI(
             type="text"
             value={scribbler}
             onChange={updateScribbler}
-            style={{ fontSize: scribbler.length < maxLength ? fontSize : fontSize - (scribbler.length - maxLength) }}
+            style={{
+              fontSize:
+                !scribbler || scribbler.length < maxLength ? fontSize : fontSize - (scribbler.length - maxLength),
+            }}
           />
         </div>
       </div>
