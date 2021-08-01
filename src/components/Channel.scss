@@ -207,8 +207,9 @@
     max-height: 0;
     margin-bottom: 0;
     overflow: hidden;
+    $drawerHeight: 288px;
     &.drawer-open {
-      max-height: 284px;
+      max-height: $drawerHeight;
       overflow: visible;
     }
     &.drawer-open-enter {
@@ -217,15 +218,15 @@
     }
     &.drawer-open-enter-active {
       transition: all $transitionTime ease-out;
-      max-height: 284px;
+      max-height: $drawerHeight;
       overflow: hidden;
     }
     &.drawer-open-enter-done {
-      max-height: 284px;
+      max-height: $drawerHeight;
       overflow: visible;
     }
     &.drawer-open-exit {
-      max-height: 284px;
+      max-height: $drawerHeight;
       overflow: hidden;
     }
     &.drawer-open-exit-active {
@@ -596,6 +597,7 @@
     letter-spacing: 1px;
     resize: none;
     overflow: hidden;
+    white-space: nowrap;
   }
 }
 
