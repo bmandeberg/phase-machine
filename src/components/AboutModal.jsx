@@ -58,6 +58,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
       'Show Step Numbers',
       'Hotkey Restart Sequencer',
       'Default channel mode',
+      'Presets restart timeline',
       'Knob type',
       'theme',
       'export presets',
@@ -84,7 +85,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
       width: 1044,
     },
     text: 'Clock View is an alternative way of viewing a Channel. In clock view, the Pitch Classes are placed in a circle instead of on a keyboard octave. This has added benefit for visualizing pitch class transformations, such as flipping the pitch classes over an axis on the clock, or shifting the pitch classes by semitones.',
-    tags: ['channel', 'clock', 'view', 'general', 'key', 'arpeggio', 'sequence', 'instrument'],
+    tags: ['channel', 'clock', 'view', 'general', 'key', 'drawer control', 'arpeggio', 'sequence', 'instrument'],
   },
   {
     title: 'General',
@@ -96,6 +97,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     tags: [
       'channel',
       'general',
+      'channel number',
       'duplicate channel',
       'delete channel',
       'mute',
