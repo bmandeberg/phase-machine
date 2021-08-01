@@ -30,6 +30,9 @@ if (!window.localStorage.getItem('presets')) {
   window.localStorage.setItem('activePreset', defaultPresets[0].id)
 }
 
+const PIANO_SCROLL = 60
+const SEQ_SCROLL = 76
+
 export default function App() {
   const [presets, setPresets] = useState(initializePresets)
   const [currentPreset, setCurrentPreset] = useState(initialPreset)
@@ -167,8 +170,8 @@ export default function App() {
       if (viewRef.current === 'horizontal') {
         const scrollPositions = [
           0,
-          document.querySelector('.piano').offsetLeft - 43,
-          document.querySelector('.sequencer').offsetLeft - 59,
+          document.querySelector('.piano').offsetLeft - PIANO_SCROLL,
+          document.querySelector('.sequencer').offsetLeft - SEQ_SCROLL,
         ]
         let scrollEl = 0
         for (let i = 0; i < SECTIONS.length; i++) {
@@ -222,8 +225,8 @@ export default function App() {
   const doScroll = useCallback((scrollEl) => {
     const scrollPositions = [
       0,
-      document.querySelector('.piano').offsetLeft - 43,
-      document.querySelector('.sequencer').offsetLeft - 59,
+      document.querySelector('.piano').offsetLeft - PIANO_SCROLL,
+      document.querySelector('.sequencer').offsetLeft - SEQ_SCROLL,
     ]
     const scrollElIndex = SECTIONS.indexOf(scrollEl)
     if (scrollElIndex !== -1) {
