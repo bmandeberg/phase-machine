@@ -432,6 +432,9 @@ $headerDarkBlue: #0f182d;
           &.mute {
             background-color: lighten($darkMediumGray, 3%);
           }
+          &.selected {
+            background-color: $darkGreenHover;
+          }
         }
       }
       &.selected {

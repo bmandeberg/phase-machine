@@ -54,6 +54,9 @@
       &.mute:hover {
         background-color: darken($lightTextGray, 5%);
       }
+      &.selected.mute:hover {
+        background-color: $greenHover;
+      }
     }
     &.white-key {
       width: 13px;
