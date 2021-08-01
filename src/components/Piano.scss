@@ -229,7 +229,7 @@
   .piano-range {
     position: absolute;
     top: -2px;
-    z-index: 1998;
+    z-index: 1997;
     path {
       fill: none;
       stroke: $green;
@@ -252,7 +252,7 @@
     height: 100%;
     position: absolute;
     top: -2px;
-    z-index: 1999;
+    z-index: 1998;
     cursor: ew-resize;
     opacity: 0.5;
     // background: red;
@@ -268,7 +268,7 @@
     top: -2px;
     height: 100%;
     opacity: 0.5;
-    z-index: 1999;
+    z-index: 1998;
     cursor: grab;
     // background: blue;
     // &:hover {
