@@ -91,12 +91,13 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     title: 'General',
     img: {
       src: 'general',
-      width: 585,
+      width: 581,
     },
     text: 'Duplicate, delete, mute, or solo a channel. Also set MIDI routing and channel velocity/volume. Click and drag the Channel Number to rearrange Channels.',
     tags: [
       'channel',
       'general',
+      'channel name',
       'channel number',
       'duplicate channel',
       'delete channel',
