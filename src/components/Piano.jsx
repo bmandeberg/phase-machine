@@ -146,7 +146,7 @@ export default function Piano({
             selected: !rangeMode && keybdPitches.includes(i),
             interactive: !rangeMode,
             mute,
-            playing: ((!rangeMode || noteOn) && playingNote === i) || noteTriggered === i,
+            playing: (noteOn && playingNote === i) || noteTriggered === i,
           })}></div>
       )),
     [keybdPitches, mute, noteDown, noteOn, noteTriggered, playingNote, rangeEnd, rangeMode, rangeStart, selectNote]
