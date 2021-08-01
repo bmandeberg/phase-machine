@@ -86,7 +86,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
         alt=""
         style={faderStyle}
         {...drag()}
-        className={classNames('fader-knob', { grabbing })}
+        className={classNames('fader-knob no-select', { grabbing })}
         draggable="false"
       />
       <p className="fader-title">{label}</p>

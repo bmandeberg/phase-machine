@@ -108,7 +108,7 @@ export default function usePresets(
     (presetID) => {
       const preset = presets.find((p) => p.id === presetID)
       setCurrentPreset(deepStateCopy(preset))
-      setRestartChannels(true)
+      setRestartChannels(presetsRestartTransport)
       setUIState(deepStateCopy(preset))
       setNumChannels(preset.numChannels)
       setChannelSync(preset.channelSync)
