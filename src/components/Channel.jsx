@@ -64,6 +64,7 @@ export default function Channel({
   midiNoteOff,
   restartChannels,
   resetTransport,
+  preventUpdate,
 }) {
   const id = useRef(initState.id)
   const [scribbler, setScribbler] = useState(initState.scribbler)
@@ -163,8 +164,10 @@ export default function Channel({
   }, [key])
 
   useEffect(() => {
-    presetInitialized.current = false
-  }, [channelNum])
+    if (preventUpdate !== undefined) {
+      presetInitialized.current = !preventUpdate
+    }
+  }, [preventUpdate])
 
   const seqOpposite = useCallback(() => {
     setSeqSteps((seqSteps) => seqSteps.map((step, i) => (i < seqLength ? !step : step)))
@@ -1216,6 +1219,7 @@ export default function Channel({
 
   useEffect(() => {
     if (channelPreset) {
+      // console.log(channelPreset.channelNum, presetInitialized.current)
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else {
@@ -2066,6 +2070,7 @@ Channel.propTypes = {
   midiNoteOff: PropTypes.object,
   restartChannels: PropTypes.bool,
   resetTransport: PropTypes.bool,
+  preventUpdate: PropTypes.bool,
 }
 
 function updateInstruments(

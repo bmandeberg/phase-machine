@@ -86,6 +86,13 @@ export default function App() {
     setResetTransport(true)
   }, [])
 
+  const [preventUpdate, setPreventUpdate] = useState()
+  useEffect(() => {
+    if (preventUpdate) {
+      setPreventUpdate(false)
+    }
+  }, [preventUpdate])
+
   const container = useRef()
 
   // settings
@@ -318,6 +325,7 @@ export default function App() {
           return uiStateCopy
         })
         setNumChannels((numChannels) => numChannels + 1)
+        setPreventUpdate(true)
       }
     },
     [getChannelColor, uiState.channels.length]
@@ -334,6 +342,7 @@ export default function App() {
       return uiStateCopy
     })
     setNumChannels((numChannels) => numChannels - 1)
+    setPreventUpdate(true)
   }, [])
 
   const changeChannelOrder = useCallback((channelNum, newChannelNum) => {
@@ -345,6 +354,7 @@ export default function App() {
       })
       return uiStateCopy
     })
+    setPreventUpdate(true)
   }, [])
 
   // render UI
@@ -381,6 +391,7 @@ export default function App() {
           defaultChannelModeKeybd={defaultChannelModeKeybd}
           restartChannels={restartChannels}
           resetTransport={resetTransport}
+          preventUpdate={preventUpdate}
         />
       )),
     [
@@ -397,6 +408,7 @@ export default function App() {
       numChannels,
       numChannelsSoloed,
       playing,
+      preventUpdate,
       resetTransport,
       resizing,
       restartChannels,
