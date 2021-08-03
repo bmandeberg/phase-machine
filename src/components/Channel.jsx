@@ -1219,7 +1219,6 @@ export default function Channel({
 
   useEffect(() => {
     if (channelPreset) {
-      // console.log(channelPreset.channelNum, presetInitialized.current)
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else {
