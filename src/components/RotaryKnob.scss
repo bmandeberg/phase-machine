@@ -7,10 +7,12 @@
   display: inline-block;
   vertical-align: top;
   margin-top: 7px;
+  touch-action: none;
   .knob {
     margin: 0 auto;
     margin-bottom: -1px;
     cursor: grab;
+    touch-action: none;
     &.grabbing {
       cursor: grabbing;
     }
@@ -86,7 +88,8 @@
       .key {
         z-index: 0;
       }
-      &::before, .knob-label {
+      &::before,
+      .knob-label {
         display: none;
       }
     }
