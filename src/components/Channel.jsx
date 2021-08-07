@@ -36,6 +36,7 @@ import './Channel.scss'
 
 const CLOCK_CHANNEL_WIDTH = 657
 const CLOCK_CHANNEL_HEIGHT = 262
+const SAMPLE_MAX_TIME = 5
 
 export default function Channel({
   numChannels,
@@ -999,12 +1000,11 @@ export default function Channel({
         }
       }
       const unheldNote = !hold || !seqSteps[nextStep.current]
-      const sampleMaxTime = 5
       if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
         if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
             note,
-            unheldNote ? scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, sampleMaxTime) : sampleMaxTime,
+            unheldNote ? scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, SAMPLE_MAX_TIME) : SAMPLE_MAX_TIME,
             time,
             velocity
           )
@@ -1051,10 +1051,14 @@ export default function Channel({
       if (!note) return
       const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
       const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
-      const sampleMaxTime = 5
       if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
         if (instrumentType !== 'synth') {
-          instrument.current.triggerAttackRelease(note, sampleMaxTime, undefined, velocity)
+          instrument.current.triggerAttackRelease(
+            note,
+            scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, SAMPLE_MAX_TIME),
+            undefined,
+            velocity
+          )
         } else {
           instrument.current.triggerAttack(note, undefined, velocity)
         }
