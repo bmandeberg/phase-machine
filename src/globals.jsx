@@ -53,14 +53,18 @@ if (device.type === 'mobile' || BROWSER.name.includes('Mobile')) {
 }
 
 export let ALT = false
+const altOnEvent = new Event('altOn')
+const altOffEvent = new Event('altOff')
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Alt') {
     ALT = true
+    document.dispatchEvent(altOnEvent)
   }
 })
 document.addEventListener('keyup', (e) => {
   if (e.key === 'Alt') {
     ALT = false
+    document.dispatchEvent(altOffEvent)
   }
 })
 

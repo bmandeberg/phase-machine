@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain, ALT } from '../globals'
 import { useGesture } from 'react-use-gesture'
+import useAlt from '../hooks/useAlt'
 import './Piano.scss'
 
 const CHANNEL_HEIGHT = 98
@@ -113,6 +114,8 @@ export default function Piano({
     [rangeMode, setKeybdPitches]
   )
 
+  const alt = useAlt()
+
   const noteDown = useCallback(
     (noteIndex) => {
       if (ALT) {
@@ -156,7 +159,7 @@ export default function Piano({
     () => (
       <svg
         style={{ left: pxStart.px - 2 }}
-        className="piano-range"
+        className={classNames('piano-range', { 'no-pointer': alt })}
         width={pxEnd.px - pxStart.px + 2}
         height="99"
         xmlns="http://www.w3.org/2000/svg">
@@ -168,16 +171,16 @@ export default function Piano({
         />
       </svg>
     ),
-    [pxEnd, pxStart]
+    [alt, pxEnd.boundaryType, pxEnd.px, pxStart.boundaryType, pxStart.px]
   )
   const rangeLeft = useMemo(
     () => (
       <div
         {...dragRangeLeft()}
         style={{ left: pxStart.px - 6, width: pxStart.boundaryType ? 14 : 10 }}
-        className="range-resize no-select"></div>
+        className={classNames('range-resize no-select', { 'no-pointer': alt })}></div>
     ),
-    [dragRangeLeft, pxStart]
+    [alt, dragRangeLeft, pxStart.boundaryType, pxStart.px]
   )
   const rangeDrag = useMemo(
     () => (
@@ -187,24 +190,27 @@ export default function Piano({
           left: pxStart.px + (pxStart.boundaryType ? 8 : 4),
           width: pxEnd.px - pxStart.px - 10 - (pxStart.boundaryType ? 4 : 0) - (pxEnd.boundaryType ? 4 : 0),
         }}
-        className={classNames('range-drag no-select', { grabbing, resizing })}></div>
+        className={classNames('range-drag no-select', { grabbing, resizing, 'no-pointer': alt })}></div>
     ),
-    [dragRange, grabbing, pxEnd, pxStart, resizing]
+    [alt, dragRange, grabbing, pxEnd.boundaryType, pxEnd.px, pxStart.boundaryType, pxStart.px, resizing]
   )
   const rangeRight = useMemo(
     () => (
       <div
         {...dragRangeRight()}
         style={{ left: pxEnd.px - (pxEnd.boundaryType ? 10 : 6), width: pxEnd.boundaryType ? 14 : 10 }}
-        className="range-resize no-select"></div>
+        className={classNames('range-resize no-select', { 'no-pointer': alt })}></div>
     ),
-    [dragRangeRight, pxEnd]
+    [alt, dragRangeRight, pxEnd.boundaryType, pxEnd.px]
   )
   const rangeGlow = useMemo(
     () => (
       <svg
         style={{ left: pxStart.px - 2 }}
-        className={classNames('piano-range piano-range-glow no-select', { 'show-range-glow': changingRange })}
+        className={classNames('piano-range piano-range-glow no-select', {
+          'show-range-glow': changingRange,
+          'no-pointer': alt,
+        })}
         width={pxEnd.px - pxStart.px + 2}
         height="99"
         xmlns="http://www.w3.org/2000/svg">
@@ -225,7 +231,7 @@ export default function Piano({
         />
       </svg>
     ),
-    [changingRange, pxEnd, pxStart]
+    [alt, changingRange, pxEnd.boundaryType, pxEnd.px, pxStart.boundaryType, pxStart.px]
   )
   const pianoBorder = useMemo(
     () => <div className={classNames('piano-border', { 'dark-border': !rangeMode && !mute })}></div>,

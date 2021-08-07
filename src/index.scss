@@ -140,6 +140,10 @@ body {
   visibility: hidden;
 }
 
+.no-pointer {
+  pointer-events: none;
+}
+
 input {
   box-sizing: border-box;
   display: block;

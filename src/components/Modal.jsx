@@ -53,9 +53,9 @@ export default function Modal({
         closeModal()
       }
     }
-    window.addEventListener('keydown', keydown)
+    document.addEventListener('keydown', keydown)
     return () => {
-      window.removeEventListener('keydown', keydown)
+      document.removeEventListener('keydown', keydown)
     }
   }, [closeModal])
 
