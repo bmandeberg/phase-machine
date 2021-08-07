@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
-import { VIEWS, SECTIONS, MAX_CHANNELS } from '../globals'
+import { VIEWS, SECTIONS, MAX_CHANNELS, ALT } from '../globals'
 import NumInput from './NumInput'
 import Dropdown from './Dropdown'
 import Presets from './Presets'
@@ -34,12 +34,16 @@ export default class Header extends React.Component {
       await Tone.start()
       this.initialized = true
     }
-    if (!this.props.playing) {
-      Tone.Transport.start()
+    if (ALT) {
+      this.props.triggerTransportReset()
     } else {
-      Tone.Transport.pause()
+      if (!this.props.playing) {
+        Tone.Transport.start()
+      } else {
+        Tone.Transport.pause()
+      }
+      this.props.setPlaying((playing) => !playing)
     }
-    this.props.setPlaying((playing) => !playing)
   }
 
   handleKeyDown(e) {
@@ -144,9 +148,6 @@ export default class Header extends React.Component {
             setSelected={this.props.setScrollTo}
           />
         )}
-        <div className="button global-reset" onClick={this.props.triggerTransportReset}>
-          Reset
-        </div>
         <div className="header-aux">
           <div className="aux-item header-about" onClick={this.openAbout.bind(this)} title="About"></div>
           <div className="aux-item header-settings" onClick={this.openSettings.bind(this)} title="Settings"></div>
