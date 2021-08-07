@@ -180,7 +180,6 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     tips: [
       'If you are on a Mac, you can send MIDI from The Phase Machine to other applications on your computer, like a DAW, by configuring the IAC Driver in Audio MIDI Setup: https://support.apple.com/guide/audio-midi-setup/transfer-midi-information-between-apps-ams1013/mac',
       'To clear your current patch, you can set the number of Channels to 0, and then reintroduce blank Channels from the Header.',
-      "The Phase machine is not built for mobile, but it is still technically possible to use it on mobile. It's difficult to turn knobs and access interface features, but if you click and hold you'll be able to grab the knobs. It may select other things on the page, but after you're done turning the knob you can click elsewhere to deselect.",
     ],
     warnings: [
       'Beware! There is not yet any undo/redo, so things you do, presets or channels you delete, cannot be undone.',
