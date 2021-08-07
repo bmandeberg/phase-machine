@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { useGesture } from 'react-use-gesture'
-import { constrain } from '../math'
+import { constrain, scaleToRange } from '../math'
 import faderSlot from '../assets/fader-slot.svg'
 import faderKnob from '../assets/fader-knob.svg'
 import faderKnobMute from '../assets/fader-knob-mute.svg'
@@ -16,24 +16,11 @@ import faderSlotLight from '../assets/fader-slot-light.svg'
 import './Fader.scss'
 
 const FADER_HEIGHT = 41
+const FADER_MIN_PX = 7
+const FADER_MAX_PX = 43
 
 export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute, theme, className }) {
-  const faderClick = useCallback(
-    (e) => {
-      var bounding = e.target.getBoundingClientRect()
-      const y = e.clientY - bounding.top
-      if (y >= -2 && y <= FADER_HEIGHT + 9) {
-        if (y < FADER_HEIGHT * 0.1) {
-          setValue(1)
-        } else if (y > FADER_HEIGHT * 0.9) {
-          setValue(0)
-        } else {
-          setValue(1 - constrain(y / FADER_HEIGHT, 0, 1))
-        }
-      }
-    },
-    [setValue]
-  )
+  const faderRef = useRef()
 
   const faderSlotGraphic = useMemo(() => {
     switch (theme) {
@@ -61,11 +48,18 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     }
   }, [mute, theme])
 
+  const faderTop = useRef()
   const drag = useGesture({
-    onDrag: ({ delta: [dx, dy] }) => {
-      setValue((value) => constrain(value - dy / FADER_HEIGHT, 0, 1))
+    onDrag: ({ xy: [x, y] }) => {
+      const newValue = constrain(
+        scaleToRange(constrain(y - faderTop.current, FADER_MIN_PX, FADER_MAX_PX), FADER_MIN_PX, FADER_MAX_PX, 1, 0),
+        0,
+        1
+      )
+      setValue(newValue)
     },
     onDragStart: () => {
+      faderTop.current = faderRef.current.getBoundingClientRect().top
       setGrabbing(true)
     },
     onDragEnd: () => {
@@ -79,13 +73,12 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
   const faderStyle = useMemo(() => ({ top: FADER_HEIGHT * (1 - value) - 1 }), [value])
 
   return (
-    <div className={classNames('fader channel-module', className)} onClick={faderClick}>
-      <img src={faderSlotGraphic} alt="" className="fader-slot" />
+    <div className={classNames('fader channel-module', className)} {...drag()} ref={faderRef}>
+      <img src={faderSlotGraphic} alt="" className="fader-slot" draggable="false" />
       <img
         src={faderKnobGraphic}
         alt=""
         style={faderStyle}
-        {...drag()}
         className={classNames('fader-knob no-select', { grabbing })}
         draggable="false"
       />
