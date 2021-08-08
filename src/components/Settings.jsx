@@ -114,6 +114,22 @@ export default function Settings({
         />
       </div>
       <div className="settings-item">
+        <p className="settings-label">Presets restart timeline</p>
+        <Switch
+          className="instrument-switch"
+          onChange={setPresetsRestartTransport}
+          checked={presetsRestartTransport}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
+          width={48}
+          height={24}
+        />
+      </div>
+      <div className="settings-item">
         <p className="settings-label">Default channel mode</p>
         <div className="switch-container inline">
           <p
@@ -140,22 +156,6 @@ export default function Settings({
             Keybd
           </p>
         </div>
-      </div>
-      <div className="settings-item">
-        <p className="settings-label">Presets restart timeline</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setPresetsRestartTransport}
-          checked={presetsRestartTransport}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
       </div>
       <div className="settings-item dropdown">
         <p className="settings-label">Knob type</p>
