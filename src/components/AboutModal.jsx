@@ -255,7 +255,7 @@ export default function AboutModal({ theme }) {
   return (
     <div className="about-container">
       <input
-        className="about-filter"
+        className="about-filter spacebar-ok"
         type="text"
         value={filter}
         onChange={updateFilter}

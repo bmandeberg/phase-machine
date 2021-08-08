@@ -47,7 +47,11 @@ export default class Header extends React.Component {
   }
 
   handleKeyDown(e) {
-    if (e.key === ' ' && document.activeElement.getAttribute('type') !== 'text') {
+    if (
+      e.key === ' ' &&
+      !document.activeElement.classList.contains('spacebar-ok') &&
+      document.activeElement.nodeName !== 'TEXTAREA'
+    ) {
       e.preventDefault()
       this.playStop()
     }

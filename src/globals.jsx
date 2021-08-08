@@ -59,6 +59,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Alt') {
     ALT = true
     document.dispatchEvent(altOnEvent)
+  } else if (e.key === 'Enter' && document.activeElement.classList.contains('nowrap')) {
+    e.preventDefault()
   }
 })
 document.addEventListener('keyup', (e) => {

@@ -114,7 +114,7 @@ export default function Presets({
   return (
     <div className={classNames('presets-container', className)}>
       <div className="presets">
-        <input type="text" value={preset.name} onChange={setPresetName} style={inputStyle} />
+        <input className="spacebar-ok" type="text" value={preset.name} onChange={setPresetName} style={inputStyle} />
         <div className="preset-tags">
           {(presetDirty || preset.placeholder) && presetEdited}
           {presetHotkey !== null && presetHotkeyEl}
