@@ -149,7 +149,7 @@ export default function Channel({
   }, [])
 
   const playNoteBuffer = useRef({ seq: null, key: null })
-  const presetInitialized = useRef(false)
+  const presetInitialized = useRef()
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState('')
@@ -165,7 +165,7 @@ export default function Channel({
   }, [key])
 
   useEffect(() => {
-    if (preventUpdate !== undefined) {
+    if (preventUpdate !== undefined && presetInitialized.current !== undefined) {
       presetInitialized.current = !preventUpdate
     }
   }, [preventUpdate])
