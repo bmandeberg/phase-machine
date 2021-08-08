@@ -19,7 +19,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     title: 'Header',
     img: {
       src: 'header',
-      width: 1330,
+      width: 1143,
     },
     text: 'Global controls.',
     tags: ['header', 'play/pause', 'channels', 'view', 'midi in', 'tempo', 'preset', 'midi out', 'settings'],
@@ -146,7 +146,6 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     },
     text: 'Available pitches are defined by selecting pitches directly on the Piano. This allows you to dial in exactly which pitches will be played by this Channel. Generally, green means "on" or "selected", and orange means "playing".',
     tags: ['channel', 'key', 'keybd', 'channel mode', 'pitch classes', 'midi input mode', 'clear', 'restart', 'piano'],
-    tips: ['To preview a note or sample, hold ALT (or OPTION) and click on a note in the Piano'],
   },
   {
     title: 'Arpeggio',
@@ -180,6 +179,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
     tips: [
       'If you are on a Mac, you can send MIDI from The Phase Machine to other applications on your computer, like a DAW, by configuring the IAC Driver in Audio MIDI Setup: https://support.apple.com/guide/audio-midi-setup/transfer-midi-information-between-apps-ams1013/mac',
       'To clear your current patch, you can set the number of Channels to 0, and then reintroduce blank Channels from the Header.',
+      'The Phase Machine works best in Google Chrome, which has full MIDI support. While the app works on mobile, it is not optimized for mobile or Safari, which can have performance and audio issues.',
     ],
     warnings: [
       'Beware! There is not yet any undo/redo, so things you do, presets or channels you delete, cannot be undone.',
