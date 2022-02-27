@@ -181,7 +181,6 @@ export default function App() {
   // init MIDI
 
   useEffect(() => {
-    window.WebMidi = WebMidi
     function connectMidi() {
       const midiOuts = WebMidi.outputs.map((o) => o.name).concat(['(None)'])
       setMidiOuts(midiOuts)
@@ -249,6 +248,23 @@ export default function App() {
       })
       midiInRef.current.addListener('noteoff', 'all', (e) => {
         setMidiNoteOff(e)
+      })
+      midiInRef.current.addListener('start', 'all', (e) => {
+        Tone.Transport.start()
+        setPlaying(true)
+      })
+      midiInRef.current.addListener('continue', 'all', (e) => {
+        Tone.Transport.start()
+        setPlaying(true)
+      })
+      midiInRef.current.addListener('stop', 'all', (e) => {
+        Tone.Transport.pause()
+        setPlaying(false)
+      })
+      midiInRef.current.addListener('songposition', 'all', (e) => {
+        if (e.data && e.data[0] === 242 && e.data[1] === 0) {
+          setResetTransport(true)
+        }
       })
     } else {
       midiInRef.current = null
