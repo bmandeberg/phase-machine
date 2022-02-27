@@ -134,6 +134,18 @@ export default function App() {
   }, [presetsRestartTransport])
 
   useEffect(() => {
+    if (WebMidi.enabled) {
+      window.localStorage.setItem('midiIn', midiIn)
+    }
+  }, [midiIn])
+
+  useEffect(() => {
+    if (WebMidi.enabled) {
+      window.localStorage.setItem('midiOut', midiOut)
+    }
+  }, [midiOut])
+
+  useEffect(() => {
     window.localStorage.setItem('view', view)
     setTimeout(() => {
       document.activeElement.blur()
@@ -169,10 +181,25 @@ export default function App() {
   // init MIDI
 
   useEffect(() => {
+    window.WebMidi = WebMidi
     function connectMidi() {
-      setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
-      setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0].name)
+      const midiOuts = WebMidi.outputs.map((o) => o.name).concat(['(None)'])
+      setMidiOuts(midiOuts)
+      let mo
+      setMidiOut(() => {
+        const midiOut = window.localStorage.getItem('midiOut')
+        if (midiOut && midiOuts.includes(midiOut)) {
+          mo = midiOut
+          return midiOut
+        } else return null
+      })
+      const midiIns = WebMidi.inputs.map((i) => i.name).concat(['(None)'])
       setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
+      const mi = window.localStorage.getItem('midiIn')
+      setMidiIn(
+        () =>
+          (midiIns.includes(mi) && mi !== mo && mi) || (WebMidi.inputs[0].name !== mo && WebMidi.inputs[0].name) || null
+      )
     }
     function disconnectMidi(e) {
       setMidiOuts(WebMidi.outputs.map((o) => o.name))
@@ -229,6 +256,10 @@ export default function App() {
   }, [midiIn])
 
   useEffect(() => {
+    if (midiOut && midiInRef.current && midiOut === midiInRef.current.name) {
+      alert('Setting MIDI output to current MIDI input - avoiding circular MIDI messages, and disabling MIDI input!')
+      setMidiIn(null)
+    }
     midiOutRef.current = midiOut
   }, [midiOut])
 
