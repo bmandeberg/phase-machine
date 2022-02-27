@@ -201,6 +201,7 @@ export default function Channel({
 
   useEffect(() => {
     if (midiInRef.current && midiNoteOn) {
+      console.log(midiNoteOn)
       if (rangeModeRef.current) {
         const pitchClassIndex = midiNoteOn.note.number % 12
         if (midiHoldRef.current || !keyRef.current[pitchClassIndex]) {

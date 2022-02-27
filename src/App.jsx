@@ -140,13 +140,39 @@ export default function App() {
     }, 500)
   }, [view])
 
+  // init scrolling
+
+  useEffect(() => {
+    const containerEl = container.current
+    function handleScroll() {
+      if (viewRef.current === 'horizontal') {
+        const scrollPositions = [
+          0,
+          document.querySelector('.piano').offsetLeft - PIANO_SCROLL,
+          document.querySelector('.sequencer').offsetLeft - SEQ_SCROLL,
+        ]
+        let scrollEl = 0
+        for (let i = 0; i < SECTIONS.length; i++) {
+          if (containerEl.scrollLeft >= scrollPositions[i]) {
+            scrollEl = i
+          }
+        }
+        setScrollTo(SECTIONS[scrollEl])
+      }
+    }
+    containerEl.addEventListener('scroll', handleScroll)
+    return () => {
+      containerEl.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   // init MIDI
 
   useEffect(() => {
     function connectMidi() {
-      setMidiOuts(WebMidi.outputs.map((o) => o.name))
+      setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
       setMidiOut((midiOut) => midiOut ?? WebMidi.outputs[0].name)
-      setMidiIns(WebMidi.inputs.map((i) => i.name))
+      setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
     }
     function disconnectMidi(e) {
       setMidiOuts(WebMidi.outputs.map((o) => o.name))
@@ -172,40 +198,23 @@ export default function App() {
         WebMidi.addListener('disconnected', disconnectMidi)
       }
     })
-    const containerEl = container.current
-    function handleScroll() {
-      if (viewRef.current === 'horizontal') {
-        const scrollPositions = [
-          0,
-          document.querySelector('.piano').offsetLeft - PIANO_SCROLL,
-          document.querySelector('.sequencer').offsetLeft - SEQ_SCROLL,
-        ]
-        let scrollEl = 0
-        for (let i = 0; i < SECTIONS.length; i++) {
-          if (containerEl.scrollLeft >= scrollPositions[i]) {
-            scrollEl = i
-          }
-        }
-        setScrollTo(SECTIONS[scrollEl])
-      }
-    }
-    containerEl.addEventListener('scroll', handleScroll)
     return () => {
-      containerEl.removeEventListener('scroll', handleScroll)
       WebMidi.removeListener('connected', connectMidi)
       WebMidi.removeListener('disconnected', disconnectMidi)
     }
   }, [])
 
+  // update MIDI ins and outs
+
   useEffect(() => {
+    if (midiInRef.current) {
+      midiInRef.current.removeListener()
+    }
     if (midiIn) {
       if (midiIn === midiOutRef.current) {
-        alert("Can't set MIDI input to current MIDI output - avoiding circular MIDI messages!")
-        setMidiIn(midiInRef.current ? midiInRef.current.name : null)
-        return
-      }
-      if (midiInRef.current) {
-        midiInRef.current.removeListener()
+        alert('Setting MIDI input to current MIDI output - avoiding circular MIDI messages, and disabling MIDI output!')
+        setMidiOut(null)
+        midiOutRef.current = null
       }
       midiInRef.current = WebMidi.getInputByName(midiIn)
       midiInRef.current.addListener('noteon', 'all', (e) => {
@@ -214,6 +223,8 @@ export default function App() {
       midiInRef.current.addListener('noteoff', 'all', (e) => {
         setMidiNoteOff(e)
       })
+    } else {
+      midiInRef.current = null
     }
   }, [midiIn])
 

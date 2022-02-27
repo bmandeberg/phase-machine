@@ -126,7 +126,7 @@ export default function Dropdown({
             <div
               key={uuid()}
               onClick={() => {
-                setValue(optionValue)
+                setValue(optionValue === '(None)' ? null : optionValue)
                 setOpen(false)
               }}
               className={classNames('dropdown-option', { selected: optionValue === value })}>
