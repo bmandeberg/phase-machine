@@ -40,6 +40,10 @@ export default function Modal({
   setGrabbing,
   presetsRestartTransport,
   setPresetsRestartTransport,
+  midiClockIn,
+  setMidiClockIn,
+  midiClockOut,
+  setMidiClockOut,
 }) {
   const modalTypeRef = useRef()
 
@@ -81,17 +85,25 @@ export default function Modal({
         modalType={modalType}
         presetsRestartTransport={presetsRestartTransport}
         setPresetsRestartTransport={setPresetsRestartTransport}
+        midiClockIn={midiClockIn}
+        setMidiClockIn={setMidiClockIn}
+        midiClockOut={midiClockOut}
+        setMidiClockOut={setMidiClockOut}
       />
     ),
     [
       defaultChannelModeKeybd,
       importPresets,
       linearKnobs,
+      midiClockIn,
+      midiClockOut,
       modalType,
       presets,
       presetsRestartTransport,
       setDefaultChannelModeKeybd,
       setLinearKnobs,
+      setMidiClockIn,
+      setMidiClockOut,
       setPresetsRestartTransport,
       setShowStepNumbers,
       setTheme,
@@ -209,4 +221,8 @@ Modal.propTypes = {
   setGrabbing: PropTypes.func,
   presetsRestartTransport: PropTypes.bool,
   setPresetsRestartTransport: PropTypes.func,
+  midiClockIn: PropTypes.bool,
+  setMidiClockIn: PropTypes.func,
+  midiClockOut: PropTypes.bool,
+  setMidiClockOut: PropTypes.func,
 }

@@ -118,6 +118,10 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('presetsRestartTransport')) ?? true
   )
 
+  const [midiClockIn, setMidiClockIn] = useState(JSON.parse(window.localStorage.getItem('midiClockIn')) ?? true)
+
+  const [midiClockOut, setMidiClockOut] = useState(JSON.parse(window.localStorage.getItem('midiClockOut')) ?? true)
+
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
   }, [showStepNumbers])
@@ -156,6 +160,16 @@ export default function App() {
       document.activeElement.blur()
     }, 500)
   }, [view])
+
+  useEffect(() => {
+    WebMidi.midiClockIn = midiClockIn
+    window.localStorage.setItem('midiClockIn', midiClockIn)
+  }, [midiClockIn])
+
+  useEffect(() => {
+    WebMidi.midiClockOut = midiClockOut
+    window.localStorage.setItem('midiClockOut', midiClockOut)
+  }, [midiClockOut])
 
   // init scrolling
 
@@ -205,9 +219,11 @@ export default function App() {
         Tone.Transport.midiContinue = false
         if (Tone.Transport.PPQ % 24 === 0) {
           Tone.Transport.scheduleRepeat((time) => {
-            if (midiOutRef.current) {
+            if (WebMidi.midiClockOut && midiOutRef.current && midiInRef.current.name !== midiOutRef.current) {
               const clockOffset = WebMidi.time - Tone.immediate() * 1000
-              WebMidi.getOutputByName(midiOutRef.current).sendClock({ time: time * 1000 + clockOffset })
+              WebMidi.getOutputByName(midiOutRef.current).sendClock({
+                time: time * 1000 + clockOffset + 10,
+              })
             }
           }, Tone.Transport.PPQ / 24 + 'i')
         }
@@ -271,25 +287,31 @@ export default function App() {
         }
       })
       midiInRef.current.addListener('start', 'all', (e) => {
-        Tone.Transport.start()
-        setPlaying(true)
-        // MIDI out
-        midiStartContinue(midiOutRef.current, midiIn)
+        if (WebMidi.midiClockIn) {
+          Tone.Transport.start()
+          setPlaying(true)
+          // MIDI out
+          midiStartContinue(midiOutRef.current, midiIn)
+        }
       })
       midiInRef.current.addListener('continue', 'all', (e) => {
-        Tone.Transport.start()
-        setPlaying(true)
-        // MIDI out
-        midiStartContinue(midiOutRef.current, midiIn)
+        if (WebMidi.midiClockIn) {
+          Tone.Transport.start()
+          setPlaying(true)
+          // MIDI out
+          midiStartContinue(midiOutRef.current, midiIn)
+        }
       })
       midiInRef.current.addListener('stop', 'all', (e) => {
-        Tone.Transport.pause()
-        setPlaying(false)
-        // MIDI out
-        midiStop(midiOutRef.current, midiIn)
+        if (WebMidi.midiClockIn) {
+          Tone.Transport.pause()
+          setPlaying(false)
+          // MIDI out
+          midiStop(midiOutRef.current, midiIn)
+        }
       })
       midiInRef.current.addListener('songposition', 'all', (e) => {
-        if (e.data && e.data[0] === 242 && e.data[1] === 0) {
+        if (WebMidi.midiClockIn && e.data && e.data[0] === 242 && e.data[1] === 0) {
           setResetTransport(true)
           // MIDI out
           midiSongpositionReset(midiOutRef.current, midiIn)
@@ -579,6 +601,10 @@ export default function App() {
           setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
           presetsRestartTransport={presetsRestartTransport}
           setPresetsRestartTransport={setPresetsRestartTransport}
+          midiClockIn={midiClockIn}
+          setMidiClockIn={setMidiClockIn}
+          midiClockOut={midiClockOut}
+          setMidiClockOut={setMidiClockOut}
           theme={theme}
           setTheme={setTheme}
           presets={presets}

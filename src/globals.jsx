@@ -487,8 +487,10 @@ export const PRESET_HOLD_TIME = 1000
 
 export const PLAY_NOTE_BUFFER_TIME = 0.015
 
+// MIDI out
+
 export function midiStartContinue(midiOut, midiIn) {
-  if (midiOut && midiOut !== midiIn) {
+  if (WebMidi.midiClockOut && midiOut && midiOut !== midiIn) {
     const midiOutObj = WebMidi.getOutputByName(midiOut)
     if (Tone.Transport.midiContinue) {
       midiOutObj.sendContinue()
@@ -500,13 +502,13 @@ export function midiStartContinue(midiOut, midiIn) {
 }
 
 export function midiSongpositionReset(midiOut, midiIn) {
-  if (midiOut && midiOut !== midiIn) {
+  if (WebMidi.midiClockOut && midiOut && midiOut !== midiIn) {
     WebMidi.getOutputByName(midiOut).sendSongPosition(0)
   }
 }
 
 export function midiStop(midiOut, midiIn, reset) {
-  if (midiOut && midiOut !== midiIn) {
+  if (WebMidi.midiClockOut && midiOut && midiOut !== midiIn) {
     WebMidi.getOutputByName(midiOut).sendStop()
     if (reset) {
       midiSongpositionReset(midiOut, midiIn)

@@ -21,6 +21,10 @@ export default function Settings({
   modalType,
   presetsRestartTransport,
   setPresetsRestartTransport,
+  midiClockIn,
+  setMidiClockIn,
+  midiClockOut,
+  setMidiClockOut,
 }) {
   const setKnobType = useCallback(
     (knobType) => {
@@ -130,6 +134,38 @@ export default function Settings({
         />
       </div>
       <div className="settings-item">
+        <p className="settings-label">MIDI clock in</p>
+        <Switch
+          className="instrument-switch"
+          onChange={setMidiClockIn}
+          checked={midiClockIn}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
+          width={48}
+          height={24}
+        />
+      </div>
+      <div className="settings-item">
+        <p className="settings-label">MIDI clock out</p>
+        <Switch
+          className="instrument-switch"
+          onChange={setMidiClockOut}
+          checked={midiClockOut}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
+          width={48}
+          height={24}
+        />
+      </div>
+      <div className="settings-item">
         <p className="settings-label">Default channel mode</p>
         <div className="switch-container inline">
           <p
@@ -207,4 +243,8 @@ Settings.propTypes = {
   modalType: PropTypes.string,
   presetsRestartTransport: PropTypes.bool,
   setPresetsRestartTransport: PropTypes.func,
+  midiClockIn: PropTypes.bool,
+  setMidiClockIn: PropTypes.func,
+  midiClockOut: PropTypes.bool,
+  setMidiClockOut: PropTypes.func,
 }
