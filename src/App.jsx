@@ -181,24 +181,39 @@ export default function App() {
   // init MIDI
 
   useEffect(() => {
+    let connectOnce = false
     function connectMidi() {
-      const midiOuts = WebMidi.outputs.map((o) => o.name).concat(['(None)'])
-      setMidiOuts(midiOuts)
-      let mo
-      setMidiOut(() => {
-        const midiOut = window.localStorage.getItem('midiOut')
-        if (midiOut && midiOuts.includes(midiOut)) {
-          mo = midiOut
-          return midiOut
-        } else return null
-      })
-      const midiIns = WebMidi.inputs.map((i) => i.name).concat(['(None)'])
-      setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
-      const mi = window.localStorage.getItem('midiIn')
-      setMidiIn(
-        () =>
-          (midiIns.includes(mi) && mi !== mo && mi) || (WebMidi.inputs[0].name !== mo && WebMidi.inputs[0].name) || null
-      )
+      if (!connectOnce) {
+        const midiOuts = WebMidi.outputs.map((o) => o.name).concat(['(None)'])
+        setMidiOuts(midiOuts)
+        let mo
+        setMidiOut(() => {
+          const midiOut = window.localStorage.getItem('midiOut')
+          if (midiOut && midiOuts.includes(midiOut)) {
+            mo = midiOut
+            return midiOut
+          } else return null
+        })
+        const midiIns = WebMidi.inputs.map((i) => i.name).concat(['(None)'])
+        setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
+        const mi = window.localStorage.getItem('midiIn')
+        setMidiIn(
+          () =>
+            (midiIns.includes(mi) && mi !== mo && mi) ||
+            (WebMidi.inputs[0].name !== mo && WebMidi.inputs[0].name) ||
+            null
+        )
+        // schedule MIDI clock output
+        if (Tone.Transport.PPQ % 24 === 0) {
+          Tone.Transport.scheduleRepeat((time) => {
+            if (midiOutRef.current) {
+              const clockOffset = WebMidi.time - Tone.immediate() * 1000
+              WebMidi.getOutputByName(midiOutRef.current).sendClock({ time: time * 1000 + clockOffset })
+            }
+          }, Tone.Transport.PPQ / 24 + 'i')
+        }
+        connectOnce = true
+      }
     }
     function disconnectMidi(e) {
       setMidiOuts(WebMidi.outputs.map((o) => o.name))
