@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useMemo } from 'react'
 import { v4 as uuid } from 'uuid'
-import { PRESET_HOLD_TIME } from '../globals'
+import { midiStartContinue, midiStop, PRESET_HOLD_TIME } from '../globals'
 import * as Tone from 'tone'
 
 export default function usePresets(
@@ -17,7 +17,8 @@ export default function usePresets(
   keydownTimer,
   setRestartChannels,
   presetsRestartTransport,
-  playing
+  playing,
+  midiOutRef
 ) {
   // state management for presets
 
@@ -115,8 +116,11 @@ export default function usePresets(
       // restart transport if necessary
       if (presetsRestartTransport) {
         Tone.Transport.stop()
+        midiStop(midiOutRef.current, true)
+        Tone.Transport.midiContinue = false
         if (playing) {
           Tone.Transport.start()
+          midiStartContinue(midiOutRef.current)
         }
       }
       // save in localStorage
@@ -124,6 +128,7 @@ export default function usePresets(
     },
     [
       deepStateCopy,
+      midiOutRef,
       playing,
       presets,
       presetsRestartTransport,

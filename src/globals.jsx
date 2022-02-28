@@ -1,5 +1,7 @@
 import React from 'react'
 import { v4 as uuid } from 'uuid'
+import WebMidi from 'webmidi'
+import * as Tone from 'tone'
 import UAParser from 'ua-parser-js'
 import sine from './assets/sine_wave.svg'
 import lightSine from './assets/sine_wave_light.svg'
@@ -484,6 +486,34 @@ export const MAX_SWING_LENGTH = 6
 export const PRESET_HOLD_TIME = 1000
 
 export const PLAY_NOTE_BUFFER_TIME = 0.015
+
+export function midiStartContinue(midiOut) {
+  if (midiOut) {
+    const midiOutObj = WebMidi.getOutputByName(midiOut)
+    if (Tone.Transport.midiContinue) {
+      midiOutObj.sendContinue()
+    } else {
+      midiOutObj.sendStart()
+      Tone.Transport.midiContinue = true
+    }
+  }
+}
+
+export function midiSongpositionReset(midiOut) {
+  if (midiOut) {
+    WebMidi.getOutputByName(midiOut).sendSongPosition(0)
+  }
+}
+
+export function midiStop(midiOut, reset) {
+  if (midiOut) {
+    WebMidi.getOutputByName(midiOut).sendStop()
+    if (reset) {
+      midiSongpositionReset(midiOut)
+      Tone.Transport.midiContinue = false
+    }
+  }
+}
 
 export function noteString(playingNote) {
   if (!playingNote && playingNote !== 0) {

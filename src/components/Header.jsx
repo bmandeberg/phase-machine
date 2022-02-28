@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
-import { VIEWS, SECTIONS, MAX_CHANNELS, ALT } from '../globals'
+import { VIEWS, SECTIONS, MAX_CHANNELS, ALT, midiStartContinue, midiStop } from '../globals'
 import NumInput from './NumInput'
 import Dropdown from './Dropdown'
 import Presets from './Presets'
@@ -39,8 +39,10 @@ export default class Header extends React.Component {
     } else {
       if (!this.props.playing) {
         Tone.Transport.start()
+        midiStartContinue(this.props.midiOut)
       } else {
         Tone.Transport.pause()
+        midiStop(this.props.midiOut)
       }
       this.props.setPlaying((playing) => !playing)
     }

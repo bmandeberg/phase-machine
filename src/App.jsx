@@ -15,6 +15,9 @@ import {
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
   SIGNAL_TYPES,
+  midiStartContinue,
+  midiStop,
+  midiSongpositionReset,
 } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
@@ -76,8 +79,10 @@ export default function App() {
   useEffect(() => {
     if (resetTransport) {
       Tone.Transport.stop()
+      midiStop(midiOutRef.current, true)
       if (playing) {
         Tone.Transport.start()
+        midiStartContinue(midiOutRef.current)
       }
       setResetTransport(false)
     }
@@ -204,6 +209,7 @@ export default function App() {
             null
         )
         // schedule MIDI clock output
+        Tone.Transport.midiContinue = false
         if (Tone.Transport.PPQ % 24 === 0) {
           Tone.Transport.scheduleRepeat((time) => {
             if (midiOutRef.current) {
@@ -258,6 +264,7 @@ export default function App() {
         midiOutRef.current = null
       }
       midiInRef.current = WebMidi.getInputByName(midiIn)
+      // MIDI listeners
       midiInRef.current.addListener('noteon', 'all', (e) => {
         setMidiNoteOn(e)
       })
@@ -267,18 +274,26 @@ export default function App() {
       midiInRef.current.addListener('start', 'all', (e) => {
         Tone.Transport.start()
         setPlaying(true)
+        // MIDI out
+        midiStartContinue(midiOutRef.current)
       })
       midiInRef.current.addListener('continue', 'all', (e) => {
         Tone.Transport.start()
         setPlaying(true)
+        // MIDI out
+        midiStartContinue(midiOutRef.current)
       })
       midiInRef.current.addListener('stop', 'all', (e) => {
         Tone.Transport.pause()
         setPlaying(false)
+        // MIDI out
+        midiStop(midiOutRef.current)
       })
       midiInRef.current.addListener('songposition', 'all', (e) => {
         if (e.data && e.data[0] === 242 && e.data[1] === 0) {
           setResetTransport(true)
+          // MIDI out
+          midiSongpositionReset(midiOutRef.current)
         }
       })
     } else {
@@ -350,7 +365,8 @@ export default function App() {
       keydownTimer,
       setRestartChannels,
       presetsRestartTransport,
-      playing
+      playing,
+      midiOutRef
     )
 
   // channel management
