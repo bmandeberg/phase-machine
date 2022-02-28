@@ -18,7 +18,8 @@ export default function usePresets(
   setRestartChannels,
   presetsRestartTransport,
   playing,
-  midiOutRef
+  midiOutRef,
+  midiInRef
 ) {
   // state management for presets
 
@@ -116,11 +117,11 @@ export default function usePresets(
       // restart transport if necessary
       if (presetsRestartTransport) {
         Tone.Transport.stop()
-        midiStop(midiOutRef.current, true)
+        midiStop(midiOutRef.current, midiInRef.current.name, true)
         Tone.Transport.midiContinue = false
         if (playing) {
           Tone.Transport.start()
-          midiStartContinue(midiOutRef.current)
+          midiStartContinue(midiOutRef.current, midiInRef.current.name)
         }
       }
       // save in localStorage
@@ -128,6 +129,7 @@ export default function usePresets(
     },
     [
       deepStateCopy,
+      midiInRef,
       midiOutRef,
       playing,
       presets,

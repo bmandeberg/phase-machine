@@ -79,10 +79,10 @@ export default function App() {
   useEffect(() => {
     if (resetTransport) {
       Tone.Transport.stop()
-      midiStop(midiOutRef.current, true)
+      midiStop(midiOutRef.current, midiInRef.current.name, true)
       if (playing) {
         Tone.Transport.start()
-        midiStartContinue(midiOutRef.current)
+        midiStartContinue(midiOutRef.current, midiInRef.current.name)
       }
       setResetTransport(false)
     }
@@ -191,23 +191,16 @@ export default function App() {
       if (!connectOnce) {
         const midiOuts = WebMidi.outputs.map((o) => o.name).concat(['(None)'])
         setMidiOuts(midiOuts)
-        let mo
         setMidiOut(() => {
           const midiOut = window.localStorage.getItem('midiOut')
           if (midiOut && midiOuts.includes(midiOut)) {
-            mo = midiOut
             return midiOut
           } else return null
         })
         const midiIns = WebMidi.inputs.map((i) => i.name).concat(['(None)'])
         setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
         const mi = window.localStorage.getItem('midiIn')
-        setMidiIn(
-          () =>
-            (midiIns.includes(mi) && mi !== mo && mi) ||
-            (WebMidi.inputs[0].name !== mo && WebMidi.inputs[0].name) ||
-            null
-        )
+        setMidiIn(() => (midiIns.includes(mi) && mi) || null)
         // schedule MIDI clock output
         Tone.Transport.midiContinue = false
         if (Tone.Transport.PPQ % 24 === 0) {
@@ -259,41 +252,47 @@ export default function App() {
     }
     if (midiIn) {
       if (midiIn === midiOutRef.current) {
-        alert('Setting MIDI input to current MIDI output - avoiding circular MIDI messages, and disabling MIDI output!')
-        setMidiOut(null)
-        midiOutRef.current = null
+        alert(
+          'Setting MIDI input to current MIDI output - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
+        )
       }
       midiInRef.current = WebMidi.getInputByName(midiIn)
-      // MIDI listeners
+      // MIDI input listeners
       midiInRef.current.addListener('noteon', 'all', (e) => {
-        setMidiNoteOn(e)
+        if (midiIn !== midiOutRef.current) {
+          console.log('NOTE ON')
+          setMidiNoteOn(e)
+        }
       })
       midiInRef.current.addListener('noteoff', 'all', (e) => {
-        setMidiNoteOff(e)
+        if (midiIn !== midiOutRef.current) {
+          console.log('NOTE OFF')
+          setMidiNoteOff(e)
+        }
       })
       midiInRef.current.addListener('start', 'all', (e) => {
         Tone.Transport.start()
         setPlaying(true)
         // MIDI out
-        midiStartContinue(midiOutRef.current)
+        midiStartContinue(midiOutRef.current, midiIn)
       })
       midiInRef.current.addListener('continue', 'all', (e) => {
         Tone.Transport.start()
         setPlaying(true)
         // MIDI out
-        midiStartContinue(midiOutRef.current)
+        midiStartContinue(midiOutRef.current, midiIn)
       })
       midiInRef.current.addListener('stop', 'all', (e) => {
         Tone.Transport.pause()
         setPlaying(false)
         // MIDI out
-        midiStop(midiOutRef.current)
+        midiStop(midiOutRef.current, midiIn)
       })
       midiInRef.current.addListener('songposition', 'all', (e) => {
         if (e.data && e.data[0] === 242 && e.data[1] === 0) {
           setResetTransport(true)
           // MIDI out
-          midiSongpositionReset(midiOutRef.current)
+          midiSongpositionReset(midiOutRef.current, midiIn)
         }
       })
     } else {
@@ -303,8 +302,9 @@ export default function App() {
 
   useEffect(() => {
     if (midiOut && midiInRef.current && midiOut === midiInRef.current.name) {
-      alert('Setting MIDI output to current MIDI input - avoiding circular MIDI messages, and disabling MIDI input!')
-      setMidiIn(null)
+      alert(
+        'Setting MIDI output to current MIDI input - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
+      )
     }
     midiOutRef.current = midiOut
   }, [midiOut])
@@ -366,7 +366,8 @@ export default function App() {
       setRestartChannels,
       presetsRestartTransport,
       playing,
-      midiOutRef
+      midiOutRef,
+      midiInRef
     )
 
   // channel management
