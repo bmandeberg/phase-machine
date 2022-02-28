@@ -79,10 +79,10 @@ export default function App() {
   useEffect(() => {
     if (resetTransport) {
       Tone.Transport.stop()
-      midiStop(midiOutRef.current, midiInRef.current.name, true)
+      midiStop(midiOutRef.current, midiInRef.current && midiInRef.current.name, true)
       if (playing) {
         Tone.Transport.start()
-        midiStartContinue(midiOutRef.current, midiInRef.current.name)
+        midiStartContinue(midiOutRef.current, midiInRef.current && midiInRef.current.name)
       }
       setResetTransport(false)
     }
@@ -200,26 +200,34 @@ export default function App() {
   // init MIDI
 
   useEffect(() => {
-    let connectOnce = false
     function connectMidi() {
-      if (!connectOnce) {
-        const midiOuts = WebMidi.outputs.map((o) => o.name).concat(['(None)'])
-        setMidiOuts(midiOuts)
-        setMidiOut(() => {
-          const midiOut = window.localStorage.getItem('midiOut')
-          if (midiOut && midiOuts.includes(midiOut)) {
-            return midiOut
-          } else return null
-        })
-        const midiIns = WebMidi.inputs.map((i) => i.name).concat(['(None)'])
-        setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
+      setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
+      setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
+    }
+    function disconnectMidi(e) {
+      setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
+      setMidiOut((midiOut) => (e.port.name === midiOut ? null : midiOut))
+      setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
+      setMidiIn((midiIn) => (e.port.name === midiIn ? null : midiIn))
+    }
+    WebMidi.enable((err) => {
+      if (err) {
+        console.log(err)
+      } else {
+        // initialize MIDI I/O
+        const mo = window.localStorage.getItem('midiOut')
+        setMidiOut(() => (WebMidi.outputs.map((o) => o.name).includes(mo) && mo) || null)
         const mi = window.localStorage.getItem('midiIn')
-        setMidiIn(() => (midiIns.includes(mi) && mi) || null)
+        setMidiIn(() => (WebMidi.inputs.map((i) => i.name).includes(mi) && mi) || null)
         // schedule MIDI clock output
         Tone.Transport.midiContinue = false
         if (Tone.Transport.PPQ % 24 === 0) {
           Tone.Transport.scheduleRepeat((time) => {
-            if (WebMidi.midiClockOut && midiOutRef.current && midiInRef.current.name !== midiOutRef.current) {
+            if (
+              WebMidi.midiClockOut &&
+              midiOutRef.current &&
+              (!midiInRef.current || midiInRef.current.name !== midiOutRef.current)
+            ) {
               const clockOffset = WebMidi.time - Tone.immediate() * 1000
               WebMidi.getOutputByName(midiOutRef.current).sendClock({
                 time: time * 1000 + clockOffset + 10,
@@ -227,28 +235,6 @@ export default function App() {
             }
           }, Tone.Transport.PPQ / 24 + 'i')
         }
-        connectOnce = true
-      }
-    }
-    function disconnectMidi(e) {
-      setMidiOuts(WebMidi.outputs.map((o) => o.name))
-      setMidiOut((midiOut) => {
-        if (e.port.name === midiOut) {
-          return WebMidi.outputs[0] ? WebMidi.outputs[0].name : null
-        } else return midiOut
-      })
-      setMidiIns(WebMidi.inputs.map((i) => i.name))
-      midiInRef.current = null
-      setMidiIn((midiIn) => {
-        if (e.port.name === midiIn) {
-          return null
-        } else return midiIn
-      })
-    }
-    WebMidi.enable((err) => {
-      if (err) {
-        console.log(err)
-      } else {
         setMidiEnabled(true)
         WebMidi.addListener('connected', connectMidi)
         WebMidi.addListener('disconnected', disconnectMidi)
@@ -276,13 +262,11 @@ export default function App() {
       // MIDI input listeners
       midiInRef.current.addListener('noteon', 'all', (e) => {
         if (midiIn !== midiOutRef.current) {
-          console.log('NOTE ON')
           setMidiNoteOn(e)
         }
       })
       midiInRef.current.addListener('noteoff', 'all', (e) => {
         if (midiIn !== midiOutRef.current) {
-          console.log('NOTE OFF')
           setMidiNoteOff(e)
         }
       })

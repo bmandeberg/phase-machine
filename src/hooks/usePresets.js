@@ -117,11 +117,11 @@ export default function usePresets(
       // restart transport if necessary
       if (presetsRestartTransport) {
         Tone.Transport.stop()
-        midiStop(midiOutRef.current, midiInRef.current.name, true)
+        midiStop(midiOutRef.current, midiInRef.current && midiInRef.current.name, true)
         Tone.Transport.midiContinue = false
         if (playing) {
           Tone.Transport.start()
-          midiStartContinue(midiOutRef.current, midiInRef.current.name)
+          midiStartContinue(midiOutRef.current, midiInRef.current && midiInRef.current.name)
         }
       }
       // save in localStorage
