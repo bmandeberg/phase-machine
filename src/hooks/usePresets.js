@@ -381,7 +381,12 @@ export default function usePresets(
 
   useEffect(() => {
     function keydown(e) {
-      if (e.key !== ' ' && !isNaN(+e.key) && document.activeElement.getAttribute('type') !== 'text') {
+      if (
+        e.key !== ' ' &&
+        !isNaN(+e.key) &&
+        document.activeElement.getAttribute('type') !== 'text' &&
+        document.activeElement.nodeName !== 'TEXTAREA'
+      ) {
         if (keydownTimer.current === null) {
           keydownTimer.current = window.performance.now()
         } else if (keydownTimer.current && window.performance.now() - keydownTimer.current > PRESET_HOLD_TIME) {
@@ -400,7 +405,11 @@ export default function usePresets(
       }
     }
     function keyup(e) {
-      if (!isNaN(+e.key) && document.activeElement.getAttribute('type') !== 'text') {
+      if (
+        !isNaN(+e.key) &&
+        document.activeElement.getAttribute('type') !== 'text' &&
+        document.activeElement.nodeName !== 'TEXTAREA'
+      ) {
         if (keydownTimer.current && window.performance.now() - keydownTimer.current < PRESET_HOLD_TIME) {
           const preset = presets.find((p) => p.hotkey === +e.key)
           if (preset) {
