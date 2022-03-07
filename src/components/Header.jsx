@@ -49,13 +49,23 @@ export default class Header extends React.Component {
   }
 
   handleKeyDown(e) {
-    if (
-      e.key === ' ' &&
-      !document.activeElement.classList.contains('spacebar-ok') &&
-      document.activeElement.nodeName !== 'TEXTAREA'
-    ) {
-      e.preventDefault()
-      this.playStop()
+    if (!document.activeElement.classList.contains('spacebar-ok') && document.activeElement.nodeName !== 'TEXTAREA') {
+      switch (e.key) {
+        case ' ':
+          e.preventDefault()
+          this.playStop()
+          break
+        case 'a':
+          this.props.setScrollTo(SECTIONS[0])
+          break
+        case 's':
+          this.props.setScrollTo(SECTIONS[1])
+          break
+        case 'd':
+          this.props.setScrollTo(SECTIONS[2])
+          break
+        default:
+      }
     }
   }
 
