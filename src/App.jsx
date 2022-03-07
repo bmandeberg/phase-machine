@@ -35,6 +35,10 @@ if (!window.localStorage.getItem('presets')) {
 
 const PIANO_SCROLL = 60
 const SEQ_SCROLL = 76
+const MIDI_IO_CHANGED = {
+  IN: 0,
+  OUT: 0,
+}
 
 export default function App() {
   const [presets, setPresets] = useState(initializePresets)
@@ -249,11 +253,13 @@ export default function App() {
   // update MIDI ins and outs
 
   useEffect(() => {
+    console.log(midiIn)
     if (midiInRef.current) {
       midiInRef.current.removeListener()
     }
     if (midiIn) {
-      if (midiIn === midiOutRef.current) {
+      if (midiIn === midiOutRef.current && MIDI_IO_CHANGED.IN > 2) {
+        console.log('huh')
         alert(
           'Setting MIDI input to current MIDI output - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
         )
@@ -304,15 +310,17 @@ export default function App() {
     } else {
       midiInRef.current = null
     }
+    MIDI_IO_CHANGED.IN++
   }, [midiIn])
 
   useEffect(() => {
-    if (midiOut && midiInRef.current && midiOut === midiInRef.current.name) {
+    if (midiOut && midiInRef.current && midiOut === midiInRef.current.name && MIDI_IO_CHANGED.OUT > 2) {
       alert(
         'Setting MIDI output to current MIDI input - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
       )
     }
     midiOutRef.current = midiOut
+    MIDI_IO_CHANGED.OUT++
   }, [midiOut])
 
   const updateView = useCallback((view) => {
