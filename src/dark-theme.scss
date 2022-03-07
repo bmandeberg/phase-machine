@@ -275,9 +275,15 @@ $headerDarkBlue: #0f182d;
         }
       }
       &.playing {
-        background-color: $orangeHover !important;
+        background-color: $orange !important;
         &:hover {
           background-color: $orangeHover !important;
+        }
+      }
+      &.ghost-playing {
+        background-color: $darkDarkOrange !important;
+        &:hover {
+          background-color: $darkOrange !important;
         }
       }
       &.previewed {

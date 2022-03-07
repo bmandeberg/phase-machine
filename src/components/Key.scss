@@ -98,9 +98,15 @@
       }
     }
     &.playing {
-      background-color: $orangeHover !important;
+      background-color: $orange !important;
       &:hover {
         background-color: $orangeHover !important;
+      }
+    }
+    &.ghost-playing {
+      background-color: $darkerLightOrange !important;
+      &:hover {
+        background-color: $darkLightOrange !important;
       }
     }
     &.previewed {

@@ -283,6 +283,12 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
           background-color: $orangeHover !important;
         }
       }
+      &.ghost-playing {
+        background-color: $darkDarkOrange !important;
+        &:hover {
+          background-color: $darkOrange !important;
+        }
+      }
       &.previewed {
         border-width: 5px;
       }

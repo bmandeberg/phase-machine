@@ -20,16 +20,13 @@ export default function Key({
 }) {
   const togglePitchClass = useCallback(
     (i) => {
-      if (musicalKey[i] && playingPitchClass === i) {
-        setPlayingPitchClass(null)
-      }
       setKey((key) => {
         const keyCopy = key.slice()
         keyCopy[i] = !keyCopy[i]
         return keyCopy
       })
     },
-    [musicalKey, playingPitchClass, setKey, setPlayingPitchClass]
+    [setKey]
   )
 
   const selectedKeyVisible = useCallback((i) => showKeyPreview && keyPreview[i], [keyPreview, showKeyPreview])
@@ -45,7 +42,8 @@ export default function Key({
             'black-key-right': blackKeyRight(i),
             selected: musicalKey[i],
             previewed: !pianoKeys && showKeyPreview && keyPreview[i],
-            playing: playingPitchClass === i,
+            playing: playingPitchClass === i && musicalKey[i],
+            'ghost-playing': playingPitchClass === i && !musicalKey[i],
             mute,
             'no-pointer-events': !rangeMode,
           })}
