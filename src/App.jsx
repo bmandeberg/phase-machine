@@ -253,13 +253,11 @@ export default function App() {
   // update MIDI ins and outs
 
   useEffect(() => {
-    console.log(midiIn)
     if (midiInRef.current) {
       midiInRef.current.removeListener()
     }
     if (midiIn) {
       if (midiIn === midiOutRef.current && MIDI_IO_CHANGED.IN > 2) {
-        console.log('huh')
         alert(
           'Setting MIDI input to current MIDI output - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
         )

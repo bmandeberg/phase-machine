@@ -412,13 +412,23 @@ export default function RotaryKnob({
         musicalKey={musicalKey}
         setKey={setKey}
         playingPitchClass={playingPitchClass}
+        setPlayingPitchClass={setPlayingPitchClass}
         turningAxisKnob={turningAxisKnob}
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
         rangeMode={rangeMode}
       />
     ),
-    [keyPreview, musicalKey, playingPitchClass, rangeMode, setKey, showKeyPreview, turningAxisKnob]
+    [
+      keyPreview,
+      musicalKey,
+      playingPitchClass,
+      rangeMode,
+      setKey,
+      setPlayingPitchClass,
+      showKeyPreview,
+      turningAxisKnob,
+    ]
   )
   const linearKnob = useMemo(
     () => (
