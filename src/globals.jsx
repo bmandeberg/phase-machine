@@ -74,7 +74,7 @@ document.addEventListener('keyup', (e) => {
 
 export const CHORUS_ENABLED = !BROWSER.name.includes('Safari')
 
-export const VIEWS = ['stacked', 'horizontal', 'clock']
+export const VIEWS = ['horizontal', 'stacked', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequence']
 
