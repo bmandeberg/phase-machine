@@ -28,6 +28,7 @@ export default function InstrumentModal({
   setGrabbing,
   linearKnobs,
 }) {
+  const [gain, setGain] = useState(instrumentParams.gain)
   // synth
   const [synthType, setSynthType] = useState(instrumentParams.synthType)
   const [oscModifier, setOscModifier] = useState(() => {
@@ -109,6 +110,13 @@ export default function InstrumentModal({
     },
     [setInstrumentParams]
   )
+
+  useEffect(() => {
+    if (gainNode.current) {
+      gainNode.current.set({ gain })
+    }
+    updateInstrumentParams('gain', gain)
+  }, [gainNode, gain, updateInstrumentParams])
 
   // update synth params
 
@@ -1138,6 +1146,20 @@ export default function InstrumentModal({
           theme={theme}
           mute={false}
           inModal={true}
+        />
+        <RotaryKnob
+          className="instrument-item"
+          min={0}
+          max={1}
+          value={gain}
+          setValue={setGain}
+          label="Volume"
+          setGrabbing={setGrabbing}
+          grabbing={grabbing}
+          inline={true}
+          mute={false}
+          linearKnobs={linearKnobs}
+          theme={theme}
         />
       </div>
       <div className="instrument-controls">

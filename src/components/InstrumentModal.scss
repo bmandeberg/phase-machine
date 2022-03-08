@@ -78,7 +78,10 @@
   }
   .instrument {
     margin-top: 0;
+    margin-right: 10px;
     height: 28px;
+    display: inline-block;
+    vertical-align: top;
     .dropdown-container {
       margin-top: 0;
     }
@@ -102,6 +105,11 @@
     padding-bottom: 0;
     .knob-container {
       min-width: 62px;
+    }
+  }
+  .instrument-type {
+    .knob-container {
+      margin-top: -5px;
     }
   }
 }

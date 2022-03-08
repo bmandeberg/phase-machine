@@ -721,8 +721,9 @@ export default function Channel({
     }
   }, [getCurrentEffect])
 
+  // initialize instruments
   useEffect(() => {
-    gainNode.current = new Tone.Gain(1).toDestination()
+    gainNode.current = new Tone.Gain(instrumentParamsRef.current.gain).toDestination()
     if (CHORUS_ENABLED) {
       chorusEffect.current = new Tone.Chorus(
         instrumentParamsRef.current.chorusFreq,
@@ -2098,6 +2099,7 @@ function updateInstruments(
   instrumentParams,
   currentEffect
 ) {
+  gainNode.set({ gain: instrumentParams.gain })
   if (CHORUS_ENABLED) {
     chorusEffect.set({
       wet: instrumentParams.effectWet,
