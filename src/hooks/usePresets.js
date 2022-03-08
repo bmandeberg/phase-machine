@@ -1,11 +1,14 @@
 import { useEffect, useCallback, useMemo } from 'react'
 import { v4 as uuid } from 'uuid'
 import { midiStartContinue, midiStop, PRESET_HOLD_TIME } from '../globals'
+import { patchPresetAndChannels } from '../App'
 import * as Tone from 'tone'
 
 export default function usePresets(
   setUIState,
   channelSync,
+  tempo,
+  setTempo,
   uiState,
   currentPreset,
   presets,
@@ -49,6 +52,15 @@ export default function usePresets(
       return uiStateCopy
     })
   }, [channelSync, setUIState])
+
+  useEffect(() => {
+    setUIState((uiState) => {
+      const uiStateCopy = Object.assign({}, uiState, {
+        tempo,
+      })
+      return uiStateCopy
+    })
+  }, [tempo, setUIState])
 
   const setPresetName = useCallback(
     (presetName) => {
@@ -113,6 +125,7 @@ export default function usePresets(
       setRestartChannels(presetsRestartTransport)
       setUIState(deepStateCopy(preset))
       setNumChannels(preset.numChannels)
+      setTempo(preset.tempo)
       setChannelSync(preset.channelSync)
       // restart transport if necessary
       if (presetsRestartTransport) {
@@ -138,6 +151,7 @@ export default function usePresets(
       setCurrentPreset,
       setNumChannels,
       setRestartChannels,
+      setTempo,
       setUIState,
     ]
   )
@@ -255,6 +269,7 @@ export default function usePresets(
       invalidProp(preset, 'placeholder', 'boolean') ||
       invalidProp(preset, 'numChannels', 'number') ||
       invalidProp(preset, 'channelSync', 'boolean') ||
+      invalidProp(preset, 'tempo', 'number') ||
       invalidProp(preset, 'channels', 'object')
     ) {
       return false
@@ -349,6 +364,7 @@ export default function usePresets(
         const parsedPresets = JSON.parse(presetsString)
         if (Array.isArray(parsedPresets) && parsedPresets.length) {
           for (let i = 0; i < parsedPresets.length; i++) {
+            patchPresetAndChannels(parsedPresets[i])
             if (!validPreset(parsedPresets[i])) {
               alert('Some presets are invalid format!')
               return

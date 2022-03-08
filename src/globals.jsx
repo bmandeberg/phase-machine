@@ -613,6 +613,7 @@ export const DEFAULT_PRESET = {
   placeholder: false,
   numChannels: 1,
   channelSync: false,
+  tempo: 120,
   channels: [BLANK_CHANNEL(0, CHANNEL_COLORS[0], true)],
 }
 

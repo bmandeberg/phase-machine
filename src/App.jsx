@@ -45,7 +45,7 @@ export default function App() {
   const [currentPreset, setCurrentPreset] = useState(initialPreset)
   const [uiState, setUIState] = useState(initializeUiState)
 
-  const [tempo, setTempo] = useState(JSON.parse(window.localStorage.getItem('tempo')) ?? 120)
+  const [tempo, setTempo] = useState(uiState.tempo)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(uiState.numChannels)
   const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[0])
@@ -354,7 +354,6 @@ export default function App() {
     if (Tone.Transport.bpm.value !== tempo) {
       Tone.Transport.bpm.value = tempo
     }
-    window.localStorage.setItem('tempo', tempo)
   }, [tempo])
 
   const numChannelsSoloed = useMemo(
@@ -366,6 +365,8 @@ export default function App() {
     usePresets(
       setUIState,
       channelSync,
+      tempo,
+      setTempo,
       uiState,
       currentPreset,
       presets,
@@ -619,18 +620,47 @@ function deepStateCopy(state) {
   })
 }
 
+export function patchPreset(preset, defaultPreset, updated) {
+  for (const prop in defaultPreset) {
+    if (preset[prop] === undefined) {
+      preset[prop] = defaultPreset[prop]
+      updated = true
+    }
+  }
+  return updated
+}
+
+export function patchChannel(channel, defaultChannel, updated) {
+  for (const prop in defaultChannel) {
+    if (channel[prop] === undefined) {
+      channel[prop] = defaultChannel[prop]
+      updated = true
+    }
+  }
+  for (const prop in defaultChannel.instrumentParams) {
+    if (channel.instrumentParams[prop] === undefined) {
+      channel.instrumentParams[prop] = defaultChannel.instrumentParams[prop]
+      updated = true
+    }
+  }
+  return updated
+}
+
+export function patchPresetAndChannels(preset, defaultPreset, updated) {
+  updated = patchPreset(preset, defaultPreset, updated)
+  preset.channels.forEach((channel) => {
+    updated = patchChannel(channel, defaultPreset.channels[0])
+  })
+  return updated
+}
+
 function initializePresets() {
   const presets = JSON.parse(window.localStorage.getItem('presets'))
   const examplePreset = DEFAULT_PRESET
   const exampleChannel = examplePreset.channels[0]
   let updated = false
   presets.forEach((preset) => {
-    for (const prop in examplePreset) {
-      if (preset[prop] === undefined) {
-        preset[prop] = examplePreset[prop]
-        updated = true
-      }
-    }
+    updated = patchPreset(preset, examplePreset, updated)
     preset.channels.forEach((channel) => {
       if (!Object.keys(INSTRUMENT_TYPES).includes(channel.instrumentType)) {
         channel.instrumentParams.synthType =
@@ -642,18 +672,7 @@ function initializePresets() {
             : exampleChannel.instrumentParams.synthType
         channel.instrumentType = 'synth'
       }
-      for (const prop in exampleChannel) {
-        if (channel[prop] === undefined) {
-          channel[prop] = exampleChannel[prop]
-          updated = true
-        }
-      }
-      for (const prop in exampleChannel.instrumentParams) {
-        if (channel.instrumentParams[prop] === undefined) {
-          channel.instrumentParams[prop] = exampleChannel.instrumentParams[prop]
-          updated = true
-        }
-      }
+      updated = patchChannel(channel, exampleChannel, updated)
     })
   })
   if (updated) {
@@ -673,5 +692,7 @@ function initializeUiState() {
   if (!window.localStorage.getItem('activePatch')) {
     window.localStorage.setItem('activePatch', JSON.stringify(initialPreset()))
   }
-  return JSON.parse(window.localStorage.getItem('activePatch'))
+  const activePatch = JSON.parse(window.localStorage.getItem('activePatch'))
+  patchPresetAndChannels(activePatch, DEFAULT_PRESET)
+  return activePatch
 }
