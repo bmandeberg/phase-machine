@@ -22,6 +22,7 @@ export default function InstrumentModal({
   instrumentParams,
   setInstrumentParams,
   instruments,
+  gainNode,
   effects,
   grabbing,
   setGrabbing,
@@ -328,9 +329,9 @@ export default function InstrumentModal({
         effect = effects.vibratoEffect.current
         break
       default:
-        effect = instruments.gainNode.current
+        effect = gainNode.current
     }
-    effect = effect || instruments.gainNode.current
+    effect = effect || gainNode.current
     if (effectRef.current) {
       Object.values(instruments).forEach((instrument) => {
         if (instrument.current) {
@@ -345,7 +346,7 @@ export default function InstrumentModal({
       }
     })
     updateInstrumentParams('effectType', effectType)
-  }, [effectType, effects, instruments, updateInstrumentParams])
+  }, [effectType, effects, gainNode, instruments, updateInstrumentParams])
 
   useEffect(() => {
     Object.values(effects).forEach((effect) => {
@@ -1174,6 +1175,7 @@ InstrumentModal.propTypes = {
   instrumentParams: PropTypes.object,
   setInstrumentParams: PropTypes.func,
   instruments: PropTypes.object,
+  gainNode: PropTypes.object,
   effects: PropTypes.object,
   grabbing: PropTypes.bool,
   setGrabbing: PropTypes.func,

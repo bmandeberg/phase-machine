@@ -1505,7 +1505,6 @@ export default function Channel({
 
   const instruments = useMemo(
     () => ({
-      gainNode,
       synthInstrument,
       pianoInstrument,
       marimbaInstrument,
@@ -1550,6 +1549,7 @@ export default function Channel({
           instrumentParams={instrumentParams}
           setInstrumentParams={setInstrumentParams}
           instruments={instruments}
+          gainNode={gainNode}
           effects={effects}
           grabbing={grabbing}
           setGrabbing={setGrabbing}

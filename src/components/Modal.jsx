@@ -35,6 +35,7 @@ export default function Modal({
   instrumentParams,
   setInstrumentParams,
   instruments,
+  gainNode,
   effects,
   grabbing,
   setGrabbing,
@@ -151,6 +152,7 @@ export default function Modal({
         instrumentParams={instrumentParams}
         setInstrumentParams={setInstrumentParams}
         instruments={instruments}
+        gainNode={gainNode}
         effects={effects}
         theme={theme}
         grabbing={grabbing}
@@ -160,6 +162,7 @@ export default function Modal({
     ),
     [
       effects,
+      gainNode,
       grabbing,
       instrumentOn,
       instrumentParams,
@@ -222,6 +225,7 @@ Modal.propTypes = {
   instrumentParams: PropTypes.object,
   setInstrumentParams: PropTypes.func,
   instruments: PropTypes.object,
+  gainNode: PropTypes.object,
   effects: PropTypes.object,
   grabbing: PropTypes.bool,
   setGrabbing: PropTypes.func,
