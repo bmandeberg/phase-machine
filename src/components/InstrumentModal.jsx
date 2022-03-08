@@ -328,9 +328,9 @@ export default function InstrumentModal({
         effect = effects.vibratoEffect.current
         break
       default:
-        effect = Tone.getDestination()
+        effect = instruments.gainNode.current
     }
-    effect = effect || Tone.getDestination()
+    effect = effect || instruments.gainNode.current
     if (effectRef.current) {
       Object.values(instruments).forEach((instrument) => {
         if (instrument.current) {

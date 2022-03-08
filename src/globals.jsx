@@ -567,6 +567,7 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   customMidiOutChannel: false,
   midiOutChannel: 1,
   instrumentParams: {
+    gain: 1,
     synthType: 'triangle',
     portamento: 0,
     modulationType: 'square',

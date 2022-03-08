@@ -275,9 +275,9 @@ export default function Channel({
         effect = vibratoEffect.current
         break
       default:
-        effect = Tone.getDestination()
+        effect = gainNode.current
     }
-    return effect || Tone.getDestination()
+    return effect || gainNode.current
   }, [])
 
   useEffect(() => {
@@ -334,6 +334,7 @@ export default function Channel({
   // instrument
 
   const initInstrumentType = useRef(instrumentType)
+  const gainNode = useRef()
   const instrument = useRef()
   const synthInstrument = useRef()
   const drumsInstrument = useRef()
@@ -721,12 +722,13 @@ export default function Channel({
   }, [getCurrentEffect])
 
   useEffect(() => {
+    gainNode.current = new Tone.Gain(1).toDestination()
     if (CHORUS_ENABLED) {
       chorusEffect.current = new Tone.Chorus(
         instrumentParamsRef.current.chorusFreq,
         instrumentParamsRef.current.chorusDelayTime,
         instrumentParamsRef.current.chorusDepth
-      ).toDestination()
+      ).connect(gainNode.current)
       chorusEffect.current.set({
         wet: instrumentParamsRef.current.effectWet,
         spread: instrumentParamsRef.current.chorusSpread,
@@ -735,14 +737,14 @@ export default function Channel({
         chorusEffect.current.start()
       }
     }
-    distortionEffect.current = new Tone.Distortion(instrumentParamsRef.current.distortion).toDestination()
+    distortionEffect.current = new Tone.Distortion(instrumentParamsRef.current.distortion).connect(gainNode.current)
     distortionEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
     delayEffect.current = new Tone.FeedbackDelay(
       instrumentParamsRef.current.delayTime,
       instrumentParamsRef.current.delayFeedback
-    ).toDestination()
+    ).connect(gainNode.current)
     delayEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
-    reverbEffect.current = new Tone.Reverb(instrumentParamsRef.current.reverbDecay).toDestination()
+    reverbEffect.current = new Tone.Reverb(instrumentParamsRef.current.reverbDecay).connect(gainNode.current)
     reverbEffect.current.set({
       wet: instrumentParamsRef.current.effectWet,
       preDelay: instrumentParamsRef.current.reverbPreDelay,
@@ -750,7 +752,7 @@ export default function Channel({
     vibratoEffect.current = new Tone.Vibrato(
       instrumentParamsRef.current.vibratoFreq,
       instrumentParamsRef.current.vibratoDepth
-    ).toDestination()
+    ).connect(gainNode.current)
     vibratoEffect.current.set({
       wet: instrumentParamsRef.current.effectWet,
     })
@@ -796,6 +798,8 @@ export default function Channel({
         instrument.current = synthInstrument.current
     }
     instrument.current.connect(getCurrentEffect())
+
+    // cleanup instruments
     return () => {
       if (notePlaying.current && noteIndex.current !== undefined) {
         Tone.context.clearTimeout(noteOffTimeout.current)
@@ -843,6 +847,9 @@ export default function Channel({
       delayEffect.current.dispose()
       reverbEffect.current.dispose()
       vibratoEffect.current.dispose()
+      if (gainNode.current) {
+        gainNode.current.dispose()
+      }
       instrument.current = null
     }
   }, [
@@ -1267,6 +1274,7 @@ export default function Channel({
         setInstrumentParams(channelPreset.instrumentParams)
         setModalType(null)
         updateInstruments(
+          gainNode.current,
           synthInstrument.current,
           [
             pianoInstrument.current,
@@ -1497,6 +1505,7 @@ export default function Channel({
 
   const instruments = useMemo(
     () => ({
+      gainNode,
       synthInstrument,
       pianoInstrument,
       marimbaInstrument,
@@ -2078,6 +2087,7 @@ Channel.propTypes = {
 }
 
 function updateInstruments(
+  gainNode,
   synthInstrument,
   samplerInstruments,
   chorusEffect,
@@ -2135,9 +2145,9 @@ function updateInstruments(
       effect = vibratoEffect
       break
     default:
-      effect = Tone.getDestination()
+      effect = gainNode
   }
-  effect = effect || Tone.getDestination()
+  effect = effect || gainNode
   if (CHORUS_ENABLED && instrumentParams.effectType !== 'chorus') {
     chorusEffect.stop()
   }
