@@ -50,21 +50,23 @@ export default class Header extends React.Component {
 
   handleKeyDown(e) {
     if (!document.activeElement.classList.contains('spacebar-ok') && document.activeElement.nodeName !== 'TEXTAREA') {
-      switch (e.key) {
-        case ' ':
-          e.preventDefault()
-          this.playStop()
-          break
-        case 'a':
-          this.props.setScrollTo(SECTIONS[0])
-          break
-        case 's':
-          this.props.setScrollTo(SECTIONS[1])
-          break
-        case 'd':
-          this.props.setScrollTo(SECTIONS[2])
-          break
-        default:
+      if (e.key === ' ') {
+        e.preventDefault()
+        this.playStop()
+      }
+      if (this.props.view === 'horizontal') {
+        switch (e.key) {
+          case 'a':
+            this.props.setScrollTo(SECTIONS[0])
+            break
+          case 's':
+            this.props.setScrollTo(SECTIONS[1])
+            break
+          case 'd':
+            this.props.setScrollTo(SECTIONS[2])
+            break
+          default:
+        }
       }
     }
   }
