@@ -44,6 +44,8 @@ export default function Modal({
   setMidiClockIn,
   midiClockOut,
   setMidiClockOut,
+  ignorePresetsTempo,
+  setIgnorePresetsTempo,
 }) {
   const modalTypeRef = useRef()
 
@@ -89,10 +91,13 @@ export default function Modal({
         setMidiClockIn={setMidiClockIn}
         midiClockOut={midiClockOut}
         setMidiClockOut={setMidiClockOut}
+        ignorePresetsTempo={ignorePresetsTempo}
+        setIgnorePresetsTempo={setIgnorePresetsTempo}
       />
     ),
     [
       defaultChannelModeKeybd,
+      ignorePresetsTempo,
       importPresets,
       linearKnobs,
       midiClockIn,
@@ -101,6 +106,7 @@ export default function Modal({
       presets,
       presetsRestartTransport,
       setDefaultChannelModeKeybd,
+      setIgnorePresetsTempo,
       setLinearKnobs,
       setMidiClockIn,
       setMidiClockOut,
@@ -225,4 +231,6 @@ Modal.propTypes = {
   setMidiClockIn: PropTypes.func,
   midiClockOut: PropTypes.bool,
   setMidiClockOut: PropTypes.func,
+  ignorePresetsTempo: PropTypes.bool,
+  setIgnorePresetsTempo: PropTypes.func,
 }

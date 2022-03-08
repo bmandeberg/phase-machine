@@ -126,6 +126,10 @@ export default function App() {
 
   const [midiClockOut, setMidiClockOut] = useState(JSON.parse(window.localStorage.getItem('midiClockOut')) ?? true)
 
+  const [ignorePresetsTempo, setIgnorePresetsTempo] = useState(
+    JSON.parse(window.localStorage.getItem('ignorePresetsTempo')) ?? false
+  )
+
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
   }, [showStepNumbers])
@@ -157,6 +161,10 @@ export default function App() {
       window.localStorage.setItem('midiOut', midiOut)
     }
   }, [midiOut])
+
+  useEffect(() => {
+    window.localStorage.setItem('ignorePresetsTempo', ignorePresetsTempo)
+  }, [ignorePresetsTempo])
 
   useEffect(() => {
     window.localStorage.setItem('view', view)
@@ -380,7 +388,8 @@ export default function App() {
       presetsRestartTransport,
       playing,
       midiOutRef,
-      midiInRef
+      midiInRef,
+      ignorePresetsTempo
     )
 
   // channel management
@@ -600,6 +609,8 @@ export default function App() {
           setTheme={setTheme}
           presets={presets}
           importPresets={importPresets}
+          ignorePresetsTempo={ignorePresetsTempo}
+          setIgnorePresetsTempo={setIgnorePresetsTempo}
         />
       </CSSTransition>
     </div>

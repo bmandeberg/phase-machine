@@ -22,7 +22,8 @@ export default function usePresets(
   presetsRestartTransport,
   playing,
   midiOutRef,
-  midiInRef
+  midiInRef,
+  ignorePresetsTempo
 ) {
   // state management for presets
 
@@ -76,7 +77,7 @@ export default function usePresets(
       if (uiState.hasOwnProperty(param)) {
         // check global preset params
         if (param !== 'channels') {
-          if (uiState[param] !== currentPreset[param]) {
+          if (uiState[param] !== currentPreset[param] && (param !== 'tempo' || !ignorePresetsTempo)) {
             return true
           }
         } else {
@@ -114,7 +115,7 @@ export default function usePresets(
       }
     }
     return false
-  }, [currentPreset, uiState])
+  }, [currentPreset, ignorePresetsTempo, uiState])
 
   // preset actions
 
@@ -125,7 +126,9 @@ export default function usePresets(
       setRestartChannels(presetsRestartTransport)
       setUIState(deepStateCopy(preset))
       setNumChannels(preset.numChannels)
-      setTempo(preset.tempo)
+      if (!ignorePresetsTempo) {
+        setTempo(preset.tempo)
+      }
       setChannelSync(preset.channelSync)
       // restart transport if necessary
       if (presetsRestartTransport) {
@@ -142,6 +145,7 @@ export default function usePresets(
     },
     [
       deepStateCopy,
+      ignorePresetsTempo,
       midiInRef,
       midiOutRef,
       playing,
@@ -181,7 +185,7 @@ export default function usePresets(
     (e, hotkey = null) => {
       const uiStateCopy = Object.assign({}, uiState, {
         placeholder: false,
-        hotkey: hotkey !== null ? hotkey : uiState.hotkey,
+        hotkey: hotkey ?? uiState.hotkey,
       })
       for (let i = 0; i < presets.length; i++) {
         if (presets[i].name === uiStateCopy.name && presets[i].id !== uiStateCopy.id) {
@@ -196,7 +200,9 @@ export default function usePresets(
         const presetsCopy = presets.slice()
         const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
         if (i !== -1) {
+          const tempo = ignorePresetsTempo ? presetsCopy[i].tempo : uiStateCopy.tempo
           presetsCopy[i] = uiStateCopy
+          presetsCopy[i].tempo = tempo
         } else {
           presetsCopy.push(uiStateCopy)
         }
@@ -205,7 +211,17 @@ export default function usePresets(
       // save in localStorage
       window.localStorage.setItem('activePreset', uiStateCopy.id)
     },
-    [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setRestartChannels, setUIState, uiState]
+    [
+      dedupName,
+      deepStateCopy,
+      ignorePresetsTempo,
+      presets,
+      setCurrentPreset,
+      setPresets,
+      setRestartChannels,
+      setUIState,
+      uiState,
+    ]
   )
 
   const newPreset = useCallback(

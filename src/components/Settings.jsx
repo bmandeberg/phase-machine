@@ -25,6 +25,8 @@ export default function Settings({
   setMidiClockIn,
   midiClockOut,
   setMidiClockOut,
+  ignorePresetsTempo,
+  setIgnorePresetsTempo,
 }) {
   const setKnobType = useCallback(
     (knobType) => {
@@ -166,6 +168,22 @@ export default function Settings({
         />
       </div>
       <div className="settings-item">
+        <p className="settings-label">Ignore presets tempo</p>
+        <Switch
+          className="instrument-switch"
+          onChange={setIgnorePresetsTempo}
+          checked={ignorePresetsTempo}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
+          width={48}
+          height={24}
+        />
+      </div>
+      <div className="settings-item">
         <p className="settings-label">Default channel mode</p>
         <div className="switch-container inline">
           <p
@@ -247,4 +265,6 @@ Settings.propTypes = {
   setMidiClockIn: PropTypes.func,
   midiClockOut: PropTypes.bool,
   setMidiClockOut: PropTypes.func,
+  ignorePresetsTempo: PropTypes.bool,
+  setIgnorePresetsTempo: PropTypes.func,
 }
