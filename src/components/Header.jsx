@@ -12,6 +12,8 @@ import logoDark from '../assets/logo-dark.svg'
 import play from '../assets/play.svg'
 import playDark from '../assets/play-dark.svg'
 import stop from '../assets/stop.svg'
+import waves from '../assets/waves.png'
+import logoShadow from '../assets/48F8B2439E7D5A31.png'
 import './Header.scss'
 
 export default class Header extends React.Component {
@@ -82,6 +84,8 @@ export default class Header extends React.Component {
   render() {
     return (
       <div id="header">
+        {this.props.theme !== 'light' && <img className="waves-background" src={waves} alt="" />}
+        {this.props.theme !== 'light' && <img className="logo-shadow" src={logoShadow} alt="" />}
         <img id="logo" className="no-select" src={this.props.theme === 'dark' ? logoDark : logo} alt="Phase Machine" />
         <img
           id="play-stop"
