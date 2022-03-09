@@ -585,7 +585,16 @@ export default function App() {
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>
-        {channels}
+        <div className="channels-flex-column">
+          <div className="channels-flex">
+            <div className="channels-container">
+              {channels}
+              {view === 'stacked' && <div className="stacked-spacer" style={{ height: numChannels * 97 }}></div>}
+            </div>
+            <div className="border-gradient gradient-right"></div>
+          </div>
+          <div className="border-gradient gradient-bottom"></div>
+        </div>
         {numChannels === 0 && (
           <div className="no-channels">
             <p>😴</p>
@@ -593,8 +602,6 @@ export default function App() {
           </div>
         )}
         <div className="border-gradient gradient-top" ref={topGradient}></div>
-        {/* <div className="border-gradient gradient-right"></div> */}
-        {/* <div className="border-gradient gradient-bottom"></div> */}
       </div>
       <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>
         <Modal

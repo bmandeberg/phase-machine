@@ -1046,4 +1046,16 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       }
     }
   }
+
+  .border-gradient {
+    &.gradient-top {
+      background: linear-gradient(to bottom, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
+    }
+    &.gradient-right {
+      background: linear-gradient(to left, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
+    }
+    &.gradient-bottom {
+      background: linear-gradient(to top, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
+    }
+  }
 }

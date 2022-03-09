@@ -75,6 +75,7 @@ body {
   position: relative;
   overflow-y: visible;
   flex-grow: 1;
+  display: inline-block;
   &.empty {
     text-align: center;
     .no-channels {
@@ -180,10 +181,30 @@ input {
   border-radius: 0;
 }
 
+.channels-flex-column {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.channels-flex {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+.channels-container {
+  display: inline-block;
+  vertical-align: top;
+}
+.stacked-spacer {
+  pointer-events: none;
+  background: transparent;
+  width: 100%;
+}
+
 .border-gradient {
-  position: fixed;
-  z-index: 1996;
+  z-index: 2000;
   &.gradient-top {
+    position: fixed;
     width: 100%;
     height: 16px;
     top: 44px;
@@ -192,19 +213,17 @@ input {
     // background-color: red;
   }
   &.gradient-right {
-    width: 16px;
-    height: 100%;
-    top: 0;
+    flex-basis: 16px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    position: sticky;
     right: 0;
-    // background-color: linear-gradient(to left, #090c10, rgba(9, 12, 16, 0));
-    background-color: red;
+    background: linear-gradient(to left, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0));
   }
   &.gradient-bottom {
-    width: 100%;
     height: 16px;
+    position: sticky;
     bottom: 0;
-    left: 0;
-    // background-color: linear-gradient(0deg, rgba(9, 12, 16, 0), #090c10);
-    background-color: red;
+    background: linear-gradient(to top, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0));
   }
 }
