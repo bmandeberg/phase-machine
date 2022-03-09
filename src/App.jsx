@@ -185,6 +185,8 @@ export default function App() {
 
   // init scrolling
 
+  const topGradient = useRef()
+
   useEffect(() => {
     const containerEl = container.current
     function handleScroll() {
@@ -201,6 +203,9 @@ export default function App() {
           }
         }
         setScrollTo(SECTIONS[scrollEl])
+      }
+      if (topGradient.current) {
+        topGradient.current.style.top = 44 + Math.min(containerEl.scrollTop, 16) + 'px'
       }
     }
     containerEl.addEventListener('scroll', handleScroll)
@@ -587,6 +592,9 @@ export default function App() {
             <p>no channels</p>
           </div>
         )}
+        <div className="border-gradient gradient-top" ref={topGradient}></div>
+        {/* <div className="border-gradient gradient-right"></div> */}
+        {/* <div className="border-gradient gradient-bottom"></div> */}
       </div>
       <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>
         <Modal
