@@ -631,17 +631,18 @@ function deepStateCopy(state) {
   })
 }
 
-export function patchPreset(preset, defaultPreset, updated) {
-  for (const prop in defaultPreset) {
+export function patchPreset(preset, updated) {
+  for (const prop in DEFAULT_PRESET) {
     if (preset[prop] === undefined) {
-      preset[prop] = defaultPreset[prop]
+      preset[prop] = DEFAULT_PRESET[prop]
       updated = true
     }
   }
   return updated
 }
 
-export function patchChannel(channel, defaultChannel, updated) {
+export function patchChannel(channel, updated) {
+  const defaultChannel = DEFAULT_PRESET.channels[0]
   for (const prop in defaultChannel) {
     if (channel[prop] === undefined) {
       channel[prop] = defaultChannel[prop]
@@ -657,10 +658,10 @@ export function patchChannel(channel, defaultChannel, updated) {
   return updated
 }
 
-export function patchPresetAndChannels(preset, defaultPreset, updated) {
-  updated = patchPreset(preset, defaultPreset, updated)
+export function patchPresetAndChannels(preset, updated) {
+  updated = patchPreset(preset, updated)
   preset.channels.forEach((channel) => {
-    updated = patchChannel(channel, defaultPreset.channels[0])
+    updated = patchChannel(channel, updated)
   })
   return updated
 }
@@ -671,7 +672,7 @@ function initializePresets() {
   const exampleChannel = examplePreset.channels[0]
   let updated = false
   presets.forEach((preset) => {
-    updated = patchPreset(preset, examplePreset, updated)
+    updated = patchPreset(preset, updated)
     preset.channels.forEach((channel) => {
       if (!Object.keys(INSTRUMENT_TYPES).includes(channel.instrumentType)) {
         channel.instrumentParams.synthType =
@@ -683,7 +684,7 @@ function initializePresets() {
             : exampleChannel.instrumentParams.synthType
         channel.instrumentType = 'synth'
       }
-      updated = patchChannel(channel, exampleChannel, updated)
+      updated = patchChannel(channel, updated)
     })
   })
   if (updated) {
@@ -704,6 +705,6 @@ function initializeUiState() {
     window.localStorage.setItem('activePatch', JSON.stringify(initialPreset()))
   }
   const activePatch = JSON.parse(window.localStorage.getItem('activePatch'))
-  patchPresetAndChannels(activePatch, DEFAULT_PRESET)
+  patchPresetAndChannels(activePatch)
   return activePatch
 }
