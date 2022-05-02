@@ -48,7 +48,7 @@ export default function App() {
   const [tempo, setTempo] = useState(uiState.tempo)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(uiState.numChannels)
-  const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[0])
+  const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[1])
   const viewRef = useRef()
   viewRef.current = view
 
@@ -107,7 +107,7 @@ export default function App() {
   // settings
 
   const [showStepNumbers, setShowStepNumbers] = useState(
-    JSON.parse(window.localStorage.getItem('showStepNumbers')) ?? false
+    JSON.parse(window.localStorage.getItem('showStepNumbers')) ?? true
   )
 
   const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
