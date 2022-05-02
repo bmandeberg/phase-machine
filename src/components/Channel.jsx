@@ -98,6 +98,7 @@ export default function Channel({
   const [noteOn, setNoteOn] = useState(false)
   const notePlaying = useRef(false)
   const noteOffTimeout = useRef()
+  const noNoteOffScheduled = useRef(false)
   const [seqSteps, setSeqSteps] = useState(initState.seqSteps)
   const [seqLength, setSeqLength] = useState(initState.seqLength)
   const [playingStep, setPlayingStep] = useState()
@@ -956,26 +957,30 @@ export default function Channel({
     [instrumentType]
   )
 
+  const getChannelData = useCallback(() => {
+    const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
+    const note = noteString(noteIndex.current)
+    const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+    const clockOffset = WebMidi.time - Tone.immediate() * 1000
+    return { channel, note, midiOutObj, clockOffset }
+  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel])
+
   // note off when stop playing
   useEffect(() => {
     if (!playing && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
-      const note = noteString(noteIndex.current)
-      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+      const { channel, note, midiOutObj } = getChannelData()
       Tone.context.clearTimeout(noteOffTimeout.current)
       noteOff(channel, note, midiOutObj, true, Tone.now(), WebMidi.time - Tone.immediate() * 1000)
     }
-  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel, noteOff, playing])
+  }, [getChannelData, noteOff, playing])
 
   // note off when muting
   useEffect(() => {
     if (muted && notePlaying.current && noteIndex.current !== undefined) {
-      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
-      const note = noteString(noteIndex.current)
-      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+      const { channel, note, midiOutObj } = getChannelData()
       noteOff(channel, note, midiOutObj, true, null)
     }
-  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel, muted, noteOff])
+  }, [getChannelData, muted, noteOff])
 
   // note off when changing channel number
   useEffect(() => {
@@ -996,15 +1001,13 @@ export default function Channel({
   // play note
   const playNote = useCallback(
     (time) => {
-      const note = noteString(noteIndex.current)
+      const { channel, note, midiOutObj, clockOffset } = getChannelData()
       if (!note) return
-      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
-      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
-      const clockOffset = WebMidi.time - Tone.immediate() * 1000
       if (notePlaying.current) {
         Tone.context.clearTimeout(noteOffTimeout.current)
         let offNote = noteIndex.current === playingNoteRef.current ? playingNoteRef.current : prevNoteIndex.current
         if (offNote) {
+          noNoteOffScheduled.current = false
           noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
         }
       }
@@ -1035,22 +1038,11 @@ export default function Channel({
         noteOffTimeout.current = Tone.context.setTimeout(() => {
           noteOff(channel, note, midiOutObj, false, null)
         }, time - Tone.immediate() + sustainTime)
+      } else {
+        noNoteOffScheduled.current = true
       }
     },
-    [
-      customMidiOutChannel,
-      midiOutChannel,
-      channelNum,
-      midiOut,
-      instrumentOn,
-      instrumentType,
-      hold,
-      seqSteps,
-      noteOff,
-      velocity,
-      sustain,
-      keyRate,
-    ]
+    [getChannelData, hold, instrumentOn, instrumentType, keyRate, noteOff, seqSteps, sustain, velocity]
   )
 
   // fire individual notes, like on an ALT+Click
@@ -1115,8 +1107,25 @@ export default function Channel({
         playNote(playNoteBuffer.current.key.time + PLAY_NOTE_BUFFER_TIME)
       }
     }
+    // while holding, ensure notes are turned off when the sequence is off
+    if (noNoteOffScheduled.current && !seqSteps[currentStep.current] && notePlaying.current) {
+      Tone.context.clearTimeout(noteOffTimeout.current)
+      let offNote = noteIndex.current === playingNoteRef.current ? playingNoteRef.current : prevNoteIndex.current
+      if (offNote) {
+        const { channel, midiOutObj, clockOffset } = getChannelData()
+        noteOff(
+          channel,
+          noteString(offNote),
+          midiOutObj,
+          false,
+          playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME - 0.005,
+          clockOffset
+        )
+      }
+      noNoteOffScheduled.current = false
+    }
     playNoteBuffer.current = { seq: null, key: null }
-  }, [emptyKey, hold, muted, playNote, seqSteps])
+  }, [emptyKey, getChannelData, hold, muted, noteOff, playNote, seqSteps])
 
   const loadPlayNoteBuffer = useCallback(
     (type, time, interval) => {
@@ -1152,7 +1161,7 @@ export default function Channel({
         loadPlayNoteBuffer('seq', time, interval)
       }
     },
-    [emptyKey, loadPlayNoteBuffer, muted, seqArpInc1, seqArpInc2, seqMovement, seqLength]
+    [seqMovement, seqLength, seqArpInc1, seqArpInc2, emptyKey, muted, loadPlayNoteBuffer]
   )
   const seqLoop = useLoop(seqCallback, seqRate, tempo, seqSwing, seqSwingLength)
 
