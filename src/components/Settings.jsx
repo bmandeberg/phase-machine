@@ -65,7 +65,7 @@ export default function Settings({
   }, [modalType])
 
   const copyPresets = useCallback(() => {
-    const exportPresets = presets.filter((p) => selectedPresets.includes(p.name))
+    const exportPresets = selectedPresets.map((sp) => presets.find((p) => p.name === sp))
     navigator.clipboard.writeText(JSON.stringify(exportPresets)).then(
       () => {
         alert('Presets copied to clipboard!')
