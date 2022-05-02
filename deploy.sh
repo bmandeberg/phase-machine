@@ -7,4 +7,4 @@ git pull
 yarn install
 yarn build
 rm -rf node_modules/ package.json README.md src/ webpack.config.js yarn.lock .gitignore .prettierrc
-gcloud app deploy
+gcloud app deploy --quiet
