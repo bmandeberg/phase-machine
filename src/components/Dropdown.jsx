@@ -6,7 +6,6 @@ import { v4 as uuid } from 'uuid'
 import './Dropdown.scss'
 
 const DROPDOWN_HEIGHT = 28
-const OPTION_HEIGHT = 27
 
 function longestText(options, graphicOptions) {
   if (graphicOptions) {
@@ -81,7 +80,9 @@ export default function Dropdown({
     }
   }, [])
 
-  const menuHeight = useMemo(() => Math.min(options.length * OPTION_HEIGHT, 200), [options])
+  const optionHeight = useMemo(() => (small ? 20 : 27), [small])
+
+  const menuHeight = useMemo(() => Math.min(options.length * optionHeight, 200), [optionHeight, options])
 
   const toggleOpen = useCallback(() => {
     if (!open && dropdownRef.current) {
@@ -111,10 +112,10 @@ export default function Dropdown({
   useEffect(() => {
     if (open) {
       if (selectedIndex !== -1) {
-        menuRef.current.scroll({ top: selectedIndex * OPTION_HEIGHT })
+        menuRef.current.scroll({ top: selectedIndex * optionHeight })
       }
     }
-  }, [open, selectedIndex])
+  }, [open, optionHeight, selectedIndex])
 
   const optionEls = useMemo(
     () =>
