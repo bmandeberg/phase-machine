@@ -7,13 +7,17 @@ import './AboutModal.scss'
 const ABOUT_SECTIONS = [
   {
     title: 'The Phase Machine',
-    text: `The Phase Machine is a musical sequencer and composition tool. It can have one or more Channels, each of which is monophonic (can play one note at a time). Each Channel defines its own musical Key, and has a Sequence and Arpeggio, which work together to choose and play a note. The Sequence and Arpeggio can have different rates and lengths, which can lead to their series of events becoming out of phase with each other, creating unique and shifting patterns of notes - hence The "Phase" Machine.
+    text: `The Phase Machine is a musical sequencer and composition tool. Although this website can play sounds, The Phase Machine is more about <i>choosing</i> notes via specific combinations of arpeggiators and sequencers. The notes can be played here on this page, or they can be sent via MIDI to instruments or DAWs. This is mostly still 🚧 under construction 🚧 but eventually we'll make some video tutorials. In the meantime, if you're here you probably know me so feel free to hmu for tutorials.
+    
+The Phase Machine can have one or more Channels, each of which is monophonic (can play one note at a time). Each Channel defines its own musical Key, and has a Sequence and Arpeggio, which work together to choose and play a note. The Sequence and Arpeggio can have different rates and lengths, which can lead to their series of events becoming out of phase with each other, creating unique and shifting patterns of notes - hence The "Phase" Machine.
     
 The Key defines which pitches are available to a Channel. The Arpeggio cycles through those pitches to select the pitch that will be heard when a note is played. The Sequence defines when a note can be played. When the Sequence reaches a step that is on, a note is played at the current selected pitch. Also, when the Arpeggio selects a new pitch, a note is played if the current selected Sequence step is on.
     
 The Phase Machine can send MIDI notes when a note is played, and receive MIDI notes to define the Key for a Channel (MIDI only works in Google Chrome). Each Channel also has a customizable Instrument that can be heard in the browser. Presets can be saved, exported, and imported. For now, Presets are only saved locally in the browser, sort of like a cookie, so beware that clearing your browser cache will permanently delete any saved Presets (it is recommended to export your Presets beforehand).
 
-To share presets, ask questions, and post insights, you can use <a href="https://groups.google.com/g/phase-machine" target="_blank">the forum</a>`,
+To share presets, ask questions, and post insights, you can use <a href="https://groups.google.com/g/phase-machine" target="_blank">the forum</a>
+
+The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-tonal_music_theory" target="_blank">post-tonal music theory</a>, specifically <a href="https://en.wikipedia.org/wiki/Set_theory_(music)" target="_blank">set theory</a>.`,
   },
   {
     title: 'Header',
@@ -189,9 +193,7 @@ To share presets, ask questions, and post insights, you can use <a href="https:/
   },
   {
     tags: ['about'],
-    text: `The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-tonal_music_theory" target="_blank">post-tonal music theory</a>, specifically <a href="https://en.wikipedia.org/wiki/Set_theory_(music)" target="_blank">set theory</a>.
-
-This project is made possible by the excellent <a href="https://tonejs.github.io/" target="_blank">Tone.js</a> web audio framework, and <a href="https://github.com/djipco/webmidi" target="_blank">WebMidi.js</a>.
+    text: `This project is made possible by the excellent <a href="https://tonejs.github.io/" target="_blank">Tone.js</a> web audio framework, and <a href="https://github.com/djipco/webmidi" target="_blank">WebMidi.js</a>.
 
 The Phase Machine is an open-source project. Get the code at our <a href="https://github.com/bmandeberg/phase-machine" target="_blank">GitHub page</a>
 
