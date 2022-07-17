@@ -47,6 +47,8 @@ export default function Modal({
   setMidiClockOut,
   ignorePresetsTempo,
   setIgnorePresetsTempo,
+  presetsStopTransport,
+  setPresetsStopTransport,
 }) {
   const modalTypeRef = useRef()
 
@@ -94,6 +96,8 @@ export default function Modal({
         setMidiClockOut={setMidiClockOut}
         ignorePresetsTempo={ignorePresetsTempo}
         setIgnorePresetsTempo={setIgnorePresetsTempo}
+        presetsStopTransport={presetsStopTransport}
+        setPresetsStopTransport={setPresetsStopTransport}
       />
     ),
     [
@@ -113,8 +117,10 @@ export default function Modal({
       setMidiClockOut,
       setPresetsRestartTransport,
       setShowStepNumbers,
+      setPresetsStopTransport,
       setTheme,
       showStepNumbers,
+      presetsStopTransport,
       theme,
     ]
   )
@@ -237,4 +243,6 @@ Modal.propTypes = {
   setMidiClockOut: PropTypes.func,
   ignorePresetsTempo: PropTypes.bool,
   setIgnorePresetsTempo: PropTypes.func,
+  presetsStopTransport: PropTypes.bool,
+  setPresetsStopTransport: PropTypes.func,
 }

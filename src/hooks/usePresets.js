@@ -20,7 +20,9 @@ export default function usePresets(
   keydownTimer,
   setRestartChannels,
   presetsRestartTransport,
+  presetsStopTransport,
   playing,
+  setPlaying,
   midiOutRef,
   midiInRef,
   ignorePresetsTempo
@@ -131,11 +133,13 @@ export default function usePresets(
       }
       setChannelSync(preset.channelSync)
       // restart transport if necessary
-      if (presetsRestartTransport) {
+      if (presetsRestartTransport || presetsStopTransport) {
         Tone.Transport.stop()
         midiStop(midiOutRef.current, midiInRef.current && midiInRef.current.name, true)
         Tone.Transport.midiContinue = false
-        if (playing) {
+        if (presetsStopTransport) {
+          setPlaying(false)
+        } else if (playing) {
           Tone.Transport.start()
           midiStartContinue(midiOutRef.current, midiInRef.current && midiInRef.current.name)
         }
@@ -151,9 +155,11 @@ export default function usePresets(
       playing,
       presets,
       presetsRestartTransport,
+      presetsStopTransport,
       setChannelSync,
       setCurrentPreset,
       setNumChannels,
+      setPlaying,
       setRestartChannels,
       setTempo,
       setUIState,

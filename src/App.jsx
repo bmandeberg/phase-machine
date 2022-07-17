@@ -122,6 +122,10 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('presetsRestartTransport')) ?? true
   )
 
+  const [presetsStopTransport, setPresetsStopTransport] = useState(
+    JSON.parse(window.localStorage.getItem('presetsStopTransport')) ?? true
+  )
+
   const [midiClockIn, setMidiClockIn] = useState(JSON.parse(window.localStorage.getItem('midiClockIn')) ?? true)
 
   const [midiClockOut, setMidiClockOut] = useState(JSON.parse(window.localStorage.getItem('midiClockOut')) ?? true)
@@ -391,7 +395,9 @@ export default function App() {
       keydownTimer,
       setRestartChannels,
       presetsRestartTransport,
+      presetsStopTransport,
       playing,
+      setPlaying,
       midiOutRef,
       midiInRef,
       ignorePresetsTempo
@@ -626,6 +632,8 @@ export default function App() {
           importPresets={importPresets}
           ignorePresetsTempo={ignorePresetsTempo}
           setIgnorePresetsTempo={setIgnorePresetsTempo}
+          presetsStopTransport={presetsStopTransport}
+          setPresetsStopTransport={setPresetsStopTransport}
         />
       </CSSTransition>
     </div>

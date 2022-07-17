@@ -27,6 +27,8 @@ export default function Settings({
   setMidiClockOut,
   ignorePresetsTempo,
   setIgnorePresetsTempo,
+  presetsStopTransport,
+  setPresetsStopTransport,
 }) {
   const setKnobType = useCallback(
     (knobType) => {
@@ -125,6 +127,22 @@ export default function Settings({
           className="instrument-switch"
           onChange={setPresetsRestartTransport}
           checked={presetsRestartTransport}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
+          width={48}
+          height={24}
+        />
+      </div>
+      <div className="settings-item">
+        <p className="settings-label">Presets stop timeline</p>
+        <Switch
+          className="instrument-switch"
+          onChange={setPresetsStopTransport}
+          checked={presetsStopTransport}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -267,4 +285,6 @@ Settings.propTypes = {
   setMidiClockOut: PropTypes.func,
   ignorePresetsTempo: PropTypes.bool,
   setIgnorePresetsTempo: PropTypes.func,
+  presetsStopTransport: PropTypes.bool,
+  setPresetsStopTransport: PropTypes.func,
 }
