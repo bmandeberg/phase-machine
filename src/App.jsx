@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import * as Tone from 'tone'
-import WebMidi from 'webmidi'
 import classNames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
 import { v4 as uuid } from 'uuid'
@@ -15,14 +14,12 @@ import {
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
   SIGNAL_TYPES,
-  midiStartContinue,
-  midiStop,
-  midiSongpositionReset,
 } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
 import usePresets from './hooks/usePresets'
+import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import './dark-theme.scss'
 import './contrast-theme.scss'
 
@@ -35,10 +32,6 @@ if (!window.localStorage.getItem('presets')) {
 
 const PIANO_SCROLL = 60
 const SEQ_SCROLL = 76
-const MIDI_IO_CHANGED = {
-  IN: 0,
-  OUT: 0,
-}
 
 export default function App() {
   const [presets, setPresets] = useState(initializePresets)
@@ -52,17 +45,8 @@ export default function App() {
   const viewRef = useRef()
   viewRef.current = view
 
-  const [midiEnabled, setMidiEnabled] = useState(false)
-  const [midiOut, setMidiOut] = useState(null)
-  const midiOutRef = useRef()
-  const [midiOuts, setMidiOuts] = useState([])
-  const [midiIn, setMidiIn] = useState(null)
-  const midiInRef = useRef()
-  const [midiIns, setMidiIns] = useState([])
-  const [midiNoteOn, setMidiNoteOn] = useState(null)
-  const [midiNoteOff, setMidiNoteOff] = useState(null)
-
   const [restartChannels, setRestartChannels] = useState(true)
+  const [resetTransport, setResetTransport] = useState(false)
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(uiState.channelSync)
 
@@ -79,7 +63,24 @@ export default function App() {
   const [resizing, setResizing] = useState(false)
   const keydownTimer = useRef(null)
 
-  const [resetTransport, setResetTransport] = useState(false)
+  const {
+    midiOutRef,
+    midiInRef,
+    midiOut,
+    midiIn,
+    midiNoteOn,
+    midiNoteOff,
+    midiOuts,
+    midiIns,
+    setMidiOut,
+    setMidiIn,
+    midiEnabled,
+    midiClockIn,
+    setMidiClockIn,
+    midiClockOut,
+    setMidiClockOut,
+  } = useMIDI(setPlaying, setResetTransport)
+
   useEffect(() => {
     if (resetTransport) {
       Tone.Transport.stop()
@@ -90,7 +91,7 @@ export default function App() {
       }
       setResetTransport(false)
     }
-  }, [playing, resetTransport])
+  }, [midiInRef, midiOutRef, playing, resetTransport])
   const triggerTransportReset = useCallback(() => {
     setResetTransport(true)
   }, [])
@@ -126,10 +127,6 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('presetsStopTransport')) ?? true
   )
 
-  const [midiClockIn, setMidiClockIn] = useState(JSON.parse(window.localStorage.getItem('midiClockIn')) ?? true)
-
-  const [midiClockOut, setMidiClockOut] = useState(JSON.parse(window.localStorage.getItem('midiClockOut')) ?? true)
-
   const [ignorePresetsTempo, setIgnorePresetsTempo] = useState(
     JSON.parse(window.localStorage.getItem('ignorePresetsTempo')) ?? false
   )
@@ -155,18 +152,6 @@ export default function App() {
   }, [presetsRestartTransport])
 
   useEffect(() => {
-    if (WebMidi.enabled) {
-      window.localStorage.setItem('midiIn', midiIn)
-    }
-  }, [midiIn])
-
-  useEffect(() => {
-    if (WebMidi.enabled) {
-      window.localStorage.setItem('midiOut', midiOut)
-    }
-  }, [midiOut])
-
-  useEffect(() => {
     window.localStorage.setItem('ignorePresetsTempo', ignorePresetsTempo)
   }, [ignorePresetsTempo])
 
@@ -176,16 +161,6 @@ export default function App() {
       document.activeElement.blur()
     }, 500)
   }, [view])
-
-  useEffect(() => {
-    WebMidi.midiClockIn = midiClockIn
-    window.localStorage.setItem('midiClockIn', midiClockIn)
-  }, [midiClockIn])
-
-  useEffect(() => {
-    WebMidi.midiClockOut = midiClockOut
-    window.localStorage.setItem('midiClockOut', midiClockOut)
-  }, [midiClockOut])
 
   // init scrolling
 
@@ -217,126 +192,6 @@ export default function App() {
       containerEl.removeEventListener('scroll', handleScroll)
     }
   }, [])
-
-  // init MIDI
-
-  useEffect(() => {
-    function connectMidi() {
-      setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
-      setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
-    }
-    function disconnectMidi(e) {
-      setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
-      setMidiOut((midiOut) => (e.port.name === midiOut ? null : midiOut))
-      setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
-      setMidiIn((midiIn) => (e.port.name === midiIn ? null : midiIn))
-    }
-    WebMidi.enable((err) => {
-      if (err) {
-        console.log(err)
-      } else {
-        // initialize MIDI I/O
-        const mo = window.localStorage.getItem('midiOut')
-        setMidiOut(() => (WebMidi.outputs.map((o) => o.name).includes(mo) && mo) || null)
-        const mi = window.localStorage.getItem('midiIn')
-        setMidiIn(() => (WebMidi.inputs.map((i) => i.name).includes(mi) && mi) || null)
-        // schedule MIDI clock output
-        Tone.Transport.midiContinue = false
-        if (Tone.Transport.PPQ % 24 === 0) {
-          Tone.Transport.scheduleRepeat((time) => {
-            if (
-              WebMidi.midiClockOut &&
-              midiOutRef.current &&
-              (!midiInRef.current || midiInRef.current.name !== midiOutRef.current)
-            ) {
-              const clockOffset = WebMidi.time - Tone.immediate() * 1000
-              WebMidi.getOutputByName(midiOutRef.current).sendClock({
-                time: time * 1000 + clockOffset + 10,
-              })
-            }
-          }, Tone.Transport.PPQ / 24 + 'i')
-        }
-        setMidiEnabled(true)
-        WebMidi.addListener('connected', connectMidi)
-        WebMidi.addListener('disconnected', disconnectMidi)
-      }
-    })
-    return () => {
-      WebMidi.removeListener('connected', connectMidi)
-      WebMidi.removeListener('disconnected', disconnectMidi)
-    }
-  }, [])
-
-  // update MIDI ins and outs
-
-  useEffect(() => {
-    if (midiInRef.current) {
-      midiInRef.current.removeListener()
-    }
-    if (midiIn) {
-      if (midiIn === midiOutRef.current && MIDI_IO_CHANGED.IN > 2) {
-        alert(
-          'Setting MIDI input to current MIDI output - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
-        )
-      }
-      midiInRef.current = WebMidi.getInputByName(midiIn)
-      // MIDI input listeners
-      midiInRef.current.addListener('noteon', 'all', (e) => {
-        if (midiIn !== midiOutRef.current) {
-          setMidiNoteOn(e)
-        }
-      })
-      midiInRef.current.addListener('noteoff', 'all', (e) => {
-        if (midiIn !== midiOutRef.current) {
-          setMidiNoteOff(e)
-        }
-      })
-      midiInRef.current.addListener('start', 'all', (e) => {
-        if (WebMidi.midiClockIn) {
-          Tone.Transport.start()
-          setPlaying(true)
-          // MIDI out
-          midiStartContinue(midiOutRef.current, midiIn)
-        }
-      })
-      midiInRef.current.addListener('continue', 'all', (e) => {
-        if (WebMidi.midiClockIn) {
-          Tone.Transport.start()
-          setPlaying(true)
-          // MIDI out
-          midiStartContinue(midiOutRef.current, midiIn)
-        }
-      })
-      midiInRef.current.addListener('stop', 'all', (e) => {
-        if (WebMidi.midiClockIn) {
-          Tone.Transport.pause()
-          setPlaying(false)
-          // MIDI out
-          midiStop(midiOutRef.current, midiIn)
-        }
-      })
-      midiInRef.current.addListener('songposition', 'all', (e) => {
-        if (WebMidi.midiClockIn && e.data && e.data[0] === 242 && e.data[1] === 0) {
-          setResetTransport(true)
-          // MIDI out
-          midiSongpositionReset(midiOutRef.current, midiIn)
-        }
-      })
-    } else {
-      midiInRef.current = null
-    }
-    MIDI_IO_CHANGED.IN++
-  }, [midiIn])
-
-  useEffect(() => {
-    if (midiOut && midiInRef.current && midiOut === midiInRef.current.name && MIDI_IO_CHANGED.OUT > 2) {
-      alert(
-        'Setting MIDI output to current MIDI input - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
-      )
-    }
-    midiOutRef.current = midiOut
-    MIDI_IO_CHANGED.OUT++
-  }, [midiOut])
 
   const updateView = useCallback((view) => {
     viewRef.current = view
