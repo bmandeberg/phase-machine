@@ -344,6 +344,8 @@ export default function Channel({
     vibratoEffect,
     getCurrentEffect,
     openInstrumentModal,
+    instruments,
+    effects,
   } = useInstruments(instrument, instrumentParams, instrumentType, cleanupInstruments, setModalType)
 
   const noteOff = useCallback(
@@ -948,40 +950,6 @@ export default function Channel({
     triggerNote
   )
 
-  const instruments = useMemo(
-    () => ({
-      synthInstrument,
-      pianoInstrument,
-      marimbaInstrument,
-      bassInstrument,
-      vibesInstrument,
-      harpInstrument,
-      choralInstrument,
-      drumsInstrument,
-      drumMachineInstrument,
-    }),
-    [
-      bassInstrument,
-      choralInstrument,
-      drumMachineInstrument,
-      drumsInstrument,
-      harpInstrument,
-      marimbaInstrument,
-      pianoInstrument,
-      synthInstrument,
-      vibesInstrument,
-    ]
-  )
-  const effects = useMemo(
-    () => ({
-      chorusEffect,
-      distortionEffect,
-      delayEffect,
-      reverbEffect,
-      vibratoEffect,
-    }),
-    [chorusEffect, delayEffect, distortionEffect, reverbEffect, vibratoEffect]
-  )
   const modalEl = useMemo(
     () => (
       <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>

@@ -1,7 +1,5 @@
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import WebMidi from 'webmidi'
-import * as Tone from 'tone'
 import UAParser from 'ua-parser-js'
 import sine from './assets/sine_wave.svg'
 import lightSine from './assets/sine_wave_light.svg'

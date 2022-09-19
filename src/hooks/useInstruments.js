@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, useMemo } from 'react'
 import { CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
 
@@ -626,6 +626,41 @@ export default function useInstruments(instrument, instrumentParams, instrumentT
     setModalType('instrument')
   }, [setModalType])
 
+  const instruments = useMemo(
+    () => ({
+      synthInstrument,
+      pianoInstrument,
+      marimbaInstrument,
+      bassInstrument,
+      vibesInstrument,
+      harpInstrument,
+      choralInstrument,
+      drumsInstrument,
+      drumMachineInstrument,
+    }),
+    [
+      bassInstrument,
+      choralInstrument,
+      drumMachineInstrument,
+      drumsInstrument,
+      harpInstrument,
+      marimbaInstrument,
+      pianoInstrument,
+      synthInstrument,
+      vibesInstrument,
+    ]
+  )
+  const effects = useMemo(
+    () => ({
+      chorusEffect,
+      distortionEffect,
+      delayEffect,
+      reverbEffect,
+      vibratoEffect,
+    }),
+    [chorusEffect, delayEffect, distortionEffect, reverbEffect, vibratoEffect]
+  )
+
   return {
     gainNode,
     synthInstrument,
@@ -644,6 +679,8 @@ export default function useInstruments(instrument, instrumentParams, instrumentT
     vibratoEffect,
     getCurrentEffect,
     openInstrumentModal,
+    instruments,
+    effects,
   }
 }
 
