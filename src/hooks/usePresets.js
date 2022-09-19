@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useMemo } from 'react'
 import { v4 as uuid } from 'uuid'
 import { PRESET_HOLD_TIME } from '../globals'
-import { midiStartContinue, midiStop } from './hooks/useMIDI'
+import { midiStartContinue, midiStop } from './useMIDI'
 import { patchPresetAndChannels } from '../App'
 import * as Tone from 'tone'
 
