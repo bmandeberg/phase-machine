@@ -185,7 +185,7 @@ export default function Modal({
   const aboutEl = useMemo(() => <AboutModal theme={theme} />, [theme])
 
   return (
-    <div className="modal-container">
+    <div className="modal-container" onClick={closeModal}>
       <div className={classNames('modal-buffer', { 'small-buffer': modalTypeRef.current === 'about' })}>
         <div className="modal-window">
           <div className="modal-header">
