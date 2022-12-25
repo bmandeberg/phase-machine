@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { MAX_SEQUENCE_LENGTH } from '../globals'
 
 import './Sequencer.scss'
 
@@ -13,6 +12,7 @@ export default function Sequencer({
   playingStep,
   children,
   showStepNumbers,
+  longestSequence,
 }) {
   const updateSeq = useCallback(
     (i) => {
@@ -33,7 +33,7 @@ export default function Sequencer({
 
   const steps = useMemo(
     () =>
-      [...Array(MAX_SEQUENCE_LENGTH)].map((d, i) => (
+      [...Array(seqLength)].map((_d, i) => (
         <div
           className={classNames('sequence-step', {
             selected: seqSteps[i],
@@ -50,7 +50,11 @@ export default function Sequencer({
 
   return (
     <div className={classNames('sequencer', className)}>
-      <div className="sequencer-container">{steps}</div>
+      <div
+        className="sequencer-container"
+        style={{ width: longestSequence > seqLength && (22 + 18) * longestSequence + 'px' }}>
+        {steps}
+      </div>
       {children}
     </div>
   )
@@ -63,4 +67,5 @@ Sequencer.propTypes = {
   playingStep: PropTypes.number,
   children: PropTypes.node,
   showStepNumbers: PropTypes.bool,
+  longestSequence: PropTypes.number,
 }

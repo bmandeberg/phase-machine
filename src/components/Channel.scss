@@ -81,7 +81,7 @@
   }
   .sequencer {
     margin-top: 16px;
-    width: 1254px;
+    margin-right: 0;
   }
   .swing-module {
     .knob-container {
@@ -208,9 +208,8 @@
     max-height: 0;
     margin-bottom: 0;
     overflow: hidden;
-    $drawerHeight: 288px;
     &.drawer-open {
-      max-height: $drawerHeight;
+      max-height: var(--drawer-height);
       overflow: visible;
     }
     &.drawer-open-enter {
@@ -219,15 +218,15 @@
     }
     &.drawer-open-enter-active {
       transition: all $transitionTime ease-out;
-      max-height: $drawerHeight;
+      max-height: var(--drawer-height);
       overflow: hidden;
     }
     &.drawer-open-enter-done {
-      max-height: $drawerHeight;
+      max-height: var(--drawer-height);
       overflow: visible;
     }
     &.drawer-open-exit {
-      max-height: $drawerHeight;
+      max-height: var(--drawer-height);
       overflow: hidden;
     }
     &.drawer-open-exit-active {
@@ -410,6 +409,16 @@
 .stacked-auxiliary {
   position: absolute;
   left: 0;
+
+  &.first-auxiliary::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: -1px;
+    height: 1px;
+    background-color: $lightMediumGray;
+  }
 }
 
 .border {

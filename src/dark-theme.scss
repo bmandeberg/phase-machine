@@ -170,6 +170,10 @@ $headerDarkBlue: #0f182d;
     }
   }
 
+  .first-auxiliary::before {
+    background-color: $darkMediumGray;
+  }
+  
   .border {
     border-color: $darkMediumGray;
   }

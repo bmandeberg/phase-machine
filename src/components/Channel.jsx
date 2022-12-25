@@ -66,6 +66,7 @@ export default function Channel({
   restartChannels,
   resetTransport,
   preventUpdate,
+  longestSequence,
 }) {
   const id = useRef(initState.id)
   const [scribbler, setScribbler] = useState(initState.scribbler)
@@ -1188,7 +1189,10 @@ export default function Channel({
           {keySwingNormal}
           <div
             style={{ top: numChannels * CHANNEL_HEIGHT }}
-            className={classNames('channel channel-horizontal stacked-auxiliary', { mute: muted })}>
+            className={classNames('channel channel-horizontal stacked-auxiliary', {
+              mute: muted,
+              'first-auxiliary': channelNum === 0,
+            })}>
             {scribblerEl}
             {channelNumAux}
             <Sequencer
@@ -1197,7 +1201,8 @@ export default function Channel({
               setSeqSteps={setSeqSteps}
               seqLength={seqLength}
               playingStep={playingStep}
-              showStepNumbers={showStepNumbers}>
+              showStepNumbers={showStepNumbers}
+              longestSequence={longestSequence}>
               <div className="sequencer-controls">
                 {seqLengthInline}
                 {seqRateInline}
@@ -1234,6 +1239,7 @@ export default function Channel({
       keyMovementEl,
       keyRateEl,
       keySwingNormal,
+      longestSequence,
       midiEl,
       midiInputModeEl,
       modalEl,
@@ -1298,7 +1304,8 @@ export default function Channel({
             setSeqSteps={setSeqSteps}
             seqLength={seqLength}
             playingStep={playingStep}
-            showStepNumbers={showStepNumbers}>
+            showStepNumbers={showStepNumbers}
+            longestSequence={longestSequence}>
             <div className="sequencer-controls">
               {seqLengthInline}
               {seqRateInline}
@@ -1333,6 +1340,7 @@ export default function Channel({
       keyMovementEl,
       keyRateEl,
       keySwingNormal,
+      longestSequence,
       midiEl,
       midiInputModeEl,
       modalEl,
@@ -1400,7 +1408,9 @@ export default function Channel({
             </div>
           </div>
           <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
-            <div className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}>
+            <div
+              className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}
+              style={{ '--drawer-height': 251 + Math.floor(seqLength / 16) * (22 + 16) + 'px' }}>
               <div className="piano-container">{pianoEl}</div>
               <div className="piano-drawer-border"></div>
               <Sequencer
@@ -1508,4 +1518,5 @@ Channel.propTypes = {
   restartChannels: PropTypes.bool,
   resetTransport: PropTypes.bool,
   preventUpdate: PropTypes.bool,
+  longestSequence: PropTypes.number,
 }

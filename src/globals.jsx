@@ -475,7 +475,7 @@ export function constrain(n, min, max) {
 
 export const CHANNEL_HEIGHT = 97
 
-export const MAX_SEQUENCE_LENGTH = 32
+export const MAX_SEQUENCE_LENGTH = 64
 
 export const DEFAULT_TIME_DIVISION = '4n'
 

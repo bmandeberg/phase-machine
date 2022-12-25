@@ -335,6 +335,10 @@ export default function App() {
     setPreventUpdate(true)
   }, [])
 
+  const longestSequence = useMemo(() => Math.max(...uiState.channels.map((c) => c.seqLength)), [uiState])
+
+  const longestAuxChannel = useMemo(() => 277.66 + longestSequence * (22 + 18), [longestSequence])
+
   // render UI
 
   const channels = useMemo(
@@ -370,6 +374,7 @@ export default function App() {
           restartChannels={restartChannels}
           resetTransport={resetTransport}
           preventUpdate={preventUpdate}
+          longestSequence={longestSequence}
         />
       )),
     [
@@ -380,6 +385,7 @@ export default function App() {
       duplicateChannel,
       grabbing,
       linearKnobs,
+      longestSequence,
       midiNoteOff,
       midiNoteOn,
       midiOut,
@@ -450,7 +456,11 @@ export default function App() {
           <div className="channels-flex">
             <div className="channels-container">
               {channels}
-              {view === 'stacked' && <div className="stacked-spacer" style={{ height: numChannels * 97 }}></div>}
+              {view === 'stacked' && (
+                <div
+                  className="stacked-spacer"
+                  style={{ height: numChannels * 97, minWidth: longestAuxChannel + 'px' }}></div>
+              )}
             </div>
             <div className="border-gradient gradient-right"></div>
           </div>

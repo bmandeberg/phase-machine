@@ -167,6 +167,10 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
   }
 
+  .first-auxiliary::before {
+    background-color: $pitchClassGray;
+  }
+
   .border {
     border-color: $pitchClassGray;
   }
