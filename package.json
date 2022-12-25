@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "./node_modules/.bin/webpack serve --open --mode development",
-    "build": "./node_modules/.bin/webpack build"
+    "build": "./node_modules/.bin/webpack build --openssl-legacy-provider"
   },
   "babel": {
     "presets": [
