@@ -4,6 +4,7 @@
 echo "Building and deploying..."
 git reset --hard HEAD
 git pull
+export NODE_OPTIONS=--openssl-legacy-provider
 yarn install
 yarn build
 rm -rf node_modules/ package.json README.md src/ webpack.config.js yarn.lock .gitignore .prettierrc
