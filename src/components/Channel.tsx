@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import PropTypes from 'prop-types'
 import * as Tone from 'tone'
 import { WebMidi } from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
@@ -38,6 +38,39 @@ const CLOCK_CHANNEL_WIDTH = 657
 const CLOCK_CHANNEL_HEIGHT = 262
 const SAMPLE_MAX_TIME = 5
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface ChannelProps {
+  numChannels: number
+  color: string
+  channelNum: number
+  setGrabbing: any
+  grabbing: boolean
+  resizing: boolean
+  setResizing: any
+  view: string
+  numChannelsSoloed: number
+  tempo: number
+  playing: boolean
+  showStepNumbers: boolean
+  midiOut: any
+  setChannelState: any
+  channelPreset: any
+  duplicateChannel: any
+  deleteChannel: any
+  initState: any
+  container: any
+  changeChannelOrder: any
+  theme: string
+  midiNoteOn: any
+  midiNoteOff: any
+  restartChannels: any
+  resetTransport: any
+  preventUpdate: any
+  longestSequence: any
+  defaultChannelModeKeybd?: any
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export default function Channel({
   numChannels,
   color,
@@ -66,12 +99,12 @@ export default function Channel({
   resetTransport,
   preventUpdate,
   longestSequence,
-}) {
+}: ChannelProps) {
   const id = useRef(initState.id)
   const [scribbler, setScribbler] = useState(initState.scribbler)
   const [velocity, setVelocity] = useState(initState.velocity)
   const [key, setKey] = useState(initState.key)
-  const keyRef = useRef()
+  const keyRef = useRef<any>()
   const [keyRate, setKeyRate] = useState(initState.keyRate)
   const [keyMovement, setKeyMovement] = useState(initState.keyMovement)
   const [keyArpInc1, setKeyArpInc1] = useState(initState.keyArpInc1)
@@ -90,21 +123,21 @@ export default function Channel({
   const [turningAxisKnob, setTurningAxisKnob] = useState(false)
   const [rangeStart, setRangeStart] = useState(initState.rangeStart)
   const [rangeEnd, setRangeEnd] = useState(initState.rangeEnd) // non-inclusive
-  const [playingPitchClass, setPlayingPitchClass] = useState()
-  const [playingNote, setPlayingNote] = useState()
-  const playingNoteRef = useRef()
-  const noteIndex = useRef()
-  const prevNoteIndex = useRef()
+  const [playingPitchClass, setPlayingPitchClass] = useState<any>()
+  const [playingNote, setPlayingNote] = useState<any>()
+  const playingNoteRef = useRef<any>()
+  const noteIndex = useRef<any>()
+  const prevNoteIndex = useRef<any>()
   const [noteOn, setNoteOn] = useState(false)
   const notePlaying = useRef(false)
-  const noteOffTimeout = useRef()
+  const noteOffTimeout = useRef<any>()
   const noNoteOffScheduled = useRef(false)
   const [seqSteps, setSeqSteps] = useState(initState.seqSteps)
   const [seqLength, setSeqLength] = useState(initState.seqLength)
-  const [playingStep, setPlayingStep] = useState()
-  const prevStep = useRef()
-  const currentStep = useRef()
-  const nextStep = useRef()
+  const [playingStep, setPlayingStep] = useState<any>()
+  const prevStep = useRef<any>()
+  const currentStep = useRef<any>()
+  const nextStep = useRef<any>()
   const [seqRate, setSeqRate] = useState(initState.seqRate)
   const [seqMovement, setSeqMovement] = useState(initState.seqMovement)
   const [seqArpInc1, setSeqArpInc1] = useState(initState.seqArpInc1)
@@ -123,14 +156,14 @@ export default function Channel({
   const [dragRow, setDragRow] = useState(0)
 
   const [rangeMode, setRangeMode] = useState(initState.rangeMode)
-  const rangeModeRef = useRef()
+  const rangeModeRef = useRef<any>()
   const [keybdPitches, setKeybdPitches] = useState(initState.keybdPitches)
-  const keybdPitchesRef = useRef()
+  const keybdPitchesRef = useRef<any>()
 
   const [midiIn, setMidiIn] = useState(initState.midiIn)
-  const midiInRef = useRef()
+  const midiInRef = useRef<any>()
   const [midiHold, setMidiHold] = useState(initState.midiHold)
-  const midiHoldRef = useRef()
+  const midiHoldRef = useRef<any>()
   const [customMidiOutChannel, setCustomMidiOutChannel] = useState(false)
   const customMidiOutChannelRef = useRef(customMidiOutChannel)
   const [midiOutChannel, setMidiOutChannel] = useState(1)
@@ -148,11 +181,11 @@ export default function Channel({
     setModalContent(false)
   }, [])
 
-  const playNoteBuffer = useRef({ seq: null, key: null })
-  const presetInitialized = useRef()
+  const playNoteBuffer = useRef<any>({ seq: null, key: null })
+  const presetInitialized = useRef<any>()
 
   const channelNumRef = useRef(channelNum)
-  const [modalType, setModalType] = useState('')
+  const [modalType, setModalType] = useState<any>('')
 
   const [updateOnce, setUpdateOnce] = useState(false)
 
@@ -161,7 +194,7 @@ export default function Channel({
   }, [])
 
   const emptyKey = useMemo(() => {
-    return !key.some((p) => p)
+    return !key.some((p: any) => p)
   }, [key])
 
   useEffect(() => {
@@ -171,7 +204,7 @@ export default function Channel({
   }, [preventUpdate])
 
   const seqOpposite = useCallback(() => {
-    setSeqSteps((seqSteps) => seqSteps.map((step, i) => (i < seqLength ? !step : step)))
+    setSeqSteps((seqSteps: any) => seqSteps.map((step: any, i: number) => (i < seqLength ? !step : step)))
   }, [seqLength])
 
   // MIDI
@@ -205,13 +238,13 @@ export default function Channel({
       if (rangeModeRef.current) {
         const pitchClassIndex = midiNoteOn.note.number % 12
         if (midiHoldRef.current || !keyRef.current[pitchClassIndex]) {
-          setKey((key) => {
+          setKey((key: any) => {
             const keyCopy = key.slice()
             keyCopy[pitchClassIndex] = true
             return keyCopy
           })
         } else {
-          setKey((key) => {
+          setKey((key: any) => {
             const keyCopy = key.slice()
             keyCopy[pitchClassIndex] = false
             return keyCopy
@@ -221,13 +254,13 @@ export default function Channel({
         const noteNumber = convertMidiNumber(midiNoteOn.note.number)
         if (noteNumber >= 0 && noteNumber < OCTAVES * 12) {
           if (midiHoldRef.current || !keybdPitchesRef.current.includes(noteNumber)) {
-            setKeybdPitches((keybdPitches) => {
+            setKeybdPitches((keybdPitches: any) => {
               const keybdPitchesCopy = keybdPitches.slice()
               keybdPitchesCopy.push(noteNumber)
               return keybdPitchesCopy.sort()
             })
           } else {
-            setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+            setKeybdPitches((keybdPitches: any) => keybdPitches.filter((p: any) => p !== noteNumber))
           }
         }
       }
@@ -238,7 +271,7 @@ export default function Channel({
     if (midiInRef.current && midiNoteOff && midiHoldRef.current) {
       if (rangeModeRef.current) {
         const pitchClassIndex = midiNoteOff.note.number % 12
-        setKey((key) => {
+        setKey((key: any) => {
           const keyCopy = key.slice()
           keyCopy[pitchClassIndex] = false
           return keyCopy
@@ -246,7 +279,7 @@ export default function Channel({
       } else {
         const noteNumber = convertMidiNumber(midiNoteOff.note.number)
         if (noteNumber >= 0 && noteNumber < OCTAVES * 12) {
-          setKeybdPitches((keybdPitches) => keybdPitches.filter((p) => p !== noteNumber))
+          setKeybdPitches((keybdPitches: any) => keybdPitches.filter((p: any) => p !== noteNumber))
         }
       }
     }
@@ -270,11 +303,11 @@ export default function Channel({
   const dragAuxChannel = useRef(false)
   const drag = useGesture({
     onDrag: ({ event, xy: [x, y] }) => {
-      let hoveredChannel
+      let hoveredChannel: any
       if (view === 'stacked' || view === 'horizontal') {
         const topOffset =
           62 +
-          (event.target.classList.contains('auxiliary') ? numChannels * CHANNEL_HEIGHT : 0) -
+          ((event.target as HTMLElement).classList.contains('auxiliary') ? numChannels * CHANNEL_HEIGHT : 0) -
           container.current.scrollTop
         hoveredChannel = constrain(Math.round((y - topOffset) / CHANNEL_HEIGHT), 0, numChannels)
         if (hoveredChannel !== dragChannel.current) {
@@ -295,7 +328,7 @@ export default function Channel({
     },
     onDragStart: ({ event }) => {
       dragChannel.current = channelNum
-      dragAuxChannel.current = event.target.classList.contains('auxiliary')
+      dragAuxChannel.current = (event.target as HTMLElement).classList.contains('auxiliary')
       setDragTarget(channelNum)
       setDraggingChannel(true)
     },
@@ -309,7 +342,7 @@ export default function Channel({
 
   // instrument
 
-  const instrument = useRef()
+  const instrument = useRef<any>()
 
   const cleanupInstruments = useCallback(() => {
     if (notePlaying.current && noteIndex.current !== undefined) {
@@ -319,7 +352,7 @@ export default function Channel({
       }
       const channel = customMidiOutChannelRef.current ? midiOutChannelRef.current : channelNumRef.current + 1
       const note = noteString(noteIndex.current)
-      const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
+      const midiOutObj = midiOutRef.current ? (WebMidi.getOutputByName(midiOutRef.current) as any) : null
       if (midiOutObj) {
         midiOutObj.stopNote(note, { channels: channel })
       }
@@ -349,12 +382,12 @@ export default function Channel({
   } = useInstruments(instrument, instrumentParams, instrumentType, cleanupInstruments, setModalType)
 
   const noteOff = useCallback(
-    (channel, note, midiOutObj, delay, offTime, clockOffset) => {
+    (channel: any, note: any, midiOutObj: any, delay?: any, offTime?: any, clockOffset?: any) => {
       if (instrument.current && instrumentType === 'synth') {
         instrument.current.triggerRelease(offTime ?? undefined)
       }
       if (midiOutObj) {
-        const params = {}
+        const params: any = {}
         if (offTime) {
           params.time = offTime * 1000 + clockOffset
         }
@@ -375,7 +408,7 @@ export default function Channel({
   const getChannelData = useCallback(() => {
     const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
     const note = noteString(noteIndex.current)
-    const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+    const midiOutObj = midiOut ? (WebMidi.getOutputByName(midiOut) as any) : null
     const clockOffset = WebMidi.time - Tone.immediate() * 1000
     return { channel, note, midiOutObj, clockOffset }
   }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel])
@@ -402,7 +435,7 @@ export default function Channel({
     if (notePlaying.current && noteIndex.current !== undefined && channelNumRef.current !== channelNum) {
       const channel = customMidiOutChannel ? midiOutChannel : channelNumRef.current + 1
       const note = noteString(noteIndex.current)
-      const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
+      const midiOutObj = midiOutRef.current ? (WebMidi.getOutputByName(midiOutRef.current) as any) : null
       noteOff(channel, note, midiOutObj, true, null)
       channelNumRef.current = channelNum
     }
@@ -415,7 +448,7 @@ export default function Channel({
 
   // play note
   const playNote = useCallback(
-    (time) => {
+    (time: any) => {
       const { channel, note, midiOutObj, clockOffset } = getChannelData()
       if (!note) return
       if (notePlaying.current) {
@@ -462,11 +495,11 @@ export default function Channel({
 
   // fire individual notes, like on an ALT+Click
   const triggerNote = useCallback(
-    (i, callback) => {
+    (i: number, callback: any) => {
       const note = noteString(i)
       if (!note) return
       const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
-      const midiOutObj = midiOut ? WebMidi.getOutputByName(midiOut) : null
+      const midiOutObj = midiOut ? (WebMidi.getOutputByName(midiOut) as any) : null
       if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
         if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
@@ -544,7 +577,7 @@ export default function Channel({
   }, [emptyKey, getChannelData, hold, muted, noteOff, playNote, seqSteps])
 
   const loadPlayNoteBuffer = useCallback(
-    (type, time, interval) => {
+    (type: any, time: any, interval: any) => {
       if (!playNoteBuffer.current.seq && !playNoteBuffer.current.key) {
         Tone.getContext().setTimeout(clearPlayNoteBuffer, PLAY_NOTE_BUFFER_TIME)
       }
@@ -555,7 +588,7 @@ export default function Channel({
 
   // sequence loop
   const seqCallback = useCallback(
-    (time, interval) => {
+    (time: any, interval: any) => {
       // console.log('SEQ', time, Tone.immediate())
       if (currentStep.current === undefined) {
         currentStep.current = handleArpMode(seqMovement, seqLength, undefined, seqArpUtil, seqArpInc1, seqArpInc2)
@@ -583,7 +616,7 @@ export default function Channel({
 
   // key loop
   const keyCallback = useCallback(
-    (time, interval) => {
+    (time: any, interval: any) => {
       // console.log('KEY', time, Tone.immediate())
       const pitchRange = rangeMode ? pitchesInRange(rangeStart, rangeEnd, key) : keybdPitches
       if (pitchRange.length) {
@@ -593,7 +626,7 @@ export default function Channel({
           currentPitchIndex = pitchRange.indexOf(noteIndex.current)
           if (currentPitchIndex === -1) {
             currentPitchIndex = pitchRange.indexOf(
-              pitchRange.reduce((acc, curr) =>
+              pitchRange.reduce((acc: any, curr: any) =>
                 Math.abs(noteIndex.current - curr) < Math.abs(noteIndex.current - acc) ? curr : acc
               )
             )
@@ -634,7 +667,7 @@ export default function Channel({
     noteIndex.current = undefined
     prevNoteIndex.current = undefined
     keyArpUtil.current = false
-    keyLoop.current.reset()
+    keyLoop.current?.reset()
   }, [keyLoop])
 
   const seqRestart = useCallback(() => {
@@ -643,7 +676,7 @@ export default function Channel({
     nextStep.current = undefined
     seqArpUtil.current = false
     setPlayingStep(null)
-    seqLoop.current.reset()
+    seqLoop.current?.reset()
   }, [seqLoop])
 
   useEffect(() => {
@@ -769,7 +802,7 @@ export default function Channel({
   useEffect(() => {
     if (!rangeMode) {
       const newKey = BLANK_PITCH_CLASSES()
-      keybdPitches.forEach((note) => {
+      keybdPitches.forEach((note: any) => {
         newKey[note % 12] = true
       })
       setKey(newKey)
@@ -1000,7 +1033,7 @@ export default function Channel({
   )
 
   const dragTargetUI = useCallback(
-    (horizontal) => {
+    (horizontal: any) => {
       const numHorizontalChannels = Math.floor(window.innerWidth / CLOCK_CHANNEL_WIDTH)
       const top = horizontal
         ? (dragTarget - channelNum + (dragTarget > channelNum ? 1 : 0)) * CHANNEL_HEIGHT +
@@ -1038,7 +1071,7 @@ export default function Channel({
 
   // watch and update state, with debounce
 
-  const channelStateDebounce = useRef()
+  const channelStateDebounce = useRef<any>()
   useEffect(() => {
     clearTimeout(channelStateDebounce.current)
     const debounceTime = 200
@@ -1173,7 +1206,7 @@ export default function Channel({
           <div className="transformations">
             {rangeMode && shiftEl}
             {rangeMode && axisNormal}
-            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
+            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
             {!rangeMode && midiInputModeEl}
             {!rangeMode && clearResetEl}
@@ -1283,7 +1316,7 @@ export default function Channel({
           <div className="transformations">
             {rangeMode && shiftEl}
             {rangeMode && axisNormal}
-            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic} alt="" draggable="false" />}
+            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />}
             {rangeMode && flipOppositeEl}
             {!rangeMode && midiInputModeEl}
             {!rangeMode && clearResetEl}
@@ -1387,7 +1420,7 @@ export default function Channel({
               {!rangeMode && clearResetEl}
               {/* {keyViewTypeEl} */}
             </div>
-            {rangeMode && <img className="arrow-clock" src={arrowClockGraphic} alt="" />}
+            {rangeMode && <img className="arrow-clock" src={arrowClockGraphic ?? undefined} alt="" />}
             {axisClock}
             <div className="channel-vertical">
               {keyMovementEl}
@@ -1406,7 +1439,9 @@ export default function Channel({
           <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
             <div
               className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}
-              style={{ '--drawer-height': 251 + Math.floor(seqLength / 16) * (22 + 16) + 'px' }}>
+              style={
+                { '--drawer-height': 251 + Math.floor(seqLength / 16) * (22 + 16) + 'px' } as React.CSSProperties
+              }>
               <div className="piano-container">{pianoEl}</div>
               <div className="piano-drawer-border"></div>
               <Sequencer
@@ -1485,33 +1520,4 @@ export default function Channel({
     default:
       return null
   }
-}
-Channel.propTypes = {
-  numChannels: PropTypes.number,
-  color: PropTypes.string,
-  channelNum: PropTypes.number,
-  grabbing: PropTypes.bool,
-  setGrabbing: PropTypes.func,
-  resizing: PropTypes.bool,
-  setResizing: PropTypes.func,
-  view: PropTypes.string,
-  numChannelsSoloed: PropTypes.number,
-  tempo: PropTypes.number,
-  playing: PropTypes.bool,
-  showStepNumbers: PropTypes.bool,
-  midiOut: PropTypes.string,
-  setChannelState: PropTypes.func,
-  channelPreset: PropTypes.object,
-  duplicateChannel: PropTypes.func,
-  deleteChannel: PropTypes.func,
-  initState: PropTypes.object,
-  container: PropTypes.object,
-  changeChannelOrder: PropTypes.func,
-  theme: PropTypes.string,
-  midiNoteOn: PropTypes.object,
-  midiNoteOff: PropTypes.object,
-  restartChannels: PropTypes.bool,
-  resetTransport: PropTypes.bool,
-  preventUpdate: PropTypes.bool,
-  longestSequence: PropTypes.number,
 }

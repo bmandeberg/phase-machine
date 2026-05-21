@@ -1,8 +1,18 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 import './Sequencer.scss'
+
+interface SequencerProps {
+  className?: string
+  seqSteps: boolean[]
+  setSeqSteps: React.Dispatch<React.SetStateAction<boolean[]>>
+  seqLength: number
+  playingStep?: number
+  children?: React.ReactNode
+  showStepNumbers?: boolean
+  longestSequence?: number
+}
 
 export default function Sequencer({
   className,
@@ -13,9 +23,9 @@ export default function Sequencer({
   children,
   showStepNumbers,
   longestSequence,
-}) {
+}: SequencerProps) {
   const updateSeq = useCallback(
-    (i) => {
+    (i: number) => {
       setSeqSteps((seq) => {
         const seqCopy = seq.slice()
         seqCopy[i] = !seqCopy[i]
@@ -52,20 +62,12 @@ export default function Sequencer({
     <div className={classNames('sequencer', className)}>
       <div
         className="sequencer-container"
-        style={{ width: longestSequence > seqLength && (22 + 18) * longestSequence + 'px' }}>
+        style={
+          { width: longestSequence && longestSequence > seqLength && (22 + 18) * longestSequence + 'px' } as React.CSSProperties
+        }>
         {steps}
       </div>
       {children}
     </div>
   )
-}
-Sequencer.propTypes = {
-  className: PropTypes.string,
-  seqSteps: PropTypes.array,
-  setSeqSteps: PropTypes.func,
-  seqLength: PropTypes.number,
-  playingStep: PropTypes.number,
-  children: PropTypes.node,
-  showStepNumbers: PropTypes.bool,
-  longestSequence: PropTypes.number,
 }

@@ -26,9 +26,9 @@ interface HeaderProps {
   playing?: boolean
   setPlaying: any
   midiOuts?: any[]
-  midiOut?: string
+  midiOut?: string | null
   midiIns?: any[]
-  midiIn?: string
+  midiIn?: string | null
   setMidiOut: any
   setMidiIn: any
   midiEnabled?: boolean

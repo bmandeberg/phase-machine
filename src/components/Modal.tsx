@@ -13,41 +13,41 @@ interface ModalProps {
   modalType?: string | null
   setModalType: (type: string | null) => void
   showStepNumbers?: boolean
-  setShowStepNumbers: any
+  setShowStepNumbers?: any
   defaultChannelModeKeybd?: boolean
-  setDefaultChannelModeKeybd: any
+  setDefaultChannelModeKeybd?: any
   theme: string
-  setTheme: any
+  setTheme?: any
   midiHold?: boolean
-  setMidiHold: any
+  setMidiHold?: any
   customMidiOutChannel?: boolean
-  setCustomMidiOutChannel: any
+  setCustomMidiOutChannel?: any
   channelNum?: number
   midiOutChannel?: number
-  setMidiOutChannel: any
-  presets: Preset[]
-  importPresets: any
+  setMidiOutChannel?: any
+  presets?: Preset[]
+  importPresets?: any
   instrumentOn?: boolean
-  setInstrumentOn: any
-  instrumentType: string
-  setInstrumentType: any
-  instrumentParams: InstrumentParams
-  setInstrumentParams: any
-  instruments: any
-  gainNode: any
-  effects: any
+  setInstrumentOn?: any
+  instrumentType?: string
+  setInstrumentType?: any
+  instrumentParams?: InstrumentParams
+  setInstrumentParams?: any
+  instruments?: any
+  gainNode?: any
+  effects?: any
   grabbing?: boolean
-  setGrabbing: any
+  setGrabbing?: any
   presetsRestartTransport?: boolean
-  setPresetsRestartTransport: any
+  setPresetsRestartTransport?: any
   midiClockIn?: boolean
-  setMidiClockIn: any
+  setMidiClockIn?: any
   midiClockOut?: boolean
-  setMidiClockOut: any
+  setMidiClockOut?: any
   ignorePresetsTempo?: boolean
-  setIgnorePresetsTempo: any
+  setIgnorePresetsTempo?: any
   presetsStopTransport?: boolean
-  setPresetsStopTransport: any
+  setPresetsStopTransport?: any
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -134,7 +134,7 @@ export default function Modal({
         setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
         theme={theme}
         setTheme={setTheme}
-        presets={presets}
+        presets={presets ?? []}
         importPresets={importPresets}
         modalType={modalType}
         presetsRestartTransport={presetsRestartTransport}
@@ -200,9 +200,9 @@ export default function Modal({
       <InstrumentModal
         instrumentOn={instrumentOn}
         setInstrumentOn={setInstrumentOn}
-        instrumentType={instrumentType}
+        instrumentType={instrumentType as string}
         setInstrumentType={setInstrumentType}
-        instrumentParams={instrumentParams}
+        instrumentParams={instrumentParams as InstrumentParams}
         setInstrumentParams={setInstrumentParams}
         instruments={instruments}
         gainNode={gainNode}
