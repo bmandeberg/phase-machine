@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import NumericInput from 'react-numeric-input'
+import NumericInput from './NumericInput'
 import './NumInput.scss'
 
 export default function NumInput({
@@ -89,8 +89,7 @@ export default function NumInput({
     <div
       ref={input}
       className={classNames('num-input', className, { 'small-input': small, 'inline-input': inline, short, disabled })}>
-      {/* eslint-disable-next-line */}
-      <NumericInput min={min} max={max} value={value} onChange={setValue} style={false} strict />
+      <NumericInput min={min} max={max} value={value} onChange={setValue} />
       {buttonText && buttonAction ? numInputButton : numInputLabel}
     </div>
   )

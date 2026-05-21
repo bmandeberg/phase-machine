@@ -73,6 +73,26 @@ if (diag.knobs > 0) {
   ok('knob rotated on drag', before !== (await getT()))
 }
 
+// Numeric input stepper (custom NumericInput replacing react-numeric-input)
+{
+  const sel = '.num-input .react-numeric-input'
+  const has = await page.$(sel)
+  if (!has) {
+    ok('numeric input present', false)
+  } else {
+    ok('numeric input present', true)
+    const readVal = () => page.$eval(sel + ' input', (el) => el.value)
+    const before = await readVal()
+    await page.click(sel + ' b:first-of-type') // increment
+    await new Promise((r) => setTimeout(r, 120))
+    const afterUp = await readVal()
+    await page.click(sel + ' b:last-of-type') // decrement
+    await new Promise((r) => setTimeout(r, 120))
+    const afterDown = await readVal()
+    ok('numeric stepper +/- works', afterUp !== before && afterDown === before, `${before} ->+ ${afterUp} ->- ${afterDown}`)
+  }
+}
+
 await page.screenshot({ path: '/tmp/pm-smoke.png' })
 
 const failed = results.filter((r) => r.startsWith('FAIL')).length
