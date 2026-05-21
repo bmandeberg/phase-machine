@@ -2,8 +2,21 @@ import { Bezier } from 'bezier-js'
 import * as Tone from 'tone'
 import { lerp, scaleToRange } from '../math'
 
+type LoopCallback = (time: number, interval: number) => void
+
 export default class Loop {
-  constructor(callback) {
+  rate: string
+  interval: number
+  swingAmt: number
+  swingPhraseLength: number
+  swingEnable: boolean
+  callback: LoopCallback
+  swingSkew: number
+  swingIndex: number
+  swingCurve: Bezier
+  loop: Tone.Loop
+
+  constructor(callback: LoopCallback) {
     this.rate = '4n'
     this.interval = Tone.getTransport().toSeconds(this.rate)
     this.swingAmt = 0.5
@@ -35,8 +48,8 @@ export default class Loop {
     return cy * this.interval * this.swingPhraseLength
   }
 
-  curveY(x) {
-    const intersect = this.swingCurve.intersects({ p1: { x, y: 0 }, p2: { x, y: 1 } })
+  curveY(x: number) {
+    const intersect = this.swingCurve.intersects({ p1: { x, y: 0 }, p2: { x, y: 1 } }) as number[]
     if (!intersect.length) {
       return x
     }
@@ -50,7 +63,7 @@ export default class Loop {
     }
   }
 
-  updateSwingAmt(swingAmt) {
+  updateSwingAmt(swingAmt: number) {
     this.swingAmt = swingAmt
     if (this.swingAmt === 0.5) {
       this.swingEnable = false
@@ -64,7 +77,7 @@ export default class Loop {
     this.updateCurve()
   }
 
-  updateSwingPhraseLength(swingPhraseLength) {
+  updateSwingPhraseLength(swingPhraseLength: number) {
     this.swingPhraseLength = swingPhraseLength
     this.swingSkew = this.swingPhraseLength === 2 ? 0 : scaleToRange(this.swingPhraseLength, 3, 6, 0.25, 1)
     if (this.swingEnable) {
@@ -73,12 +86,12 @@ export default class Loop {
     this.updateCurve()
   }
 
-  updateRate(rate) {
+  updateRate(rate: string) {
     this.rate = rate
     this.updateInterval()
   }
 
-  updateTempo(tempo) {
+  updateTempo(tempo: number) {
     if (Tone.getTransport().bpm.value !== tempo) {
       Tone.getTransport().bpm.value = tempo
     }

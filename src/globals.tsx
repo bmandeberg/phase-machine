@@ -44,11 +44,12 @@ import choral from './assets/samples-choral.svg'
 import lightChoral from './assets/samples-choral-light.svg'
 import darkChoral from './assets/samples-choral-dark.svg'
 import { rangeWrapper } from './math'
+import { Channel, Preset } from './types'
 
 const uaParser = new UAParser()
 export const BROWSER = uaParser.getBrowser()
 const device = uaParser.getDevice()
-if (device.type === 'mobile' || BROWSER.name.includes('Mobile')) {
+if (device.type === 'mobile' || BROWSER.name?.includes('Mobile')) {
   alert('🗣 sounds can only play if your device is not on silent')
 }
 
@@ -59,7 +60,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Alt') {
     ALT = true
     document.dispatchEvent(altOnEvent)
-  } else if (e.key === 'Enter' && document.activeElement.classList.contains('nowrap')) {
+  } else if (e.key === 'Enter' && document.activeElement?.classList.contains('nowrap')) {
     e.preventDefault()
   }
 })
@@ -70,7 +71,7 @@ document.addEventListener('keyup', (e) => {
   }
 })
 
-export const CHORUS_ENABLED = !BROWSER.name.includes('Safari')
+export const CHORUS_ENABLED = !BROWSER.name?.includes('Safari')
 
 export const VIEWS = ['horizontal', 'stacked', 'clock']
 
@@ -104,7 +105,7 @@ export const RATES = [
   '64t',
 ]
 
-function themedIcon(icon, theme) {
+function themedIcon(icon: string, theme: string) {
   switch (icon) {
     case 'sine':
       switch (theme) {
@@ -265,7 +266,7 @@ function themedIcon(icon, theme) {
   }
 }
 
-export function themedSwitch(component, theme, mute) {
+export function themedSwitch(component: string, theme: string, mute?: boolean) {
   switch (component) {
     case 'offColor':
       switch (theme) {
@@ -316,14 +317,14 @@ export function themedSwitch(component, theme, mute) {
   }
 }
 
-export const SIGNAL_TYPES = {
-  sine: (theme) => <img className="wave-icon" src={themedIcon('sine', theme)} alt="" />,
-  square: (theme) => <img className="wave-icon" src={themedIcon('square', theme)} alt="" />,
-  triangle: (theme) => <img className="wave-icon" src={themedIcon('triangle', theme)} alt="" />,
-  sawtooth: (theme) => <img className="wave-icon" src={themedIcon('sawtooth', theme)} alt="" />,
+export const SIGNAL_TYPES: Record<string, (theme: string) => JSX.Element> = {
+  sine: (theme: string) => <img className="wave-icon" src={themedIcon('sine', theme) ?? ''} alt="" />,
+  square: (theme: string) => <img className="wave-icon" src={themedIcon('square', theme) ?? ''} alt="" />,
+  triangle: (theme: string) => <img className="wave-icon" src={themedIcon('triangle', theme) ?? ''} alt="" />,
+  sawtooth: (theme: string) => <img className="wave-icon" src={themedIcon('sawtooth', theme) ?? ''} alt="" />,
 }
-export const SYNTH_TYPES = Object.assign({}, SIGNAL_TYPES, {
-  pulse: (theme) => <img className="wave-icon" src={themedIcon('pulse', theme)} alt="" />,
+export const SYNTH_TYPES: Record<string, (theme: string) => JSX.Element> = Object.assign({}, SIGNAL_TYPES, {
+  pulse: (theme: string) => <img className="wave-icon" src={themedIcon('pulse', theme) ?? ''} alt="" />,
   pwm: () => (
     <span className="wave-title" style={{ marginRight: 0 }}>
       pwm
@@ -331,23 +332,40 @@ export const SYNTH_TYPES = Object.assign({}, SIGNAL_TYPES, {
   ),
 })
 
-export const INSTRUMENT_TYPES = {
-  synth: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('synth', theme)} alt="" />,
-  bass: (theme) => <img className="wave-icon" style={{ height: 28 }} src={themedIcon('bass', theme)} alt="" />,
-  piano: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('piano', theme)} alt="" />,
-  marimba: (theme) => <img className="wave-icon" style={{ height: 18 }} src={themedIcon('marimba', theme)} alt="" />,
-  vibes: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('vibes', theme)} alt="" />,
-  harp: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('harp', theme)} alt="" />,
-  choral: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('choral', theme)} alt="" />,
-  drums: (theme) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drums', theme)} alt="" />,
-  'drum-machine': (theme) => (
-    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drum-machine', theme)} alt="" />
+export const INSTRUMENT_TYPES: Record<string, (theme: string) => JSX.Element> = {
+  synth: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('synth', theme) ?? ''} alt="" />
+  ),
+  bass: (theme: string) => (
+    <img className="wave-icon" style={{ height: 28 }} src={themedIcon('bass', theme) ?? ''} alt="" />
+  ),
+  piano: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('piano', theme) ?? ''} alt="" />
+  ),
+  marimba: (theme: string) => (
+    <img className="wave-icon" style={{ height: 18 }} src={themedIcon('marimba', theme) ?? ''} alt="" />
+  ),
+  vibes: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('vibes', theme) ?? ''} alt="" />
+  ),
+  harp: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('harp', theme) ?? ''} alt="" />
+  ),
+  choral: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('choral', theme) ?? ''} alt="" />
+  ),
+  drums: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drums', theme) ?? ''} alt="" />
+  ),
+  'drum-machine': (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drum-machine', theme) ?? ''} alt="" />
   ),
 }
 
-export const MOVEMENTS = {
-  up: (length, i) => (i === undefined ? 0 : i < length - 1 ? i + 1 : 0),
-  'up/down': (length, i, descending) => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const MOVEMENTS: Record<string, (...args: any[]) => number> = {
+  up: (length: number, i: number | undefined) => (i === undefined ? 0 : i < length - 1 ? i + 1 : 0),
+  'up/down': (length: number, i: number | undefined, descending: { current: boolean }) => {
     if (i === undefined) {
       return 0
     }
@@ -356,8 +374,14 @@ export const MOVEMENTS = {
     }
     return i + (descending.current ? -1 : 1)
   },
-  down: (length, i) => (i === undefined ? length - 1 : i > 0 ? i - 1 : length - 1),
-  '+/-': (length, i, inc1, inc2, doInc2) => {
+  down: (length: number, i: number | undefined) => (i === undefined ? length - 1 : i > 0 ? i - 1 : length - 1),
+  '+/-': (
+    length: number,
+    i: number | undefined,
+    inc1: number,
+    inc2: number,
+    doInc2: { current: boolean }
+  ) => {
     if (i === undefined) {
       return 0
     }
@@ -365,10 +389,18 @@ export const MOVEMENTS = {
     doInc2.current = !doInc2.current
     return index
   },
-  random: (length) => Math.floor(Math.random() * length),
+  random: (length: number) => Math.floor(Math.random() * length),
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-export function handleArpMode(mode, length, i, util, inc1, inc2) {
+export function handleArpMode(
+  mode: string,
+  length: number,
+  i: number | undefined,
+  util: any,
+  inc1?: number,
+  inc2?: number
+) {
   let nextPitchIndex = 0
   switch (mode) {
     case 'up':
@@ -417,7 +449,7 @@ export const BLANK_PITCH_CLASSES = () => [
 
 export const RANDOM_PITCH_CLASSES = () => [...Array(12)].map(() => Math.random() > 0.5)
 
-export const whiteKey = (i) => {
+export const whiteKey = (i: number) => {
   i = i % 12
   if (i <= 4) {
     return i % 2 === 0
@@ -427,40 +459,40 @@ export const whiteKey = (i) => {
 }
 
 export const nextBlackKey = {
-  near: (i) => {
+  near: (i: number) => {
     i = i % 12
     return i === 0 || i === 5
   },
-  middle: (i) => {
+  middle: (i: number) => {
     i = i % 12
     return i === 7
   },
-  far: (i) => {
+  far: (i: number) => {
     i = i % 12
     return i === 2 || i === 9
   },
 }
 export const prevBlackKey = {
-  near: (i) => {
+  near: (i: number) => {
     i = i % 12
     return i === 4 || i === 11
   },
-  middle: (i) => {
+  middle: (i: number) => {
     i = i % 12
     return i === 9
   },
-  far: (i) => {
+  far: (i: number) => {
     i = i % 12
     return i === 2 || i === 7
   },
 }
 
-export const blackKeyLeft = (i) => {
+export const blackKeyLeft = (i: number) => {
   i = i % 12
   return i === 1 || i === 6
 }
 
-export const blackKeyRight = (i) => {
+export const blackKeyRight = (i: number) => {
   i = i % 12
   return i === 3 || i === 10
 }
@@ -469,7 +501,7 @@ export const MIDDLE_C = 36
 
 export const OCTAVES = 8
 
-export function constrain(n, min, max) {
+export function constrain(n: number, min: number, max: number) {
   return Math.min(Math.max(n, min), max)
 }
 
@@ -485,7 +517,7 @@ export const PRESET_HOLD_TIME = 1000
 
 export const PLAY_NOTE_BUFFER_TIME = 0.015
 
-export function noteString(playingNote) {
+export function noteString(playingNote: number | null | undefined) {
   if (!playingNote && playingNote !== 0) {
     return null
   }
@@ -493,11 +525,11 @@ export function noteString(playingNote) {
   return notes[playingNote % 12] + (Math.floor(playingNote / 12) + 1)
 }
 
-export function convertMidiNumber(midiNumber) {
+export function convertMidiNumber(midiNumber: number) {
   return midiNumber - 24
 }
 
-export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
+export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: boolean): Channel => ({
   id: uuid(),
   color,
   channelNum,
@@ -575,7 +607,7 @@ export const BLANK_CHANNEL = (channelNum, color, rangeMode) => ({
   },
 })
 
-export const DEFAULT_PRESET = {
+export const DEFAULT_PRESET: Preset = {
   name: 'New Preset',
   id: uuid(),
   hotkey: null,

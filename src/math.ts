@@ -1,10 +1,10 @@
 import { BLANK_PITCH_CLASSES, OCTAVES } from './globals'
 
-export function rangeWrapper(n, range = 12) {
+export function rangeWrapper(n: number, range = 12) {
   return n < 0 ? range - 1 + ((n + 1) % range) : n % range
 }
 
-export function flip(axis, key) {
+export function flip(axis: number, key: boolean[]) {
   const dedupAxis = (axis / 2) % 6
   const keyCopy = key.slice()
   key.forEach((pitchClass, i) => {
@@ -16,7 +16,7 @@ export function flip(axis, key) {
   return keyCopy
 }
 
-export function opposite(key) {
+export function opposite(key: boolean[]) {
   const keyCopy = key.slice()
   key.forEach((pitchClass, i) => {
     keyCopy[i] = !pitchClass
@@ -24,7 +24,7 @@ export function opposite(key) {
   return keyCopy
 }
 
-export function shiftWrapper(n, shiftDirectionForward) {
+export function shiftWrapper(n: number, shiftDirectionForward: boolean) {
   if (n < -11) {
     n = 11
   } else if (n > 11) {
@@ -37,7 +37,7 @@ export function shiftWrapper(n, shiftDirectionForward) {
   return n
 }
 
-export function shift(shiftAmt, key) {
+export function shift(shiftAmt: number, key: boolean[]) {
   const shiftedPitchClasses = BLANK_PITCH_CLASSES()
   for (let i = 0; i < key.length; i++) {
     if (key[i]) {
@@ -48,33 +48,33 @@ export function shift(shiftAmt, key) {
   return shiftedPitchClasses
 }
 
-export function pitchesInRange(rangeStart, rangeEnd, key) {
-  const pitchIndexes = []
+export function pitchesInRange(rangeStart: number, rangeEnd: number, key: boolean[]) {
+  const pitchIndexes: number[] = []
   key.forEach((pitchClass, i) => {
     if (pitchClass) {
       pitchIndexes.push(i)
     }
   })
-  const allPitches = []
+  const allPitches: number[] = []
   for (let i = 0; i < OCTAVES; i++) {
     allPitches.push(...pitchIndexes.map((pi) => pi + 12 * i))
   }
   return allPitches.filter((pitch) => pitch >= rangeStart && pitch < rangeEnd)
 }
 
-export function lerp(n1, n2, t) {
+export function lerp(n1: number, n2: number, t: number) {
   return n1 + (n2 - n1) * t
 }
 
-export function scaleToRange(num, inMin, inMax, outMin, outMax) {
+export function scaleToRange(num: number, inMin: number, inMax: number, outMin: number, outMax: number) {
   return ((num - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
 }
 
-export function expInterpolate(min, max, value, invert = false) {
-  const exp = invert ? 1/Math.E : Math.E
+export function expInterpolate(min: number, max: number, value: number, invert = false) {
+  const exp = invert ? 1 / Math.E : Math.E
   return (max - min) * Math.pow((value - min) / (max - min), exp) + min
 }
 
-export function constrain(n, min, max) {
+export function constrain(n: number, min: number, max: number) {
   return Math.min(Math.max(n, min), max)
 }
