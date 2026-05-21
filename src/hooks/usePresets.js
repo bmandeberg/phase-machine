@@ -135,13 +135,13 @@ export default function usePresets(
       setChannelSync(preset.channelSync)
       // restart transport if necessary
       if (presetsRestartTransport || presetsStopTransport) {
-        Tone.Transport.stop()
+        Tone.getTransport().stop()
         midiStop(midiOutRef.current, midiInRef.current && midiInRef.current.name, true)
-        Tone.Transport.midiContinue = false
+        Tone.getTransport().midiContinue = false
         if (presetsStopTransport) {
           setPlaying(false)
         } else if (playing) {
-          Tone.Transport.start()
+          Tone.getTransport().start()
           midiStartContinue(midiOutRef.current, midiInRef.current && midiInRef.current.name)
         }
       }

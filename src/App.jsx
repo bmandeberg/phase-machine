@@ -83,10 +83,10 @@ export default function App() {
 
   useEffect(() => {
     if (resetTransport) {
-      Tone.Transport.stop()
+      Tone.getTransport().stop()
       midiStop(midiOutRef.current, midiInRef.current && midiInRef.current.name, true)
       if (playing) {
-        Tone.Transport.start()
+        Tone.getTransport().start()
         midiStartContinue(midiOutRef.current, midiInRef.current && midiInRef.current.name)
       }
       setResetTransport(false)
@@ -217,8 +217,8 @@ export default function App() {
   }, [view])
 
   useEffect(() => {
-    if (Tone.Transport.bpm.value !== tempo) {
-      Tone.Transport.bpm.value = tempo
+    if (Tone.getTransport().bpm.value !== tempo) {
+      Tone.getTransport().bpm.value = tempo
     }
   }, [tempo])
 

@@ -41,10 +41,10 @@ export default class Header extends React.Component {
       this.props.triggerTransportReset()
     } else {
       if (!this.props.playing) {
-        Tone.Transport.start()
+        Tone.getTransport().start()
         midiStartContinue(this.props.midiOut, this.props.midiIn)
       } else {
-        Tone.Transport.pause()
+        Tone.getTransport().pause()
         midiStop(this.props.midiOut, this.props.midiIn)
       }
       this.props.setPlaying((playing) => !playing)

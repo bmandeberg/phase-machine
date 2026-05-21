@@ -5,7 +5,7 @@ import { lerp, scaleToRange } from '../math'
 export default class Loop {
   constructor(callback) {
     this.rate = '4n'
-    this.interval = Tone.Transport.toSeconds(this.rate)
+    this.interval = Tone.getTransport().toSeconds(this.rate)
     this.swingAmt = 0.5
     this.swingPhraseLength = 2
     this.swingEnable = false
@@ -79,14 +79,14 @@ export default class Loop {
   }
 
   updateTempo(tempo) {
-    if (Tone.Transport.bpm.value !== tempo) {
-      Tone.Transport.bpm.value = tempo
+    if (Tone.getTransport().bpm.value !== tempo) {
+      Tone.getTransport().bpm.value = tempo
     }
     this.updateInterval()
   }
 
   updateInterval() {
-    this.interval = Tone.Transport.toSeconds(this.rate)
+    this.interval = Tone.getTransport().toSeconds(this.rate)
     this.loop.interval = this.interval * (this.swingEnable ? this.swingPhraseLength : 1)
   }
 

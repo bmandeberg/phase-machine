@@ -63,9 +63,9 @@ export default function useMIDI(setPlaying, setResetTransport) {
         const mi = window.localStorage.getItem('midiIn')
         setMidiIn(() => (WebMidi.inputs.map((i) => i.name).includes(mi) && mi) || null)
         // schedule MIDI clock output
-        Tone.Transport.midiContinue = false
-        if (Tone.Transport.PPQ % 24 === 0) {
-          Tone.Transport.scheduleRepeat((time) => {
+        Tone.getTransport().midiContinue = false
+        if (Tone.getTransport().PPQ % 24 === 0) {
+          Tone.getTransport().scheduleRepeat((time) => {
             if (
               WebMidi.midiClockOut &&
               midiOutRef.current &&
@@ -76,7 +76,7 @@ export default function useMIDI(setPlaying, setResetTransport) {
                 time: time * 1000 + clockOffset + 10,
               })
             }
-          }, Tone.Transport.PPQ / 24 + 'i')
+          }, Tone.getTransport().PPQ / 24 + 'i')
         }
         setMidiEnabled(true)
         WebMidi.addListener('connected', connectMidi)
@@ -121,7 +121,7 @@ export default function useMIDI(setPlaying, setResetTransport) {
       })
       midiInRef.current.addListener('start', (e) => {
         if (WebMidi.midiClockIn) {
-          Tone.Transport.start()
+          Tone.getTransport().start()
           setPlaying(true)
           // MIDI out
           midiStartContinue(midiOutRef.current, midiIn)
@@ -129,7 +129,7 @@ export default function useMIDI(setPlaying, setResetTransport) {
       })
       midiInRef.current.addListener('continue', (e) => {
         if (WebMidi.midiClockIn) {
-          Tone.Transport.start()
+          Tone.getTransport().start()
           setPlaying(true)
           // MIDI out
           midiStartContinue(midiOutRef.current, midiIn)
@@ -137,7 +137,7 @@ export default function useMIDI(setPlaying, setResetTransport) {
       })
       midiInRef.current.addListener('stop', (e) => {
         if (WebMidi.midiClockIn) {
-          Tone.Transport.pause()
+          Tone.getTransport().pause()
           setPlaying(false)
           // MIDI out
           midiStop(midiOutRef.current, midiIn)
@@ -190,11 +190,11 @@ export default function useMIDI(setPlaying, setResetTransport) {
 export function midiStartContinue(midiOut, midiIn) {
   if (WebMidi.midiClockOut && midiOut && midiOut !== midiIn) {
     const midiOutObj = WebMidi.getOutputByName(midiOut)
-    if (Tone.Transport.midiContinue) {
+    if (Tone.getTransport().midiContinue) {
       midiOutObj.sendContinue()
     } else {
       midiOutObj.sendStart()
-      Tone.Transport.midiContinue = true
+      Tone.getTransport().midiContinue = true
     }
   }
 }
@@ -210,7 +210,7 @@ export function midiStop(midiOut, midiIn, reset) {
     WebMidi.getOutputByName(midiOut).sendStop()
     if (reset) {
       midiSongpositionReset(midiOut, midiIn)
-      Tone.Transport.midiContinue = false
+      Tone.getTransport().midiContinue = false
     }
   }
 }

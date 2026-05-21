@@ -84,14 +84,14 @@ export default function InstrumentModal({
   }, [])
 
   const setSyncedDelay = useCallback((rate) => {
-    setDelayTime(Tone.Transport.toSeconds(rate))
+    setDelayTime(Tone.getTransport().toSeconds(rate))
   }, [])
   const syncedDelayOptions = useMemo(() => {
-    return RATES.filter((rate) => Tone.Transport.toSeconds(rate) <= 1)
+    return RATES.filter((rate) => Tone.getTransport().toSeconds(rate) <= 1)
   }, [])
   const syncedDelay = useMemo(() => {
     for (let i = 0; i < RATES.length; i++) {
-      if (delayTime === Tone.Transport.toSeconds(RATES[i])) {
+      if (delayTime === Tone.getTransport().toSeconds(RATES[i])) {
         return RATES[i]
       }
     }
