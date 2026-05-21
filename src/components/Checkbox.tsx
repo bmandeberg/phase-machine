@@ -1,12 +1,18 @@
 import React, { useCallback } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import checkmark from '../assets/checkmark.svg'
 import './Checkbox.scss'
 
-export default function Checkbox({ label, className, checked, setChecked }) {
+interface CheckboxProps {
+  label?: string
+  className?: string
+  checked?: boolean
+  setChecked?: (checked: boolean) => void
+}
+
+export default function Checkbox({ label, className, checked, setChecked }: CheckboxProps) {
   const toggle = useCallback(() => {
-    setChecked(!checked)
+    setChecked?.(!checked)
   }, [checked, setChecked])
 
   return (
@@ -19,10 +25,4 @@ export default function Checkbox({ label, className, checked, setChecked }) {
       </p>
     </div>
   )
-}
-Checkbox.propTypes = {
-  label: PropTypes.string,
-  className: PropTypes.string,
-  checked: PropTypes.bool,
-  setChecked: PropTypes.func,
 }

@@ -1,11 +1,16 @@
 import React, { useMemo, useCallback } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Switch from 'react-switch'
 import { themedSwitch } from '../globals'
 import './MidiInputMode.scss'
 
-export default function MidiInputMode({ midiHold, setMidiHold, theme }) {
+interface MidiInputModeProps {
+  midiHold?: boolean
+  setMidiHold: (midiHold: boolean) => void
+  theme: string
+}
+
+export default function MidiInputMode({ midiHold, setMidiHold, theme }: MidiInputModeProps) {
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
@@ -27,7 +32,7 @@ export default function MidiInputMode({ midiHold, setMidiHold, theme }) {
         <Switch
           className="switch"
           onChange={setMidiHold}
-          checked={midiHold}
+          checked={midiHold ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -44,9 +49,4 @@ export default function MidiInputMode({ midiHold, setMidiHold, theme }) {
       <p className="midi-input-mode-title no-select">MIDI In</p>
     </div>
   )
-}
-MidiInputMode.propTypes = {
-  midiHold: PropTypes.bool,
-  setMidiHold: PropTypes.func,
-  theme: PropTypes.string,
 }

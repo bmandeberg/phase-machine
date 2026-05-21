@@ -1,9 +1,14 @@
 import React, { useCallback } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './MIDI.scss'
 
-export default function MIDI({ midiIn, setMidiIn, openMidiModal }) {
+interface MIDIProps {
+  midiIn?: boolean
+  setMidiIn: React.Dispatch<React.SetStateAction<boolean>>
+  openMidiModal?: () => void
+}
+
+export default function MIDI({ midiIn, setMidiIn, openMidiModal }: MIDIProps) {
   const toggleMidiIn = useCallback(() => {
     setMidiIn((midiIn) => !midiIn)
   }, [setMidiIn])
@@ -18,9 +23,4 @@ export default function MIDI({ midiIn, setMidiIn, openMidiModal }) {
       </div>
     </div>
   )
-}
-MIDI.propTypes = {
-  midiIn: PropTypes.bool,
-  setMidiIn: PropTypes.func,
-  openMidiModal: PropTypes.func,
 }

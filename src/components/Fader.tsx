@@ -1,5 +1,4 @@
 import React, { useMemo, useRef } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { useGesture } from '@use-gesture/react'
 import { constrain, scaleToRange } from '../math'
@@ -19,8 +18,19 @@ const FADER_HEIGHT = 41
 const FADER_MIN_PX = 7
 const FADER_MAX_PX = 43
 
-export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute, theme, className }) {
-  const faderRef = useRef()
+interface FaderProps {
+  value: number
+  setValue: (value: number) => void
+  grabbing?: boolean
+  setGrabbing: (grabbing: boolean) => void
+  label?: string
+  mute?: boolean
+  theme: string
+  className?: string
+}
+
+export default function Fader({ label, grabbing, setGrabbing, value, setValue, mute, theme, className }: FaderProps) {
+  const faderRef = useRef<HTMLDivElement>(null)
 
   const faderSlotGraphic = useMemo(() => {
     switch (theme) {
@@ -48,7 +58,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     }
   }, [mute, theme])
 
-  const faderTop = useRef()
+  const faderTop = useRef(0)
   const drag = useGesture({
     onDrag: ({ xy: [x, y] }) => {
       const newValue = constrain(
@@ -59,7 +69,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
       setValue(newValue)
     },
     onDragStart: () => {
-      faderTop.current = faderRef.current.getBoundingClientRect().top
+      faderTop.current = faderRef.current?.getBoundingClientRect().top ?? 0
       setGrabbing(true)
     },
     onDragEnd: () => {
@@ -87,14 +97,4 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
       <p className="fader-title">{label}</p>
     </div>
   )
-}
-Fader.propTypes = {
-  value: PropTypes.number,
-  setValue: PropTypes.func,
-  grabbing: PropTypes.bool,
-  setGrabbing: PropTypes.func,
-  label: PropTypes.string,
-  mute: PropTypes.bool,
-  theme: PropTypes.string,
-  className: PropTypes.string,
 }

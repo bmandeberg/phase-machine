@@ -1,8 +1,27 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import PropTypes from 'prop-types'
 import { useGesture } from '@use-gesture/react'
 import parse from 'html-react-parser'
 import { constrain } from '../math'
+
+interface KnobSkin {
+  svg: string
+  knobX: number
+  knobY: number
+}
+
+interface LinearKnobProps {
+  className?: string
+  min: number
+  max: number
+  value: number
+  onChange: (value: number) => void
+  skin: KnobSkin
+  style?: React.CSSProperties
+  onStart: () => void
+  onEnd: () => void
+  clampMax: number
+  rotateDegrees: number
+}
 
 export default function LinearKnob({
   className,
@@ -16,8 +35,8 @@ export default function LinearKnob({
   onEnd,
   clampMax,
   rotateDegrees,
-}) {
-  const [svg, setSVG] = useState()
+}: LinearKnobProps) {
+  const [svg, setSVG] = useState<HTMLDivElement>()
 
   useEffect(() => {
     const container = document.createElement('div')
@@ -25,7 +44,7 @@ export default function LinearKnob({
     setSVG(container)
   }, [skin])
 
-  const valueRef = useRef()
+  const valueRef = useRef(0)
   const drag = useGesture({
     onDrag: ({ movement: [dx, dy] }) => {
       const range = max - min
@@ -50,14 +69,14 @@ export default function LinearKnob({
     onDragEnd: onEnd,
   })
 
-  const knobStyle = useMemo(() => {
+  const knobStyle = useMemo<React.CSSProperties>(() => {
     return Object.assign({ width: 50, height: 50, position: 'relative', overflow: 'hidden' }, style)
   }, [style])
 
   const knobHTML = useMemo(() => {
     if (svg) {
       const rotation = rotateDegrees + ((value - min) / (max - min)) * clampMax
-      svg.querySelector('#knob').setAttribute('transform', `rotate(${rotation}, ${skin.knobX}, ${skin.knobY})`)
+      svg.querySelector('#knob')?.setAttribute('transform', `rotate(${rotation}, ${skin.knobX}, ${skin.knobY})`)
       return parse(svg.innerHTML)
     }
     return null
@@ -68,17 +87,4 @@ export default function LinearKnob({
       {knobHTML}
     </div>
   )
-}
-LinearKnob.propTypes = {
-  className: PropTypes.string,
-  min: PropTypes.number,
-  max: PropTypes.number,
-  value: PropTypes.number,
-  onChange: PropTypes.func,
-  skin: PropTypes.object,
-  style: PropTypes.object,
-  onStart: PropTypes.func,
-  onEnd: PropTypes.func,
-  clampMax: PropTypes.number,
-  rotateDegrees: PropTypes.number,
 }

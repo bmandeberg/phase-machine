@@ -1,13 +1,22 @@
 import React, { useMemo } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './SplitButton.scss'
+
+interface SplitButtonProps {
+  className?: string
+  content?: React.ReactNode
+  label?: string
+  leftAction?: () => void
+  rightAction?: () => void
+  contentAction?: () => void
+  small?: boolean
+}
 
 function notImplemented() {
   alert('Not implemented yet 😉')
 }
 
-export default function SplitButton(props) {
+export default function SplitButton(props: SplitButtonProps) {
   const splitButtonLabel = useMemo(() => <p className="split-button-label no-select">{props.label}</p>, [props.label])
 
   return (
@@ -40,13 +49,4 @@ export default function SplitButton(props) {
       {props.label && splitButtonLabel}
     </div>
   )
-}
-SplitButton.propTypes = {
-  className: PropTypes.string,
-  content: PropTypes.node,
-  label: PropTypes.string,
-  leftAction: PropTypes.func,
-  rightAction: PropTypes.func,
-  contentAction: PropTypes.func,
-  small: PropTypes.bool,
 }

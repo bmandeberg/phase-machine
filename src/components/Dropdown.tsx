@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import NumInput from './NumInput'
 import { v4 as uuid } from 'uuid'
@@ -7,7 +6,31 @@ import './Dropdown.scss'
 
 const DROPDOWN_HEIGHT = 28
 
-function longestText(options, graphicOptions) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DropdownOption = any
+
+interface DropdownProps {
+  label?: string
+  className?: string
+  options: DropdownOption[]
+  setValue: (value: any) => void // eslint-disable-line @typescript-eslint/no-explicit-any
+  value?: string | number | null
+  placeholder?: string
+  noOptions?: string
+  small?: boolean
+  noTextTransform?: boolean
+  capitalize?: boolean
+  inline?: boolean
+  num1?: number
+  setNum1?: (value: number) => void
+  num2?: number
+  setNum2?: (value: number) => void
+  showNumInputs?: boolean
+  container?: string
+  minWidth?: number
+}
+
+function longestText(options: DropdownOption[], graphicOptions: boolean) {
   if (graphicOptions) {
     return '-----'
   }
@@ -43,38 +66,39 @@ export default function Dropdown({
   showNumInputs,
   container,
   minWidth,
-}) {
+}: DropdownProps) {
   const [open, setOpen] = useState(false)
   const [menuAbove, setMenuAbove] = useState(false)
   const [dropdownWidth, setDropdownWidth] = useState(0)
   const [scrollTop, setScrollTop] = useState(0)
-  const dropdownRef = useRef()
-  const menuRef = useRef()
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef(container)
 
   const graphicOptions = useMemo(
-    () => options.length && typeof options[0] === 'object' && React.isValidElement(options[0].label),
+    () => !!(options.length && typeof options[0] === 'object' && React.isValidElement(options[0].label)),
     [options]
   )
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpen(false)
       }
     }
     function handleScroll() {
-      setScrollTop(document.querySelector(containerRef.current).scrollTop)
+      const el = document.querySelector(containerRef.current as string)
+      if (el) setScrollTop(el.scrollTop)
     }
     document.addEventListener('mousedown', handleClickOutside)
     const containerVar = containerRef.current
-    const scrollContainer = document.querySelector(containerRef.current)
-    if (containerVar) {
+    const scrollContainer = containerVar ? document.querySelector(containerVar) : null
+    if (containerVar && scrollContainer) {
       scrollContainer.addEventListener('scroll', handleScroll)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-      if (containerVar) {
+      if (containerVar && scrollContainer) {
         scrollContainer.removeEventListener('scroll', handleScroll)
       }
     }
@@ -88,7 +112,7 @@ export default function Dropdown({
     if (!open && dropdownRef.current) {
       setDropdownWidth(dropdownRef.current.clientWidth)
     }
-    const dropdownDimensions = dropdownRef.current.getBoundingClientRect()
+    const dropdownDimensions = dropdownRef.current!.getBoundingClientRect()
     setMenuAbove(
       dropdownDimensions.top + DROPDOWN_HEIGHT + menuHeight > window.innerHeight &&
         dropdownDimensions.top - DROPDOWN_HEIGHT > window.innerHeight - dropdownDimensions.top + DROPDOWN_HEIGHT
@@ -112,7 +136,7 @@ export default function Dropdown({
   useEffect(() => {
     if (open) {
       if (selectedIndex !== -1) {
-        menuRef.current.scroll({ top: selectedIndex * optionHeight })
+        menuRef.current?.scroll({ top: selectedIndex * optionHeight })
       }
     }
   }, [open, optionHeight, selectedIndex])
@@ -141,19 +165,22 @@ export default function Dropdown({
     [noOptions, options, setValue, value]
   )
 
-  const menuWrapperStyle = useMemo(() => {
+  const menuWrapperStyle = useMemo<React.CSSProperties>(() => {
     const top = menuAbove ? menuHeight * -1 + 2 + 'px' : '100%'
     return container ? { top: `calc(${top} - ${scrollTop}px)` } : { top }
   }, [container, menuAbove, menuHeight, scrollTop])
-  const menuStyle = useMemo(() => (container ? { width: dropdownWidth } : null), [container, dropdownWidth])
+  const menuStyle = useMemo<React.CSSProperties | undefined>(
+    () => (container ? { width: dropdownWidth } : undefined),
+    [container, dropdownWidth]
+  )
 
   const dropdownLabel = useMemo(() => <p className="dropdown-label no-select">{label}</p>, [label])
   const numInputs = useMemo(
     () => (
       <div className="dropdown-num-inputs-wrapper">
         <div className="dropdown-num-inputs">
-          <NumInput value={num1} setValue={setNum1} min={-12} max={12} />
-          <NumInput value={num2} setValue={setNum2} min={-12} max={12} />
+          <NumInput value={num1 as number} setValue={setNum1 as (value: number) => void} min={-12} max={12} />
+          <NumInput value={num2 as number} setValue={setNum2 as (value: number) => void} min={-12} max={12} />
         </div>
       </div>
     ),
@@ -172,7 +199,7 @@ export default function Dropdown({
         'show-dropdown-num-inputs': showNumInputs,
         'graphic-options': graphicOptions,
       })}
-      style={minWidth ? { minWidth } : null}>
+      style={minWidth ? { minWidth } : undefined}>
       <div className="dropdown">
         <div className={classNames('dropdown-root', { open })}>
           <div onClick={toggleOpen} className="dropdown-control">
@@ -195,24 +222,4 @@ export default function Dropdown({
       {setNum1 && numInputs}
     </div>
   )
-}
-Dropdown.propTypes = {
-  label: PropTypes.string,
-  className: PropTypes.string,
-  options: PropTypes.array,
-  setValue: PropTypes.func,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  placeholder: PropTypes.string,
-  noOptions: PropTypes.string,
-  small: PropTypes.bool,
-  noTextTransform: PropTypes.bool,
-  capitalize: PropTypes.bool,
-  inline: PropTypes.bool,
-  num1: PropTypes.number,
-  setNum1: PropTypes.func,
-  num2: PropTypes.number,
-  setNum2: PropTypes.func,
-  showNumInputs: PropTypes.bool,
-  container: PropTypes.string,
-  minWidth: PropTypes.number,
 }

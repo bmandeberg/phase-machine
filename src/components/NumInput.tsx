@@ -1,8 +1,25 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import NumericInput from './NumericInput'
 import './NumInput.scss'
+
+interface NumInputProps {
+  label?: string
+  value: number
+  setValue: (value: number) => void
+  className?: string
+  min?: number
+  max?: number
+  small?: boolean
+  inline?: boolean
+  preview?: (directionForward?: boolean) => void
+  setShowKeyPreview?: (show: boolean) => void
+  setDirectionForward?: (forward: boolean) => void
+  buttonText?: string
+  buttonAction?: () => void
+  short?: boolean
+  disabled?: boolean
+}
 
 export default function NumInput({
   label,
@@ -20,8 +37,8 @@ export default function NumInput({
   buttonAction,
   short,
   disabled,
-}) {
-  const input = useRef()
+}: NumInputProps) {
+  const input = useRef<HTMLDivElement>(null)
 
   const hidePreview = useCallback(() => {
     if (setShowKeyPreview) {
@@ -30,31 +47,31 @@ export default function NumInput({
   }, [setShowKeyPreview])
 
   const showPreview = useCallback(() => {
-    preview()
+    preview?.()
   }, [preview])
 
   const showPreviewForward = useCallback(() => {
-    preview(true)
-    setDirectionForward(true)
+    preview?.(true)
+    setDirectionForward?.(true)
   }, [preview, setDirectionForward])
 
   const showPreviewBack = useCallback(() => {
-    preview(false)
-    setDirectionForward(false)
+    preview?.(false)
+    setDirectionForward?.(false)
   }, [preview, setDirectionForward])
 
   useEffect(() => {
     setTimeout(() => {
       if (input.current) {
         const inputEl = input.current.querySelector('input')
-        inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
+        if (inputEl) inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
       }
     }, 500)
   }, [value])
 
   useEffect(() => {
     if (preview && setShowKeyPreview && input.current) {
-      const inputEl = input.current.querySelector('input')
+      const inputEl = input.current.querySelector('input') as HTMLInputElement
       inputEl.addEventListener('click', showPreview)
       inputEl.addEventListener('blur', hidePreview)
       const buttons = input.current.querySelectorAll('b')
@@ -93,21 +110,4 @@ export default function NumInput({
       {buttonText && buttonAction ? numInputButton : numInputLabel}
     </div>
   )
-}
-NumInput.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.number,
-  setValue: PropTypes.func,
-  className: PropTypes.string,
-  min: PropTypes.number,
-  max: PropTypes.number,
-  small: PropTypes.bool,
-  inline: PropTypes.bool,
-  preview: PropTypes.func,
-  setShowKeyPreview: PropTypes.func,
-  setDirectionForward: PropTypes.func,
-  buttonText: PropTypes.string,
-  buttonAction: PropTypes.func,
-  short: PropTypes.bool,
-  disabled: PropTypes.bool,
 }

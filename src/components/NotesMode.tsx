@@ -1,11 +1,16 @@
 import React, { useCallback, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Switch from 'react-switch'
 import { themedSwitch } from '../globals'
 import './NotesMode.scss'
 
-export default function NotesMode({ rangeMode, setRangeMode, theme }) {
+interface NotesModeProps {
+  rangeMode?: boolean
+  setRangeMode: (rangeMode: boolean) => void
+  theme: string
+}
+
+export default function NotesMode({ rangeMode, setRangeMode, theme }: NotesModeProps) {
   const setRangeModeTrue = useCallback(() => setRangeMode(true), [setRangeMode])
   const setRangeModeFalse = useCallback(() => setRangeMode(false), [setRangeMode])
 
@@ -18,7 +23,7 @@ export default function NotesMode({ rangeMode, setRangeMode, theme }) {
       <Switch
         className="switch"
         onChange={setRangeMode}
-        checked={rangeMode}
+        checked={rangeMode ?? false}
         uncheckedIcon={false}
         checkedIcon={false}
         offColor={offColor}
@@ -41,9 +46,4 @@ export default function NotesMode({ rangeMode, setRangeMode, theme }) {
       <p className="notes-mode-title">Mode</p>
     </div>
   )
-}
-NotesMode.propTypes = {
-  rangeMode: PropTypes.bool,
-  setRangeMode: PropTypes.func,
-  theme: PropTypes.string,
 }

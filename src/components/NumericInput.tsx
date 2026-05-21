@@ -1,12 +1,18 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import PropTypes from 'prop-types'
+
+interface NumericInputProps {
+  min?: number
+  max?: number
+  value: number
+  onChange: (value: number) => void
+}
 
 // Drop-in replacement for the abandoned `react-numeric-input` (style={false},
 // strict). Renders the same DOM structure it did — `.react-numeric-input`
 // wrapper, an <input>, and two stepper <b><i/></b> elements (first = up,
 // last = down) — so NumInput.scss and NumInput's preview-listener wiring
 // (which reaches for `input` and `b` nodes) keep working unchanged.
-export default function NumericInput({ min, max, value, onChange }) {
+export default function NumericInput({ min, max, value, onChange }: NumericInputProps) {
   const [text, setText] = useState(String(value))
   const focused = useRef(false)
 
@@ -17,13 +23,13 @@ export default function NumericInput({ min, max, value, onChange }) {
   }, [value])
 
   const clamp = useCallback(
-    (n) => Math.min(max != null ? max : Infinity, Math.max(min != null ? min : -Infinity, n)),
+    (n: number) => Math.min(max != null ? max : Infinity, Math.max(min != null ? min : -Infinity, n)),
     [min, max]
   )
 
   // Clamp, reflect in the field, and emit if changed.
   const emit = useCallback(
-    (n) => {
+    (n: number) => {
       const c = clamp(n)
       setText(String(c))
       if (c !== value) onChange(c)
@@ -32,7 +38,7 @@ export default function NumericInput({ min, max, value, onChange }) {
   )
 
   const handleInput = useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value
       setText(raw)
       const n = parseInt(raw, 10)
@@ -52,7 +58,7 @@ export default function NumericInput({ min, max, value, onChange }) {
   }, [text, value, emit])
 
   const step = useCallback(
-    (delta) => {
+    (delta: number) => {
       const base = parseInt(text, 10)
       emit((Number.isNaN(base) ? value : base) + delta)
     },
@@ -60,7 +66,7 @@ export default function NumericInput({ min, max, value, onChange }) {
   )
 
   const handleKeyDown = useCallback(
-    (e) => {
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') handleBlur()
       else if (e.key === 'ArrowUp') {
         e.preventDefault()
@@ -91,10 +97,4 @@ export default function NumericInput({ min, max, value, onChange }) {
       </b>
     </span>
   )
-}
-NumericInput.propTypes = {
-  min: PropTypes.number,
-  max: PropTypes.number,
-  value: PropTypes.number,
-  onChange: PropTypes.func,
 }

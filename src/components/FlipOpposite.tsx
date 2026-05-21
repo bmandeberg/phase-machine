@@ -1,10 +1,23 @@
 import React, { useCallback } from 'react'
-import PropTypes from 'prop-types'
 import './FlipOpposite.scss'
 
-export default function FlipOpposite({ flip, previewFlip, opposite, previewOpposite, setShowKeyPreview }) {
+interface FlipOppositeProps {
+  flip?: () => void
+  previewFlip?: () => void
+  opposite?: () => void
+  previewOpposite?: () => void
+  setShowKeyPreview?: (show: boolean) => void
+}
+
+export default function FlipOpposite({
+  flip,
+  previewFlip,
+  opposite,
+  previewOpposite,
+  setShowKeyPreview,
+}: FlipOppositeProps) {
   const hideKeyPreview = useCallback(() => {
-    setShowKeyPreview(false)
+    setShowKeyPreview?.(false)
   }, [setShowKeyPreview])
 
   return (
@@ -17,11 +30,4 @@ export default function FlipOpposite({ flip, previewFlip, opposite, previewOppos
       </div>
     </div>
   )
-}
-FlipOpposite.propTypes = {
-  flip: PropTypes.func,
-  previewFlip: PropTypes.func,
-  opposite: PropTypes.func,
-  previewOpposite: PropTypes.func,
-  setShowKeyPreview: PropTypes.func,
 }

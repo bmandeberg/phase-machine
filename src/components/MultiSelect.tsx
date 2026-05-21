@@ -1,20 +1,26 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './MultiSelect.scss'
 
-export default function MultiSelect({ options, setValues, values, placeholder }) {
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const multiSelectRef = useRef()
+interface MultiSelectProps {
+  options: string[]
+  values: string[]
+  setValues: React.Dispatch<React.SetStateAction<string[]>>
+  placeholder?: string
+}
 
-  const toggleDropdown = useCallback((e) => {
+export default function MultiSelect({ options, setValues, values, placeholder }: MultiSelectProps) {
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const multiSelectRef = useRef<HTMLDivElement>(null)
+
+  const toggleDropdown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     setDropdownOpen((dropdownOpen) => !dropdownOpen)
   }, [])
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (multiSelectRef.current && !multiSelectRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (multiSelectRef.current && !multiSelectRef.current.contains(event.target as Node)) {
         setDropdownOpen(false)
       }
     }
@@ -25,7 +31,7 @@ export default function MultiSelect({ options, setValues, values, placeholder })
   }, [])
 
   const addValue = useCallback(
-    (value) => {
+    (value: string) => {
       if (!values.includes(value)) {
         setValues((values) => {
           const valuesCopy = values.slice()
@@ -38,14 +44,14 @@ export default function MultiSelect({ options, setValues, values, placeholder })
   )
 
   const removeValue = useCallback(
-    (e, value) => {
+    (e: React.MouseEvent, value: string) => {
       e.stopPropagation()
       setValues((values) => values.filter((v) => v !== value))
     },
     [setValues]
   )
 
-  const stopPropagation = useCallback((e) => {
+  const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
   }, [])
 
@@ -80,10 +86,4 @@ export default function MultiSelect({ options, setValues, values, placeholder })
       </div>
     </div>
   )
-}
-MultiSelect.propTypes = {
-  options: PropTypes.array,
-  values: PropTypes.array,
-  setValues: PropTypes.func,
-  placeholder: PropTypes.string,
 }

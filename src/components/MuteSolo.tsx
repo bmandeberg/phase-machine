@@ -1,9 +1,15 @@
 import React, { useCallback } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './MuteSolo.scss'
 
-export default function MuteSolo({ mute, setMute, solo, setSolo }) {
+interface MuteSoloProps {
+  mute?: boolean
+  setMute: React.Dispatch<React.SetStateAction<boolean>>
+  solo?: boolean
+  setSolo: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function MuteSolo({ mute, setMute, solo, setSolo }: MuteSoloProps) {
   const toggleMute = useCallback(() => {
     setMute((mute) => !mute)
   }, [setMute])
@@ -22,10 +28,4 @@ export default function MuteSolo({ mute, setMute, solo, setSolo }) {
       </div>
     </div>
   )
-}
-MuteSolo.propTypes = {
-  mute: PropTypes.bool,
-  setMute: PropTypes.func,
-  solo: PropTypes.bool,
-  setSolo: PropTypes.func,
 }

@@ -47,7 +47,8 @@
       "Bash(node /tmp/tone-getters.mjs)",
       "Bash(bc)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\),indent=2\\)\\); print\\('DEPS:', json.dumps\\(d.get\\('dependencies',{}\\),indent=2\\)\\); print\\('DEVDEPS:', json.dumps\\(d.get\\('devDependencies',{}\\),indent=2\\)\\)\")",
-      "Bash(awk 'NR>=528' src/globals.jsx)"
+      "Bash(awk 'NR>=528' src/globals.jsx)",
+      "Bash(node -p \"require\\('classnames/package.json'\\).version\")"
     ]
   }
 }
