@@ -4,29 +4,31 @@ import { PRESET_HOLD_TIME } from '../globals'
 import { midiStartContinue, midiStop } from './useMIDI'
 import { patchPresetAndChannels } from '../App'
 import * as Tone from 'tone'
+import { Channel, Preset } from '../types'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function usePresets(
-  setUIState,
-  channelSync,
-  tempo,
-  setTempo,
-  uiState,
-  currentPreset,
-  presets,
-  setCurrentPreset,
-  deepStateCopy,
-  setNumChannels,
-  setChannelSync,
-  setPresets,
-  keydownTimer,
-  setRestartChannels,
-  presetsRestartTransport,
-  presetsStopTransport,
-  playing,
-  setPlaying,
-  midiOutRef,
-  midiInRef,
-  ignorePresetsTempo
+  setUIState: any,
+  channelSync: boolean,
+  tempo: number,
+  setTempo: any,
+  uiState: any,
+  currentPreset: any,
+  presets: Preset[],
+  setCurrentPreset: any,
+  deepStateCopy: (state: any) => any,
+  setNumChannels: any,
+  setChannelSync: any,
+  setPresets: any,
+  keydownTimer: any,
+  setRestartChannels: any,
+  presetsRestartTransport: boolean,
+  presetsStopTransport: boolean,
+  playing: boolean,
+  setPlaying: any,
+  midiOutRef: any,
+  midiInRef: any,
+  ignorePresetsTempo: boolean
 ) {
   // state management for presets
 
@@ -35,10 +37,10 @@ export default function usePresets(
   }, [uiState])
 
   const setChannelState = useCallback(
-    (id, state) => {
-      setUIState((uiState) => {
+    (id: string, state: Channel) => {
+      setUIState((uiState: any) => {
         const uiStateCopy = deepStateCopy(uiState)
-        const channelIndex = uiStateCopy.channels.findIndex((c) => c.id === id)
+        const channelIndex = uiStateCopy.channels.findIndex((c: Channel) => c.id === id)
         if (channelIndex !== -1) {
           uiStateCopy.channels[channelIndex] = state
         }
@@ -49,7 +51,7 @@ export default function usePresets(
   )
 
   useEffect(() => {
-    setUIState((uiState) => {
+    setUIState((uiState: any) => {
       const uiStateCopy = Object.assign({}, uiState, {
         channelSync,
       })
@@ -58,7 +60,7 @@ export default function usePresets(
   }, [channelSync, setUIState])
 
   useEffect(() => {
-    setUIState((uiState) => {
+    setUIState((uiState: any) => {
       const uiStateCopy = Object.assign({}, uiState, {
         tempo,
       })
@@ -67,8 +69,8 @@ export default function usePresets(
   }, [tempo, setUIState])
 
   const setPresetName = useCallback(
-    (presetName) => {
-      setUIState((uiState) => {
+    (presetName: any) => {
+      setUIState((uiState: any) => {
         return Object.assign({}, uiState, { name: presetName.target.value })
       })
     },
@@ -123,8 +125,8 @@ export default function usePresets(
   // preset actions
 
   const setPreset = useCallback(
-    (presetID) => {
-      const preset = presets.find((p) => p.id === presetID)
+    (presetID: string) => {
+      const preset = presets.find((p) => p.id === presetID)!
       setCurrentPreset(deepStateCopy(preset))
       setRestartChannels(presetsRestartTransport)
       setUIState(deepStateCopy(preset))
@@ -137,7 +139,7 @@ export default function usePresets(
       if (presetsRestartTransport || presetsStopTransport) {
         Tone.getTransport().stop()
         midiStop(midiOutRef.current, midiInRef.current && midiInRef.current.name, true)
-        Tone.getTransport().midiContinue = false
+        ;(Tone.getTransport() as any).midiContinue = false
         if (presetsStopTransport) {
           setPlaying(false)
         } else if (playing) {
@@ -167,14 +169,14 @@ export default function usePresets(
     ]
   )
 
-  const dedupName = useCallback((name, id, presets) => {
+  const dedupName = useCallback((name: string, id: string | null, presets: Preset[]) => {
     const sameNamePreset = presets.find((p) => p.name === name)
     if (sameNamePreset && !(id && sameNamePreset.id === id)) {
       const digitMatch = /\s\((\d+)\)$/
       const baseName = name.replace(digitMatch, '')
       const incRegex = new RegExp(baseName + '\\s\\((\\d+)\\)$')
       const nameIncrements = presets.reduce(
-        (acc, curr) => {
+        (acc: number[], curr) => {
           const match = curr.name.match(incRegex)
           if (match && !(id && curr.id === id)) {
             acc.push(+match[1])
@@ -189,7 +191,7 @@ export default function usePresets(
   }, [])
 
   const savePreset = useCallback(
-    (e, hotkey = null) => {
+    (e: any, hotkey: number | null = null) => {
       const uiStateCopy = Object.assign({}, uiState, {
         placeholder: false,
         hotkey: hotkey ?? uiState.hotkey,
@@ -203,7 +205,7 @@ export default function usePresets(
       setUIState(deepStateCopy(uiStateCopy))
       setCurrentPreset(uiStateCopy)
       setRestartChannels(false)
-      setPresets((presets) => {
+      setPresets((presets: Preset[]) => {
         const presetsCopy = presets.slice()
         const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
         if (i !== -1) {
@@ -232,7 +234,7 @@ export default function usePresets(
   )
 
   const newPreset = useCallback(
-    (e, hotkey = null) => {
+    (e: any, hotkey: number | null = null) => {
       const id = uuid()
       const uiStateCopy = Object.assign({}, uiState, {
         name: dedupName(uiState.name !== currentPreset.name ? uiState.name : 'New Preset', id, presets),
@@ -244,7 +246,7 @@ export default function usePresets(
       setUIState(deepStateCopy(uiStateCopy))
       setCurrentPreset(uiStateCopy)
       setRestartChannels(false)
-      setPresets((presets) => {
+      setPresets((presets: Preset[]) => {
         const presetsCopy = presets.slice()
         presetsCopy.push(uiStateCopy)
         return presetsCopy
@@ -272,7 +274,7 @@ export default function usePresets(
       hotkey: null,
       placeholder: true,
     })
-    setPresets((presets) => presets.filter((p) => p.id !== uiState.id))
+    setPresets((presets: Preset[]) => presets.filter((p) => p.id !== uiState.id))
     setUIState(deepStateCopy(uiStateCopy))
     setCurrentPreset(uiStateCopy)
     setRestartChannels(false)
@@ -280,8 +282,8 @@ export default function usePresets(
     window.localStorage.removeItem('activePreset')
   }, [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setRestartChannels, setUIState, uiState])
 
-  const validPreset = useCallback((preset) => {
-    function invalidProp(obj, prop, type) {
+  const validPreset = useCallback((preset: any) => {
+    function invalidProp(obj: any, prop: string, type: string) {
       const typeCheck = typeof obj[prop] !== type
       return !obj.hasOwnProperty(prop) || (type === 'number' ? typeCheck && obj[prop] !== null : typeCheck)
     }
@@ -383,7 +385,7 @@ export default function usePresets(
   }, [])
 
   const importPresets = useCallback(
-    (presetsString) => {
+    (presetsString: string) => {
       try {
         const parsedPresets = JSON.parse(presetsString)
         if (Array.isArray(parsedPresets) && parsedPresets.length) {
@@ -394,9 +396,9 @@ export default function usePresets(
               return
             }
           }
-          setPresets((presets) => {
+          setPresets((presets: Preset[]) => {
             const presetsCopy = presets.slice()
-            parsedPresets.forEach((p) => {
+            parsedPresets.forEach((p: any) => {
               const id = uuid()
               presetsCopy.push(Object.assign(p, { name: dedupName(p.name, id, presetsCopy), id, hotkey: null }))
             })
@@ -404,7 +406,7 @@ export default function usePresets(
           })
           alert(`${parsedPresets.length} Preset${parsedPresets.length !== 1 ? 's' : ''} imported`)
         } else alert('No valid presets to import')
-      } catch (error) {
+      } catch {
         alert('Invalid presets!')
       }
     },
@@ -420,17 +422,17 @@ export default function usePresets(
   // handle preset keypresses
 
   useEffect(() => {
-    function keydown(e) {
+    function keydown(e: KeyboardEvent) {
       if (
         e.key !== ' ' &&
         !isNaN(+e.key) &&
-        document.activeElement.getAttribute('type') !== 'text' &&
-        document.activeElement.nodeName !== 'TEXTAREA'
+        document.activeElement?.getAttribute('type') !== 'text' &&
+        document.activeElement?.nodeName !== 'TEXTAREA'
       ) {
         if (keydownTimer.current === null) {
           keydownTimer.current = window.performance.now()
         } else if (keydownTimer.current && window.performance.now() - keydownTimer.current > PRESET_HOLD_TIME) {
-          setPresets((presets) => {
+          setPresets((presets: Preset[]) => {
             const presetsCopy = presets.slice()
             presetsCopy.forEach((p) => {
               if (p.hotkey === +e.key) {
@@ -444,11 +446,11 @@ export default function usePresets(
         }
       }
     }
-    function keyup(e) {
+    function keyup(e: KeyboardEvent) {
       if (
         !isNaN(+e.key) &&
-        document.activeElement.getAttribute('type') !== 'text' &&
-        document.activeElement.nodeName !== 'TEXTAREA'
+        document.activeElement?.getAttribute('type') !== 'text' &&
+        document.activeElement?.nodeName !== 'TEXTAREA'
       ) {
         if (keydownTimer.current && window.performance.now() - keydownTimer.current < PRESET_HOLD_TIME) {
           const preset = presets.find((p) => p.hotkey === +e.key)

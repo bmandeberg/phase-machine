@@ -25,6 +25,7 @@ interface PianoProps {
   rangeMode?: boolean
   keybdPitches: number[]
   setKeybdPitches: React.Dispatch<React.SetStateAction<number[]>>
+  channelNum?: number
   theme?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   triggerNote: (noteIndex: number, onEnded: () => void) => any

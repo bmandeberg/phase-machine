@@ -1,22 +1,23 @@
 import { useCallback } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import { flip, opposite, shiftWrapper, shift } from '../math'
 import { BLANK_PITCH_CLASSES } from '../globals'
 
 // key manipulation functions
 
 export default function useKeyManipulation(
-  key,
-  shiftAmt,
-  shiftDirectionForward,
-  setKeyPreview,
-  setShowKeyPreview,
-  setShiftAmt,
-  setKey,
-  setAxis,
-  axis,
-  setGrabbing,
-  setTurningAxisKnob,
-  setKeybdPitches
+  key: boolean[],
+  shiftAmt: number,
+  shiftDirectionForward: boolean,
+  setKeyPreview: Dispatch<SetStateAction<boolean[]>>,
+  setShowKeyPreview: Dispatch<SetStateAction<boolean>>,
+  setShiftAmt: Dispatch<SetStateAction<number>>,
+  setKey: Dispatch<SetStateAction<boolean[]>>,
+  setAxis: Dispatch<SetStateAction<number>>,
+  axis: number,
+  setGrabbing: Dispatch<SetStateAction<boolean>>,
+  setTurningAxisKnob: Dispatch<SetStateAction<boolean>>,
+  setKeybdPitches: Dispatch<SetStateAction<number[]>>
 ) {
   const previewShift = useCallback(
     (forward = shiftDirectionForward, newShift = shiftAmt, previewKey = key) => {
@@ -28,7 +29,7 @@ export default function useKeyManipulation(
   )
 
   const updateShift = useCallback(
-    (newShift) => {
+    (newShift: number) => {
       newShift = shiftWrapper(newShift, shiftDirectionForward)
       setShiftAmt(newShift)
       previewShift(shiftDirectionForward, newShift)
@@ -53,7 +54,7 @@ export default function useKeyManipulation(
   }, [key, setKeyPreview, setShowKeyPreview])
 
   const updateAxis = useCallback(
-    (a) => {
+    (a: number) => {
       setAxis(a)
       setKeyPreview(flip(a, key))
     },

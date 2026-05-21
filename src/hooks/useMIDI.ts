@@ -2,43 +2,53 @@ import { useState, useRef, useEffect } from 'react'
 import { WebMidi } from 'webmidi'
 import * as Tone from 'tone'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// WebMidi / Tone transport carry custom runtime props (midiClockIn/Out,
+// midiContinue, etc.) not in their published types; cast to any pragmatically.
+const WM = WebMidi as any
+const transport = () => Tone.getTransport() as any
+
 const MIDI_IO_CHANGED = {
   IN: 0,
   OUT: 0,
 }
 
-export default function useMIDI(setPlaying, setResetTransport) {
+export default function useMIDI(setPlaying: any, setResetTransport: any) {
   const [midiEnabled, setMidiEnabled] = useState(false)
-  const [midiOut, setMidiOut] = useState(null)
-  const midiOutRef = useRef()
-  const [midiOuts, setMidiOuts] = useState([])
-  const [midiIn, setMidiIn] = useState(null)
-  const midiInRef = useRef()
-  const [midiIns, setMidiIns] = useState([])
-  const [midiNoteOn, setMidiNoteOn] = useState(null)
-  const [midiNoteOff, setMidiNoteOff] = useState(null)
-  const [midiClockIn, setMidiClockIn] = useState(JSON.parse(window.localStorage.getItem('midiClockIn')) ?? true)
-  const [midiClockOut, setMidiClockOut] = useState(JSON.parse(window.localStorage.getItem('midiClockOut')) ?? true)
+  const [midiOut, setMidiOut] = useState<string | null>(null)
+  const midiOutRef = useRef<any>()
+  const [midiOuts, setMidiOuts] = useState<string[]>([])
+  const [midiIn, setMidiIn] = useState<string | null>(null)
+  const midiInRef = useRef<any>()
+  const [midiIns, setMidiIns] = useState<string[]>([])
+  const [midiNoteOn, setMidiNoteOn] = useState<any>(null)
+  const [midiNoteOff, setMidiNoteOff] = useState<any>(null)
+  const [midiClockIn, setMidiClockIn] = useState(
+    JSON.parse(window.localStorage.getItem('midiClockIn') as string) ?? true
+  )
+  const [midiClockOut, setMidiClockOut] = useState(
+    JSON.parse(window.localStorage.getItem('midiClockOut') as string) ?? true
+  )
 
   useEffect(() => {
     if (WebMidi.enabled) {
-      window.localStorage.setItem('midiIn', midiIn)
+      window.localStorage.setItem('midiIn', midiIn as string)
     }
   }, [midiIn])
 
   useEffect(() => {
     if (WebMidi.enabled) {
-      window.localStorage.setItem('midiOut', midiOut)
+      window.localStorage.setItem('midiOut', midiOut as string)
     }
   }, [midiOut])
 
   useEffect(() => {
-    WebMidi.midiClockIn = midiClockIn
+    WM.midiClockIn = midiClockIn
     window.localStorage.setItem('midiClockIn', midiClockIn)
   }, [midiClockIn])
 
   useEffect(() => {
-    WebMidi.midiClockOut = midiClockOut
+    WM.midiClockOut = midiClockOut
     window.localStorage.setItem('midiClockOut', midiClockOut)
   }, [midiClockOut])
 
@@ -49,7 +59,7 @@ export default function useMIDI(setPlaying, setResetTransport) {
       setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
       setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
     }
-    function disconnectMidi(e) {
+    function disconnectMidi(e: any) {
       setMidiOuts(WebMidi.outputs.map((o) => o.name).concat(['(None)']))
       setMidiOut((midiOut) => (e.port.name === midiOut ? null : midiOut))
       setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
@@ -59,20 +69,20 @@ export default function useMIDI(setPlaying, setResetTransport) {
       .then(() => {
         // initialize MIDI I/O
         const mo = window.localStorage.getItem('midiOut')
-        setMidiOut(() => (WebMidi.outputs.map((o) => o.name).includes(mo) && mo) || null)
+        setMidiOut(() => (mo !== null && WebMidi.outputs.map((o) => o.name).includes(mo) && mo) || null)
         const mi = window.localStorage.getItem('midiIn')
-        setMidiIn(() => (WebMidi.inputs.map((i) => i.name).includes(mi) && mi) || null)
+        setMidiIn(() => (mi !== null && WebMidi.inputs.map((i) => i.name).includes(mi) && mi) || null)
         // schedule MIDI clock output
-        Tone.getTransport().midiContinue = false
+        transport().midiContinue = false
         if (Tone.getTransport().PPQ % 24 === 0) {
           Tone.getTransport().scheduleRepeat((time) => {
             if (
-              WebMidi.midiClockOut &&
+              WM.midiClockOut &&
               midiOutRef.current &&
               (!midiInRef.current || midiInRef.current.name !== midiOutRef.current)
             ) {
-              const clockOffset = WebMidi.time - Tone.immediate() * 1000
-              WebMidi.getOutputByName(midiOutRef.current).sendClock({
+              const clockOffset = WM.time - Tone.immediate() * 1000
+              WM.getOutputByName(midiOutRef.current).sendClock({
                 time: time * 1000 + clockOffset + 10,
               })
             }
@@ -109,42 +119,42 @@ export default function useMIDI(setPlaying, setResetTransport) {
       }
       midiInRef.current = WebMidi.getInputByName(midiIn)
       // MIDI input listeners
-      midiInRef.current.addListener('noteon', (e) => {
+      midiInRef.current.addListener('noteon', (e: any) => {
         if (midiIn !== midiOutRef.current) {
           setMidiNoteOn(e)
         }
       })
-      midiInRef.current.addListener('noteoff', (e) => {
+      midiInRef.current.addListener('noteoff', (e: any) => {
         if (midiIn !== midiOutRef.current) {
           setMidiNoteOff(e)
         }
       })
-      midiInRef.current.addListener('start', (e) => {
-        if (WebMidi.midiClockIn) {
+      midiInRef.current.addListener('start', () => {
+        if (WM.midiClockIn) {
           Tone.getTransport().start()
           setPlaying(true)
           // MIDI out
           midiStartContinue(midiOutRef.current, midiIn)
         }
       })
-      midiInRef.current.addListener('continue', (e) => {
-        if (WebMidi.midiClockIn) {
+      midiInRef.current.addListener('continue', () => {
+        if (WM.midiClockIn) {
           Tone.getTransport().start()
           setPlaying(true)
           // MIDI out
           midiStartContinue(midiOutRef.current, midiIn)
         }
       })
-      midiInRef.current.addListener('stop', (e) => {
-        if (WebMidi.midiClockIn) {
+      midiInRef.current.addListener('stop', () => {
+        if (WM.midiClockIn) {
           Tone.getTransport().pause()
           setPlaying(false)
           // MIDI out
           midiStop(midiOutRef.current, midiIn)
         }
       })
-      midiInRef.current.addListener('songposition', (e) => {
-        if (WebMidi.midiClockIn && e.message.data && e.message.data[0] === 242 && e.message.data[1] === 0) {
+      midiInRef.current.addListener('songposition', (e: any) => {
+        if (WM.midiClockIn && e.message.data && e.message.data[0] === 242 && e.message.data[1] === 0) {
           setResetTransport(true)
           // MIDI out
           midiSongpositionReset(midiOutRef.current, midiIn)
@@ -187,30 +197,30 @@ export default function useMIDI(setPlaying, setResetTransport) {
 
 // MIDI out
 
-export function midiStartContinue(midiOut, midiIn) {
-  if (WebMidi.midiClockOut && midiOut && midiOut !== midiIn) {
-    const midiOutObj = WebMidi.getOutputByName(midiOut)
-    if (Tone.getTransport().midiContinue) {
+export function midiStartContinue(midiOut: any, midiIn: any) {
+  if (WM.midiClockOut && midiOut && midiOut !== midiIn) {
+    const midiOutObj = WM.getOutputByName(midiOut)
+    if (transport().midiContinue) {
       midiOutObj.sendContinue()
     } else {
       midiOutObj.sendStart()
-      Tone.getTransport().midiContinue = true
+      transport().midiContinue = true
     }
   }
 }
 
-export function midiSongpositionReset(midiOut, midiIn) {
-  if (WebMidi.midiClockOut && midiOut && midiOut !== midiIn) {
-    WebMidi.getOutputByName(midiOut).sendSongPosition(0)
+export function midiSongpositionReset(midiOut: any, midiIn: any) {
+  if (WM.midiClockOut && midiOut && midiOut !== midiIn) {
+    WM.getOutputByName(midiOut).sendSongPosition(0)
   }
 }
 
-export function midiStop(midiOut, midiIn, reset) {
-  if (WebMidi.midiClockOut && midiOut && midiOut !== midiIn) {
-    WebMidi.getOutputByName(midiOut).sendStop()
+export function midiStop(midiOut: any, midiIn: any, reset?: boolean) {
+  if (WM.midiClockOut && midiOut && midiOut !== midiIn) {
+    WM.getOutputByName(midiOut).sendStop()
     if (reset) {
       midiSongpositionReset(midiOut, midiIn)
-      Tone.getTransport().midiContinue = false
+      transport().midiContinue = false
     }
   }
 }

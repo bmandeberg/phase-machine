@@ -50,7 +50,13 @@
       "Bash(awk 'NR>=528' src/globals.jsx)",
       "Bash(node -p \"require\\('classnames/package.json'\\).version\")",
       "Bash(perl -0pi -e 's/checked=\\\\{showStepNumbers\\\\}/checked={showStepNumbers ?? false}/; s/checked=\\\\{presetsRestartTransport\\\\}/checked={presetsRestartTransport ?? false}/; s/checked=\\\\{presetsStopTransport\\\\}/checked={presetsStopTransport ?? false}/; s/checked=\\\\{midiClockIn\\\\}/checked={midiClockIn ?? false}/; s/checked=\\\\{midiClockOut\\\\}/checked={midiClockOut ?? false}/; s/checked=\\\\{ignorePresetsTempo\\\\}/checked={ignorePresetsTempo ?? false}/; s/checked=\\\\{defaultChannelModeKeybd\\\\}/checked={defaultChannelModeKeybd ?? false}/' src/components/Settings.tsx)",
-      "Bash(xargs -I{} basename {})"
+      "Bash(xargs -I{} basename {})",
+      "Bash(perl -pi -e 's/= useRef\\\\\\(\\\\\\)$/= useRef<any>\\(\\)/ if /^\\\\s*const \\\\w+Instrument = useRef\\\\\\(\\\\\\)$|^\\\\s*const gainNode = useRef\\\\\\(\\\\\\)$|^\\\\s*const \\\\w+Effect = useRef\\\\\\(\\\\\\)$/' src/hooks/useInstruments.ts)",
+      "Bash(perl -pi -e 's/WebMidi\\\\.midiClockIn/WM.midiClockIn/g; s/WebMidi\\\\.midiClockOut/WM.midiClockOut/g; s/Tone\\\\.getTransport\\\\\\(\\\\\\)\\\\.midiContinue/transport\\(\\).midiContinue/g; s/WebMidi\\\\.getOutputByName/WM.getOutputByName/g;' src/hooks/useMIDI.ts)",
+      "Bash(perl -i -pe 'if \\($. >= 21 && $. <= 121\\) { s/^\\(\\\\s+\\)\\(\\\\w+\\)\\(,?\\)\\\\s*$/$1$2: any$3\\\\n/; }' src/hooks/useUI.tsx)",
+      "Bash(awk 'NR>=20 && NR<=30' src/hooks/useUI.tsx)",
+      "Bash(awk 'NR>=119 && NR<=123' src/hooks/useUI.tsx)",
+      "Bash(perl -i -pe 's/^\\(\\\\s*\\)\\\\\\(e\\\\\\) => \\\\{$/$1\\(e: any\\) => {/; s/^\\(\\\\s*\\)\\\\\\(auxiliary\\\\\\) => \\\\{$/$1\\(auxiliary: boolean\\) => {/; s/^\\(\\\\s*\\)\\\\\\(clock\\\\\\) => \\\\{$/$1\\(clock: boolean\\) => {/; s/^\\(\\\\s*\\)\\\\\\(vertical\\\\\\) => \\\\{$/$1\\(vertical: boolean\\) => {/; s/^\\(\\\\s*\\)\\\\\\(inline\\\\\\) => \\\\{$/$1\\(inline: boolean\\) => {/; s/^\\(\\\\s*\\)\\\\\\(small\\\\\\) => \\\\{$/$1\\(small: boolean\\) => {/' src/hooks/useUI.tsx)"
     ]
   }
 }

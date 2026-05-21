@@ -17,110 +17,111 @@ import Switch from 'react-switch'
 
 // ui elements
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function useUI(
-  id,
-  color,
-  scribbler,
-  setScribbler,
-  channelNum,
-  key,
-  setKey,
-  playingPitchClass,
-  setPlayingPitchClass,
-  turningAxisKnob,
-  keyPreview,
-  showKeyPreview,
-  mute,
-  muted,
-  setMute,
-  solo,
-  setSolo,
-  velocity,
-  setVelocity,
-  setGrabbing,
-  grabbing,
-  shiftAmt,
-  updateShift,
-  previewShift,
-  setShowKeyPreview,
-  setShiftDirectionForward,
-  doShift,
-  axis,
-  updateAxis,
-  startChangingAxis,
-  stopChangingAxis,
-  doFlip,
-  previewFlip,
-  doOpposite,
-  previewOpposite,
-  playingNote,
-  noteOn,
-  rangeStart,
-  setRangeStart,
-  rangeEnd,
-  setRangeEnd,
-  resizing,
-  setResizing,
-  setKeyRate,
-  keyRate,
-  setKeyMovement,
-  keyMovement,
-  keyArpInc1,
-  setKeyArpInc1,
-  keyArpInc2,
-  setKeyArpInc2,
-  sustain,
-  setSustain,
-  keySwing,
-  setKeySwing,
-  keySwingLength,
-  setKeySwingLength,
-  seqLength,
-  setSeqLength,
-  setSeqRate,
-  seqRate,
-  setSeqMovement,
-  seqMovement,
-  seqArpInc1,
-  setSeqArpInc1,
-  seqArpInc2,
-  setSeqArpInc2,
-  seqSwing,
-  setSeqSwing,
-  seqSwingLength,
-  setSeqSwingLength,
-  setHold,
-  hold,
-  instrumentOn,
-  setInstrumentOn,
-  instrumentType,
-  setInstrumentType,
-  keyViewType,
-  setKeyViewType,
-  duplicateChannel,
-  deleteChannel,
-  drag,
-  draggingChannel,
-  theme,
-  seqRestart,
-  seqOpposite,
-  rangeMode,
-  setRangeMode,
-  keybdPitches,
-  setKeybdPitches,
-  midiIn,
-  setMidiIn,
-  midiHold,
-  setMidiHold,
-  keyClear,
-  keyRestart,
-  openMidiModal,
-  openInstrumentModal,
-  updateOnce,
-  triggerNote
+  id: any,
+  color: any,
+  scribbler: any,
+  setScribbler: any,
+  channelNum: any,
+  key: any,
+  setKey: any,
+  playingPitchClass: any,
+  setPlayingPitchClass: any,
+  turningAxisKnob: any,
+  keyPreview: any,
+  showKeyPreview: any,
+  mute: any,
+  muted: any,
+  setMute: any,
+  solo: any,
+  setSolo: any,
+  velocity: any,
+  setVelocity: any,
+  setGrabbing: any,
+  grabbing: any,
+  shiftAmt: any,
+  updateShift: any,
+  previewShift: any,
+  setShowKeyPreview: any,
+  setShiftDirectionForward: any,
+  doShift: any,
+  axis: any,
+  updateAxis: any,
+  startChangingAxis: any,
+  stopChangingAxis: any,
+  doFlip: any,
+  previewFlip: any,
+  doOpposite: any,
+  previewOpposite: any,
+  playingNote: any,
+  noteOn: any,
+  rangeStart: any,
+  setRangeStart: any,
+  rangeEnd: any,
+  setRangeEnd: any,
+  resizing: any,
+  setResizing: any,
+  setKeyRate: any,
+  keyRate: any,
+  setKeyMovement: any,
+  keyMovement: any,
+  keyArpInc1: any,
+  setKeyArpInc1: any,
+  keyArpInc2: any,
+  setKeyArpInc2: any,
+  sustain: any,
+  setSustain: any,
+  keySwing: any,
+  setKeySwing: any,
+  keySwingLength: any,
+  setKeySwingLength: any,
+  seqLength: any,
+  setSeqLength: any,
+  setSeqRate: any,
+  seqRate: any,
+  setSeqMovement: any,
+  seqMovement: any,
+  seqArpInc1: any,
+  setSeqArpInc1: any,
+  seqArpInc2: any,
+  setSeqArpInc2: any,
+  seqSwing: any,
+  setSeqSwing: any,
+  seqSwingLength: any,
+  setSeqSwingLength: any,
+  setHold: any,
+  hold: any,
+  instrumentOn: any,
+  setInstrumentOn: any,
+  instrumentType: any,
+  setInstrumentType: any,
+  keyViewType: any,
+  setKeyViewType: any,
+  duplicateChannel: any,
+  deleteChannel: any,
+  drag: any,
+  draggingChannel: any,
+  theme: any,
+  seqRestart: any,
+  seqOpposite: any,
+  rangeMode: any,
+  setRangeMode: any,
+  keybdPitches: any,
+  setKeybdPitches: any,
+  midiIn: any,
+  setMidiIn: any,
+  midiHold: any,
+  setMidiHold: any,
+  keyClear: any,
+  keyRestart: any,
+  openMidiModal: any,
+  openInstrumentModal: any,
+  updateOnce: any,
+  triggerNote: any
 ) {
   const updateScribbler = useCallback(
-    (e) => {
+    (e: any) => {
       setScribbler(e.target.value)
     },
     [setScribbler]
@@ -146,7 +147,7 @@ export default function useUI(
   }, [scribbler, updateScribbler])
 
   const channelNumEl = useCallback(
-    (auxiliary) => {
+    (auxiliary: boolean) => {
       return (
         <div className="channel-number-container">
           <div className="channel-number-background"></div>
@@ -251,7 +252,7 @@ export default function useUI(
   }, [doShift, previewShift, setShiftDirectionForward, setShowKeyPreview, shiftAmt, updateShift])
 
   const axisEl = useCallback(
-    (clock) => {
+    (clock: boolean) => {
       const className = classNames({ 'channel-module': !clock, 'axis-knob': clock })
       return (
         <RotaryKnob
@@ -431,7 +432,7 @@ export default function useUI(
   }, [movements, keyArpInc1, keyArpInc2, keyMovement, setKeyArpInc1, setKeyArpInc2, setKeyMovement])
 
   const sustainEl = useCallback(
-    (vertical) => {
+    (vertical: boolean) => {
       return (
         <RotaryKnob
           min={SUSTAIN_MIN}
@@ -455,7 +456,7 @@ export default function useUI(
   const sustainVertical = useMemo(() => sustainEl(true), [sustainEl])
 
   const keySwingEl = useCallback(
-    (vertical) => {
+    (vertical: boolean) => {
       return (
         <div className="swing-module channel-module">
           <RotaryKnob
@@ -499,7 +500,7 @@ export default function useUI(
   const keySwingVertical = useMemo(() => keySwingEl(true), [keySwingEl])
 
   const seqLengthEl = useCallback(
-    (inline) => {
+    (inline: boolean) => {
       return (
         <NumInput
           className="channel-module"
@@ -520,7 +521,7 @@ export default function useUI(
   const seqLengthInline = useMemo(() => seqLengthEl(true), [seqLengthEl])
 
   const seqRateEl = useCallback(
-    (inline) => {
+    (inline: boolean) => {
       return (
         <Dropdown
           className="channel-module"
@@ -540,7 +541,7 @@ export default function useUI(
   const seqRateInline = useMemo(() => seqRateEl(true), [seqRateEl])
 
   const seqMovementEl = useCallback(
-    (inline) => {
+    (inline: boolean) => {
       return (
         <Dropdown
           className="channel-module seq-movement"
@@ -564,7 +565,7 @@ export default function useUI(
   const seqMovementInline = useMemo(() => seqMovementEl(true), [seqMovementEl])
 
   const seqSwingEl = useCallback(
-    (inline) => {
+    (inline: boolean) => {
       return (
         <div className="swing-module channel-module">
           <RotaryKnob
@@ -609,7 +610,7 @@ export default function useUI(
   const seqSwingInline = useMemo(() => seqSwingEl(true), [seqSwingEl])
 
   const holdEl = useCallback(
-    (inline) => {
+    (inline: boolean) => {
       return (
         <div className={classNames('switch-container channel-module', { inline })}>
           <Switch
@@ -665,7 +666,7 @@ export default function useUI(
   }, [seqOpposite, seqRestart])
 
   const instrumentEl = useCallback(
-    (small) => {
+    (small: boolean) => {
       return (
         <Instrument
           className="channel-module"

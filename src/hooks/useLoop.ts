@@ -1,8 +1,16 @@
 import { useEffect, useRef } from 'react'
 import Loop from '../tonejs/Loop'
 
-export default function useLoop(callback, rate, tempo, swing, swingLength) {
-  const loop = useRef()
+type LoopCallback = (time: number, interval: number) => void
+
+export default function useLoop(
+  callback: LoopCallback,
+  rate: string,
+  tempo: number,
+  swing: number,
+  swingLength: number
+) {
+  const loop = useRef<Loop>()
   // cleanup
   useEffect(() => {
     return () => {
@@ -21,18 +29,18 @@ export default function useLoop(callback, rate, tempo, swing, swingLength) {
   }, [callback])
   // change rate
   useEffect(() => {
-    loop.current.updateRate(rate)
+    loop.current?.updateRate(rate)
   }, [rate])
   // change tempo
   useEffect(() => {
-    loop.current.updateTempo(tempo)
+    loop.current?.updateTempo(tempo)
   }, [tempo])
   // change swing
   useEffect(() => {
-    loop.current.updateSwingAmt(swing)
+    loop.current?.updateSwingAmt(swing)
   }, [swing])
   useEffect(() => {
-    loop.current.updateSwingPhraseLength(swingLength)
+    loop.current?.updateSwingPhraseLength(swingLength)
   }, [swingLength])
 
   return loop

@@ -1,8 +1,16 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react'
 import { CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
+import { InstrumentParams } from '../types'
 
-export default function useInstruments(instrument, instrumentParams, instrumentType, cleanup, setModalType) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export default function useInstruments(
+  instrument: any,
+  instrumentParams: InstrumentParams,
+  instrumentType: string,
+  cleanup: () => void,
+  setModalType: (type: string) => void
+) {
   const instrumentParamsRef = useRef(instrumentParams)
   useEffect(() => {
     instrumentParamsRef.current = instrumentParams
@@ -40,25 +48,25 @@ export default function useInstruments(instrument, instrumentParams, instrumentT
   // instrument
 
   const initInstrumentType = useRef(instrumentType)
-  const gainNode = useRef()
-  const synthInstrument = useRef()
-  const drumsInstrument = useRef()
-  const drumMachineInstrument = useRef()
-  const pianoInstrument = useRef()
-  const marimbaInstrument = useRef()
-  const bassInstrument = useRef()
-  const vibesInstrument = useRef()
-  const harpInstrument = useRef()
-  const choralInstrument = useRef()
-  const chorusEffect = useRef()
-  const distortionEffect = useRef()
-  const delayEffect = useRef()
-  const reverbEffect = useRef()
-  const vibratoEffect = useRef()
+  const gainNode = useRef<any>()
+  const synthInstrument = useRef<any>()
+  const drumsInstrument = useRef<any>()
+  const drumMachineInstrument = useRef<any>()
+  const pianoInstrument = useRef<any>()
+  const marimbaInstrument = useRef<any>()
+  const bassInstrument = useRef<any>()
+  const vibesInstrument = useRef<any>()
+  const harpInstrument = useRef<any>()
+  const choralInstrument = useRef<any>()
+  const chorusEffect = useRef<any>()
+  const distortionEffect = useRef<any>()
+  const delayEffect = useRef<any>()
+  const reverbEffect = useRef<any>()
+  const vibratoEffect = useRef<any>()
 
   const initSynthInstrument = useCallback(() => {
     if (!synthInstrument.current) {
-      synthInstrument.current = new Tone.MonoSynth({
+      const synthOptions: any = {
         portamento: instrumentParamsRef.current.portamento,
         volume: -8,
         oscillator: {
@@ -88,7 +96,8 @@ export default function useInstruments(instrument, instrumentParams, instrumentT
           release: instrumentParamsRef.current.filterRelease,
           octaves: instrumentParamsRef.current.filterAmount,
         },
-      })
+      }
+      synthInstrument.current = new Tone.MonoSynth(synthOptions)
       synthInstrument.current.connect(getCurrentEffect())
     }
   }, [getCurrentEffect])
@@ -685,16 +694,16 @@ export default function useInstruments(instrument, instrumentParams, instrumentT
 }
 
 export function updateInstruments(
-  gainNode,
-  synthInstrument,
-  samplerInstruments,
-  chorusEffect,
-  distortionEffect,
-  delayEffect,
-  reverbEffect,
-  vibratoEffect,
-  instrumentParams,
-  currentEffect
+  gainNode: any,
+  synthInstrument: any,
+  samplerInstruments: any[],
+  chorusEffect: any,
+  distortionEffect: any,
+  delayEffect: any,
+  reverbEffect: any,
+  vibratoEffect: any,
+  instrumentParams: InstrumentParams,
+  currentEffect: any
 ) {
   gainNode.set({ gain: instrumentParams.gain })
   if (CHORUS_ENABLED) {

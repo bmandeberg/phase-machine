@@ -16,7 +16,7 @@ interface RotaryKnobProps {
   max?: number
   label?: string
   grabbing?: boolean
-  setGrabbing: (grabbing: boolean) => void
+  setGrabbing?: (grabbing: boolean) => void
   className?: string
   axisKnob?: boolean
   axisKnobLarge?: boolean
@@ -108,11 +108,11 @@ export default function RotaryKnob({
   }, [logarithmic, maxVal, minVal, updateOnce, value])
 
   const startTurningKnob = useCallback(() => {
-    setGrabbing(true)
+    setGrabbing?.(true)
   }, [setGrabbing])
 
   const stopTurningKnob = useCallback(() => {
-    setGrabbing(false)
+    setGrabbing?.(false)
   }, [setGrabbing])
 
   const knobSize = useMemo<React.CSSProperties>(() => {
