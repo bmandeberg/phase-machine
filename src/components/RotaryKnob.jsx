@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { KNOB_MAX } from '../globals'
 import Key from './Key'
-import { Knob } from 'react-rotary-knob'
 import LinearKnob from './LinearKnob'
 import { expInterpolate } from '../math'
 import './RotaryKnob.scss'
@@ -35,7 +34,6 @@ export default function RotaryKnob({
   inline,
   detent,
   mute,
-  linearKnobs,
   theme,
   rangeMode,
   logarithmic,
@@ -57,21 +55,10 @@ export default function RotaryKnob({
       } else {
         const mid = (maxVal - minVal) / 2 + minVal
         const range = maxVal - minVal
-        const maxDistance = (maxVal - minVal) / 5
-        let distance = Math.abs(val - value)
-        if (!linearKnobs && distance > maxDistance) {
-          if (val - value > 0 && value !== minVal) {
-            newValue = minVal
-          } else if (val - value < 0 && value !== maxVal) {
-            newValue = maxVal
-          }
-          return
+        if (detent && val > mid - range * 0.05 && val < mid + range * 0.05) {
+          newValue = mid
         } else {
-          if (detent && val > mid - range * 0.05 && val < mid + range * 0.05) {
-            newValue = mid
-          } else {
-            newValue = val
-          }
+          newValue = val
         }
       }
       if (newValue != null) {
@@ -82,7 +69,7 @@ export default function RotaryKnob({
         setValue(newValue)
       }
     },
-    [axisKnob, logarithmic, setValue, value, maxVal, minVal, linearKnobs, detent]
+    [axisKnob, logarithmic, setValue, value, maxVal, minVal, detent]
   )
 
   useEffect(() => {
@@ -461,38 +448,6 @@ export default function RotaryKnob({
       updateValue,
     ]
   )
-  const relativeCircularKnob = useMemo(
-    () => (
-      <Knob
-        className={activeClass}
-        min={minVal}
-        max={maxVal}
-        value={internalValue}
-        onChange={updateValue}
-        skin={activeSkin}
-        unlockDistance={30}
-        preciseMode={false}
-        style={knobSize}
-        onStart={onStart}
-        onEnd={onEnd}
-        clampMax={clampMax}
-        rotateDegrees={rotateDegrees}
-      />
-    ),
-    [
-      activeClass,
-      activeSkin,
-      clampMax,
-      internalValue,
-      knobSize,
-      maxVal,
-      minVal,
-      onEnd,
-      onStart,
-      rotateDegrees,
-      updateValue,
-    ]
-  )
   const knobStyle = useMemo(() => ({ marginLeft: squeeze && -squeeze }), [squeeze])
 
   return (
@@ -507,7 +462,7 @@ export default function RotaryKnob({
       })}>
       {axisKnob && axisKnobHelper}
       {axisKnobLarge && axisKey}
-      {linearKnobs ? linearKnob : relativeCircularKnob}
+      {linearKnob}
       <div className="knob-label no-select">{axisKnob ? 'Axis' : label}</div>
     </div>
   )
@@ -536,7 +491,6 @@ RotaryKnob.propTypes = {
   inline: PropTypes.bool,
   detent: PropTypes.bool,
   mute: PropTypes.bool,
-  linearKnobs: PropTypes.bool,
   theme: PropTypes.string,
   rangeMode: PropTypes.bool,
   logarithmic: PropTypes.bool,

@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { useGesture } from 'react-use-gesture'
+import { useGesture } from '@use-gesture/react'
 import { constrain, scaleToRange } from '../math'
 import faderSlot from '../assets/fader-slot.svg'
 import faderKnob from '../assets/fader-knob.svg'
@@ -65,15 +65,17 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     onDragEnd: () => {
       setGrabbing(false)
     },
-    onClick: (e) => {
-      e.event.stopPropagation()
-    },
   })
 
   const faderStyle = useMemo(() => ({ top: FADER_HEIGHT * (1 - value) - 1 }), [value])
 
   return (
-    <div className={classNames('fader channel-module', className)} {...drag()} ref={faderRef}>
+    <div
+      className={classNames('fader channel-module', className)}
+      {...drag()}
+      onClick={(e) => e.stopPropagation()}
+      ref={faderRef}>
+
       <img src={faderSlotGraphic} alt="" className="fader-slot" draggable="false" />
       <img
         src={faderKnobGraphic}

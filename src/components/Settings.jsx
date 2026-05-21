@@ -10,8 +10,6 @@ import './Settings.scss'
 export default function Settings({
   showStepNumbers,
   setShowStepNumbers,
-  linearKnobs,
-  setLinearKnobs,
   defaultChannelModeKeybd,
   setDefaultChannelModeKeybd,
   theme,
@@ -30,12 +28,6 @@ export default function Settings({
   presetsStopTransport,
   setPresetsStopTransport,
 }) {
-  const setKnobType = useCallback(
-    (knobType) => {
-      setLinearKnobs(knobType === 'Linear')
-    },
-    [setLinearKnobs]
-  )
 
   const setRangeModeDefault = useCallback(() => {
     setDefaultChannelModeKeybd(false)
@@ -49,8 +41,6 @@ export default function Settings({
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
-
-  const knobsDropdownValue = useMemo(() => (linearKnobs ? 'Linear' : 'Relative Circular'), [linearKnobs])
 
   const presetNames = useMemo(() => presets.map((p) => p.name), [presets])
   const [selectedPresets, setSelectedPresets] = useState([])
@@ -230,15 +220,6 @@ export default function Settings({
         </div>
       </div>
       <div className="settings-item dropdown">
-        <p className="settings-label">Knob type</p>
-        <Dropdown
-          options={['Linear', 'Relative Circular']}
-          value={knobsDropdownValue}
-          setValue={setKnobType}
-          noTextTransform
-        />
-      </div>
-      <div className="settings-item dropdown">
         <p className="settings-label">Theme</p>
         <Dropdown options={THEMES} value={theme} setValue={setTheme} capitalize />
       </div>
@@ -268,8 +249,6 @@ export default function Settings({
 Settings.propTypes = {
   showStepNumbers: PropTypes.bool,
   setShowStepNumbers: PropTypes.func,
-  linearKnobs: PropTypes.bool,
-  setLinearKnobs: PropTypes.func,
   defaultChannelModeKeybd: PropTypes.bool,
   setDefaultChannelModeKeybd: PropTypes.func,
   theme: PropTypes.string,

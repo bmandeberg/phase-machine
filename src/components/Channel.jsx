@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import * as Tone from 'tone'
 import WebMidi from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
-import { useGesture } from 'react-use-gesture'
+import { useGesture } from '@use-gesture/react'
 import {
   BLANK_PITCH_CLASSES,
   CHANNEL_HEIGHT,
@@ -51,7 +51,6 @@ export default function Channel({
   tempo,
   playing,
   showStepNumbers,
-  linearKnobs,
   midiOut,
   setChannelState,
   channelPreset,
@@ -931,7 +930,6 @@ export default function Channel({
     deleteChannel,
     drag,
     draggingChannel,
-    linearKnobs,
     theme,
     seqRestart,
     seqOpposite,
@@ -977,7 +975,6 @@ export default function Channel({
           effects={effects}
           grabbing={grabbing}
           setGrabbing={setGrabbing}
-          linearKnobs={linearKnobs}
         />
       </CSSTransition>
     ),
@@ -992,7 +989,6 @@ export default function Channel({
       instrumentParams,
       instrumentType,
       instruments,
-      linearKnobs,
       midiHold,
       midiOutChannel,
       modalContent,
@@ -1503,7 +1499,6 @@ Channel.propTypes = {
   tempo: PropTypes.number,
   playing: PropTypes.bool,
   showStepNumbers: PropTypes.bool,
-  linearKnobs: PropTypes.bool,
   midiOut: PropTypes.string,
   setChannelState: PropTypes.func,
   channelPreset: PropTypes.object,

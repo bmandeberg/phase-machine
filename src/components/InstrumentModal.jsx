@@ -26,7 +26,6 @@ export default function InstrumentModal({
   effects,
   grabbing,
   setGrabbing,
-  linearKnobs,
 }) {
   const [gain, setGain] = useState(instrumentParams.gain)
   // synth
@@ -514,7 +513,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             {(synthType.startsWith('am') || synthType.startsWith('fm')) && (
@@ -539,7 +537,6 @@ export default function InstrumentModal({
                   grabbing={grabbing}
                   inline={false}
                   mute={false}
-                  linearKnobs={linearKnobs}
                   theme={theme}
                 />
               </div>
@@ -557,7 +554,6 @@ export default function InstrumentModal({
                   grabbing={grabbing}
                   inline={false}
                   mute={false}
-                  linearKnobs={linearKnobs}
                   theme={theme}
                 />
                 <NumInput
@@ -585,7 +581,6 @@ export default function InstrumentModal({
                   grabbing={grabbing}
                   inline={false}
                   mute={false}
-                  linearKnobs={linearKnobs}
                   theme={theme}
                 />
               </div>
@@ -603,7 +598,6 @@ export default function InstrumentModal({
                   grabbing={grabbing}
                   inline={false}
                   mute={false}
-                  linearKnobs={linearKnobs}
                   theme={theme}
                 />
               </div>
@@ -624,7 +618,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -638,7 +631,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -652,7 +644,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -666,7 +657,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
           </div>
@@ -685,7 +675,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
               logarithmic
             />
@@ -700,7 +689,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <Dropdown
@@ -724,7 +712,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -738,7 +725,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -752,7 +738,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -766,7 +751,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -780,7 +764,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
           </div>
@@ -802,7 +785,6 @@ export default function InstrumentModal({
       filterSustain,
       grabbing,
       harmonicity,
-      linearKnobs,
       modulationType,
       oscModifier,
       portamento,
@@ -838,7 +820,6 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
             <RotaryKnob
@@ -852,14 +833,13 @@ export default function InstrumentModal({
               grabbing={grabbing}
               inline={false}
               mute={false}
-              linearKnobs={linearKnobs}
               theme={theme}
             />
           </div>
         </div>
       </div>
     ),
-    [grabbing, linearKnobs, samplerAttack, samplerRelease, setGrabbing, theme]
+    [grabbing, samplerAttack, samplerRelease, setGrabbing, theme]
   )
   const wetControl = useMemo(
     () => (
@@ -874,11 +854,10 @@ export default function InstrumentModal({
         grabbing={grabbing}
         inline={false}
         mute={false}
-        linearKnobs={linearKnobs}
         theme={theme}
       />
     ),
-    [effectWet, grabbing, linearKnobs, setGrabbing, theme]
+    [effectWet, grabbing, setGrabbing, theme]
   )
   const chorusControls = useMemo(
     () =>
@@ -895,7 +874,6 @@ export default function InstrumentModal({
             grabbing={grabbing}
             inline={false}
             mute={false}
-            linearKnobs={linearKnobs}
             theme={theme}
             logarithmic
           />
@@ -910,7 +888,6 @@ export default function InstrumentModal({
             grabbing={grabbing}
             inline={false}
             mute={false}
-            linearKnobs={linearKnobs}
             theme={theme}
           />
           <RotaryKnob
@@ -924,7 +901,6 @@ export default function InstrumentModal({
             grabbing={grabbing}
             inline={false}
             mute={false}
-            linearKnobs={linearKnobs}
             theme={theme}
             logarithmic
           />
@@ -939,7 +915,6 @@ export default function InstrumentModal({
             grabbing={grabbing}
             inline={false}
             mute={false}
-            linearKnobs={linearKnobs}
             theme={theme}
           />
         </div>
@@ -955,7 +930,6 @@ export default function InstrumentModal({
       chorusSpread,
       effects.chorusEffect,
       grabbing,
-      linearKnobs,
       setGrabbing,
       theme,
     ]
@@ -974,12 +948,11 @@ export default function InstrumentModal({
           grabbing={grabbing}
           inline={false}
           mute={false}
-          linearKnobs={linearKnobs}
           theme={theme}
         />
       </div>
     ),
-    [distortion, grabbing, linearKnobs, setGrabbing, theme]
+    [distortion, grabbing, setGrabbing, theme]
   )
   const delayControls = useMemo(
     () => (
@@ -1012,7 +985,6 @@ export default function InstrumentModal({
             grabbing={grabbing}
             inline={false}
             mute={false}
-            linearKnobs={linearKnobs}
             theme={theme}
           />
         )}
@@ -1039,7 +1011,6 @@ export default function InstrumentModal({
           grabbing={grabbing}
           inline={false}
           mute={false}
-          linearKnobs={linearKnobs}
           theme={theme}
         />
       </div>
@@ -1048,7 +1019,6 @@ export default function InstrumentModal({
       delayFeedback,
       delayTime,
       grabbing,
-      linearKnobs,
       offColor,
       offHandleColor,
       onColor,
@@ -1075,7 +1045,6 @@ export default function InstrumentModal({
           grabbing={grabbing}
           inline={false}
           mute={false}
-          linearKnobs={linearKnobs}
           theme={theme}
         />
         <RotaryKnob
@@ -1089,12 +1058,11 @@ export default function InstrumentModal({
           grabbing={grabbing}
           inline={false}
           mute={false}
-          linearKnobs={linearKnobs}
           theme={theme}
         />
       </div>
     ),
-    [grabbing, linearKnobs, reverbDecay, reverbPreDelay, setGrabbing, theme]
+    [grabbing, reverbDecay, reverbPreDelay, setGrabbing, theme]
   )
   const vibratoControls = useMemo(
     () => (
@@ -1110,7 +1078,6 @@ export default function InstrumentModal({
           grabbing={grabbing}
           inline={false}
           mute={false}
-          linearKnobs={linearKnobs}
           theme={theme}
         />
         <RotaryKnob
@@ -1124,13 +1091,12 @@ export default function InstrumentModal({
           grabbing={grabbing}
           inline={false}
           mute={false}
-          linearKnobs={linearKnobs}
           theme={theme}
           logarithmic
         />
       </div>
     ),
-    [grabbing, linearKnobs, setGrabbing, theme, vibratoDepth, vibratoFreq]
+    [grabbing, setGrabbing, theme, vibratoDepth, vibratoFreq]
   )
 
   return (
@@ -1158,7 +1124,6 @@ export default function InstrumentModal({
           grabbing={grabbing}
           inline={true}
           mute={false}
-          linearKnobs={linearKnobs}
           theme={theme}
         />
       </div>
@@ -1201,5 +1166,4 @@ InstrumentModal.propTypes = {
   effects: PropTypes.object,
   grabbing: PropTypes.bool,
   setGrabbing: PropTypes.func,
-  linearKnobs: PropTypes.bool,
 }

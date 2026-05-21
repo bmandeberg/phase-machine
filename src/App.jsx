@@ -111,8 +111,6 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('showStepNumbers')) ?? true
   )
 
-  const [linearKnobs, setLinearKnobs] = useState(JSON.parse(window.localStorage.getItem('linearKnobs')) ?? true)
-
   const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'dark')
 
   const [defaultChannelModeKeybd, setDefaultChannelModeKeybd] = useState(
@@ -134,10 +132,6 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
   }, [showStepNumbers])
-
-  useEffect(() => {
-    window.localStorage.setItem('linearKnobs', linearKnobs)
-  }, [linearKnobs])
 
   useEffect(() => {
     window.localStorage.setItem('theme', theme)
@@ -358,7 +352,6 @@ export default function App() {
           tempo={tempo}
           playing={playing}
           showStepNumbers={showStepNumbers}
-          linearKnobs={linearKnobs}
           midiOut={midiOut}
           setChannelState={setChannelState}
           channelPreset={currentPreset.channels[i]}
@@ -384,7 +377,6 @@ export default function App() {
       deleteChannel,
       duplicateChannel,
       grabbing,
-      linearKnobs,
       longestSequence,
       midiNoteOff,
       midiNoteOn,
@@ -481,8 +473,6 @@ export default function App() {
           setModalType={setModalType}
           showStepNumbers={showStepNumbers}
           setShowStepNumbers={setShowStepNumbers}
-          linearKnobs={linearKnobs}
-          setLinearKnobs={setLinearKnobs}
           defaultChannelModeKeybd={defaultChannelModeKeybd}
           setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
           presetsRestartTransport={presetsRestartTransport}

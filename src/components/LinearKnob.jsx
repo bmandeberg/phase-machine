@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { useGesture } from 'react-use-gesture'
+import { useGesture } from '@use-gesture/react'
 import parse from 'html-react-parser'
 import { constrain } from '../math'
 

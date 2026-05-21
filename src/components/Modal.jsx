@@ -12,8 +12,6 @@ export default function Modal({
   setModalType,
   showStepNumbers,
   setShowStepNumbers,
-  linearKnobs,
-  setLinearKnobs,
   defaultChannelModeKeybd,
   setDefaultChannelModeKeybd,
   theme,
@@ -88,8 +86,6 @@ export default function Modal({
       <Settings
         showStepNumbers={showStepNumbers}
         setShowStepNumbers={setShowStepNumbers}
-        linearKnobs={linearKnobs}
-        setLinearKnobs={setLinearKnobs}
         defaultChannelModeKeybd={defaultChannelModeKeybd}
         setDefaultChannelModeKeybd={setDefaultChannelModeKeybd}
         theme={theme}
@@ -113,7 +109,6 @@ export default function Modal({
       defaultChannelModeKeybd,
       ignorePresetsTempo,
       importPresets,
-      linearKnobs,
       midiClockIn,
       midiClockOut,
       modalType,
@@ -121,7 +116,6 @@ export default function Modal({
       presetsRestartTransport,
       setDefaultChannelModeKeybd,
       setIgnorePresetsTempo,
-      setLinearKnobs,
       setMidiClockIn,
       setMidiClockOut,
       setPresetsRestartTransport,
@@ -172,7 +166,6 @@ export default function Modal({
         theme={theme}
         grabbing={grabbing}
         setGrabbing={setGrabbing}
-        linearKnobs={linearKnobs}
       />
     ),
     [
@@ -183,7 +176,6 @@ export default function Modal({
       instrumentParams,
       instrumentType,
       instruments,
-      linearKnobs,
       setGrabbing,
       setInstrumentOn,
       setInstrumentParams,
@@ -218,8 +210,6 @@ Modal.propTypes = {
   setModalType: PropTypes.func,
   showStepNumbers: PropTypes.bool,
   setShowStepNumbers: PropTypes.func,
-  linearKnobs: PropTypes.bool,
-  setLinearKnobs: PropTypes.func,
   defaultChannelModeKeybd: PropTypes.bool,
   setDefaultChannelModeKeybd: PropTypes.func,
   theme: PropTypes.string,

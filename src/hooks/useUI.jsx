@@ -101,7 +101,6 @@ export default function useUI(
   deleteChannel,
   drag,
   draggingChannel,
-  linearKnobs,
   theme,
   seqRestart,
   seqOpposite,
@@ -272,7 +271,6 @@ export default function useUI(
           startChangingAxis={startChangingAxis}
           stopChangingAxis={stopChangingAxis}
           mute={muted}
-          linearKnobs={linearKnobs}
           theme={theme}
           rangeMode={rangeMode}
           updateOnce={updateOnce}
@@ -284,7 +282,6 @@ export default function useUI(
       grabbing,
       key,
       keyPreview,
-      linearKnobs,
       muted,
       playingPitchClass,
       rangeMode,
@@ -446,13 +443,12 @@ export default function useUI(
           grabbing={grabbing}
           squeeze={!vertical ? 6 : 0}
           mute={muted}
-          linearKnobs={linearKnobs}
           theme={theme}
           updateOnce={updateOnce}
         />
       )
     },
-    [sustain, setSustain, setGrabbing, grabbing, muted, linearKnobs, theme, updateOnce]
+    [sustain, setSustain, setGrabbing, grabbing, muted, theme, updateOnce]
   )
 
   const sustainNormal = useMemo(() => sustainEl(false), [sustainEl])
@@ -472,7 +468,6 @@ export default function useUI(
             squeeze={!vertical ? 2 : 0}
             detent
             mute={mute}
-            linearKnobs={linearKnobs}
             theme={theme}
             updateOnce={updateOnce}
           />
@@ -491,7 +486,6 @@ export default function useUI(
       grabbing,
       keySwing,
       keySwingLength,
-      linearKnobs,
       mute,
       setGrabbing,
       setKeySwing,
@@ -583,7 +577,6 @@ export default function useUI(
             inline={inline}
             detent
             mute={mute}
-            linearKnobs={linearKnobs}
             theme={theme}
             updateOnce={updateOnce}
           />
@@ -601,7 +594,6 @@ export default function useUI(
     },
     [
       grabbing,
-      linearKnobs,
       mute,
       seqSwing,
       seqSwingLength,

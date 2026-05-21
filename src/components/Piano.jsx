@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain, ALT } from '../globals'
-import { useGesture } from 'react-use-gesture'
+import { useGesture } from '@use-gesture/react'
 import useAlt from '../hooks/useAlt'
 import './Piano.scss'
 
