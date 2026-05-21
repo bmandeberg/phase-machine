@@ -9,6 +9,11 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.20.6":
+  version "7.29.2"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.29.2.tgz#9a6e2d05f4b6692e1801cd4fb176ad823930ed5e"
+  integrity sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==
+
 "@next/env@14.2.15":
   version "14.2.15"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-14.2.15.tgz#06d984e37e670d93ddd6790af1844aeb935f332f"
@@ -372,6 +377,13 @@ devtools-protocol@0.0.1608973:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1608973.tgz#56e0a2a999b06d416ee928ca06aeba95a5880515"
   integrity sha512-Tpm17fxYzt+J7VrGdc1k8YdRqS3YV7se/M6KeemEqvUbq/n7At1rWVuXMxQgpWkdwSdIEKYbU//Bve+Shm4YNQ==
 
+djipevents@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/djipevents/-/djipevents-2.0.7.tgz#4805dcb8dcf0b4a2c6e51eaecdfc218bb8f202fb"
+  integrity sha512-KNFYaU85imxOCKOUsIR70Iz9E19r96/X7LSH+u0tSoZdpWcBdzoqtTsU+wuLhc6GMpSFob+KInkZAbfKi01Bjg==
+  dependencies:
+    "@babel/runtime" "^7.20.6"
+
 dom-helpers@^5.0.1:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-5.2.0.tgz#57fd054c5f8f34c52a3eeffdb7e7e93cd357d95b"
@@ -521,10 +533,22 @@ is-glob@^4.0.3:
   dependencies:
     is-extglob "^2.1.1"
 
+jazz-midi@^1.7.9:
+  version "1.7.9"
+  resolved "https://registry.yarnpkg.com/jazz-midi/-/jazz-midi-1.7.9.tgz#ad564e85acf12414aec7ef7d879ad61a5d7f6896"
+  integrity sha512-c8c4BBgwxdsIr1iVm53nadCrtH7BUlnX3V95ciK/gbvXN/ndE5+POskBalXgqlc/r9p2XUbdLTrgrC6fou5p9w==
+
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
+
+jzz@^1.8.5:
+  version "1.9.6"
+  resolved "https://registry.yarnpkg.com/jzz/-/jzz-1.9.6.tgz#557c64d9766d7c1e60d5b1be510be752a913ad21"
+  integrity sha512-J7ENLhXwfm2BNDKRUrL8eKtPhUS/CtMBpiafxQHDBcOWSocLhearDKEdh+ylnZFcr5OXWTed0gj6l/txeQA9vg==
+  dependencies:
+    jazz-midi "^1.7.9"
 
 loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
@@ -875,10 +899,14 @@ webdriver-bidi-protocol@0.4.1:
   resolved "https://registry.yarnpkg.com/webdriver-bidi-protocol/-/webdriver-bidi-protocol-0.4.1.tgz#d411e7b8e158408d83bb166b0b4f1054fa3f077e"
   integrity sha512-ARrjNjtWRRs2w4Tk7nqrf2gBI0QXWuOmMCx2hU+1jUt6d00MjMxURrhxhGbrsoiZKJrhTSTzbIrc554iKI10qw==
 
-webmidi@^2.5.2:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/webmidi/-/webmidi-2.5.2.tgz#0323e906185f0c4ed4224fcbfd1595a250ff5dce"
-  integrity sha512-T/KhiljH0cdaJxB5zl9BEpbFOpKovop8pqCcWLjNPIB8XduIGGg8DkA/NCvy5t2onYCXmn+oMYJ3oYcaIWSvlA==
+webmidi@^3:
+  version "3.1.16"
+  resolved "https://registry.yarnpkg.com/webmidi/-/webmidi-3.1.16.tgz#e706e70f6e5c5cb29ae6842da75e4c45328b896a"
+  integrity sha512-I6NnCfBUXNbV8q6EU+DPtr1u1EgjzDrFKHQQS2OgaHzcuQRFhRHgogfKpKSpxD0IgXhZHz8+k/OpGfZoWbvWAQ==
+  dependencies:
+    djipevents "^2.0.7"
+  optionalDependencies:
+    jzz "^1.8.5"
 
 wrap-ansi@^7.0.0:
   version "7.0.0"

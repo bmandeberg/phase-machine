@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import WebMidi from 'webmidi'
+import { WebMidi } from 'webmidi'
 import * as Tone from 'tone'
 
 const MIDI_IO_CHANGED = {
@@ -55,10 +55,8 @@ export default function useMIDI(setPlaying, setResetTransport) {
       setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
       setMidiIn((midiIn) => (e.port.name === midiIn ? null : midiIn))
     }
-    WebMidi.enable((err) => {
-      if (err) {
-        console.log(err)
-      } else {
+    WebMidi.enable()
+      .then(() => {
         // initialize MIDI I/O
         const mo = window.localStorage.getItem('midiOut')
         setMidiOut(() => (WebMidi.outputs.map((o) => o.name).includes(mo) && mo) || null)
@@ -83,8 +81,10 @@ export default function useMIDI(setPlaying, setResetTransport) {
         setMidiEnabled(true)
         WebMidi.addListener('connected', connectMidi)
         WebMidi.addListener('disconnected', disconnectMidi)
-      }
-    })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     return () => {
       // WebMidi.enable() is async, so under React 18 StrictMode the cleanup can
       // run before it resolves; removing listeners then throws. Guard on enabled.
@@ -109,17 +109,17 @@ export default function useMIDI(setPlaying, setResetTransport) {
       }
       midiInRef.current = WebMidi.getInputByName(midiIn)
       // MIDI input listeners
-      midiInRef.current.addListener('noteon', 'all', (e) => {
+      midiInRef.current.addListener('noteon', (e) => {
         if (midiIn !== midiOutRef.current) {
           setMidiNoteOn(e)
         }
       })
-      midiInRef.current.addListener('noteoff', 'all', (e) => {
+      midiInRef.current.addListener('noteoff', (e) => {
         if (midiIn !== midiOutRef.current) {
           setMidiNoteOff(e)
         }
       })
-      midiInRef.current.addListener('start', 'all', (e) => {
+      midiInRef.current.addListener('start', (e) => {
         if (WebMidi.midiClockIn) {
           Tone.Transport.start()
           setPlaying(true)
@@ -127,7 +127,7 @@ export default function useMIDI(setPlaying, setResetTransport) {
           midiStartContinue(midiOutRef.current, midiIn)
         }
       })
-      midiInRef.current.addListener('continue', 'all', (e) => {
+      midiInRef.current.addListener('continue', (e) => {
         if (WebMidi.midiClockIn) {
           Tone.Transport.start()
           setPlaying(true)
@@ -135,7 +135,7 @@ export default function useMIDI(setPlaying, setResetTransport) {
           midiStartContinue(midiOutRef.current, midiIn)
         }
       })
-      midiInRef.current.addListener('stop', 'all', (e) => {
+      midiInRef.current.addListener('stop', (e) => {
         if (WebMidi.midiClockIn) {
           Tone.Transport.pause()
           setPlaying(false)
@@ -143,8 +143,8 @@ export default function useMIDI(setPlaying, setResetTransport) {
           midiStop(midiOutRef.current, midiIn)
         }
       })
-      midiInRef.current.addListener('songposition', 'all', (e) => {
-        if (WebMidi.midiClockIn && e.data && e.data[0] === 242 && e.data[1] === 0) {
+      midiInRef.current.addListener('songposition', (e) => {
+        if (WebMidi.midiClockIn && e.message.data && e.message.data[0] === 242 && e.message.data[1] === 0) {
           setResetTransport(true)
           // MIDI out
           midiSongpositionReset(midiOutRef.current, midiIn)

@@ -25,7 +25,7 @@
     "tone": "^14.7.77",
     "ua-parser-js": "^0.7.28",
     "uuid": "^8.3.2",
-    "webmidi": "^2.5.2"
+    "webmidi": "^3"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

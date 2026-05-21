@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import * as Tone from 'tone'
-import WebMidi from 'webmidi'
+import { WebMidi } from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
 import { useGesture } from '@use-gesture/react'
 import {
@@ -321,7 +321,7 @@ export default function Channel({
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOutRef.current ? WebMidi.getOutputByName(midiOutRef.current) : null
       if (midiOutObj) {
-        midiOutObj.stopNote(note, channel)
+        midiOutObj.stopNote(note, { channels: channel })
       }
     }
   }, [instrument])
@@ -358,7 +358,7 @@ export default function Channel({
         if (offTime) {
           params.time = offTime * 1000 + clockOffset
         }
-        midiOutObj.stopNote(note, channel, params)
+        midiOutObj.stopNote(note, { channels: channel, ...params })
       }
       setNoteOn(false)
       if (delay) {
@@ -440,7 +440,7 @@ export default function Channel({
         }
       }
       if (midiOutObj) {
-        midiOutObj.playNote(note, channel, { time: time * 1000 + clockOffset, velocity })
+        midiOutObj.playNote(note, { channels: channel, time: time * 1000 + clockOffset, attack: velocity })
       }
       setNoteOn(true)
       setPlayingNote(noteIndex.current)
@@ -480,7 +480,7 @@ export default function Channel({
         }
       }
       if (midiOutObj) {
-        midiOutObj.playNote(note, channel, { velocity })
+        midiOutObj.playNote(note, { channels: channel, attack: velocity })
       }
       const sustainTime = Math.max(sustain * Tone.Transport.toSeconds(keyRate), 0.08)
       Tone.context.setTimeout(() => {
@@ -488,7 +488,7 @@ export default function Channel({
           instrument.current.triggerRelease()
         }
         if (midiOutObj) {
-          midiOutObj.stopNote(note, channel)
+          midiOutObj.stopNote(note, { channels: channel })
         }
         callback()
       }, sustainTime)
