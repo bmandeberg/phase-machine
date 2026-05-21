@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import * as Tone from 'tone'
 import classNames from 'classnames'
@@ -20,8 +22,6 @@ import Channel from './components/Channel'
 import Modal from './components/Modal'
 import usePresets from './hooks/usePresets'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
-import './dark-theme.scss'
-import './contrast-theme.scss'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {

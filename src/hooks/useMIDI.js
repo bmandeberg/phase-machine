@@ -86,8 +86,12 @@ export default function useMIDI(setPlaying, setResetTransport) {
       }
     })
     return () => {
-      WebMidi.removeListener('connected', connectMidi)
-      WebMidi.removeListener('disconnected', disconnectMidi)
+      // WebMidi.enable() is async, so under React 18 StrictMode the cleanup can
+      // run before it resolves; removing listeners then throws. Guard on enabled.
+      if (WebMidi.enabled) {
+        WebMidi.removeListener('connected', connectMidi)
+        WebMidi.removeListener('disconnected', disconnectMidi)
+      }
     }
   }, [])
 
