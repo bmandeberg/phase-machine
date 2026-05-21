@@ -1,11 +1,35 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
 import Switch from 'react-switch'
 import Dropdown from '../components/Dropdown'
 import MultiSelect from './MultiSelect'
 import { THEMES, themedSwitch } from '../globals'
 import classNames from 'classnames'
+import { Preset } from '../types'
 import './Settings.scss'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface SettingsProps {
+  showStepNumbers?: boolean
+  setShowStepNumbers: any
+  defaultChannelModeKeybd?: boolean
+  setDefaultChannelModeKeybd: any
+  theme: string
+  setTheme: any
+  presets: Preset[]
+  importPresets: (json: string) => void
+  modalType?: string | null
+  presetsRestartTransport?: boolean
+  setPresetsRestartTransport: any
+  midiClockIn?: boolean
+  setMidiClockIn: any
+  midiClockOut?: boolean
+  setMidiClockOut: any
+  ignorePresetsTempo?: boolean
+  setIgnorePresetsTempo: any
+  presetsStopTransport?: boolean
+  setPresetsStopTransport: any
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function Settings({
   showStepNumbers,
@@ -27,7 +51,7 @@ export default function Settings({
   setIgnorePresetsTempo,
   presetsStopTransport,
   setPresetsStopTransport,
-}) {
+}: SettingsProps) {
 
   const setRangeModeDefault = useCallback(() => {
     setDefaultChannelModeKeybd(false)
@@ -43,10 +67,10 @@ export default function Settings({
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
 
   const presetNames = useMemo(() => presets.map((p) => p.name), [presets])
-  const [selectedPresets, setSelectedPresets] = useState([])
+  const [selectedPresets, setSelectedPresets] = useState<string[]>([])
   const [presetsJSON, setPresetsJSON] = useState('')
 
-  const updatePresetsJSON = useCallback((e) => {
+  const updatePresetsJSON = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPresetsJSON(e.target.value)
   }, [])
 
@@ -100,7 +124,7 @@ export default function Settings({
         <Switch
           className="instrument-switch"
           onChange={setShowStepNumbers}
-          checked={showStepNumbers}
+          checked={showStepNumbers ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -116,7 +140,7 @@ export default function Settings({
         <Switch
           className="instrument-switch"
           onChange={setPresetsRestartTransport}
-          checked={presetsRestartTransport}
+          checked={presetsRestartTransport ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -132,7 +156,7 @@ export default function Settings({
         <Switch
           className="instrument-switch"
           onChange={setPresetsStopTransport}
-          checked={presetsStopTransport}
+          checked={presetsStopTransport ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -148,7 +172,7 @@ export default function Settings({
         <Switch
           className="instrument-switch"
           onChange={setMidiClockIn}
-          checked={midiClockIn}
+          checked={midiClockIn ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -164,7 +188,7 @@ export default function Settings({
         <Switch
           className="instrument-switch"
           onChange={setMidiClockOut}
-          checked={midiClockOut}
+          checked={midiClockOut ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -180,7 +204,7 @@ export default function Settings({
         <Switch
           className="instrument-switch"
           onChange={setIgnorePresetsTempo}
-          checked={ignorePresetsTempo}
+          checked={ignorePresetsTempo ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -202,7 +226,7 @@ export default function Settings({
           <Switch
             className="switch"
             onChange={setDefaultChannelModeKeybd}
-            checked={defaultChannelModeKeybd}
+            checked={defaultChannelModeKeybd ?? false}
             uncheckedIcon={false}
             checkedIcon={false}
             offColor={offColor}
@@ -245,25 +269,4 @@ export default function Settings({
       </div>
     </div>
   )
-}
-Settings.propTypes = {
-  showStepNumbers: PropTypes.bool,
-  setShowStepNumbers: PropTypes.func,
-  defaultChannelModeKeybd: PropTypes.bool,
-  setDefaultChannelModeKeybd: PropTypes.func,
-  theme: PropTypes.string,
-  setTheme: PropTypes.func,
-  presets: PropTypes.array,
-  importPresets: PropTypes.func,
-  modalType: PropTypes.string,
-  presetsRestartTransport: PropTypes.bool,
-  setPresetsRestartTransport: PropTypes.func,
-  midiClockIn: PropTypes.bool,
-  setMidiClockIn: PropTypes.func,
-  midiClockOut: PropTypes.bool,
-  setMidiClockOut: PropTypes.func,
-  ignorePresetsTempo: PropTypes.bool,
-  setIgnorePresetsTempo: PropTypes.func,
-  presetsStopTransport: PropTypes.bool,
-  setPresetsStopTransport: PropTypes.func,
 }

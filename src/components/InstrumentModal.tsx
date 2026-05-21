@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
-import PropTypes from 'prop-types'
 import Instrument from './Instrument'
 import RotaryKnob from './RotaryKnob'
 import Dropdown from './Dropdown'
@@ -8,10 +7,28 @@ import Switch from 'react-switch'
 import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES, CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
 import classNames from 'classnames'
+import { InstrumentParams } from '../types'
 import './InstrumentModal.scss'
 
 const rolloffOptions = ['-12', '-24', '-48', '-96']
 const oscModifiers = ['none', 'am', 'fm', 'fat']
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface InstrumentModalProps {
+  instrumentOn?: boolean
+  setInstrumentOn: any
+  instrumentType: string
+  setInstrumentType: any
+  theme: string
+  instrumentParams: InstrumentParams
+  setInstrumentParams: any
+  instruments: any
+  gainNode: any
+  effects: any
+  grabbing?: boolean
+  setGrabbing: any
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function InstrumentModal({
   instrumentOn,
@@ -26,7 +43,7 @@ export default function InstrumentModal({
   effects,
   grabbing,
   setGrabbing,
-}) {
+}: InstrumentModalProps) {
   const [gain, setGain] = useState(instrumentParams.gain)
   // synth
   const [synthType, setSynthType] = useState(instrumentParams.synthType)
@@ -76,14 +93,14 @@ export default function InstrumentModal({
   const [vibratoDepth, setVibratoDepth] = useState(instrumentParams.vibratoDepth)
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
 
-  const effectRef = useRef()
+  const effectRef = useRef<any>() // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const rolloffString = useMemo(() => `${rolloff}`, [rolloff])
-  const updateRolloff = useCallback((r) => {
+  const updateRolloff = useCallback((r: string) => {
     setRolloff(+r)
   }, [])
 
-  const setSyncedDelay = useCallback((rate) => {
+  const setSyncedDelay = useCallback((rate: string) => {
     setDelayTime(Tone.getTransport().toSeconds(rate))
   }, [])
   const syncedDelayOptions = useMemo(() => {
@@ -98,13 +115,16 @@ export default function InstrumentModal({
     return null
   }, [delayTime])
 
-  const instrumentParamsDebounce = useRef()
+  const instrumentParamsDebounce = useRef<ReturnType<typeof setTimeout>>()
   const updateInstrumentParams = useCallback(
-    (param, value) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (param: string, value: any) => {
       clearTimeout(instrumentParamsDebounce.current)
       const debounceTime = 200
       instrumentParamsDebounce.current = setTimeout(() => {
-        setInstrumentParams((instrumentParams) => Object.assign({}, instrumentParams, { [param]: value }))
+        setInstrumentParams((instrumentParams: InstrumentParams) =>
+          Object.assign({}, instrumentParams, { [param]: value })
+        )
       }, debounceTime)
     },
     [setInstrumentParams]
@@ -318,7 +338,7 @@ export default function InstrumentModal({
         effects.chorusEffect.current.stop()
       }
     }
-    let effect
+    let effect: any // eslint-disable-line @typescript-eslint/no-explicit-any
     switch (effectType) {
       case 'chorus':
         effect = effects.chorusEffect.current
@@ -340,14 +360,16 @@ export default function InstrumentModal({
     }
     effect = effect || gainNode.current
     if (effectRef.current) {
-      Object.values(instruments).forEach((instrument) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      Object.values(instruments).forEach((instrument: any) => {
         if (instrument.current) {
           instrument.current.disconnect(effectRef.current)
         }
       })
     }
     effectRef.current = effect
-    Object.values(instruments).forEach((instrument) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Object.values(instruments).forEach((instrument: any) => {
       if (instrument.current) {
         instrument.current.connect(effect)
       }
@@ -356,7 +378,8 @@ export default function InstrumentModal({
   }, [effectType, effects, gainNode, instruments, updateInstrumentParams])
 
   useEffect(() => {
-    Object.values(effects).forEach((effect) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Object.values(effects).forEach((effect: any) => {
       if (effect.current) {
         effect.current.set({ wet: effectWet })
       }
@@ -457,7 +480,7 @@ export default function InstrumentModal({
     return synthType
   }, [synthType])
   const updateSynthType = useCallback(
-    (newType) => {
+    (newType: string) => {
       const updatedType =
         oscModifier !== oscModifiers[0] && Object.keys(SIGNAL_TYPES).includes(newType) ? oscModifier + newType : newType
       setSynthType(updatedType)
@@ -466,7 +489,7 @@ export default function InstrumentModal({
     [harmonicity, instruments.synthInstrument, oscModifier]
   )
   const updateOscModifier = useCallback(
-    (modifier) => {
+    (modifier: string) => {
       const updatedModifier = modifier === oscModifiers[0] ? '' : modifier
       setSynthType(updatedModifier + synthBase)
       instruments.synthInstrument.current.oscillator.set({ harmonicity, type: updatedModifier + synthBase })
@@ -961,7 +984,7 @@ export default function InstrumentModal({
           <Switch
             className="switch"
             onChange={setSyncDelayTime}
-            checked={syncDelayTime}
+            checked={!!syncDelayTime}
             uncheckedIcon={false}
             checkedIcon={false}
             offColor={offColor}
@@ -1152,18 +1175,4 @@ export default function InstrumentModal({
       </div>
     </div>
   )
-}
-InstrumentModal.propTypes = {
-  instrumentOn: PropTypes.bool,
-  setInstrumentOn: PropTypes.func,
-  instrumentType: PropTypes.string,
-  setInstrumentType: PropTypes.func,
-  theme: PropTypes.string,
-  instrumentParams: PropTypes.object,
-  setInstrumentParams: PropTypes.func,
-  instruments: PropTypes.object,
-  gainNode: PropTypes.object,
-  effects: PropTypes.object,
-  grabbing: PropTypes.bool,
-  setGrabbing: PropTypes.func,
 }

@@ -1,10 +1,20 @@
 import React, { useMemo } from 'react'
-import PropTypes from 'prop-types'
 import MidiInputMode from './MidiInputMode'
 import Switch from 'react-switch'
 import NumInput from './NumInput'
 import { themedSwitch } from '../globals'
 import './MIDIModal.scss'
+
+interface MIDIModalProps {
+  midiHold?: boolean
+  setMidiHold: (midiHold: boolean) => void
+  customMidiOutChannel?: boolean
+  setCustomMidiOutChannel: (custom: boolean) => void
+  channelNum?: number
+  theme: string
+  midiOutChannel?: number
+  setMidiOutChannel: (value: number) => void
+}
 
 export default function MIDIModal({
   midiHold,
@@ -15,17 +25,17 @@ export default function MIDIModal({
   theme,
   midiOutChannel,
   setMidiOutChannel,
-}) {
+}: MIDIModalProps) {
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
 
-  const midiChannel = useMemo(() => <p className="channel-num">{channelNum + 1}</p>, [channelNum])
+  const midiChannel = useMemo(() => <p className="channel-num">{(channelNum ?? 0) + 1}</p>, [channelNum])
   const customInput = useMemo(
     () => (
       <div className="modal-param">
-        <NumInput value={midiOutChannel} setValue={setMidiOutChannel} min={1} max={16} />
+        <NumInput value={midiOutChannel ?? 1} setValue={setMidiOutChannel} min={1} max={16} />
       </div>
     ),
     [midiOutChannel, setMidiOutChannel]
@@ -43,7 +53,7 @@ export default function MIDIModal({
         <Switch
           className="modal-param"
           onChange={setCustomMidiOutChannel}
-          checked={customMidiOutChannel}
+          checked={customMidiOutChannel ?? false}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}
@@ -59,14 +69,4 @@ export default function MIDIModal({
       </div>
     </div>
   )
-}
-MIDIModal.propTypes = {
-  midiHold: PropTypes.bool,
-  setMidiHold: PropTypes.func,
-  customMidiOutChannel: PropTypes.bool,
-  setCustomMidiOutChannel: PropTypes.func,
-  channelNum: PropTypes.number,
-  midiOutChannel: PropTypes.number,
-  setMidiOutChannel: PropTypes.func,
-  theme: PropTypes.string,
 }

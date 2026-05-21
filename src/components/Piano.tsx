@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain, ALT } from '../globals'
 import { useGesture } from '@use-gesture/react'
@@ -10,6 +9,26 @@ const CHANNEL_HEIGHT = 98
 const BLACK_KEY_HEIGHT = 58
 const BLACK_KEY_WIDTH = 8
 const WHITE_KEY_WIDTH = 13
+
+interface PianoProps {
+  playingNote?: number | null
+  rangeStart: number
+  setRangeStart: (value: number) => void
+  rangeEnd: number
+  setRangeEnd: (value: number) => void
+  grabbing?: boolean
+  setGrabbing: (grabbing: boolean) => void
+  resizing?: boolean
+  setResizing: (resizing: boolean) => void
+  noteOn?: boolean
+  mute?: boolean
+  rangeMode?: boolean
+  keybdPitches: number[]
+  setKeybdPitches: React.Dispatch<React.SetStateAction<number[]>>
+  theme?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  triggerNote: (noteIndex: number, onEnded: () => void) => any
+}
 
 export default function Piano({
   playingNote,
@@ -28,8 +47,8 @@ export default function Piano({
   setKeybdPitches,
   theme,
   triggerNote,
-}) {
-  const [noteTriggered, setNoteTriggered] = useState(null)
+}: PianoProps) {
+  const [noteTriggered, setNoteTriggered] = useState<number | null>(null)
   const [changingRange, setChangingRange] = useState(false)
   const [rangeStartReference, setRangeStartReference] = useState(rangeStart)
   const [rangeEndReference, setRangeEndReference] = useState(rangeEnd)
@@ -96,7 +115,7 @@ export default function Piano({
   })
 
   const selectNote = useCallback(
-    (noteIndex) => {
+    (noteIndex: number) => {
       if (!rangeMode && !ALT) {
         setKeybdPitches((keybdPitches) => {
           const keybdPitchesCopy = keybdPitches.slice()
@@ -117,7 +136,7 @@ export default function Piano({
   const alt = useAlt()
 
   const noteDown = useCallback(
-    (noteIndex) => {
+    (noteIndex: number) => {
       if (ALT) {
         triggerNote(noteIndex, () => {
           setNoteTriggered(null)
@@ -250,26 +269,7 @@ export default function Piano({
     </div>
   )
 }
-Piano.propTypes = {
-  playingNote: PropTypes.number,
-  rangeStart: PropTypes.number,
-  setRangeStart: PropTypes.func,
-  rangeEnd: PropTypes.number,
-  setRangeEnd: PropTypes.func,
-  grabbing: PropTypes.bool,
-  setGrabbing: PropTypes.func,
-  resizing: PropTypes.bool,
-  setResizing: PropTypes.func,
-  noteOn: PropTypes.bool,
-  mute: PropTypes.bool,
-  rangeMode: PropTypes.bool,
-  keybdPitches: PropTypes.array,
-  setKeybdPitches: PropTypes.func,
-  theme: PropTypes.string,
-  triggerNote: PropTypes.func,
-}
-
-function noteLeftBoundary(boundaryType, x, height) {
+function noteLeftBoundary(boundaryType: number, x: number, height: number) {
   switch (boundaryType) {
     case 0:
       return `M${x} 1 V ${height}`
@@ -290,7 +290,7 @@ function noteLeftBoundary(boundaryType, x, height) {
   }
 }
 
-function noteRightBoundary(boundaryType, x) {
+function noteRightBoundary(boundaryType: number, x: number) {
   switch (boundaryType) {
     case 0:
       return ` H ${x} V 1 Z`
@@ -311,7 +311,7 @@ function noteRightBoundary(boundaryType, x) {
   }
 }
 
-function noteToPx(note, after) {
+function noteToPx(note: number, after: boolean) {
   let px = 0
   let boundaryType = 0
   const i = note % 12
@@ -353,6 +353,6 @@ function noteToPx(note, after) {
   return { px, boundaryType }
 }
 
-function keyOffset(x) {
+function keyOffset(x: number) {
   return Math.round(x / ((WHITE_KEY_WIDTH * 7) / 12))
 }

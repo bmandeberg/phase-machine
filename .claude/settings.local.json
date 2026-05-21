@@ -48,7 +48,9 @@
       "Bash(bc)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\),indent=2\\)\\); print\\('DEPS:', json.dumps\\(d.get\\('dependencies',{}\\),indent=2\\)\\); print\\('DEVDEPS:', json.dumps\\(d.get\\('devDependencies',{}\\),indent=2\\)\\)\")",
       "Bash(awk 'NR>=528' src/globals.jsx)",
-      "Bash(node -p \"require\\('classnames/package.json'\\).version\")"
+      "Bash(node -p \"require\\('classnames/package.json'\\).version\")",
+      "Bash(perl -0pi -e 's/checked=\\\\{showStepNumbers\\\\}/checked={showStepNumbers ?? false}/; s/checked=\\\\{presetsRestartTransport\\\\}/checked={presetsRestartTransport ?? false}/; s/checked=\\\\{presetsStopTransport\\\\}/checked={presetsStopTransport ?? false}/; s/checked=\\\\{midiClockIn\\\\}/checked={midiClockIn ?? false}/; s/checked=\\\\{midiClockOut\\\\}/checked={midiClockOut ?? false}/; s/checked=\\\\{ignorePresetsTempo\\\\}/checked={ignorePresetsTempo ?? false}/; s/checked=\\\\{defaultChannelModeKeybd\\\\}/checked={defaultChannelModeKeybd ?? false}/' src/components/Settings.tsx)",
+      "Bash(xargs -I{} basename {})"
     ]
   }
 }

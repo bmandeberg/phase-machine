@@ -1,11 +1,55 @@
 import React, { useCallback, useRef, useEffect, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import Settings from './Settings'
 import MIDIModal from './MIDIModal'
 import InstrumentModal from './InstrumentModal'
 import AboutModal from './AboutModal'
 import classNames from 'classnames'
+import { InstrumentParams, Preset } from '../types'
 import './Modal.scss'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface ModalProps {
+  modalContent?: boolean
+  modalType?: string | null
+  setModalType: (type: string | null) => void
+  showStepNumbers?: boolean
+  setShowStepNumbers: any
+  defaultChannelModeKeybd?: boolean
+  setDefaultChannelModeKeybd: any
+  theme: string
+  setTheme: any
+  midiHold?: boolean
+  setMidiHold: any
+  customMidiOutChannel?: boolean
+  setCustomMidiOutChannel: any
+  channelNum?: number
+  midiOutChannel?: number
+  setMidiOutChannel: any
+  presets: Preset[]
+  importPresets: any
+  instrumentOn?: boolean
+  setInstrumentOn: any
+  instrumentType: string
+  setInstrumentType: any
+  instrumentParams: InstrumentParams
+  setInstrumentParams: any
+  instruments: any
+  gainNode: any
+  effects: any
+  grabbing?: boolean
+  setGrabbing: any
+  presetsRestartTransport?: boolean
+  setPresetsRestartTransport: any
+  midiClockIn?: boolean
+  setMidiClockIn: any
+  midiClockOut?: boolean
+  setMidiClockOut: any
+  ignorePresetsTempo?: boolean
+  setIgnorePresetsTempo: any
+  presetsStopTransport?: boolean
+  setPresetsStopTransport: any
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function Modal({
   modalType,
@@ -47,16 +91,16 @@ export default function Modal({
   setIgnorePresetsTempo,
   presetsStopTransport,
   setPresetsStopTransport,
-}) {
-  const modalTypeRef = useRef()
+}: ModalProps) {
+  const modalTypeRef = useRef<string | null>(null)
 
   const closeModal = useCallback(() => {
     setModalType(null)
   }, [setModalType])
 
   const clickScrim = useCallback(
-    (e) => {
-      if (e.target.classList.contains('modal-container')) {
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).classList.contains('modal-container')) {
         closeModal()
       }
     },
@@ -64,7 +108,7 @@ export default function Modal({
   )
 
   useEffect(() => {
-    function keydown(e) {
+    function keydown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         closeModal()
       }
@@ -203,45 +247,4 @@ export default function Modal({
       </div>
     </div>
   )
-}
-Modal.propTypes = {
-  modalContent: PropTypes.bool,
-  modalType: PropTypes.string,
-  setModalType: PropTypes.func,
-  showStepNumbers: PropTypes.bool,
-  setShowStepNumbers: PropTypes.func,
-  defaultChannelModeKeybd: PropTypes.bool,
-  setDefaultChannelModeKeybd: PropTypes.func,
-  theme: PropTypes.string,
-  setTheme: PropTypes.func,
-  midiHold: PropTypes.bool,
-  setMidiHold: PropTypes.func,
-  customMidiOutChannel: PropTypes.bool,
-  setCustomMidiOutChannel: PropTypes.func,
-  channelNum: PropTypes.number,
-  midiOutChannel: PropTypes.number,
-  setMidiOutChannel: PropTypes.func,
-  presets: PropTypes.array,
-  importPresets: PropTypes.func,
-  instrumentOn: PropTypes.bool,
-  setInstrumentOn: PropTypes.func,
-  instrumentType: PropTypes.string,
-  setInstrumentType: PropTypes.func,
-  instrumentParams: PropTypes.object,
-  setInstrumentParams: PropTypes.func,
-  instruments: PropTypes.object,
-  gainNode: PropTypes.object,
-  effects: PropTypes.object,
-  grabbing: PropTypes.bool,
-  setGrabbing: PropTypes.func,
-  presetsRestartTransport: PropTypes.bool,
-  setPresetsRestartTransport: PropTypes.func,
-  midiClockIn: PropTypes.bool,
-  setMidiClockIn: PropTypes.func,
-  midiClockOut: PropTypes.bool,
-  setMidiClockOut: PropTypes.func,
-  ignorePresetsTempo: PropTypes.bool,
-  setIgnorePresetsTempo: PropTypes.func,
-  presetsStopTransport: PropTypes.bool,
-  setPresetsStopTransport: PropTypes.func,
 }

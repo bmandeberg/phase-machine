@@ -1,9 +1,22 @@
 import React, { useCallback, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import { whiteKey, blackKeyLeft, blackKeyRight } from '../globals'
 import pitchClassesCircle from '../assets/pitch-classes-circle.svg'
 import classNames from 'classnames'
 import './Key.scss'
+
+interface KeyProps {
+  musicalKey: boolean[]
+  setKey: React.Dispatch<React.SetStateAction<boolean[]>>
+  playingPitchClass?: number | null
+  setPlayingPitchClass?: React.Dispatch<React.SetStateAction<number | null>>
+  className?: string
+  pianoKeys?: boolean
+  turningAxisKnob?: boolean
+  keyPreview?: boolean[]
+  showKeyPreview?: boolean
+  mute?: boolean
+  rangeMode?: boolean
+}
 
 export default function Key({
   musicalKey,
@@ -17,9 +30,9 @@ export default function Key({
   showKeyPreview,
   mute,
   rangeMode,
-}) {
+}: KeyProps) {
   const togglePitchClass = useCallback(
-    (i) => {
+    (i: number) => {
       setKey((key) => {
         const keyCopy = key.slice()
         keyCopy[i] = !keyCopy[i]
@@ -29,7 +42,10 @@ export default function Key({
     [setKey]
   )
 
-  const selectedKeyVisible = useCallback((i) => showKeyPreview && keyPreview[i], [keyPreview, showKeyPreview])
+  const selectedKeyVisible = useCallback(
+    (i: number) => !!(showKeyPreview && keyPreview?.[i]),
+    [keyPreview, showKeyPreview]
+  )
 
   const pitchClasses = useMemo(
     () =>
@@ -41,14 +57,14 @@ export default function Key({
             'black-key-left': blackKeyLeft(i),
             'black-key-right': blackKeyRight(i),
             selected: musicalKey[i],
-            previewed: !pianoKeys && showKeyPreview && keyPreview[i],
+            previewed: !pianoKeys && showKeyPreview && keyPreview?.[i],
             playing: playingPitchClass === i && musicalKey[i],
             'ghost-playing': playingPitchClass === i && !musicalKey[i],
             mute,
             'no-pointer-events': !rangeMode,
           })}
           style={{
-            transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : null,
+            transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : undefined,
           }}
           onClick={() => togglePitchClass(i)}></div>
       )),
@@ -78,21 +94,13 @@ export default function Key({
     </div>
   )
 }
-Key.propTypes = {
-  musicalKey: PropTypes.array,
-  setKey: PropTypes.func,
-  playingPitchClass: PropTypes.number,
-  setPlayingPitchClass: PropTypes.func,
-  pianoKeys: PropTypes.bool,
-  className: PropTypes.string,
-  turningAxisKnob: PropTypes.bool,
-  keyPreview: PropTypes.array,
-  showKeyPreview: PropTypes.bool,
-  mute: PropTypes.bool,
-  rangeMode: PropTypes.bool,
+interface SelectedKeyProps {
+  left?: number
+  type?: number
+  visible?: boolean
 }
 
-function SelectedKey({ left, type, visible }) {
+function SelectedKey({ left, type, visible }: SelectedKeyProps) {
   const type0 = useMemo(
     () => (
       <svg
@@ -214,12 +222,6 @@ function SelectedKey({ left, type, visible }) {
       return null
   }
 }
-SelectedKey.propTypes = {
-  left: PropTypes.number,
-  type: PropTypes.number,
-  visible: PropTypes.bool,
-}
-
 const SELECTED_KEYS = [
   {
     left: 2,

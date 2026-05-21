@@ -21,6 +21,7 @@ interface LinearKnobProps {
   onEnd: () => void
   clampMax: number
   rotateDegrees: number
+  unlockDistance?: number
 }
 
 export default function LinearKnob({

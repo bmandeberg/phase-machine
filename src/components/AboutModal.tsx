@@ -1,10 +1,18 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import PropTypes from 'prop-types'
 import { v4 as uuid } from 'uuid'
 import parse from 'html-react-parser'
 import './AboutModal.scss'
 
-const ABOUT_SECTIONS = [
+interface AboutSection {
+  title?: string
+  text?: string
+  img?: { src: string; width: number }
+  tags?: string[]
+  warnings?: string[]
+  tips?: string[]
+}
+
+const ABOUT_SECTIONS: AboutSection[] = [
   {
     title: 'The Phase Machine',
     text: `The Phase Machine is a musical sequencer and composition tool. Although this website can play sounds, The Phase Machine is more about <i>choosing</i> notes via specific combinations of arpeggiators and sequencers. The notes can be played here on this page, or they can be sent via MIDI to instruments or DAWs. This is mostly still 🚧 under construction 🚧 but eventually we'll make some video tutorials. In the meantime, if you're here you probably know me so feel free to hmu for tutorials.
@@ -203,10 +211,14 @@ Please direct any questions, comments, or hate-mail to <a href="mailto:manberg@m
   },
 ]
 
-export default function AboutModal({ theme }) {
+interface AboutModalProps {
+  theme: string
+}
+
+export default function AboutModal({ theme }: AboutModalProps) {
   const [filter, setFilter] = useState('')
 
-  const updateFilter = useCallback((e) => {
+  const updateFilter = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value)
   }, [])
 
@@ -230,7 +242,7 @@ export default function AboutModal({ theme }) {
           )}
           {section.warnings &&
             section.warnings.map((warning, i) => (
-              <div key={uuid()} className="about-section-warning-container" style={i ? { marginTop: 10 } : null}>
+              <div key={uuid()} className="about-section-warning-container" style={i ? { marginTop: 10 } : undefined}>
                 <div className="about-section-warning">
                   <div className="about-section-warning-icon"></div>
                   <p className="about-section-warning-content">{warning}</p>
@@ -242,7 +254,7 @@ export default function AboutModal({ theme }) {
               <div
                 key={uuid()}
                 className="about-section-tip-container"
-                style={i || section.warnings ? { marginTop: 10 } : null}>
+                style={i || section.warnings ? { marginTop: 10 } : undefined}>
                 <div className="about-section-tip">
                   <div className="about-section-tip-icon"></div>
                   {parseLinks(tip, 'tip')}
@@ -267,11 +279,7 @@ export default function AboutModal({ theme }) {
     </div>
   )
 }
-AboutModal.propTypes = {
-  theme: PropTypes.string,
-}
-
-function parseLinks(text, type) {
+function parseLinks(text: string, type: string) {
   const className = `about-section-${type}-content`
   const linkedContent = text.replaceAll(/(https?:.+)$/g, (match, p1) => `<a href="${p1}" target="_blank">${p1}</a>`)
   return <div className={className}>{parse(linkedContent)}</div>

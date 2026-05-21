@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { KNOB_MAX } from '../globals'
 import Key from './Key'
@@ -9,6 +8,36 @@ import './RotaryKnob.scss'
 
 const AXIS_LINE_SIZE = 270
 const RANDOM_RANGE = 10000000
+
+interface RotaryKnobProps {
+  value: number
+  setValue: (value: number) => void
+  min?: number
+  max?: number
+  label?: string
+  grabbing?: boolean
+  setGrabbing: (grabbing: boolean) => void
+  className?: string
+  axisKnob?: boolean
+  axisKnobLarge?: boolean
+  musicalKey?: boolean[]
+  setKey?: React.Dispatch<React.SetStateAction<boolean[]>>
+  playingPitchClass?: number | null
+  setPlayingPitchClass?: React.Dispatch<React.SetStateAction<number | null>>
+  turningAxisKnob?: boolean
+  keyPreview?: boolean[]
+  showKeyPreview?: boolean
+  startChangingAxis?: () => void
+  stopChangingAxis?: () => void
+  squeeze?: number
+  inline?: boolean
+  detent?: boolean
+  mute?: boolean
+  theme?: string
+  rangeMode?: boolean
+  logarithmic?: boolean
+  updateOnce?: boolean
+}
 
 export default function RotaryKnob({
   value,
@@ -38,15 +67,15 @@ export default function RotaryKnob({
   rangeMode,
   logarithmic,
   updateOnce,
-}) {
+}: RotaryKnobProps) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
 
   const [internalValue, setInternalValue] = useState(logarithmic ? expInterpolate(minVal, maxVal, value, true) : value)
 
   const updateValue = useCallback(
-    (val) => {
-      let newValue
+    (val: number) => {
+      let newValue: number | undefined
       if (axisKnob) {
         const roundedVal = Math.round(val) % 12
         if (roundedVal !== value) {
@@ -86,7 +115,7 @@ export default function RotaryKnob({
     setGrabbing(false)
   }, [setGrabbing])
 
-  const knobSize = useMemo(() => {
+  const knobSize = useMemo<React.CSSProperties>(() => {
     if (axisKnobLarge) {
       return {
         width: '60px',
@@ -339,11 +368,11 @@ export default function RotaryKnob({
   }, [grabbing])
 
   const onStart = useMemo(
-    () => (axisKnob ? startChangingAxis : startTurningKnob),
+    () => (axisKnob ? startChangingAxis ?? (() => {}) : startTurningKnob),
     [axisKnob, startChangingAxis, startTurningKnob]
   )
   const onEnd = useMemo(
-    () => (axisKnob ? stopChangingAxis : stopTurningKnob),
+    () => (axisKnob ? stopChangingAxis ?? (() => {}) : stopTurningKnob),
     [axisKnob, stopChangingAxis, stopTurningKnob]
   )
   const clampMax = useMemo(() => (axisKnob ? 360 : 270), [axisKnob])
@@ -380,8 +409,8 @@ export default function RotaryKnob({
         </svg>
         {!axisKnobLarge && (
           <Key
-            musicalKey={musicalKey}
-            setKey={setKey}
+            musicalKey={musicalKey!}
+            setKey={setKey!}
             playingPitchClass={playingPitchClass}
             setPlayingPitchClass={setPlayingPitchClass}
             className="axis-knob-supplemental"
@@ -396,8 +425,8 @@ export default function RotaryKnob({
   const axisKey = useMemo(
     () => (
       <Key
-        musicalKey={musicalKey}
-        setKey={setKey}
+        musicalKey={musicalKey!}
+        setKey={setKey!}
         playingPitchClass={playingPitchClass}
         setPlayingPitchClass={setPlayingPitchClass}
         turningAxisKnob={turningAxisKnob}
@@ -448,7 +477,7 @@ export default function RotaryKnob({
       updateValue,
     ]
   )
-  const knobStyle = useMemo(() => ({ marginLeft: squeeze && -squeeze }), [squeeze])
+  const knobStyle = useMemo<React.CSSProperties>(() => ({ marginLeft: squeeze ? -squeeze : undefined }), [squeeze])
 
   return (
     <div
@@ -466,33 +495,4 @@ export default function RotaryKnob({
       <div className="knob-label no-select">{axisKnob ? 'Axis' : label}</div>
     </div>
   )
-}
-RotaryKnob.propTypes = {
-  value: PropTypes.number,
-  setValue: PropTypes.func,
-  min: PropTypes.number,
-  max: PropTypes.number,
-  label: PropTypes.string,
-  grabbing: PropTypes.bool,
-  setGrabbing: PropTypes.func,
-  className: PropTypes.string,
-  axisKnob: PropTypes.bool,
-  axisKnobLarge: PropTypes.bool,
-  musicalKey: PropTypes.array,
-  setKey: PropTypes.func,
-  playingPitchClass: PropTypes.number,
-  setPlayingPitchClass: PropTypes.func,
-  turningAxisKnob: PropTypes.bool,
-  keyPreview: PropTypes.array,
-  showKeyPreview: PropTypes.bool,
-  startChangingAxis: PropTypes.func,
-  stopChangingAxis: PropTypes.func,
-  squeeze: PropTypes.number,
-  inline: PropTypes.bool,
-  detent: PropTypes.bool,
-  mute: PropTypes.bool,
-  theme: PropTypes.string,
-  rangeMode: PropTypes.bool,
-  logarithmic: PropTypes.bool,
-  updateOnce: PropTypes.bool,
 }

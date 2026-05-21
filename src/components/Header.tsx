@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import { VIEWS, SECTIONS, MAX_CHANNELS, ALT } from '../globals'
@@ -8,6 +7,7 @@ import NumInput from './NumInput'
 import Dropdown from './Dropdown'
 import Presets from './Presets'
 import RadioButtons from './RadioButtons'
+import { Preset } from '../types'
 import logo from '../assets/logo.svg'
 import logoDark from '../assets/logo-dark.svg'
 import play from '../assets/play.svg'
@@ -17,8 +17,48 @@ import waves from '../assets/waves.png'
 import logoShadow from '../assets/48F8B2439E7D5A31.png'
 import './Header.scss'
 
-export default class Header extends React.Component {
-  constructor(props) {
+void regeneratorRuntime
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface HeaderProps {
+  tempo: number
+  setTempo: any
+  playing?: boolean
+  setPlaying: any
+  midiOuts?: any[]
+  midiOut?: string
+  midiIns?: any[]
+  midiIn?: string
+  setMidiOut: any
+  setMidiIn: any
+  midiEnabled?: boolean
+  numChannels: number
+  setNumChannels: any
+  view?: string
+  setView: any
+  scrollTo?: string
+  setScrollTo: any
+  channelSync?: boolean
+  setChannelSync?: any
+  presetOptions?: any[]
+  preset: Preset
+  setPresetName: any
+  setPreset: any
+  presetDirty?: boolean
+  presetHotkey?: number | string | null
+  savePreset: any
+  newPreset: any
+  deletePreset: any
+  setModalType: any
+  theme: string
+  triggerTransportReset: any
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export default class Header extends React.Component<HeaderProps> {
+  initialized: boolean
+
+  constructor(props: HeaderProps) {
     super(props)
     this.initialized = false
     this.handleKeyDown = this.handleKeyDown.bind(this)
@@ -47,12 +87,15 @@ export default class Header extends React.Component {
         Tone.getTransport().pause()
         midiStop(this.props.midiOut, this.props.midiIn)
       }
-      this.props.setPlaying((playing) => !playing)
+      this.props.setPlaying((playing: boolean) => !playing)
     }
   }
 
-  handleKeyDown(e) {
-    if (!document.activeElement.classList.contains('spacebar-ok') && document.activeElement.nodeName !== 'TEXTAREA') {
+  handleKeyDown(e: KeyboardEvent) {
+    if (
+      !document.activeElement?.classList.contains('spacebar-ok') &&
+      document.activeElement?.nodeName !== 'TEXTAREA'
+    ) {
       if (e.key === ' ') {
         e.preventDefault()
         this.playStop()
@@ -145,7 +188,7 @@ export default class Header extends React.Component {
         <Dropdown
           className="header-item midi-dropdown"
           label="MIDI Out"
-          options={this.props.midiOuts}
+          options={this.props.midiOuts ?? []}
           setValue={this.props.setMidiOut}
           value={this.props.midiOut}
           placeholder="No MIDI Out"
@@ -155,7 +198,7 @@ export default class Header extends React.Component {
         <Dropdown
           className="header-item midi-dropdown"
           label="MIDI In"
-          options={this.props.midiIns}
+          options={this.props.midiIns ?? []}
           setValue={this.props.setMidiIn}
           value={this.props.midiIn}
           placeholder="No MIDI In"
@@ -178,39 +221,4 @@ export default class Header extends React.Component {
       </div>
     )
   }
-}
-Header.propTypes = {
-  tempo: PropTypes.number,
-  setTempo: PropTypes.func,
-  playing: PropTypes.bool,
-  setPlaying: PropTypes.func,
-  midiOuts: PropTypes.array,
-  midiOut: PropTypes.string,
-  midiIns: PropTypes.array,
-  midiIn: PropTypes.string,
-  setMidiOut: PropTypes.func,
-  setMidiIn: PropTypes.func,
-  midiEnabled: PropTypes.bool,
-  numChannels: PropTypes.number,
-  setNumChannels: PropTypes.func,
-  VIEWS: PropTypes.array,
-  view: PropTypes.string,
-  setView: PropTypes.func,
-  SECTIONS: PropTypes.array,
-  scrollTo: PropTypes.string,
-  setScrollTo: PropTypes.func,
-  channelSync: PropTypes.bool,
-  setChannelSync: PropTypes.func,
-  presetOptions: PropTypes.array,
-  preset: PropTypes.object,
-  setPresetName: PropTypes.func,
-  setPreset: PropTypes.func,
-  presetDirty: PropTypes.bool,
-  presetHotkey: PropTypes.number,
-  savePreset: PropTypes.func,
-  newPreset: PropTypes.func,
-  deletePreset: PropTypes.func,
-  setModalType: PropTypes.func,
-  theme: PropTypes.string,
-  triggerTransportReset: PropTypes.func,
 }

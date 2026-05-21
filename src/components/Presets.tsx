@@ -1,8 +1,8 @@
 import React, { useMemo, useCallback } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Dropdown from './Dropdown'
 import { BROWSER } from '../globals'
+import { Preset } from '../types'
 import addIcon from '../assets/plus-icon-orange.svg'
 import addIconBlue from '../assets/plus-icon-blue.svg'
 import addIconDark from '../assets/plus-icon-dark.svg'
@@ -21,6 +21,23 @@ import saveIconDisabledDark from '../assets/save-icon-disabled-dark.svg'
 import edited from '../assets/edit-tag.svg'
 import './Presets.scss'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface PresetsProps {
+  className?: string
+  preset: Preset
+  presetOptions?: any[]
+  setPresetName: any
+  setPreset: any
+  presetDirty?: boolean
+  hotkey?: number
+  presetHotkey?: number | string | null
+  savePreset: () => void
+  newPreset: () => void
+  deletePreset: () => void
+  theme: string
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export default function Presets({
   className,
   preset,
@@ -34,7 +51,7 @@ export default function Presets({
   newPreset,
   deletePreset,
   theme,
-}) {
+}: PresetsProps) {
   const inputPadding = useMemo(() => {
     let padding = 2
     if (presetDirty) {
@@ -107,7 +124,7 @@ export default function Presets({
     [presetHotkey]
   )
   const inputStyle = useMemo(
-    () => ({ paddingRight: inputPadding, lineHeight: BROWSER.name.includes('Safari') ? 21 + 'px' : 22 + 'px' }),
+    () => ({ paddingRight: inputPadding, lineHeight: BROWSER.name?.includes('Safari') ? 21 + 'px' : 22 + 'px' }),
     [inputPadding]
   )
 
@@ -120,7 +137,7 @@ export default function Presets({
           {presetHotkey !== null && presetHotkeyEl}
         </div>
         <Dropdown
-          options={presetOptions}
+          options={presetOptions ?? []}
           value={preset.id}
           placeholder="New Preset"
           setValue={setPreset}
@@ -149,18 +166,4 @@ export default function Presets({
       <p className="presets-label no-select">Preset</p>
     </div>
   )
-}
-Presets.propTypes = {
-  className: PropTypes.string,
-  preset: PropTypes.object,
-  presetOptions: PropTypes.array,
-  setPresetName: PropTypes.func,
-  setPreset: PropTypes.func,
-  presetDirty: PropTypes.bool,
-  hotkey: PropTypes.number,
-  presetHotkey: PropTypes.number,
-  savePreset: PropTypes.func,
-  newPreset: PropTypes.func,
-  deletePreset: PropTypes.func,
-  theme: PropTypes.string,
 }

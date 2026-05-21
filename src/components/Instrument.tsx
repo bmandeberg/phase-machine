@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Switch from 'react-switch'
 import SplitButton from './SplitButton'
@@ -8,6 +7,19 @@ import { INSTRUMENT_TYPES, themedSwitch } from '../globals'
 import './Instrument.scss'
 
 const instrumentTypes = Object.keys(INSTRUMENT_TYPES)
+
+interface InstrumentProps {
+  className?: string
+  instrumentOn?: boolean
+  setInstrumentOn: (on: boolean) => void
+  instrumentType: string
+  setInstrumentType: (type: string) => void
+  small?: boolean
+  theme: string
+  mute?: boolean
+  openInstrumentModal?: () => void
+  inModal?: boolean
+}
 
 export default function Instrument({
   className,
@@ -20,9 +32,9 @@ export default function Instrument({
   mute,
   openInstrumentModal,
   inModal,
-}) {
+}: InstrumentProps) {
   const incrementInstrument = useCallback(
-    (next) => {
+    (next: boolean) => {
       const instrumentIndex = instrumentTypes.indexOf(instrumentType)
       if (instrumentIndex !== -1) {
         let nextIndex = instrumentIndex + (next ? 1 : -1)
@@ -103,7 +115,7 @@ export default function Instrument({
           <Switch
             className="instrument-switch"
             onChange={setInstrumentOn}
-            checked={instrumentOn}
+            checked={instrumentOn ?? false}
             uncheckedIcon={false}
             checkedIcon={false}
             offColor={offColor}
@@ -120,16 +132,4 @@ export default function Instrument({
       {instrumentSelector}
     </div>
   )
-}
-Instrument.propTypes = {
-  instrumentOn: PropTypes.bool,
-  setInstrumentOn: PropTypes.func,
-  instrumentType: PropTypes.string,
-  setInstrumentType: PropTypes.func,
-  className: PropTypes.string,
-  small: PropTypes.bool,
-  theme: PropTypes.string,
-  mute: PropTypes.bool,
-  openInstrumentModal: PropTypes.func,
-  inModal: PropTypes.bool,
 }
