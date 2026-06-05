@@ -169,7 +169,9 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     }
   }
 
-  .first-auxiliary::before {
+  // Full selector to win the specificity tie against Channel.scss (component CSS
+  // is emitted after this global theme CSS under Next's App Router).
+  .stacked-auxiliary.first-auxiliary::before {
     background-color: $pitchClassGray;
   }
 

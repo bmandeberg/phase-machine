@@ -172,7 +172,10 @@ $headerDarkBlue: #0f182d;
     }
   }
 
-  .first-auxiliary::before {
+  // Match Channel.scss's full selector (.stacked-auxiliary.first-auxiliary::before)
+  // so this wins the specificity tie — under Next's App Router, component CSS is
+  // emitted after this global theme CSS, so an equal-specificity rule would lose.
+  .stacked-auxiliary.first-auxiliary::before {
     background-color: $darkMediumGray;
   }
   
