@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useMemo, useRef, useEffect, RefObject } from 'react'
 import * as Tone from 'tone'
 import { WebMidi } from 'webmidi'
 import { CSSTransition } from 'react-transition-group'
@@ -32,44 +32,43 @@ import arrowClock from '../assets/arrow-clock.svg'
 import arrowClockDark from '../assets/arrow-clock-dark.svg'
 import arrowClockLight from '../assets/arrow-clock-light.svg'
 import arrowClockLightMute from '../assets/arrow-clock-light-mute.svg'
+import { Channel as ChannelType, Setter, MidiNoteEvent } from '../types'
 import './Channel.scss'
 
 const CLOCK_CHANNEL_WIDTH = 657
 const CLOCK_CHANNEL_HEIGHT = 262
 const SAMPLE_MAX_TIME = 5
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface ChannelProps {
   numChannels: number
   color: string
   channelNum: number
-  setGrabbing: any
+  setGrabbing: Setter<boolean>
   grabbing: boolean
   resizing: boolean
-  setResizing: any
+  setResizing: Setter<boolean>
   view: string
   numChannelsSoloed: number
   tempo: number
   playing: boolean
   showStepNumbers: boolean
-  midiOut: any
-  setChannelState: any
-  channelPreset: any
-  duplicateChannel: any
-  deleteChannel: any
-  initState: any
-  container: any
-  changeChannelOrder: any
+  midiOut: string | null
+  setChannelState: (id: string, state: ChannelType) => void
+  channelPreset: ChannelType
+  duplicateChannel: (id: string) => void
+  deleteChannel: (id: string) => void
+  initState: ChannelType
+  container: RefObject<HTMLDivElement | null>
+  changeChannelOrder: (channelNum: number, newChannelNum: number) => void
   theme: string
-  midiNoteOn: any
-  midiNoteOff: any
-  restartChannels: any
-  resetTransport: any
-  preventUpdate: any
-  longestSequence: any
-  defaultChannelModeKeybd?: any
+  midiNoteOn: MidiNoteEvent | null
+  midiNoteOff: MidiNoteEvent | null
+  restartChannels: boolean
+  resetTransport: boolean
+  preventUpdate: boolean | undefined
+  longestSequence: number
+  defaultChannelModeKeybd?: boolean
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function Channel({
   numChannels,
@@ -240,7 +239,6 @@ export default function Channel({
 
   useEffect(() => {
     if (midiInRef.current && midiNoteOn) {
-      console.log(midiNoteOn)
       if (rangeModeRef.current) {
         const pitchClassIndex = midiNoteOn.note.number % 12
         if (midiHoldRef.current || !keyRef.current[pitchClassIndex]) {
@@ -314,14 +312,14 @@ export default function Channel({
         const topOffset =
           62 +
           ((event.target as HTMLElement).classList.contains('auxiliary') ? numChannels * CHANNEL_HEIGHT : 0) -
-          container.current.scrollTop
+          container.current!.scrollTop
         hoveredChannel = constrain(Math.round((y - topOffset) / CHANNEL_HEIGHT), 0, numChannels)
         if (hoveredChannel !== dragChannel.current) {
           dragChannel.current = hoveredChannel
           setDragTarget(hoveredChannel > channelNum ? hoveredChannel - 1 : hoveredChannel)
         }
       } else if (view === 'clock') {
-        const topOffset = 62 - container.current.scrollTop
+        const topOffset = 62 - container.current!.scrollTop
         const column = Math.round(x / CLOCK_CHANNEL_WIDTH)
         const row = Math.floor((y - topOffset) / CLOCK_CHANNEL_HEIGHT)
         setDragRow(row)
@@ -739,7 +737,7 @@ export default function Channel({
         setInstrumentParams(channelPreset.instrumentParams)
         setModalType(null)
         updateInstruments(
-          gainNode.current,
+          gainNode.current!,
           synthInstrument.current,
           [
             pianoInstrument.current,
@@ -752,10 +750,10 @@ export default function Channel({
             choralInstrument.current,
           ],
           chorusEffect.current,
-          distortionEffect.current,
-          delayEffect.current,
-          reverbEffect.current,
-          vibratoEffect.current,
+          distortionEffect.current!,
+          delayEffect.current!,
+          reverbEffect.current!,
+          vibratoEffect.current!,
           channelPreset.instrumentParams,
           getCurrentEffect()
         )

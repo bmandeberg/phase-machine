@@ -7,28 +7,26 @@ import Switch from 'react-switch'
 import { SIGNAL_TYPES, EFFECTS, themedSwitch, RATES, SYNTH_TYPES, CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
 import classNames from 'classnames'
-import { InstrumentParams } from '../types'
+import { InstrumentParams, InstrumentRefs, EffectRefs, GainRef, Setter, SignalDestination } from '../types'
 import './InstrumentModal.scss'
 
 const rolloffOptions = ['-12', '-24', '-48', '-96']
 const oscModifiers = ['none', 'am', 'fm', 'fat']
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface InstrumentModalProps {
   instrumentOn?: boolean
-  setInstrumentOn: any
+  setInstrumentOn: Setter<boolean>
   instrumentType: string
-  setInstrumentType: any
+  setInstrumentType: Setter<string>
   theme: string
   instrumentParams: InstrumentParams
-  setInstrumentParams: any
-  instruments: any
-  gainNode: any
-  effects: any
+  setInstrumentParams: Setter<InstrumentParams>
+  instruments: InstrumentRefs
+  gainNode: GainRef
+  effects: EffectRefs
   grabbing?: boolean
-  setGrabbing: any
+  setGrabbing: Setter<boolean>
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function InstrumentModal({
   instrumentOn,
@@ -93,7 +91,7 @@ export default function InstrumentModal({
   const [vibratoDepth, setVibratoDepth] = useState(instrumentParams.vibratoDepth)
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
 
-  const effectRef = useRef<any>(undefined) // eslint-disable-line @typescript-eslint/no-explicit-any
+  const effectRef = useRef<SignalDestination | null | undefined>(undefined)
 
   const rolloffString = useMemo(() => `${rolloff}`, [rolloff])
   const updateRolloff = useCallback((r: string) => {
@@ -117,8 +115,7 @@ export default function InstrumentModal({
 
   const instrumentParamsDebounce = useRef<ReturnType<typeof setTimeout>>(undefined)
   const updateInstrumentParams = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (param: string, value: any) => {
+    (param: string, value: InstrumentParams[keyof InstrumentParams]) => {
       clearTimeout(instrumentParamsDebounce.current)
       const debounceTime = 200
       instrumentParamsDebounce.current = setTimeout(() => {
@@ -152,7 +149,7 @@ export default function InstrumentModal({
 
   useEffect(() => {
     if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.oscillator.modulationType = modulationType
+      instruments.synthInstrument.current.oscillator.modulationType = modulationType as Tone.ToneOscillatorType
     }
     updateInstrumentParams('modulationType', modulationType)
   }, [instruments.synthInstrument, modulationType, updateInstrumentParams])
@@ -229,7 +226,7 @@ export default function InstrumentModal({
 
   useEffect(() => {
     if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filter.rolloff = rolloff
+      instruments.synthInstrument.current.filter.rolloff = rolloff as Tone.FilterRollOff
     }
     updateInstrumentParams('rolloff', rolloff)
   }, [instruments.synthInstrument, rolloff, updateInstrumentParams])
@@ -333,12 +330,12 @@ export default function InstrumentModal({
   useEffect(() => {
     if (CHORUS_ENABLED) {
       if (effectType === 'chorus') {
-        effects.chorusEffect.current.start()
+        effects.chorusEffect.current?.start()
       } else {
-        effects.chorusEffect.current.stop()
+        effects.chorusEffect.current?.stop()
       }
     }
-    let effect: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    let effect: SignalDestination | null | undefined
     switch (effectType) {
       case 'chorus':
         effect = effects.chorusEffect.current
@@ -360,17 +357,15 @@ export default function InstrumentModal({
     }
     effect = effect || gainNode.current
     if (effectRef.current) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      Object.values(instruments).forEach((instrument: any) => {
-        if (instrument.current) {
+      Object.values(instruments).forEach((instrument) => {
+        if (instrument.current && effectRef.current) {
           instrument.current.disconnect(effectRef.current)
         }
       })
     }
     effectRef.current = effect
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.values(instruments).forEach((instrument: any) => {
-      if (instrument.current) {
+    Object.values(instruments).forEach((instrument) => {
+      if (instrument.current && effect) {
         instrument.current.connect(effect)
       }
     })
@@ -378,8 +373,7 @@ export default function InstrumentModal({
   }, [effectType, effects, gainNode, instruments, updateInstrumentParams])
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.values(effects).forEach((effect: any) => {
+    Object.values(effects).forEach((effect) => {
       if (effect.current) {
         effect.current.set({ wet: effectWet })
       }
@@ -416,7 +410,7 @@ export default function InstrumentModal({
   }, [chorusSpread, effects.chorusEffect, updateInstrumentParams])
 
   useEffect(() => {
-    effects.distortionEffect.current.distortion = distortion
+    effects.distortionEffect.current!.distortion = distortion
     updateInstrumentParams('distortion', distortion)
   }, [distortion, effects.distortionEffect, updateInstrumentParams])
 
@@ -425,32 +419,32 @@ export default function InstrumentModal({
   }, [syncDelayTime, updateInstrumentParams])
 
   useEffect(() => {
-    effects.delayEffect.current.set({ delayTime })
+    effects.delayEffect.current!.set({ delayTime })
     updateInstrumentParams('delayTime', delayTime)
   }, [delayTime, effects.delayEffect, updateInstrumentParams])
 
   useEffect(() => {
-    effects.delayEffect.current.set({ feedback: delayFeedback })
+    effects.delayEffect.current!.set({ feedback: delayFeedback })
     updateInstrumentParams('delayFeedback', delayFeedback)
   }, [delayFeedback, effects.delayEffect, updateInstrumentParams])
 
   useEffect(() => {
-    effects.reverbEffect.current.decay = reverbDecay
+    effects.reverbEffect.current!.decay = reverbDecay
     updateInstrumentParams('reverbDecay', reverbDecay)
   }, [effects.reverbEffect, reverbDecay, updateInstrumentParams])
 
   useEffect(() => {
-    effects.reverbEffect.current.preDelay = reverbPreDelay
+    effects.reverbEffect.current!.preDelay = reverbPreDelay
     updateInstrumentParams('reverbPreDelay', reverbPreDelay)
   }, [effects.reverbEffect, reverbPreDelay, updateInstrumentParams])
 
   useEffect(() => {
-    effects.vibratoEffect.current.set({ depth: vibratoDepth })
+    effects.vibratoEffect.current!.set({ depth: vibratoDepth })
     updateInstrumentParams('vibratoDepth', vibratoDepth)
   }, [effects.vibratoEffect, updateInstrumentParams, vibratoDepth])
 
   useEffect(() => {
-    effects.vibratoEffect.current.set({ frequency: vibratoFreq })
+    effects.vibratoEffect.current!.set({ frequency: vibratoFreq })
     updateInstrumentParams('vibratoFreq', vibratoFreq)
   }, [effects.vibratoEffect, updateInstrumentParams, vibratoFreq])
 
@@ -484,7 +478,12 @@ export default function InstrumentModal({
       const updatedType =
         oscModifier !== oscModifiers[0] && Object.keys(SIGNAL_TYPES).includes(newType) ? oscModifier + newType : newType
       setSynthType(updatedType)
-      instruments.synthInstrument.current.oscillator.set({ harmonicity, type: updatedType })
+      // harmonicity only exists on AM/FM oscillator option subtypes; widen the
+      // arg to the oscillator's own set() param type at this free-string boundary.
+      instruments.synthInstrument.current?.oscillator.set({
+        harmonicity,
+        type: updatedType,
+      } as unknown as Parameters<Tone.MonoSynth['oscillator']['set']>[0])
     },
     [harmonicity, instruments.synthInstrument, oscModifier]
   )
@@ -492,7 +491,10 @@ export default function InstrumentModal({
     (modifier: string) => {
       const updatedModifier = modifier === oscModifiers[0] ? '' : modifier
       setSynthType(updatedModifier + synthBase)
-      instruments.synthInstrument.current.oscillator.set({ harmonicity, type: updatedModifier + synthBase })
+      instruments.synthInstrument.current?.oscillator.set({
+        harmonicity,
+        type: updatedModifier + synthBase,
+      } as unknown as Parameters<Tone.MonoSynth['oscillator']['set']>[0])
       setOscModifier(modifier)
     },
     [harmonicity, instruments.synthInstrument, synthBase]
@@ -1164,7 +1166,7 @@ export default function InstrumentModal({
               value={effectType}
               container=".modal-content"
             />
-            {effectType !== 'none' && effects[effectType + 'Effect'].current && wetControl}
+            {effectType !== 'none' && effects[(effectType + 'Effect') as keyof EffectRefs].current && wetControl}
             {effectType === 'chorus' && chorusControls}
             {effectType === 'distortion' && distortionControls}
             {effectType === 'delay' && delayControls}

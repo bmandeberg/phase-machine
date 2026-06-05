@@ -1,11 +1,10 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react'
 import { CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
-import { InstrumentParams } from '../types'
+import { InstrumentParams, InstrumentRef, InstrumentRefs, EffectRefs, SignalDestination, GainRef } from '../types'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function useInstruments(
-  instrument: any,
+  instrument: InstrumentRef,
   instrumentParams: InstrumentParams,
   instrumentType: string,
   cleanup: () => void,
@@ -21,8 +20,8 @@ export default function useInstruments(
     cleanupRef.current = cleanup
   }, [cleanup])
 
-  const getCurrentEffect = useCallback(() => {
-    let effect
+  const getCurrentEffect = useCallback((): SignalDestination => {
+    let effect: SignalDestination | null | undefined
     switch (instrumentParamsRef.current.effectType) {
       case 'chorus':
         effect = chorusEffect.current
@@ -42,31 +41,32 @@ export default function useInstruments(
       default:
         effect = gainNode.current
     }
-    return effect || gainNode.current
+    // gainNode is always initialized before any instrument connects through this.
+    return (effect || gainNode.current) as SignalDestination
   }, [])
 
   // instrument
 
   const initInstrumentType = useRef(instrumentType)
-  const gainNode = useRef<any>(undefined)
-  const synthInstrument = useRef<any>(undefined)
-  const drumsInstrument = useRef<any>(undefined)
-  const drumMachineInstrument = useRef<any>(undefined)
-  const pianoInstrument = useRef<any>(undefined)
-  const marimbaInstrument = useRef<any>(undefined)
-  const bassInstrument = useRef<any>(undefined)
-  const vibesInstrument = useRef<any>(undefined)
-  const harpInstrument = useRef<any>(undefined)
-  const choralInstrument = useRef<any>(undefined)
-  const chorusEffect = useRef<any>(undefined)
-  const distortionEffect = useRef<any>(undefined)
-  const delayEffect = useRef<any>(undefined)
-  const reverbEffect = useRef<any>(undefined)
-  const vibratoEffect = useRef<any>(undefined)
+  const gainNode: GainRef = useRef<Tone.Gain | null>(null)
+  const synthInstrument = useRef<Tone.MonoSynth | null>(null)
+  const drumsInstrument = useRef<Tone.Sampler | null>(null)
+  const drumMachineInstrument = useRef<Tone.Sampler | null>(null)
+  const pianoInstrument = useRef<Tone.Sampler | null>(null)
+  const marimbaInstrument = useRef<Tone.Sampler | null>(null)
+  const bassInstrument = useRef<Tone.Sampler | null>(null)
+  const vibesInstrument = useRef<Tone.Sampler | null>(null)
+  const harpInstrument = useRef<Tone.Sampler | null>(null)
+  const choralInstrument = useRef<Tone.Sampler | null>(null)
+  const chorusEffect = useRef<Tone.Chorus | null>(null)
+  const distortionEffect = useRef<Tone.Distortion | null>(null)
+  const delayEffect = useRef<Tone.FeedbackDelay | null>(null)
+  const reverbEffect = useRef<Tone.Reverb | null>(null)
+  const vibratoEffect = useRef<Tone.Vibrato | null>(null)
 
   const initSynthInstrument = useCallback(() => {
     if (!synthInstrument.current) {
-      const synthOptions: any = {
+      const synthOptions = {
         portamento: instrumentParamsRef.current.portamento,
         volume: -8,
         oscillator: {
@@ -97,7 +97,9 @@ export default function useInstruments(
           octaves: instrumentParamsRef.current.filterAmount,
         },
       }
-      synthInstrument.current = new Tone.MonoSynth(synthOptions)
+      // synthType/modulationType are stored as free strings; Tone types them as
+      // strict oscillator-type unions, so widen through unknown at the boundary.
+      synthInstrument.current = new Tone.MonoSynth(synthOptions as unknown as Tone.MonoSynthOptions)
       synthInstrument.current.connect(getCurrentEffect())
     }
   }, [getCurrentEffect])
@@ -513,7 +515,7 @@ export default function useInstruments(
         initSynthInstrument()
         instrument.current = synthInstrument.current
     }
-    instrument.current.connect(getCurrentEffect())
+    instrument.current?.connect(getCurrentEffect())
 
     // cleanup instruments
     return () => {
@@ -562,10 +564,10 @@ export default function useInstruments(
       if (chorusEffect.current) {
         chorusEffect.current.dispose()
       }
-      distortionEffect.current.dispose()
-      delayEffect.current.dispose()
-      reverbEffect.current.dispose()
-      vibratoEffect.current.dispose()
+      distortionEffect.current?.dispose()
+      delayEffect.current?.dispose()
+      reverbEffect.current?.dispose()
+      vibratoEffect.current?.dispose()
       if (gainNode.current) {
         gainNode.current.dispose()
       }
@@ -587,7 +589,9 @@ export default function useInstruments(
 
   useEffect(() => {
     if (instrument.current) {
-      instrument.current.triggerRelease()
+      // Monophonic's triggerRelease is arg-less while Sampler's requires a note;
+      // releasing the active note with no arg is valid for both at runtime.
+      ;(instrument.current as Tone.MonoSynth).triggerRelease()
     }
     switch (instrumentType) {
       case 'piano':
@@ -648,7 +652,7 @@ export default function useInstruments(
     setModalType('instrument')
   }, [setModalType])
 
-  const instruments = useMemo(
+  const instruments = useMemo<InstrumentRefs>(
     () => ({
       synthInstrument,
       pianoInstrument,
@@ -672,7 +676,7 @@ export default function useInstruments(
       vibesInstrument,
     ]
   )
-  const effects = useMemo(
+  const effects = useMemo<EffectRefs>(
     () => ({
       chorusEffect,
       distortionEffect,
@@ -707,20 +711,20 @@ export default function useInstruments(
 }
 
 export function updateInstruments(
-  gainNode: any,
-  synthInstrument: any,
-  samplerInstruments: any[],
-  chorusEffect: any,
-  distortionEffect: any,
-  delayEffect: any,
-  reverbEffect: any,
-  vibratoEffect: any,
+  gainNode: Tone.Gain,
+  synthInstrument: Tone.MonoSynth | null | undefined,
+  samplerInstruments: Array<Tone.Sampler | null | undefined>,
+  chorusEffect: Tone.Chorus | null | undefined,
+  distortionEffect: Tone.Distortion,
+  delayEffect: Tone.FeedbackDelay,
+  reverbEffect: Tone.Reverb,
+  vibratoEffect: Tone.Vibrato,
   instrumentParams: InstrumentParams,
-  currentEffect: any
+  currentEffect: SignalDestination | null | undefined
 ) {
   gainNode.set({ gain: instrumentParams.gain })
   if (CHORUS_ENABLED) {
-    chorusEffect.set({
+    chorusEffect?.set({
       wet: instrumentParams.effectWet,
       depth: instrumentParams.chorusDepth,
       delayTime: instrumentParams.chorusDelayTime,
@@ -747,11 +751,11 @@ export function updateInstruments(
     depth: instrumentParams.vibratoDepth,
     frequency: instrumentParams.vibratoFreq,
   })
-  let effect
+  let effect: SignalDestination | null | undefined
   switch (instrumentParams.effectType) {
     case 'chorus':
       effect = chorusEffect
-      if (CHORUS_ENABLED) chorusEffect.start()
+      if (CHORUS_ENABLED) chorusEffect?.start()
       break
     case 'distortion':
       effect = distortionEffect
@@ -768,11 +772,13 @@ export function updateInstruments(
     default:
       effect = gainNode
   }
-  effect = effect || gainNode
+  const destination: SignalDestination = effect || gainNode
   if (CHORUS_ENABLED && instrumentParams.effectType !== 'chorus') {
-    chorusEffect.stop()
+    chorusEffect?.stop()
   }
   if (synthInstrument) {
+    // synthType/modulationType are stored as free strings; Tone types them as
+    // strict oscillator-type unions, so widen through unknown at the boundary.
     synthInstrument.set({
       portamento: instrumentParams.portamento,
       oscillator: {
@@ -802,11 +808,11 @@ export function updateInstruments(
         release: instrumentParams.filterRelease,
         octaves: instrumentParams.filterAmount,
       },
-    })
+    } as unknown as Tone.MonoSynthOptions)
     if (currentEffect) {
       synthInstrument.disconnect(currentEffect)
     }
-    synthInstrument.connect(effect)
+    synthInstrument.connect(destination)
   }
   samplerInstruments.forEach((sampler) => {
     if (sampler) {
@@ -817,7 +823,7 @@ export function updateInstruments(
       if (currentEffect) {
         sampler.disconnect(currentEffect)
       }
-      sampler.connect(effect)
+      sampler.connect(destination)
     }
   })
 }

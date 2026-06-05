@@ -3,8 +3,9 @@ import classNames from 'classnames'
 import './MIDI.scss'
 
 interface MIDIProps {
-  midiIn?: boolean
-  setMidiIn: React.Dispatch<React.SetStateAction<boolean>>
+  // midiIn is part of the Channel domain type as boolean | string; this toggle only reads its truthiness.
+  midiIn?: boolean | string
+  setMidiIn: React.Dispatch<React.SetStateAction<boolean | string>>
   openMidiModal?: () => void
 }
 

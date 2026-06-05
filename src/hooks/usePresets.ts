@@ -1,33 +1,33 @@
-import { useEffect, useCallback, useMemo } from 'react'
+import { useEffect, useCallback, useMemo, ChangeEvent, MutableRefObject } from 'react'
 import { v4 as uuid } from 'uuid'
 import { PRESET_HOLD_TIME } from '../globals'
 import { midiStartContinue, midiStop } from './useMIDI'
 import { patchPresetAndChannels } from '../App'
 import * as Tone from 'tone'
-import { Channel, Preset } from '../types'
+import { Channel, Preset, Setter, MidiOutRef, MidiInRef } from '../types'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function usePresets(
-  setUIState: any,
+  setUIState: Setter<Preset>,
   channelSync: boolean,
   tempo: number,
-  setTempo: any,
-  uiState: any,
-  currentPreset: any,
+  setTempo: Setter<number>,
+  uiState: Preset,
+  currentPreset: Preset,
   presets: Preset[],
-  setCurrentPreset: any,
-  deepStateCopy: (state: any) => any,
-  setNumChannels: any,
-  setChannelSync: any,
-  setPresets: any,
-  keydownTimer: any,
-  setRestartChannels: any,
+  setCurrentPreset: Setter<Preset>,
+  deepStateCopy: (state: Preset) => Preset,
+  setNumChannels: Setter<number>,
+  setChannelSync: Setter<boolean>,
+  setPresets: Setter<Preset[]>,
+  // Holds performance.now() while a number key is held, or null/false between presses.
+  keydownTimer: MutableRefObject<number | null | false>,
+  setRestartChannels: Setter<boolean>,
   presetsRestartTransport: boolean,
   presetsStopTransport: boolean,
   playing: boolean,
-  setPlaying: any,
-  midiOutRef: any,
-  midiInRef: any,
+  setPlaying: Setter<boolean>,
+  midiOutRef: MidiOutRef,
+  midiInRef: MidiInRef,
   ignorePresetsTempo: boolean
 ) {
   // state management for presets
@@ -38,7 +38,7 @@ export default function usePresets(
 
   const setChannelState = useCallback(
     (id: string, state: Channel) => {
-      setUIState((uiState: any) => {
+      setUIState((uiState: Preset) => {
         const uiStateCopy = deepStateCopy(uiState)
         const channelIndex = uiStateCopy.channels.findIndex((c: Channel) => c.id === id)
         if (channelIndex !== -1) {
@@ -51,7 +51,7 @@ export default function usePresets(
   )
 
   useEffect(() => {
-    setUIState((uiState: any) => {
+    setUIState((uiState: Preset) => {
       const uiStateCopy = Object.assign({}, uiState, {
         channelSync,
       })
@@ -60,7 +60,7 @@ export default function usePresets(
   }, [channelSync, setUIState])
 
   useEffect(() => {
-    setUIState((uiState: any) => {
+    setUIState((uiState: Preset) => {
       const uiStateCopy = Object.assign({}, uiState, {
         tempo,
       })
@@ -69,8 +69,8 @@ export default function usePresets(
   }, [tempo, setUIState])
 
   const setPresetName = useCallback(
-    (presetName: any) => {
-      setUIState((uiState: any) => {
+    (presetName: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setUIState((uiState: Preset) => {
         return Object.assign({}, uiState, { name: presetName.target.value })
       })
     },
@@ -78,19 +78,25 @@ export default function usePresets(
   )
 
   const presetDirty = useMemo(() => {
-    for (const param in uiState) {
-      if (uiState.hasOwnProperty(param)) {
+    // Generic deep-equality walk over every key of the active vs. saved preset to
+    // detect unsaved edits. The keyed access is intentionally dynamic across
+    // heterogeneous fields (scalars, arrays, nested objects), hence the loose casts.
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const ui = uiState as Record<string, any>
+    const cur = currentPreset as Record<string, any>
+    for (const param in ui) {
+      if (ui.hasOwnProperty(param)) {
         // check global preset params
         if (param !== 'channels') {
-          if (uiState[param] !== currentPreset[param] && (param !== 'tempo' || !ignorePresetsTempo)) {
+          if (ui[param] !== cur[param] && (param !== 'tempo' || !ignorePresetsTempo)) {
             return true
           }
         } else {
           // check channels
-          for (let i = 0; i < uiState[param].length; i++) {
-            if (!currentPreset[param][i]) return true
-            const channel = uiState[param][i]
-            const presetChannel = currentPreset[param][i]
+          for (let i = 0; i < ui[param].length; i++) {
+            if (!cur[param][i]) return true
+            const channel = ui[param][i]
+            const presetChannel = cur[param][i]
             for (const channelParam in channel) {
               if (channel.hasOwnProperty(channelParam) && channelParam !== 'id') {
                 if (['key', 'seqSteps', 'keybdPitches'].some((s) => s === channelParam)) {
@@ -119,6 +125,7 @@ export default function usePresets(
         }
       }
     }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
     return false
   }, [currentPreset, ignorePresetsTempo, uiState])
 
@@ -139,6 +146,8 @@ export default function usePresets(
       if (presetsRestartTransport || presetsStopTransport) {
         Tone.getTransport().stop()
         midiStop(midiOutRef.current, midiInRef.current && midiInRef.current.name, true)
+        // midiContinue is a runtime prop the app attaches to the transport (see useMIDI), not in Tone's types.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ;(Tone.getTransport() as any).midiContinue = false
         if (presetsStopTransport) {
           setPlaying(false)
@@ -191,7 +200,7 @@ export default function usePresets(
   }, [])
 
   const savePreset = useCallback(
-    (e: any, hotkey: number | null = null) => {
+    (e: unknown, hotkey: number | null = null) => {
       const uiStateCopy = Object.assign({}, uiState, {
         placeholder: false,
         hotkey: hotkey ?? uiState.hotkey,
@@ -234,7 +243,7 @@ export default function usePresets(
   )
 
   const newPreset = useCallback(
-    (e: any, hotkey: number | null = null) => {
+    (e: unknown, hotkey: number | null = null) => {
       const id = uuid()
       const uiStateCopy = Object.assign({}, uiState, {
         name: dedupName(uiState.name !== currentPreset.name ? uiState.name : 'New Preset', id, presets),
@@ -282,6 +291,9 @@ export default function usePresets(
     window.localStorage.removeItem('activePreset')
   }, [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setRestartChannels, setUIState, uiState])
 
+  // Validates arbitrary parsed JSON from an imported file, so the shapes are
+  // genuinely untrusted/unknown here — `any` is the pragmatic choice.
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const validPreset = useCallback((preset: any) => {
     function invalidProp(obj: any, prop: string, type: string) {
       const typeCheck = typeof obj[prop] !== type
@@ -404,6 +416,7 @@ export default function usePresets(
             })
             return presetsCopy
           })
+          /* eslint-enable @typescript-eslint/no-explicit-any */
           alert(`${parsedPresets.length} Preset${parsedPresets.length !== 1 ? 's' : ''} imported`)
         } else alert('No valid presets to import')
       } catch {
