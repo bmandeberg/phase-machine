@@ -40,12 +40,15 @@ export interface InstrumentRefs {
   drumsInstrument: SamplerRef
   drumMachineInstrument: SamplerRef
 }
+// Per-effect refs keep their concrete Tone type (so effect-specific properties
+// like Chorus.depth or Reverb.decay remain accessible), unlike the generic
+// ToneEffectRef union used where only the shared node interface matters.
 export interface EffectRefs {
-  chorusEffect: ToneEffectRef
-  distortionEffect: ToneEffectRef
-  delayEffect: ToneEffectRef
-  reverbEffect: ToneEffectRef
-  vibratoEffect: ToneEffectRef
+  chorusEffect: MutableRefObject<Tone.Chorus | null | undefined>
+  distortionEffect: MutableRefObject<Tone.Distortion | null | undefined>
+  delayEffect: MutableRefObject<Tone.FeedbackDelay | null | undefined>
+  reverbEffect: MutableRefObject<Tone.Reverb | null | undefined>
+  vibratoEffect: MutableRefObject<Tone.Vibrato | null | undefined>
 }
 
 // ---- MIDI ----
