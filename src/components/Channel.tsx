@@ -739,7 +739,7 @@ export default function Channel({
         setInstrumentParams(channelPreset.instrumentParams)
         setModalType(null)
         updateInstruments(
-          gainNode.current,
+          gainNode.current!,
           synthInstrument.current,
           [
             pianoInstrument.current,
@@ -752,10 +752,10 @@ export default function Channel({
             choralInstrument.current,
           ],
           chorusEffect.current,
-          distortionEffect.current,
-          delayEffect.current,
-          reverbEffect.current,
-          vibratoEffect.current,
+          distortionEffect.current!,
+          delayEffect.current!,
+          reverbEffect.current!,
+          vibratoEffect.current!,
           channelPreset.instrumentParams,
           getCurrentEffect()
         )
