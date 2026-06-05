@@ -10,7 +10,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "regression": "node scripts/regression.mjs"
   },
   "dependencies": {
     "@use-gesture/react": "^10.3.1",
