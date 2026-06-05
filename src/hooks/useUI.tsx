@@ -730,3 +730,7 @@ export default function useUI(
     scribblerEl,
   }
 }
+
+// The bag of memoized UI elements useUI returns — consumed by the Channel view
+// components (StackedView / HorizontalView / ClockView) via a {...ui} spread.
+export type UIElements = ReturnType<typeof useUI>

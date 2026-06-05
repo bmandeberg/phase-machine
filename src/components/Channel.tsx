@@ -18,8 +18,10 @@ import {
 } from '../globals'
 import { pitchesInRange, constrain, scaleToRange } from '../math'
 import classNames from 'classnames'
-import Sequencer from './Sequencer'
 import Modal from './Modal'
+import StackedView from './channel/StackedView'
+import HorizontalView from './channel/HorizontalView'
+import ClockView from './channel/ClockView'
 import useLoop from '../hooks/useLoop'
 import useKeyManipulation from '../hooks/useKeyManipulation'
 import useUI from '../hooks/useUI'
@@ -127,12 +129,9 @@ export default function Channel({
   const playingNoteRef = useRef<any>(undefined)
   const noteIndex = useRef<any>(undefined)
   const prevNoteIndex = useRef<any>(undefined)
-  // nodeRefs for react-transition-group (replaces findDOMNode, removed in React 19)
+  // nodeRef for react-transition-group (replaces findDOMNode, removed in React 19).
+  // The per-view transition refs now live inside the view components themselves.
   const modalNodeRef = useRef<HTMLDivElement>(null)
-  const stackedViewRef = useRef<HTMLDivElement>(null)
-  const horizontalViewRef = useRef<HTMLDivElement>(null)
-  const clockViewRef = useRef<HTMLDivElement>(null)
-  const drawerNodeRef = useRef<HTMLDivElement>(null)
   const [noteOn, setNoteOn] = useState(false)
   const notePlaying = useRef(false)
   const noteOffTimeout = useRef<any>(undefined)
@@ -844,46 +843,7 @@ export default function Channel({
 
   // ui elements
 
-  const {
-    channelNumNormal,
-    channelNumAux,
-    duplicateDeleteEl,
-    keyEl,
-    muteSoloEl,
-    velocityEl,
-    shiftEl,
-    axisNormal,
-    axisClock,
-    flipOppositeEl,
-    pianoEl,
-    keyRateEl,
-    keyMovementEl,
-    sustainNormal,
-    sustainVertical,
-    keySwingNormal,
-    keySwingVertical,
-    seqLengthNormal,
-    seqLengthInline,
-    seqRateNormal,
-    seqRateInline,
-    seqMovementNormal,
-    seqMovementInline,
-    seqSwingNormal,
-    seqSwingInline,
-    holdNormal,
-    holdInline,
-    instrumentNormal,
-    instrumentSmall,
-    keyViewTypeEl,
-    seqRestartEl,
-    seqOppositeEl,
-    seqOppositeRestartEl,
-    notesModeEl,
-    midiEl,
-    clearResetEl,
-    midiInputModeEl,
-    scribblerEl,
-  } = useUI(
+  const ui = useUI(
     id.current,
     color,
     scribbler,
@@ -1194,344 +1154,69 @@ export default function Channel({
     }
   }, [mute, theme])
 
-  // return based on view
-
-  const stackedView = useMemo(
-    () => (
-      <CSSTransition
-        timeout={400}
-        in={true}
-        appear={true}
-        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
-        nodeRef={stackedViewRef}>
-        <div ref={stackedViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
-          {scribblerEl}
-          {channelNumNormal}
-          {duplicateDeleteEl}
-          <div className="channel-primary">
-            {muteSoloEl}
-            {midiEl}
-          </div>
-          {velocityEl}
-          {notesModeEl}
-          {keyEl}
-          <div className="transformations">
-            {rangeMode && shiftEl}
-            {rangeMode && axisNormal}
-            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />}
-            {rangeMode && flipOppositeEl}
-            {!rangeMode && midiInputModeEl}
-            {!rangeMode && clearResetEl}
-          </div>
-          {pianoEl}
-          {keyRateEl}
-          {keyMovementEl}
-          {sustainNormal}
-          {keySwingNormal}
-          <div
-            style={{ top: numChannels * CHANNEL_HEIGHT }}
-            className={classNames('channel channel-horizontal stacked-auxiliary', {
-              mute: muted,
-              'first-auxiliary': channelNum === 0,
-            })}>
-            {scribblerEl}
-            {channelNumAux}
-            <Sequencer
-              className="channel-module"
-              seqSteps={seqSteps}
-              setSeqSteps={setSeqSteps}
-              seqLength={seqLength}
-              playingStep={playingStep}
-              showStepNumbers={showStepNumbers}
-              longestSequence={longestSequence}>
-              <div className="sequencer-controls">
-                {seqLengthInline}
-                {seqRateInline}
-                {seqMovementInline}
-                {seqSwingInline}
-                {holdInline}
-                {seqRestartEl}
-                {seqOppositeEl}
-              </div>
-            </Sequencer>
-            <div className="channel-module border"></div>
-            {instrumentNormal}
-          </div>
-          {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}
-          {modalEl}
-        </div>
-      </CSSTransition>
-    ),
-    [
-      arrowSmallGraphic,
-      axisNormal,
-      channelNum,
-      channelNumAux,
-      channelNumNormal,
-      clearResetEl,
-      dragTarget,
-      dragTargetHorizontal,
-      draggingChannel,
-      duplicateDeleteEl,
-      flipOppositeEl,
-      holdInline,
-      instrumentNormal,
-      keyEl,
-      keyMovementEl,
-      keyRateEl,
-      keySwingNormal,
-      longestSequence,
-      midiEl,
-      midiInputModeEl,
-      modalEl,
-      muteSoloEl,
-      muted,
-      notesModeEl,
-      numChannels,
-      pianoEl,
-      playingStep,
-      rangeMode,
-      scribblerEl,
-      seqLength,
-      seqLengthInline,
-      seqMovementInline,
-      seqOppositeEl,
-      seqRateInline,
-      seqRestartEl,
-      seqSteps,
-      seqSwingInline,
-      shiftEl,
-      showStepNumbers,
-      sustainNormal,
-      velocityEl,
-    ]
-  )
-
-  const horizontalView = useMemo(
-    () => (
-      <CSSTransition
-        timeout={400}
-        in={true}
-        appear={true}
-        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
-        nodeRef={horizontalViewRef}>
-        <div ref={horizontalViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
-          {scribblerEl}
-          {channelNumNormal}
-          {duplicateDeleteEl}
-          <div className="channel-primary">
-            {muteSoloEl}
-            {midiEl}
-          </div>
-          {velocityEl}
-          {notesModeEl}
-          {keyEl}
-          <div className="transformations">
-            {rangeMode && shiftEl}
-            {rangeMode && axisNormal}
-            {rangeMode && <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />}
-            {rangeMode && flipOppositeEl}
-            {!rangeMode && midiInputModeEl}
-            {!rangeMode && clearResetEl}
-          </div>
-          {pianoEl}
-          {keyRateEl}
-          {keyMovementEl}
-          {sustainNormal}
-          {keySwingNormal}
-          <div className="channel-module border"></div>
-          <Sequencer
-            className="channel-module"
-            seqSteps={seqSteps}
-            setSeqSteps={setSeqSteps}
-            seqLength={seqLength}
-            playingStep={playingStep}
-            showStepNumbers={showStepNumbers}
-            longestSequence={longestSequence}>
-            <div className="sequencer-controls">
-              {seqLengthInline}
-              {seqRateInline}
-              {seqMovementInline}
-              {seqSwingInline}
-              {holdInline}
-              {seqRestartEl}
-              {seqOppositeEl}
-            </div>
-          </Sequencer>
-          <div className="channel-module border"></div>
-          {instrumentNormal}
-          {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}
-          {modalEl}
-        </div>
-      </CSSTransition>
-    ),
-    [
-      arrowSmallGraphic,
-      axisNormal,
-      channelNum,
-      channelNumNormal,
-      clearResetEl,
-      dragTarget,
-      dragTargetHorizontal,
-      draggingChannel,
-      duplicateDeleteEl,
-      flipOppositeEl,
-      holdInline,
-      instrumentNormal,
-      keyEl,
-      keyMovementEl,
-      keyRateEl,
-      keySwingNormal,
-      longestSequence,
-      midiEl,
-      midiInputModeEl,
-      modalEl,
-      muteSoloEl,
-      muted,
-      notesModeEl,
-      pianoEl,
-      playingStep,
-      rangeMode,
-      scribblerEl,
-      seqLength,
-      seqLengthInline,
-      seqMovementInline,
-      seqOppositeEl,
-      seqRateInline,
-      seqRestartEl,
-      seqSteps,
-      seqSwingInline,
-      shiftEl,
-      showStepNumbers,
-      sustainNormal,
-      velocityEl,
-    ]
-  )
-
-  const clockView = useMemo(
-    () => (
-      <CSSTransition
-        timeout={400}
-        in={true}
-        appear={true}
-        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
-        nodeRef={clockViewRef}>
-        <div ref={clockViewRef} className={classNames('channel channel-clock', { mute: muted })}>
-          <div className="channel-clock-top">
-            {scribblerEl}
-            {channelNumNormal}
-            {duplicateDeleteEl}
-            <div className="channel-primary">
-              {muteSoloEl}
-              {midiEl}
-              {velocityEl}
-            </div>
-            <div className="channel-vertical left-vertical">
-              {notesModeEl}
-              {rangeMode && shiftEl}
-              {rangeMode && flipOppositeEl}
-              {!rangeMode && midiInputModeEl}
-              {!rangeMode && clearResetEl}
-              {/* {keyViewTypeEl} */}
-            </div>
-            {rangeMode && <img className="arrow-clock" src={arrowClockGraphic ?? undefined} alt="" />}
-            {axisClock}
-            <div className="channel-vertical">
-              {keyMovementEl}
-              <div>
-                {keyRateEl}
-                {sustainVertical}
-              </div>
-              {keySwingVertical}
-            </div>
-            <div
-              className={classNames('channel-drawer-control', { 'drawer-open': drawerOpen })}
-              onClick={toggleDrawerOpen}>
-              <div className="arrow-down"></div>
-            </div>
-          </div>
-          <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open" nodeRef={drawerNodeRef}>
-            <div
-              ref={drawerNodeRef}
-              className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}
-              style={
-                { '--drawer-height': 251 + Math.floor(seqLength / 16) * (22 + 16) + 'px' } as React.CSSProperties
-              }>
-              <div className="piano-container">{pianoEl}</div>
-              <div className="piano-drawer-border"></div>
-              <Sequencer
-                className="channel-module"
-                seqSteps={seqSteps}
-                setSeqSteps={setSeqSteps}
-                seqLength={seqLength}
-                playingStep={playingStep}
-                showStepNumbers={showStepNumbers}
-              />
-              <div className="sequencer-controls">
-                {seqLengthNormal}
-                {seqRateNormal}
-                {seqMovementNormal}
-                {seqSwingNormal}
-                {holdNormal}
-                {seqOppositeRestartEl}
-                {instrumentSmall}
-              </div>
-            </div>
-          </CSSTransition>
-          {draggingChannel && dragTarget !== channelNum && dragTargetBox}
-          {modalEl}
-        </div>
-      </CSSTransition>
-    ),
-    [
-      arrowClockGraphic,
-      axisClock,
-      channelNum,
-      channelNumNormal,
-      clearResetEl,
-      dragTarget,
-      dragTargetBox,
-      draggingChannel,
-      drawerOpen,
-      duplicateDeleteEl,
-      flipOppositeEl,
-      holdNormal,
-      instrumentSmall,
-      keyMovementEl,
-      keyRateEl,
-      keySwingVertical,
-      midiEl,
-      midiInputModeEl,
-      modalEl,
-      muteSoloEl,
-      muted,
-      notesModeEl,
-      pianoEl,
-      playingStep,
-      rangeMode,
-      scribblerEl,
-      seqLength,
-      seqLengthNormal,
-      seqMovementNormal,
-      seqOppositeRestartEl,
-      seqRateNormal,
-      seqSteps,
-      seqSwingNormal,
-      shiftEl,
-      showStepNumbers,
-      sustainVertical,
-      toggleDrawerOpen,
-      velocityEl,
-    ]
-  )
-
   switch (view) {
     case 'stacked':
-      return stackedView
+      return (
+        <StackedView
+          {...ui}
+          muted={muted}
+          channelNum={channelNum}
+          numChannels={numChannels}
+          rangeMode={rangeMode}
+          arrowSmallGraphic={arrowSmallGraphic}
+          seqSteps={seqSteps}
+          setSeqSteps={setSeqSteps}
+          seqLength={seqLength}
+          playingStep={playingStep}
+          showStepNumbers={showStepNumbers}
+          longestSequence={longestSequence}
+          draggingChannel={draggingChannel}
+          dragTarget={dragTarget}
+          dragTargetHorizontal={dragTargetHorizontal}
+          modalEl={modalEl}
+        />
+      )
     case 'horizontal':
-      return horizontalView
+      return (
+        <HorizontalView
+          {...ui}
+          muted={muted}
+          channelNum={channelNum}
+          rangeMode={rangeMode}
+          arrowSmallGraphic={arrowSmallGraphic}
+          seqSteps={seqSteps}
+          setSeqSteps={setSeqSteps}
+          seqLength={seqLength}
+          playingStep={playingStep}
+          showStepNumbers={showStepNumbers}
+          longestSequence={longestSequence}
+          draggingChannel={draggingChannel}
+          dragTarget={dragTarget}
+          dragTargetHorizontal={dragTargetHorizontal}
+          modalEl={modalEl}
+        />
+      )
     case 'clock':
-      return clockView
+      return (
+        <ClockView
+          {...ui}
+          muted={muted}
+          channelNum={channelNum}
+          rangeMode={rangeMode}
+          arrowClockGraphic={arrowClockGraphic}
+          seqSteps={seqSteps}
+          setSeqSteps={setSeqSteps}
+          seqLength={seqLength}
+          playingStep={playingStep}
+          showStepNumbers={showStepNumbers}
+          draggingChannel={draggingChannel}
+          dragTarget={dragTarget}
+          dragTargetBox={dragTargetBox}
+          modalEl={modalEl}
+          drawerOpen={drawerOpen}
+          toggleDrawerOpen={toggleDrawerOpen}
+        />
+      )
     default:
       return null
   }
