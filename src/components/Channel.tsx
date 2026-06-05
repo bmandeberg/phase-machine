@@ -104,7 +104,7 @@ export default function Channel({
   const [scribbler, setScribbler] = useState(initState.scribbler)
   const [velocity, setVelocity] = useState(initState.velocity)
   const [key, setKey] = useState(initState.key)
-  const keyRef = useRef<any>()
+  const keyRef = useRef<any>(undefined)
   const [keyRate, setKeyRate] = useState(initState.keyRate)
   const [keyMovement, setKeyMovement] = useState(initState.keyMovement)
   const [keyArpInc1, setKeyArpInc1] = useState(initState.keyArpInc1)
@@ -125,19 +125,25 @@ export default function Channel({
   const [rangeEnd, setRangeEnd] = useState(initState.rangeEnd) // non-inclusive
   const [playingPitchClass, setPlayingPitchClass] = useState<any>()
   const [playingNote, setPlayingNote] = useState<any>()
-  const playingNoteRef = useRef<any>()
-  const noteIndex = useRef<any>()
-  const prevNoteIndex = useRef<any>()
+  const playingNoteRef = useRef<any>(undefined)
+  const noteIndex = useRef<any>(undefined)
+  const prevNoteIndex = useRef<any>(undefined)
+  // nodeRefs for react-transition-group (replaces findDOMNode, removed in React 19)
+  const modalNodeRef = useRef<HTMLDivElement>(null)
+  const stackedViewRef = useRef<HTMLDivElement>(null)
+  const horizontalViewRef = useRef<HTMLDivElement>(null)
+  const clockViewRef = useRef<HTMLDivElement>(null)
+  const drawerNodeRef = useRef<HTMLDivElement>(null)
   const [noteOn, setNoteOn] = useState(false)
   const notePlaying = useRef(false)
-  const noteOffTimeout = useRef<any>()
+  const noteOffTimeout = useRef<any>(undefined)
   const noNoteOffScheduled = useRef(false)
   const [seqSteps, setSeqSteps] = useState(initState.seqSteps)
   const [seqLength, setSeqLength] = useState(initState.seqLength)
   const [playingStep, setPlayingStep] = useState<any>()
-  const prevStep = useRef<any>()
-  const currentStep = useRef<any>()
-  const nextStep = useRef<any>()
+  const prevStep = useRef<any>(undefined)
+  const currentStep = useRef<any>(undefined)
+  const nextStep = useRef<any>(undefined)
   const [seqRate, setSeqRate] = useState(initState.seqRate)
   const [seqMovement, setSeqMovement] = useState(initState.seqMovement)
   const [seqArpInc1, setSeqArpInc1] = useState(initState.seqArpInc1)
@@ -156,14 +162,14 @@ export default function Channel({
   const [dragRow, setDragRow] = useState(0)
 
   const [rangeMode, setRangeMode] = useState(initState.rangeMode)
-  const rangeModeRef = useRef<any>()
+  const rangeModeRef = useRef<any>(undefined)
   const [keybdPitches, setKeybdPitches] = useState(initState.keybdPitches)
-  const keybdPitchesRef = useRef<any>()
+  const keybdPitchesRef = useRef<any>(undefined)
 
   const [midiIn, setMidiIn] = useState(initState.midiIn)
-  const midiInRef = useRef<any>()
+  const midiInRef = useRef<any>(undefined)
   const [midiHold, setMidiHold] = useState(initState.midiHold)
-  const midiHoldRef = useRef<any>()
+  const midiHoldRef = useRef<any>(undefined)
   const [customMidiOutChannel, setCustomMidiOutChannel] = useState(false)
   const customMidiOutChannelRef = useRef(customMidiOutChannel)
   const [midiOutChannel, setMidiOutChannel] = useState(1)
@@ -182,7 +188,7 @@ export default function Channel({
   }, [])
 
   const playNoteBuffer = useRef<any>({ seq: null, key: null })
-  const presetInitialized = useRef<any>()
+  const presetInitialized = useRef<any>(undefined)
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState<any>('')
@@ -342,7 +348,7 @@ export default function Channel({
 
   // instrument
 
-  const instrument = useRef<any>()
+  const instrument = useRef<any>(undefined)
 
   const cleanupInstruments = useCallback(() => {
     if (notePlaying.current && noteIndex.current !== undefined) {
@@ -984,8 +990,15 @@ export default function Channel({
 
   const modalEl = useMemo(
     () => (
-      <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>
+      <CSSTransition
+        in={!!modalType}
+        timeout={300}
+        classNames="show"
+        onEnter={showModal}
+        onExited={hideModal}
+        nodeRef={modalNodeRef}>
         <Modal
+          nodeRef={modalNodeRef}
           modalContent={modalContent}
           modalType={modalType}
           setModalType={setModalType}
@@ -1071,7 +1084,7 @@ export default function Channel({
 
   // watch and update state, with debounce
 
-  const channelStateDebounce = useRef<any>()
+  const channelStateDebounce = useRef<any>(undefined)
   useEffect(() => {
     clearTimeout(channelStateDebounce.current)
     const debounceTime = 200
@@ -1191,8 +1204,9 @@ export default function Channel({
         timeout={400}
         in={true}
         appear={true}
-        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
-        <div className={classNames('channel channel-horizontal', { mute: muted })}>
+        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
+        nodeRef={stackedViewRef}>
+        <div ref={stackedViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
           {scribblerEl}
           {channelNumNormal}
           {duplicateDeleteEl}
@@ -1301,8 +1315,9 @@ export default function Channel({
         timeout={400}
         in={true}
         appear={true}
-        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
-        <div className={classNames('channel channel-horizontal', { mute: muted })}>
+        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
+        nodeRef={horizontalViewRef}>
+        <div ref={horizontalViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
           {scribblerEl}
           {channelNumNormal}
           {duplicateDeleteEl}
@@ -1401,8 +1416,9 @@ export default function Channel({
         timeout={400}
         in={true}
         appear={true}
-        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}>
-        <div className={classNames('channel channel-clock', { mute: muted })}>
+        classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
+        nodeRef={clockViewRef}>
+        <div ref={clockViewRef} className={classNames('channel channel-clock', { mute: muted })}>
           <div className="channel-clock-top">
             {scribblerEl}
             {channelNumNormal}
@@ -1436,8 +1452,9 @@ export default function Channel({
               <div className="arrow-down"></div>
             </div>
           </div>
-          <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open">
+          <CSSTransition in={drawerOpen} timeout={300} classNames="drawer-open" nodeRef={drawerNodeRef}>
             <div
+              ref={drawerNodeRef}
               className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}
               style={
                 { '--drawer-height': 251 + Math.floor(seqLength / 16) * (22 + 16) + 'px' } as React.CSSProperties

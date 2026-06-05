@@ -93,7 +93,7 @@ export default function InstrumentModal({
   const [vibratoDepth, setVibratoDepth] = useState(instrumentParams.vibratoDepth)
   const [vibratoFreq, setVibratoFreq] = useState(instrumentParams.vibratoFreq)
 
-  const effectRef = useRef<any>() // eslint-disable-line @typescript-eslint/no-explicit-any
+  const effectRef = useRef<any>(undefined) // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const rolloffString = useMemo(() => `${rolloff}`, [rolloff])
   const updateRolloff = useCallback((r: string) => {
@@ -115,7 +115,7 @@ export default function InstrumentModal({
     return null
   }, [delayTime])
 
-  const instrumentParamsDebounce = useRef<ReturnType<typeof setTimeout>>()
+  const instrumentParamsDebounce = useRef<ReturnType<typeof setTimeout>>(undefined)
   const updateInstrumentParams = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (param: string, value: any) => {

@@ -317,13 +317,13 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
   }
 }
 
-export const SIGNAL_TYPES: Record<string, (theme: string) => JSX.Element> = {
+export const SIGNAL_TYPES: Record<string, (theme: string) => React.JSX.Element> = {
   sine: (theme: string) => <img className="wave-icon" src={themedIcon('sine', theme) ?? ''} alt="" />,
   square: (theme: string) => <img className="wave-icon" src={themedIcon('square', theme) ?? ''} alt="" />,
   triangle: (theme: string) => <img className="wave-icon" src={themedIcon('triangle', theme) ?? ''} alt="" />,
   sawtooth: (theme: string) => <img className="wave-icon" src={themedIcon('sawtooth', theme) ?? ''} alt="" />,
 }
-export const SYNTH_TYPES: Record<string, (theme: string) => JSX.Element> = Object.assign({}, SIGNAL_TYPES, {
+export const SYNTH_TYPES: Record<string, (theme: string) => React.JSX.Element> = Object.assign({}, SIGNAL_TYPES, {
   pulse: (theme: string) => <img className="wave-icon" src={themedIcon('pulse', theme) ?? ''} alt="" />,
   pwm: () => (
     <span className="wave-title" style={{ marginRight: 0 }}>
@@ -332,7 +332,7 @@ export const SYNTH_TYPES: Record<string, (theme: string) => JSX.Element> = Objec
   ),
 })
 
-export const INSTRUMENT_TYPES: Record<string, (theme: string) => JSX.Element> = {
+export const INSTRUMENT_TYPES: Record<string, (theme: string) => React.JSX.Element> = {
   synth: (theme: string) => (
     <img className="wave-icon" style={{ height: 20 }} src={themedIcon('synth', theme) ?? ''} alt="" />
   ),

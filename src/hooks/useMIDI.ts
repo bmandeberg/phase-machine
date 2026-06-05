@@ -16,10 +16,10 @@ const MIDI_IO_CHANGED = {
 export default function useMIDI(setPlaying: any, setResetTransport: any) {
   const [midiEnabled, setMidiEnabled] = useState(false)
   const [midiOut, setMidiOut] = useState<string | null>(null)
-  const midiOutRef = useRef<any>()
+  const midiOutRef = useRef<any>(undefined)
   const [midiOuts, setMidiOuts] = useState<string[]>([])
   const [midiIn, setMidiIn] = useState<string | null>(null)
-  const midiInRef = useRef<any>()
+  const midiInRef = useRef<any>(undefined)
   const [midiIns, setMidiIns] = useState<string[]>([])
   const [midiNoteOn, setMidiNoteOn] = useState<any>(null)
   const [midiNoteOff, setMidiNoteOff] = useState<any>(null)

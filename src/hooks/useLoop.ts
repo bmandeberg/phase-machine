@@ -10,7 +10,7 @@ export default function useLoop(
   swing: number,
   swingLength: number
 ) {
-  const loop = useRef<Loop>()
+  const loop = useRef<Loop>(undefined)
   // cleanup
   useEffect(() => {
     return () => {

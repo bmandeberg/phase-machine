@@ -43,7 +43,7 @@ export default function App() {
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(uiState.numChannels)
   const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[1])
-  const viewRef = useRef<any>()
+  const viewRef = useRef<any>(undefined)
   viewRef.current = view
 
   const [restartChannels, setRestartChannels] = useState(true)
@@ -104,7 +104,8 @@ export default function App() {
     }
   }, [preventUpdate])
 
-  const container = useRef<any>()
+  const container = useRef<any>(undefined)
+  const modalNodeRef = useRef<HTMLDivElement>(null)
 
   // settings
 
@@ -159,7 +160,7 @@ export default function App() {
 
   // init scrolling
 
-  const topGradient = useRef<any>()
+  const topGradient = useRef<any>(undefined)
 
   useEffect(() => {
     const containerEl = container.current
@@ -467,8 +468,15 @@ export default function App() {
         )}
         <div className="border-gradient gradient-top" ref={topGradient}></div>
       </div>
-      <CSSTransition in={!!modalType} timeout={300} classNames="show" onEnter={showModal} onExited={hideModal}>
+      <CSSTransition
+        in={!!modalType}
+        timeout={300}
+        classNames="show"
+        onEnter={showModal}
+        onExited={hideModal}
+        nodeRef={modalNodeRef}>
         <Modal
+          nodeRef={modalNodeRef}
           modalContent={modalContent}
           modalType={modalType}
           setModalType={setModalType}

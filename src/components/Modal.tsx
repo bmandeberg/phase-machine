@@ -9,6 +9,9 @@ import './Modal.scss'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface ModalProps {
+  // Shared with the wrapping <CSSTransition nodeRef>: react-transition-group needs a
+  // DOM ref instead of findDOMNode (removed in React 19). Attached to the root element.
+  nodeRef?: React.RefObject<HTMLDivElement | null>
   modalContent?: boolean
   modalType?: string | null
   setModalType: (type: string | null) => void
@@ -52,6 +55,7 @@ interface ModalProps {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default function Modal({
+  nodeRef,
   modalType,
   setModalType,
   showStepNumbers,
@@ -230,7 +234,7 @@ export default function Modal({
   const aboutEl = useMemo(() => <AboutModal theme={theme} />, [theme])
 
   return (
-    <div className="modal-container" onClick={clickScrim}>
+    <div className="modal-container" ref={nodeRef} onClick={clickScrim}>
       <div className={classNames('modal-buffer', { 'small-buffer': modalTypeRef.current === 'about' })}>
         <div className="modal-window">
           <div className="modal-header">
