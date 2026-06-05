@@ -517,34 +517,47 @@ export default function useInstruments(
 
     // cleanup instruments
     return () => {
-      console.log('hmmm')
       cleanupRef.current()
+      // Dispose AND null each instrument ref. The init*Instrument() guards on
+      // `if (!x.current)`, so leaving a disposed instance in the ref would make
+      // a remount (e.g. React StrictMode's double-invoke in dev) skip recreation
+      // and reuse a disposed Sampler — which has zero buffers and throws
+      // "No available buffers" on triggerAttackRelease.
       if (synthInstrument.current) {
         synthInstrument.current.dispose()
+        synthInstrument.current = null
       }
       if (marimbaInstrument.current) {
         marimbaInstrument.current.dispose()
+        marimbaInstrument.current = null
       }
       if (pianoInstrument.current) {
         pianoInstrument.current.dispose()
+        pianoInstrument.current = null
       }
       if (bassInstrument.current) {
         bassInstrument.current.dispose()
+        bassInstrument.current = null
       }
       if (vibesInstrument.current) {
         vibesInstrument.current.dispose()
+        vibesInstrument.current = null
       }
       if (harpInstrument.current) {
         harpInstrument.current.dispose()
+        harpInstrument.current = null
       }
       if (choralInstrument.current) {
         choralInstrument.current.dispose()
+        choralInstrument.current = null
       }
       if (drumsInstrument.current) {
         drumsInstrument.current.dispose()
+        drumsInstrument.current = null
       }
       if (drumMachineInstrument.current) {
         drumMachineInstrument.current.dispose()
+        drumMachineInstrument.current = null
       }
       if (chorusEffect.current) {
         chorusEffect.current.dispose()

@@ -187,15 +187,16 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
 
   .channel-horizontal {
     border-color: $pitchClassGray;
-    .channel-number-background {
-      background: linear-gradient(to right, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
-      height: 100%;
-    }
-    .channel-number {
-      text-shadow: 0 0 5px $darkBackground;
-    }
-    .channel-number {
-      text-shadow: 0 0 5px $darkBackground;
+    // Nest under .channel-number-container to match the base rule's selector depth
+    // (Channel.scss), so these overrides win the otherwise-equal cascade tie.
+    .channel-number-container {
+      .channel-number-background {
+        background: linear-gradient(to right, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
+        height: 100%;
+      }
+      .channel-number {
+        text-shadow: 0 0 5px $darkBackground;
+      }
     }
     &.channel-in-active {
       background-color: darken($green, 35%);
@@ -828,6 +829,9 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
     &.selected {
       background-color: $green;
+      // Explicit text color so the base `.sequence-step.selected` (#00ad00) doesn't
+      // win the specificity tie and leave an unreadable step number on green.
+      color: $darkBackground;
       &:hover {
         background-color: $greenHover;
       }
