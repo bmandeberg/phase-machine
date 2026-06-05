@@ -15,12 +15,9 @@ next-env.d.ts
 
 # production
 /build
-/dist/*
-!/dist/index.html
-!/dist/samples
-!/dist/images
-!/dist/legal
-!/dist/favicon.ico
+
+# typescript incremental build info
+tsconfig.tsbuildinfo
 
 # misc
 .DS_Store
