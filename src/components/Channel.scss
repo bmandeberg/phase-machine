@@ -1,4 +1,6 @@
-@import '../sass-globals.scss';
+@use '../sass-globals' as *;
+@use 'sass:math';
+@use 'sass:color';
 
 .channel-module {
   display: inline-block;
@@ -452,7 +454,7 @@
 .switch-label {
   @extend .no-select;
   &.selected {
-    color: darken($green, 10%);
+    color: color.adjust($green, $lightness: -10%);
   }
 }
 
@@ -463,9 +465,9 @@
 }
 
 .mute {
-  $muteTransitionTime: $transitionTime / 2;
+  $muteTransitionTime: math.div($transitionTime, 2);
   $muteGray: #d8d8d8;
-  $muteGrayHover: lighten($muteGray, 3%);
+  $muteGrayHover: color.adjust($muteGray, $lightness: 3%);
   $muteBorder: #bbbbbb;
   $muteBackground: #f2f2f2;
   background-color: $muteBackground;

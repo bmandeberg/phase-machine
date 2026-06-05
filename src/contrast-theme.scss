@@ -1,25 +1,27 @@
-@import './sass-globals.scss';
+@use './sass-globals' as *;
+@use 'sass:math';
+@use 'sass:color';
 $darkBackground: #090c10;
 $darkMuteBackground: #1c1c23;
 $lightMediumGray: #ccd0ff;
 $darkMediumGray: #45454c;
-$lightMediumGrayHover: lighten($lightMediumGray, 5%);
-$lightMediumGrayActive: darken($lightMediumGray, 5%);
+$lightMediumGrayHover: color.adjust($lightMediumGray, $lightness: 5%);
+$lightMediumGrayActive: color.adjust($lightMediumGray, $lightness: -5%);
 $darkDarkGray: #1e1e25;
-$darkDarkGrayHover: lighten($darkDarkGray, 8%);
+$darkDarkGrayHover: color.adjust($darkDarkGray, $lightness: 8%);
 $darkTextGray: #383842;
 $darkLightGray: #a0a0b4;
 $darkDarkOrange: #9e5302;
 $darkerMediumGray: #979ebf;
 $pitchClassGray: #7a7f93;
-$darkerMediumGrayHover: lighten($darkerMediumGray, 5%);
-$darkerMediumGrayActive: darken($darkerMediumGray, 5%);
-$blueHover: lighten($blue, 5%);
-$blueActive: darken($blue, 3%);
+$darkerMediumGrayHover: color.adjust($darkerMediumGray, $lightness: 5%);
+$darkerMediumGrayActive: color.adjust($darkerMediumGray, $lightness: -5%);
+$blueHover: color.adjust($blue, $lightness: 5%);
+$blueActive: color.adjust($blue, $lightness: -3%);
 $headerDarkBlue: #0f182d;
-$darkGreen: darken($green, 15%);
-$darkGreenHover: lighten($darkGreen, 3%);
-$lighterDarkGreen: lighten($darkGreen, 6%);
+$darkGreen: color.adjust($green, $lightness: -15%);
+$darkGreenHover: color.adjust($darkGreen, $lightness: 3%);
+$lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
 
 .contrast-theme {
   background-color: $darkBackground;
@@ -88,10 +90,10 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     .midi-in {
       background-color: $darkerMediumGray;
       &:hover {
-        background-color: lighten($darkerMediumGray, 3%);
+        background-color: color.adjust($darkerMediumGray, $lightness: 3%);
       }
       &:active {
-        background-color: darken($darkerMediumGray, 3%);
+        background-color: color.adjust($darkerMediumGray, $lightness: -3%);
       }
       &.midi-active {
         background-color: $green;
@@ -134,8 +136,8 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
     .about-section-warning-container {
       .about-section-warning {
-        background-color: darken($red, 50%);
-        color: lighten($red, 20%);
+        background-color: color.adjust($red, $lightness: -50%);
+        color: color.adjust($red, $lightness: 20%);
         .about-section-warning-icon {
           background: transparent url('./assets/alert.png') center center;
           background-size: auto 20px;
@@ -144,7 +146,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
     .about-section-tip-container {
       .about-section-tip {
-        background-color: darken($green, 40%);
+        background-color: color.adjust($green, $lightness: -40%);
         color: #87ff69;
         .about-section-tip-icon {
           background: transparent url('./assets/lightbulb.png') center center;
@@ -199,9 +201,9 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       }
     }
     &.channel-in-active {
-      background-color: darken($green, 35%);
+      background-color: color.adjust($green, $lightness: -35%);
       .channel-horizontal {
-        background-color: darken($green, 35%);
+        background-color: color.adjust($green, $lightness: -35%);
       }
     }
   }
@@ -246,7 +248,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
           border-color: $darkMuteBackground;
         }
         &:hover {
-          background-color: darken($darkMediumGray, 4%);
+          background-color: color.adjust($darkMediumGray, $lightness: -4%);
         }
         &.white-key {
           background-color: $lightMediumGray;
@@ -260,12 +262,12 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     }
     &.clock {
       .pitch-class {
-        background-color: darken($darkerMediumGray, 15%);
+        background-color: color.adjust($darkerMediumGray, $lightness: -15%);
         &:hover {
-          background-color: darken($darkerMediumGrayHover, 15%);
+          background-color: color.adjust($darkerMediumGrayHover, $lightness: -15%);
         }
         &:active {
-          background-color: darken($darkerMediumGrayActive, 15%);
+          background-color: color.adjust($darkerMediumGrayActive, $lightness: -15%);
         }
       }
     }
@@ -274,8 +276,8 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       border-style: solid;
       border-color: $pink;
       border-width: 0;
-      transition: border-width $transitionTime / 4, border-color $transitionTime / 2,
-        background-color $transitionTime / 4;
+      transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2),
+        background-color math.div($transitionTime, 4);
       &.selected {
         background-color: $green !important;
         &:hover {
@@ -427,7 +429,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       &.interactive:hover {
         background-color: $darkDarkGrayHover;
         &.mute {
-          background-color: darken($darkMediumGray, 5%);
+          background-color: color.adjust($darkMediumGray, $lightness: -5%);
         }
       }
       &.white-key {
@@ -443,7 +445,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         &.interactive:hover {
           background-color: $lightMediumGrayHover;
           &.mute {
-            background-color: darken($pitchClassGray, 5%);
+            background-color: color.adjust($pitchClassGray, $lightness: -5%);
           }
         }
       }
@@ -518,7 +520,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         }
       }
       &.playing {
-        background-color: darken($orange, 2%);
+        background-color: color.adjust($orange, $lightness: -2%);
         &.interactive:hover {
           background-color: $orangeHover;
         }
@@ -562,7 +564,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     color: $darkTextGray;
 
     .multi-select-placeholder {
-      color: lighten($darkTextGray, 7%);
+      color: color.adjust($darkTextGray, $lightness: 7%);
     }
 
     .multi-select-arrow-container {
@@ -728,7 +730,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         background-color: $blueActive;
       }
       &.disabled {
-        background-color: darken($blue, 10%);
+        background-color: color.adjust($blue, $lightness: -10%);
       }
     }
     input[type='text'] {
@@ -762,10 +764,10 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
     .split-button-arrow {
       background-color: $darkerMediumGray;
       &:hover {
-        background-color: lighten($darkerMediumGray, 3%);
+        background-color: color.adjust($darkerMediumGray, $lightness: 3%);
       }
       &:active {
-        background-color: darken($darkerMediumGray, 3%);
+        background-color: color.adjust($darkerMediumGray, $lightness: -3%);
       }
       &.split-button-arrow-left {
         border-right: 1px solid $darkBackground;
@@ -884,7 +886,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
       }
     }
     &.channel-in-active {
-      background-color: darken($green, 35%);
+      background-color: color.adjust($green, $lightness: -35%);
     }
   }
 
@@ -898,8 +900,8 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
 
   .mute {
     $muteGray: #aab1cc;
-    $muteGrayHover: lighten($muteGray, 3%);
-    $muteGrayActive: darken($muteGray, 3%);
+    $muteGrayHover: color.adjust($muteGray, $lightness: 3%);
+    $muteGrayActive: color.adjust($muteGray, $lightness: -3%);
     $muteDarkGray: #17171e;
     background-color: $darkMuteBackground;
     color: $muteGray;
@@ -909,7 +911,7 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         background-color: $darkMuteBackground;
       }
       .scribbler-input {
-        background-color: lighten($darkDarkGray, 10%);
+        background-color: color.adjust($darkDarkGray, $lightness: 10%);
       }
     }
 
@@ -988,13 +990,13 @@ $lighterDarkGreen: lighten($darkGreen, 6%);
         }
       }
       .split-button-arrow {
-        $muteSplitButtonAction: darken($darkerMediumGray, 6%);
+        $muteSplitButtonAction: color.adjust($darkerMediumGray, $lightness: -6%);
         background-color: $muteSplitButtonAction;
         &:hover {
-          background-color: lighten($muteSplitButtonAction, 3%);
+          background-color: color.adjust($muteSplitButtonAction, $lightness: 3%);
         }
         &:active {
-          background-color: darken($muteSplitButtonAction, 3%);
+          background-color: color.adjust($muteSplitButtonAction, $lightness: -3%);
         }
         &.split-button-arrow-left {
           border-right: 1px solid $darkBackground;

@@ -1,22 +1,24 @@
-@import './sass-globals.scss';
+@use './sass-globals' as *;
+@use 'sass:math';
+@use 'sass:color';
 $darkBackground: #090c10;
 $darkMuteBackground: #1c1c23;
 $darkMediumGray: #45454c;
-$darkMediumGrayHover: lighten($darkMediumGray, 3%);
-$darkMediumGrayActive: darken($darkMediumGray, 3%);
+$darkMediumGrayHover: color.adjust($darkMediumGray, $lightness: 3%);
+$darkMediumGrayActive: color.adjust($darkMediumGray, $lightness: -3%);
 $darkDarkGray: #1e1e25;
-$darkDarkGrayHover: lighten($darkDarkGray, 5%);
+$darkDarkGrayHover: color.adjust($darkDarkGray, $lightness: 5%);
 $darkLightGray: #a0a0b4;
 $darkGreen: #00c591;
-$darkGreenHover: lighten($darkGreen, 6%);
-$darkGreenActive: darken($darkGreen, 5%);
-$darkDarkGreen: darken($darkGreen, 10%);
-$darkestGreen: darken($darkGreen, 30%);
+$darkGreenHover: color.adjust($darkGreen, $lightness: 6%);
+$darkGreenActive: color.adjust($darkGreen, $lightness: -5%);
+$darkDarkGreen: color.adjust($darkGreen, $lightness: -10%);
+$darkestGreen: color.adjust($darkGreen, $lightness: -30%);
 $darkDarkOrange: #9e5302;
 $splitButtonAction: #313139;
 $headerBlue: #17326d;
-$headerBlueHover: lighten($headerBlue, 5%);
-$headerBlueActive: darken($headerBlue, 3%);
+$headerBlueHover: color.adjust($headerBlue, $lightness: 5%);
+$headerBlueActive: color.adjust($headerBlue, $lightness: -3%);
 $headerDarkBlue: #0f182d;
 
 .dark-theme {
@@ -92,10 +94,10 @@ $headerDarkBlue: #0f182d;
     .midi-in {
       background-color: $splitButtonAction;
       &:hover {
-        background-color: lighten($splitButtonAction, 3%);
+        background-color: color.adjust($splitButtonAction, $lightness: 3%);
       }
       &:active {
-        background-color: darken($splitButtonAction, 3%);
+        background-color: color.adjust($splitButtonAction, $lightness: -3%);
       }
       &.midi-active {
         background-color: $darkGreen;
@@ -119,7 +121,7 @@ $headerDarkBlue: #0f182d;
       border-color: $darkMediumGray;
     }
     .controls-label {
-      color: lighten($darkMediumGray, 10%);
+      color: color.adjust($darkMediumGray, $lightness: 10%);
     }
   }
 
@@ -137,8 +139,8 @@ $headerDarkBlue: #0f182d;
     }
     .about-section-warning-container {
       .about-section-warning {
-        background-color: darken($red, 50%);
-        color: lighten($red, 20%);
+        background-color: color.adjust($red, $lightness: -50%);
+        color: color.adjust($red, $lightness: 20%);
         .about-section-warning-icon {
           background: transparent url('./assets/alert.png') center center;
           background-size: auto 20px;
@@ -147,7 +149,7 @@ $headerDarkBlue: #0f182d;
     }
     .about-section-tip-container {
       .about-section-tip {
-        background-color: darken($green, 40%);
+        background-color: color.adjust($green, $lightness: -40%);
         color: #87ff69;
         .about-section-tip-icon {
           background: transparent url('./assets/lightbulb.png') center center;
@@ -274,8 +276,8 @@ $headerDarkBlue: #0f182d;
       border-style: solid;
       border-color: $pink;
       border-width: 0;
-      transition: border-width $transitionTime / 4, border-color $transitionTime / 2,
-        background-color $transitionTime / 4;
+      transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2),
+        background-color math.div($transitionTime, 4);
       &.selected {
         background-color: $darkGreen !important;
         &:hover {
@@ -417,7 +419,7 @@ $headerDarkBlue: #0f182d;
 
   .piano {
     $inRangeColor: #787887;
-    $inRangeColorHover: lighten($inRangeColor, 5%);
+    $inRangeColorHover: color.adjust($inRangeColor, $lightness: 5%);
     $inRangeBorderColor: #3c3c3c;
     .piano-note {
       background-color: #26262f;
@@ -429,7 +431,7 @@ $headerDarkBlue: #0f182d;
       &.interactive:hover {
         background-color: $darkDarkGrayHover;
         &.mute {
-          background-color: lighten($darkDarkGrayHover, 3%);
+          background-color: color.adjust($darkDarkGrayHover, $lightness: 3%);
         }
       }
       &.white-key {
@@ -442,9 +444,9 @@ $headerDarkBlue: #0f182d;
           }
         }
         &.interactive:hover {
-          background-color: darken($inRangeColor, 5%);
+          background-color: color.adjust($inRangeColor, $lightness: -5%);
           &.mute {
-            background-color: lighten($darkMediumGray, 3%);
+            background-color: color.adjust($darkMediumGray, $lightness: 3%);
           }
           &.selected {
             background-color: $darkGreenHover;
@@ -520,7 +522,7 @@ $headerDarkBlue: #0f182d;
         }
       }
       &.playing {
-        background-color: darken($orange, 2%);
+        background-color: color.adjust($orange, $lightness: -2%);
         &.interactive:hover {
           background-color: $orangeHover;
         }
@@ -564,7 +566,7 @@ $headerDarkBlue: #0f182d;
     color: $darkLightGray;
 
     .multi-select-placeholder {
-      color: darken($darkLightGray, 7%);
+      color: color.adjust($darkLightGray, $lightness: -7%);
     }
 
     .multi-select-arrow-container {
@@ -708,7 +710,7 @@ $headerDarkBlue: #0f182d;
         color: $darkLightGray;
         &:hover,
         &.selected {
-          background-color: lighten($darkestGreen, 10%);
+          background-color: color.adjust($darkestGreen, $lightness: 10%);
         }
       }
     }
@@ -761,10 +763,10 @@ $headerDarkBlue: #0f182d;
     .split-button-arrow {
       background-color: $splitButtonAction;
       &:hover {
-        background-color: lighten($splitButtonAction, 3%);
+        background-color: color.adjust($splitButtonAction, $lightness: 3%);
       }
       &:active {
-        background-color: darken($splitButtonAction, 3%);
+        background-color: color.adjust($splitButtonAction, $lightness: -3%);
       }
       &.split-button-arrow-left {
         border-right: 1px solid $darkBackground;
@@ -893,8 +895,8 @@ $headerDarkBlue: #0f182d;
 
   .mute {
     $muteGray: #39393f;
-    $muteGrayHover: lighten($muteGray, 3%);
-    $muteGrayActive: darken($muteGray, 3%);
+    $muteGrayHover: color.adjust($muteGray, $lightness: 3%);
+    $muteGrayActive: color.adjust($muteGray, $lightness: -3%);
     $muteDarkGray: #17171e;
     background-color: $darkMuteBackground;
 
@@ -903,7 +905,7 @@ $headerDarkBlue: #0f182d;
         background-color: $darkMuteBackground;
       }
       .scribbler-input {
-        background-color: lighten($darkDarkGray, 5%);
+        background-color: color.adjust($darkDarkGray, $lightness: 5%);
       }
     }
 
@@ -971,13 +973,13 @@ $headerDarkBlue: #0f182d;
         }
       }
       .split-button-arrow {
-        $muteSplitButtonAction: darken($splitButtonAction, 4%);
+        $muteSplitButtonAction: color.adjust($splitButtonAction, $lightness: -4%);
         background-color: $muteSplitButtonAction;
         &:hover {
-          background-color: lighten($muteSplitButtonAction, 3%);
+          background-color: color.adjust($muteSplitButtonAction, $lightness: 3%);
         }
         &:active {
-          background-color: darken($muteSplitButtonAction, 3%);
+          background-color: color.adjust($muteSplitButtonAction, $lightness: -3%);
         }
         &.split-button-arrow-left {
           border-right: 1px solid $darkBackground;

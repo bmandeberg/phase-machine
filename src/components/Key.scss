@@ -1,4 +1,5 @@
-@import '../sass-globals.scss';
+@use '../sass-globals' as *;
+@use 'sass:math';
 
 .key {
   position: relative;
@@ -50,7 +51,7 @@
       left: 2px;
       top: 0;
       opacity: 0;
-      transition: opacity $transitionTime / 1.5;
+      transition: opacity math.div($transitionTime, 1.5);
       pointer-events: none;
       path,
       rect {
@@ -90,7 +91,7 @@
     border-style: solid;
     border-color: $pink;
     border-width: 0;
-    transition: border-width $transitionTime / 4, border-color $transitionTime / 2, background-color $transitionTime / 4;
+    transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2), background-color math.div($transitionTime, 4);
     &.selected {
       background-color: $green !important;
       &:hover {

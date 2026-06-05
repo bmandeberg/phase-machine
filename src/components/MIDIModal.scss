@@ -1,4 +1,5 @@
-@import '../sass-globals.scss';
+@use '../sass-globals' as *;
+@use 'sass:color';
 
 .midi-modal {
   width: 220px;
@@ -23,7 +24,7 @@
     display: inline-block;
     vertical-align: top;
     font-size: 28px;
-    color: darken($green, 10%);
+    color: color.adjust($green, $lightness: -10%);
     margin-left: 15px;
   }
 }

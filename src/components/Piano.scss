@@ -1,4 +1,6 @@
-@import '../sass-globals.scss';
+@use '../sass-globals' as *;
+@use 'sass:math';
+@use 'sass:color';
 
 .piano {
   height: 97px;
@@ -52,7 +54,7 @@
         background-color: $darkGrayHover;
       }
       &.mute:hover {
-        background-color: darken($lightTextGray, 5%);
+        background-color: color.adjust($lightTextGray, $lightness: -5%);
       }
       &.selected.mute:hover {
         background-color: $greenHover;
@@ -85,7 +87,7 @@
           background-color: $lightGray;
         }
         &.mute:hover {
-          background-color: darken($lightGray, 5%);
+          background-color: color.adjust($lightGray, $lightness: -5%);
         }
         &.selected:hover {
           background-color: $greenHover;
@@ -205,7 +207,7 @@
       }
     }
     &.playing {
-      background-color: darken($orange, 2%);
+      background-color: color.adjust($orange, $lightness: -2%);
       &.interactive:hover {
         background-color: $orangeHover;
       }
@@ -244,7 +246,7 @@
   .piano-range-glow {
     opacity: 0;
     pointer-events: none;
-    transition: opacity $transitionTime / 2;
+    transition: opacity math.div($transitionTime, 2);
     path {
       filter: url(#glow);
     }

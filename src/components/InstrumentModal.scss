@@ -1,4 +1,4 @@
-@import '../sass-globals.scss';
+@use '../sass-globals' as *;
 
 .instrument-modal {
   width: 637px;
