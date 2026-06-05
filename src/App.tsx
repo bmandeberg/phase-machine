@@ -1,6 +1,5 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import * as Tone from 'tone'
 import classNames from 'classnames'
@@ -23,6 +22,7 @@ import Channel from './components/Channel'
 import Modal from './components/Modal'
 import usePresets from './hooks/usePresets'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
+import { Channel as ChannelType, Preset } from './types'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
@@ -43,7 +43,7 @@ export default function App() {
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(uiState.numChannels)
   const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[1])
-  const viewRef = useRef<any>(undefined)
+  const viewRef = useRef<string | undefined>(undefined)
   viewRef.current = view
 
   const [restartChannels, setRestartChannels] = useState(true)
@@ -51,7 +51,7 @@ export default function App() {
   const [scrollTo, setScrollTo] = useState(SECTIONS[0])
   const [channelSync, setChannelSync] = useState(uiState.channelSync)
 
-  const [modalType, setModalType] = useState<any>('')
+  const [modalType, setModalType] = useState<string | null>('')
   const [modalContent, setModalContent] = useState(false)
   const showModal = useCallback(() => {
     setModalContent(true)
@@ -62,7 +62,7 @@ export default function App() {
 
   const [grabbing, setGrabbing] = useState(false)
   const [resizing, setResizing] = useState(false)
-  const keydownTimer = useRef<any>(null)
+  const keydownTimer = useRef<number | null | false>(null)
 
   const {
     midiOutRef,
@@ -97,14 +97,14 @@ export default function App() {
     setResetTransport(true)
   }, [])
 
-  const [preventUpdate, setPreventUpdate] = useState<any>()
+  const [preventUpdate, setPreventUpdate] = useState<boolean | undefined>()
   useEffect(() => {
     if (preventUpdate) {
       setPreventUpdate(false)
     }
   }, [preventUpdate])
 
-  const container = useRef<any>(undefined)
+  const container = useRef<HTMLDivElement | null>(null)
   const modalNodeRef = useRef<HTMLDivElement>(null)
 
   // settings
@@ -160,10 +160,11 @@ export default function App() {
 
   // init scrolling
 
-  const topGradient = useRef<any>(undefined)
+  const topGradient = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const containerEl = container.current
+    if (!containerEl) return
     function handleScroll() {
       if (viewRef.current === 'horizontal') {
         const scrollPositions = [
@@ -173,14 +174,16 @@ export default function App() {
         ]
         let scrollEl = 0
         for (let i = 0; i < SECTIONS.length; i++) {
-          if (containerEl.scrollLeft >= scrollPositions[i]) {
+          // containerEl is guaranteed non-null by the early return above; TS just
+          // can't carry that narrowing into this nested handler.
+          if (containerEl!.scrollLeft >= scrollPositions[i]) {
             scrollEl = i
           }
         }
         setScrollTo(SECTIONS[scrollEl])
       }
       if (topGradient.current) {
-        topGradient.current.style.top = 44 + Math.min(containerEl.scrollTop, 16) + 'px'
+        topGradient.current.style.top = 44 + Math.min(containerEl!.scrollTop, 16) + 'px'
       }
     }
     containerEl.addEventListener('scroll', handleScroll)
@@ -205,7 +208,7 @@ export default function App() {
     ]
     const scrollElIndex = SECTIONS.indexOf(scrollEl)
     if (scrollElIndex !== -1) {
-      container.current.scroll({
+      container.current?.scroll({
         left: scrollPositions[scrollElIndex],
         behavior: 'smooth',
       })
@@ -213,7 +216,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    container.current.scroll({
+    container.current?.scroll({
       left: 0,
     })
   }, [view])
@@ -225,7 +228,7 @@ export default function App() {
   }, [tempo])
 
   const numChannelsSoloed = useMemo(
-    () => uiState.channels.reduce((acc: number, curr: any) => acc + (curr.solo ? 1 : 0), 0),
+    () => uiState.channels.reduce((acc: number, curr: ChannelType) => acc + (curr.solo ? 1 : 0), 0),
     [uiState]
   )
 
@@ -256,13 +259,13 @@ export default function App() {
 
   // channel management
 
-  const getChannelColor = useCallback((channels: any[]) => {
-    const nextColor = CHANNEL_COLORS.find((color) => !channels.map((c: any) => c.color).includes(color))
+  const getChannelColor = useCallback((channels: ChannelType[]) => {
+    const nextColor = CHANNEL_COLORS.find((color) => !channels.map((c) => c.color).includes(color))
     return nextColor || CHANNEL_COLORS[0]
   }, [])
 
   useEffect(() => {
-    setUIState((uiState: any) => {
+    setUIState((uiState: Preset) => {
       const uiStateCopy = Object.assign({}, uiState, { numChannels })
       const currentChannelsLength = uiStateCopy.channels.length
       if (numChannels > currentChannelsLength) {
@@ -273,7 +276,7 @@ export default function App() {
         }
       } else {
         uiStateCopy.channels = uiStateCopy.channels.slice(0, numChannels)
-        uiStateCopy.channels.forEach((channel: any, i: number) => {
+        uiStateCopy.channels.forEach((channel, i) => {
           channel.channelNum = i
         })
       }
@@ -284,16 +287,16 @@ export default function App() {
   const duplicateChannel = useCallback(
     (id: string) => {
       if (uiState.channels.length < MAX_CHANNELS) {
-        setUIState((uiState: any) => {
+        setUIState((uiState: Preset) => {
           const uiStateCopy = deepStateCopy(uiState)
-          const channelNum = uiStateCopy.channels.find((c: any) => c.id === id).channelNum
+          const channelNum = uiStateCopy.channels.find((c) => c.id === id)!.channelNum
           const duplicatedChannel = Object.assign({}, channelCopy(uiStateCopy.channels[channelNum]), {
             id: uuid(),
             channelNum: channelNum + 1,
             color: getChannelColor(uiStateCopy.channels),
           })
           uiStateCopy.channels.splice(channelNum + 1, 0, duplicatedChannel)
-          uiStateCopy.channels.forEach((channel: any, i: number) => {
+          uiStateCopy.channels.forEach((channel, i) => {
             channel.channelNum = i
           })
           return uiStateCopy
@@ -306,11 +309,11 @@ export default function App() {
   )
 
   const deleteChannel = useCallback((id: string) => {
-    setUIState((uiState: any) => {
+    setUIState((uiState: Preset) => {
       const uiStateCopy = deepStateCopy(uiState)
-      const channelNum = uiStateCopy.channels.find((c: any) => c.id === id).channelNum
+      const channelNum = uiStateCopy.channels.find((c) => c.id === id)!.channelNum
       uiStateCopy.channels.splice(channelNum, 1)
-      uiStateCopy.channels.forEach((channel: any, i: number) => {
+      uiStateCopy.channels.forEach((channel, i) => {
         channel.channelNum = i
       })
       return uiStateCopy
@@ -320,10 +323,10 @@ export default function App() {
   }, [])
 
   const changeChannelOrder = useCallback((channelNum: number, newChannelNum: number) => {
-    setUIState((uiState: any) => {
+    setUIState((uiState: Preset) => {
       const uiStateCopy = deepStateCopy(uiState)
       uiStateCopy.channels = arrayMove(uiStateCopy.channels, channelNum, newChannelNum)
-      uiStateCopy.channels.forEach((channel: any, i: number) => {
+      uiStateCopy.channels.forEach((channel, i) => {
         channel.channelNum = i
       })
       return uiStateCopy
@@ -331,7 +334,7 @@ export default function App() {
     setPreventUpdate(true)
   }, [])
 
-  const longestSequence = useMemo(() => Math.max(...uiState.channels.map((c: any) => c.seqLength)), [uiState])
+  const longestSequence = useMemo(() => Math.max(...uiState.channels.map((c) => c.seqLength)), [uiState])
 
   const longestAuxChannel = useMemo(() => 277.66 + longestSequence * (22 + 18), [longestSequence])
 
@@ -339,7 +342,7 @@ export default function App() {
 
   const channels = useMemo(
     () =>
-      uiState.channels.map((d: any, i: number) => (
+      uiState.channels.map((d: ChannelType, i: number) => (
         <Channel
           numChannels={numChannels}
           key={d.id}
@@ -399,7 +402,7 @@ export default function App() {
     ]
   )
 
-  const presetOptions = useMemo(() => presets.map((p: any) => ({ label: p.name, value: p.id })), [presets])
+  const presetOptions = useMemo(() => presets.map((p: Preset) => ({ label: p.name, value: p.id })), [presets])
 
   return (
     <div
@@ -504,7 +507,7 @@ export default function App() {
   )
 }
 
-function channelCopy(c: any) {
+function channelCopy(c: ChannelType): ChannelType {
   return Object.assign({}, c, {
     key: c.key.slice(),
     seqSteps: c.seqSteps.slice(),
@@ -512,55 +515,64 @@ function channelCopy(c: any) {
   })
 }
 
-function deepStateCopy(state: any) {
+function deepStateCopy(state: Preset): Preset {
   return Object.assign({}, state, {
-    channels: state.channels.map((c: any) => channelCopy(c)),
+    channels: state.channels.map((c) => channelCopy(c)),
   })
 }
 
-export function patchPreset(preset: any, updated?: boolean) {
+// The patch* helpers backfill missing fields on presets/channels loaded from
+// localStorage or imported files (schema migration). The objects are partially
+// formed, so they're walked generically via a loose indexable view.
+export function patchPreset(preset: Preset, updated?: boolean) {
+  const p = preset as unknown as Record<string, unknown>
+  const defaults = DEFAULT_PRESET as unknown as Record<string, unknown>
   for (const prop in DEFAULT_PRESET) {
-    if (preset[prop] === undefined) {
-      preset[prop] = (DEFAULT_PRESET as any)[prop]
+    if (p[prop] === undefined) {
+      p[prop] = defaults[prop]
       updated = true
     }
   }
   return updated
 }
 
-export function patchChannel(channel: any, updated?: boolean) {
+export function patchChannel(channel: ChannelType, updated?: boolean) {
   const defaultChannel = DEFAULT_PRESET.channels[0]
+  const c = channel as unknown as Record<string, unknown>
+  const cParams = channel.instrumentParams as unknown as Record<string, unknown>
+  const dc = defaultChannel as unknown as Record<string, unknown>
+  const dcParams = defaultChannel.instrumentParams as unknown as Record<string, unknown>
   for (const prop in defaultChannel) {
-    if (channel[prop] === undefined) {
-      channel[prop] = (defaultChannel as any)[prop]
+    if (c[prop] === undefined) {
+      c[prop] = dc[prop]
       updated = true
     }
   }
   for (const prop in defaultChannel.instrumentParams) {
-    if (channel.instrumentParams[prop] === undefined) {
-      channel.instrumentParams[prop] = (defaultChannel.instrumentParams as any)[prop]
+    if (cParams[prop] === undefined) {
+      cParams[prop] = dcParams[prop]
       updated = true
     }
   }
   return updated
 }
 
-export function patchPresetAndChannels(preset: any, updated?: boolean) {
+export function patchPresetAndChannels(preset: Preset, updated?: boolean) {
   updated = patchPreset(preset, updated)
-  preset.channels.forEach((channel: any) => {
+  preset.channels.forEach((channel) => {
     updated = patchChannel(channel, updated)
   })
   return updated
 }
 
-function initializePresets() {
-  const presets = JSON.parse(window.localStorage.getItem('presets') as string)
+function initializePresets(): Preset[] {
+  const presets: Preset[] = JSON.parse(window.localStorage.getItem('presets') as string)
   const examplePreset = DEFAULT_PRESET
   const exampleChannel = examplePreset.channels[0]
   let updated: boolean | undefined = false
-  presets.forEach((preset: any) => {
+  presets.forEach((preset) => {
     updated = patchPreset(preset, updated)
-    preset.channels.forEach((channel: any) => {
+    preset.channels.forEach((channel) => {
       if (!Object.keys(INSTRUMENT_TYPES).includes(channel.instrumentType)) {
         channel.instrumentParams.synthType =
           Object.keys(SIGNAL_TYPES).includes(channel.instrumentType) ||
@@ -580,18 +592,18 @@ function initializePresets() {
   return presets
 }
 
-function initialPreset() {
-  const presets = JSON.parse(window.localStorage.getItem('presets') as string)
+function initialPreset(): Preset {
+  const presets: Preset[] = JSON.parse(window.localStorage.getItem('presets') as string)
   return window.localStorage.getItem('activePreset')
-    ? presets.find((p: any) => p.id === window.localStorage.getItem('activePreset'))
+    ? presets.find((p) => p.id === window.localStorage.getItem('activePreset'))!
     : presets[0] || DEFAULT_PRESET
 }
 
-function initializeUiState() {
+function initializeUiState(): Preset {
   if (!window.localStorage.getItem('activePatch')) {
     window.localStorage.setItem('activePatch', JSON.stringify(initialPreset()))
   }
-  const activePatch = JSON.parse(window.localStorage.getItem('activePatch') as string)
+  const activePatch: Preset = JSON.parse(window.localStorage.getItem('activePatch') as string)
   patchPresetAndChannels(activePatch)
   return activePatch
 }
