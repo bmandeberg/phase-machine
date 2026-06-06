@@ -41,7 +41,7 @@ function ClockView({
   toggleDrawerOpen,
   scribblerEl,
   channelNumNormal,
-  duplicateDeleteEl,
+  channelButtonsEl,
   muteSoloEl,
   midiEl,
   velocityEl,
@@ -77,7 +77,7 @@ function ClockView({
         <div className="channel-clock-top">
           {scribblerEl}
           {channelNumNormal}
-          {duplicateDeleteEl}
+          {channelButtonsEl}
           <div className="channel-primary">
             {muteSoloEl}
             {midiEl}

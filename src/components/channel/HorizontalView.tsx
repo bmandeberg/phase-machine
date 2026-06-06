@@ -39,7 +39,7 @@ function HorizontalView({
   modalEl,
   scribblerEl,
   channelNumNormal,
-  duplicateDeleteEl,
+  channelButtonsEl,
   muteSoloEl,
   midiEl,
   velocityEl,
@@ -75,7 +75,7 @@ function HorizontalView({
       <div ref={horizontalViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
         {scribblerEl}
         {channelNumNormal}
-        {duplicateDeleteEl}
+        {channelButtonsEl}
         <div className="channel-primary">
           {muteSoloEl}
           {midiEl}

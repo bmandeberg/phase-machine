@@ -222,32 +222,21 @@ $headerDarkBlue: #0f182d;
     }
   }
 
-  .duplicate-delete {
-    div {
-      background-color: transparent;
+  .channel-buttons {
+    .channel-menu-button span {
+      background-color: $darkMediumGray;
     }
-    .duplicate {
-      background-image: url('./assets/plus-icon-gray-dark.png');
-      background-size: 13px;
-      &.mute {
-        background-image: url('./assets/plus-icon-dark-gray-dark.png');
-        background-size: 13px;
-      }
-      &:hover {
-        background-image: url('./assets/plus-icon-green-dark.png');
-        background-size: 13px;
-      }
+    &.mute .channel-menu-button span {
+      background-color: $darkDarkGray;
     }
-    .delete {
-      background-image: url('./assets/trash-icon-gray-dark.png');
-      background-size: 13px 14px;
-      &.mute {
-        background-image: url('./assets/trash-icon-dark-gray-dark.png');
-        background-size: 13px 14px;
-      }
-      &:hover {
-        background-image: url('./assets/trash-icon-red.png');
-        background-size: 13px 14px;
+    .channel-menu {
+      background-color: $darkBackground;
+      box-shadow: 0px 0px 6px $darkGreen;
+      .channel-menu-item {
+        color: $darkLightGray;
+        &:hover {
+          background-color: $darkMuteBackground;
+        }
       }
     }
   }

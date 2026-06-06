@@ -8,6 +8,7 @@ import NumInput from '../components/NumInput'
 import Dropdown from '../components/Dropdown'
 import Key from '../components/Key'
 import MuteSolo from '../components/MuteSolo'
+import ChannelButtons from '../components/ChannelButtons'
 import MIDI from '../components/MIDI'
 import FlipOpposite from '../components/FlipOpposite'
 import Piano from '../components/Piano'
@@ -166,7 +167,7 @@ export default function useUI(
               stays beneath the channel number on horizontal scroll. In the aux
               (sequencer) channel it's always shown; in the main channel it carries
               the `mute-solo-scroll` class and only animates in once the channel has
-              scrolled past the (absolute, scroll-away) duplicate/delete buttons. */}
+              scrolled past the (absolute, scroll-away) channel buttons. */}
           <div className={classNames('channel-mute-solo', { 'mute-solo-scroll': !auxiliary })}>
             <div
               className={classNames('channel-mute-solo-button', { muted: mute })}
@@ -190,17 +191,20 @@ export default function useUI(
   const channelNumNormal = useMemo(() => channelNumEl(false), [channelNumEl])
   const channelNumAux = useMemo(() => channelNumEl(true), [channelNumEl])
 
-  const duplicateDeleteEl = useMemo(() => {
-    return (
-      <div className="duplicate-delete">
-        <div
-          className={classNames('duplicate', { mute })}
-          onClick={() => duplicateChannel(id)}
-          title="Duplicate channel"></div>
-        <div className={classNames('delete', { mute })} onClick={() => deleteChannel(id)} title="Delete channel"></div>
-      </div>
-    )
-  }, [deleteChannel, duplicateChannel, id, mute])
+  const channelButtonsEl = useMemo(
+    () => (
+      <ChannelButtons
+        id={id}
+        instrumentType={instrumentType}
+        theme={theme}
+        mute={mute}
+        openInstrumentModal={openInstrumentModal}
+        duplicateChannel={duplicateChannel}
+        deleteChannel={deleteChannel}
+      />
+    ),
+    [deleteChannel, duplicateChannel, id, instrumentType, mute, openInstrumentModal, theme]
+  )
 
   const keyEl = useMemo(() => {
     return (
@@ -711,7 +715,7 @@ export default function useUI(
   return {
     channelNumNormal,
     channelNumAux,
-    duplicateDeleteEl,
+    channelButtonsEl,
     keyEl,
     muteSoloEl,
     velocityEl,

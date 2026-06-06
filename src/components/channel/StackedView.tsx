@@ -43,7 +43,7 @@ function StackedView({
   scribblerEl,
   channelNumNormal,
   channelNumAux,
-  duplicateDeleteEl,
+  channelButtonsEl,
   muteSoloEl,
   midiEl,
   velocityEl,
@@ -79,7 +79,7 @@ function StackedView({
       <div ref={stackedViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
         {scribblerEl}
         {channelNumNormal}
-        {duplicateDeleteEl}
+        {channelButtonsEl}
         <div className="channel-primary">
           {muteSoloEl}
           {midiEl}
