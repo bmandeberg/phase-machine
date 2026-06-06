@@ -108,6 +108,12 @@ export const RATES = [
   '64t',
 ]
 
+// RATES arranged for the grid-style rate dropdown: 3 columns (base · dotted · triplet),
+// one note value per row, with the measures sharing the top row. The empty string is a
+// gap cell inserted where the whole-note triplet would be (it doesn't exist), so every
+// subsequent row stays aligned to its [base, dotted, triplet] columns.
+export const RATE_GRID = RATES.flatMap((rate) => (rate === '1n.' ? [rate, ''] : [rate]))
+
 function themedIcon(icon: string, theme: string) {
   switch (icon) {
     case 'sine':

@@ -83,6 +83,21 @@
   &.fixed-menu {
     position: fixed;
   }
+  // Grid layout: options flow into `gridColumns` columns (set inline) instead of a
+  // single tall column. Width hugs the content so the control stays compact.
+  &.grid-menu {
+    display: grid;
+    width: max-content;
+    max-height: 400px;
+    .dropdown-option {
+      text-align: center;
+    }
+    // A gap cell (no rate at this grid position) keeps its row height but isn't
+    // selectable or hoverable.
+    .dropdown-option-empty {
+      pointer-events: none;
+    }
+  }
 }
 
 .dropdown-menu .dropdown-group > .dropdown-title {
