@@ -83,6 +83,8 @@ export const CHANNEL_COLORS = ['#008dff', '#ff413e', '#33ff00', '#ff00ff', '#ff9
 export const THEMES = ['dark', 'light', 'contrast']
 
 export const RATES = [
+  '4m',
+  '2m',
   '1m',
   '1n',
   '1n.',

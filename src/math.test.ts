@@ -150,6 +150,13 @@ describe('rateToSeconds', () => {
     expect(rateToSeconds('1m', 120)).toBeCloseTo(2)
     expect(rateToSeconds('1m', 60)).toBeCloseTo(4)
   })
+  it('handles multi-measure rates (2m, 4m) as N measures in 4/4', () => {
+    // at 120 BPM a measure is 2s
+    expect(rateToSeconds('2m', 120)).toBeCloseTo(4)
+    expect(rateToSeconds('4m', 120)).toBeCloseTo(8)
+    expect(rateToSeconds('2m', 120)).toBeCloseTo(rateToSeconds('1m', 120) * 2)
+    expect(rateToSeconds('4m', 120)).toBeCloseTo(rateToSeconds('1m', 120) * 4)
+  })
   it('applies dotted (x1.5) and triplet (x2/3) modifiers', () => {
     expect(rateToSeconds('8n.', 120)).toBeCloseTo(0.375)
     expect(rateToSeconds('8t', 120)).toBeCloseTo(0.25 * (2 / 3))

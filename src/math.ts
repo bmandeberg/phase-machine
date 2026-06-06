@@ -85,8 +85,9 @@ export function constrain(n: number, min: number, max: number) {
 // can be recomputed deterministically when global tempo changes. See RATES.
 export function rateToSeconds(rate: string, bpm: number) {
   const quarterNote = 60 / bpm
-  // beats are in quarter-note units: '1m'/'1n' = 4, '2n' = 2, '4n' = 1, '8n' = 0.5, ...
-  let beats = rate === '1m' ? 4 : 4 / parseInt(rate, 10)
+  // beats are in quarter-note units. Measures ('Nm') are N * 4 beats in 4/4 ('1m' = 4,
+  // '2m' = 8, '4m' = 16); note values ('Nn') are 4 / N beats ('1n' = 4, '4n' = 1, '8n' = 0.5).
+  let beats = rate.endsWith('m') ? parseInt(rate, 10) * 4 : 4 / parseInt(rate, 10)
   if (rate.endsWith('t')) {
     beats *= 2 / 3 // triplet
   } else if (rate.endsWith('.')) {
