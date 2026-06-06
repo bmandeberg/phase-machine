@@ -1,0 +1,33 @@
+@use '../sass-globals' as *;
+
+// AlertDialog reuses the .modal-* classes (and the `show` CSSTransition rules that are
+// scoped under .modal-container) for an exact visual match. These rules only add the
+// pieces a confirm/alert needs: stacking above an open modal, a dialog-sized window,
+// the message block, and the button row.
+
+.alert-dialog-container {
+  // Above .modal-container (3001) so dialogs raised from inside a modal sit on top.
+  z-index: 3010;
+
+  .alert-dialog-window {
+    width: 360px;
+    max-width: 90vw;
+  }
+
+  .alert-dialog-message {
+    margin: 0 0 20px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+  }
+
+  .alert-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    .button {
+      min-width: 64px;
+      padding: 0 14px;
+    }
+  }
+}

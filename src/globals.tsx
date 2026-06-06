@@ -44,13 +44,14 @@ import choral from './assets/samples-choral.svg'
 import lightChoral from './assets/samples-choral-light.svg'
 import darkChoral from './assets/samples-choral-dark.svg'
 import { rangeWrapper } from './math'
+import { alertDialog } from './dialog'
 import { Channel, Preset } from './types'
 
 const uaParser = new UAParser()
 export const BROWSER = uaParser.getBrowser()
 const device = uaParser.getDevice()
 if (device.type === 'mobile' || BROWSER.name?.includes('Mobile')) {
-  alert('🗣 sounds can only play if your device is not on silent')
+  alertDialog('🗣 sounds can only play if your device is not on silent')
 }
 
 export let ALT = false

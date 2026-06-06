@@ -20,6 +20,7 @@ import {
 import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
+import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import { Channel as ChannelType, Preset } from './types'
@@ -503,6 +504,7 @@ export default function App() {
           setPresetsStopTransport={setPresetsStopTransport}
         />
       </CSSTransition>
+      <AlertDialog />
     </div>
   )
 }
