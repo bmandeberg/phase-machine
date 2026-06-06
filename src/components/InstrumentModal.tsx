@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Instrument from './Instrument'
 import RotaryKnob from './RotaryKnob'
 import classNames from 'classnames'
-import { InstrumentParams, InstrumentRefs, EffectRefs, GainRef, Setter } from '../types'
+import { InstrumentParams, InstrumentRefs, EffectRefs, GainRef, PannerRef, Setter } from '../types'
 import useSynthParams from './instrument/useSynthParams'
 import useSamplerParams from './instrument/useSamplerParams'
 import useEffectParams from './instrument/useEffectParams'
@@ -21,6 +21,7 @@ interface InstrumentModalProps {
   setInstrumentParams: Setter<InstrumentParams>
   instruments: InstrumentRefs
   gainNode: GainRef
+  pannerNode: PannerRef
   effects: EffectRefs
   grabbing?: boolean
   setGrabbing: Setter<boolean>
@@ -36,11 +37,13 @@ export default function InstrumentModal({
   setInstrumentParams,
   instruments,
   gainNode,
+  pannerNode,
   effects,
   grabbing,
   setGrabbing,
 }: InstrumentModalProps) {
   const [gain, setGain] = useState(instrumentParams.gain)
+  const [pan, setPan] = useState(instrumentParams.pan)
 
   // Single debounced writer shared by every parameter (synth, sampler, effect,
   // gain). One shared timer means rapid edits across params coalesce into one
@@ -65,6 +68,13 @@ export default function InstrumentModal({
     }
     updateInstrumentParams('gain', gain)
   }, [gainNode, gain, updateInstrumentParams])
+
+  useEffect(() => {
+    if (pannerNode.current) {
+      pannerNode.current.set({ pan })
+    }
+    updateInstrumentParams('pan', pan)
+  }, [pannerNode, pan, updateInstrumentParams])
 
   // These hooks each own their group's state + the effects that push values to
   // the live Tone nodes. They're called unconditionally (never behind the
@@ -95,6 +105,20 @@ export default function InstrumentModal({
           value={gain}
           setValue={setGain}
           label="Volume"
+          setGrabbing={setGrabbing}
+          grabbing={grabbing}
+          inline={true}
+          mute={false}
+          theme={theme}
+        />
+        <RotaryKnob
+          className="instrument-item pan-knob"
+          min={-1}
+          max={1}
+          value={pan}
+          setValue={setPan}
+          label="Pan"
+          detent
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           inline={true}

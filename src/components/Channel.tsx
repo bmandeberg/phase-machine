@@ -369,6 +369,7 @@ export default function Channel({
 
   const {
     gainNode,
+    pannerNode,
     synthInstrument,
     pianoInstrument,
     marimbaInstrument,
@@ -764,6 +765,7 @@ export default function Channel({
         setModalType(null)
         updateInstruments(
           gainNode.current!,
+          pannerNode.current,
           synthInstrument.current,
           [
             pianoInstrument.current,
@@ -792,6 +794,7 @@ export default function Channel({
     keyRestart,
     seqRestart,
     gainNode,
+    pannerNode,
     synthInstrument,
     pianoInstrument,
     marimbaInstrument,
@@ -1003,6 +1006,7 @@ export default function Channel({
           setInstrumentParams={setInstrumentParams}
           instruments={instruments}
           gainNode={gainNode}
+          pannerNode={pannerNode}
           effects={effects}
           grabbing={grabbing}
           setGrabbing={setGrabbing}
@@ -1014,6 +1018,7 @@ export default function Channel({
       customMidiOutChannel,
       effects,
       gainNode,
+      pannerNode,
       grabbing,
       hideModal,
       instrumentOn,

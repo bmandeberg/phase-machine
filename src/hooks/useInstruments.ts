@@ -1,7 +1,16 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react'
 import { CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
-import { InstrumentParams, InstrumentRef, InstrumentRefs, EffectRefs, SignalDestination, GainRef, SamplerRef } from '../types'
+import {
+  InstrumentParams,
+  InstrumentRef,
+  InstrumentRefs,
+  EffectRefs,
+  SignalDestination,
+  GainRef,
+  PannerRef,
+  SamplerRef,
+} from '../types'
 import { SAMPLER_CONFIGS, SamplerConfig } from '../samplerConfigs'
 
 export default function useInstruments(
@@ -50,6 +59,7 @@ export default function useInstruments(
 
   const initInstrumentType = useRef(instrumentType)
   const gainNode: GainRef = useRef<Tone.Gain | null>(null)
+  const pannerNode: PannerRef = useRef<Tone.Panner | null>(null)
   const synthInstrument = useRef<Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null>(null)
   const drumsInstrument = useRef<Tone.Sampler | null>(null)
   const drumMachineInstrument = useRef<Tone.Sampler | null>(null)
@@ -166,7 +176,10 @@ export default function useInstruments(
   // initialize instruments
 
   useEffect(() => {
-    gainNode.current = new Tone.Gain(instrumentParamsRef.current.gain).toDestination()
+    // Channel output chain: instrument -> effect -> gain -> panner -> destination.
+    // The panner applies stereo position to the whole channel.
+    pannerNode.current = new Tone.Panner(instrumentParamsRef.current.pan).toDestination()
+    gainNode.current = new Tone.Gain(instrumentParamsRef.current.gain).connect(pannerNode.current)
     if (CHORUS_ENABLED) {
       chorusEffect.current = new Tone.Chorus(
         instrumentParamsRef.current.chorusFreq,
@@ -257,6 +270,9 @@ export default function useInstruments(
       if (gainNode.current) {
         gainNode.current.dispose()
       }
+      if (pannerNode.current) {
+        pannerNode.current.dispose()
+      }
       instrument.current = null
     }
   }, [activateInstrument, getCurrentEffect, instrument])
@@ -334,6 +350,7 @@ export default function useInstruments(
 
   return {
     gainNode,
+    pannerNode,
     synthInstrument,
     pianoInstrument,
     marimbaInstrument,
@@ -357,6 +374,7 @@ export default function useInstruments(
 
 export function updateInstruments(
   gainNode: Tone.Gain,
+  pannerNode: Tone.Panner | null | undefined,
   synthInstrument: Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null | undefined,
   samplerInstruments: Array<Tone.Sampler | null | undefined>,
   chorusEffect: Tone.Chorus | null | undefined,
@@ -368,6 +386,7 @@ export function updateInstruments(
   currentEffect: SignalDestination | null | undefined
 ) {
   gainNode.set({ gain: instrumentParams.gain })
+  pannerNode?.set({ pan: instrumentParams.pan })
   if (CHORUS_ENABLED) {
     chorusEffect?.set({
       wet: instrumentParams.effectWet,

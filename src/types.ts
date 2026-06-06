@@ -29,6 +29,7 @@ export type SamplerRef = MutableRefObject<SamplerInstrument | null | undefined>
 export type InstrumentRef = MutableRefObject<Instrument | null | undefined>
 export type ToneEffectRef = MutableRefObject<ToneEffectNode | null | undefined>
 export type GainRef = MutableRefObject<Tone.Gain | null | undefined>
+export type PannerRef = MutableRefObject<Tone.Panner | null | undefined>
 
 // The bundles useInstruments groups its refs into and hands to InstrumentModal.
 export interface InstrumentRefs {
@@ -69,6 +70,8 @@ export type MidiInRef = MutableRefObject<MidiInputLike | null | undefined>
 
 export interface InstrumentParams {
   gain: number
+  // stereo pan for the whole channel, -1 (left) .. 1 (right), 0 = center.
+  pan: number
   synthType: string
   // false = monophonic MonoSynth, true = polyphonic PolySynth (synth audio only).
   poly: boolean

@@ -355,6 +355,7 @@ export default function usePresets(
       }
       if (
         invalidProp(channel.instrumentParams, 'gain', 'number') ||
+        invalidProp(channel.instrumentParams, 'pan', 'number') ||
         invalidProp(channel.instrumentParams, 'poly', 'boolean') ||
         invalidProp(channel.instrumentParams, 'portamento', 'number') ||
         invalidProp(channel.instrumentParams, 'modulationType', 'string') ||
