@@ -255,6 +255,7 @@ export default function Settings({
           values={selectedPresets}
           setValues={setSelectedPresets}
           placeholder="Select Presets"
+          container=".modal-content"
         />
       </div>
       <div className="settings-item">
