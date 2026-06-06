@@ -88,7 +88,7 @@
   &.grid-menu {
     display: grid;
     width: max-content;
-    max-height: 400px;
+    max-height: 70vh;
     .dropdown-option {
       text-align: center;
     }
@@ -96,6 +96,13 @@
     // selectable or hoverable.
     .dropdown-option-empty {
       pointer-events: none;
+    }
+    // Section separator spanning every column.
+    .dropdown-divider {
+      grid-column: 1 / -1;
+      height: 0;
+      margin: 4px 6px;
+      border-top: 1px solid $mediumGray;
     }
   }
 }

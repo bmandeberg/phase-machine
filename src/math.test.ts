@@ -168,4 +168,13 @@ describe('rateToSeconds', () => {
     // halving the tempo doubles the synced delay time
     expect(rateToSeconds('4n', 90)).toBeCloseTo(rateToSeconds('4n', 180) * 2)
   })
+  it('handles clock divisions relative to the beat (/N slower, *N faster)', () => {
+    // at 120 BPM the beat (quarter note) is 0.5s
+    expect(rateToSeconds('*1', 120)).toBeCloseTo(0.5) // unity == the beat == 4n
+    expect(rateToSeconds('*1', 120)).toBeCloseTo(rateToSeconds('4n', 120))
+    expect(rateToSeconds('/2', 120)).toBeCloseTo(1) // half speed: every 2 beats
+    expect(rateToSeconds('/9', 120)).toBeCloseTo(4.5) // every 9 beats
+    expect(rateToSeconds('*2', 120)).toBeCloseTo(0.25) // twice as fast
+    expect(rateToSeconds('*9', 120)).toBeCloseTo(0.5 / 9) // 9 per beat
+  })
 })

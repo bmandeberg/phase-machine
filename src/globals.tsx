@@ -114,6 +114,20 @@ export const RATES = [
 // subsequent row stays aligned to its [base, dotted, triplet] columns.
 export const RATE_GRID = RATES.flatMap((rate) => (rate === '1n.' ? [rate, ''] : [rate]))
 
+// Clock-division rates, relative to the global tempo's beat (quarter note). Stored as
+// '/N' (÷N, N times slower) and '*N' (×N, N times faster); '*1' is unity (== 4n). Listed
+// slowest → fastest. rateToSeconds() converts these to an interval. See math.ts.
+export const CLOCK_RATES = [
+  ...[9, 8, 7, 6, 5, 4, 3, 2].map((n) => ({ value: `/${n}`, label: `÷${n}` })),
+  { value: '*1', label: '×1' },
+  ...[2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({ value: `*${n}`, label: `×${n}` })),
+]
+
+// Full option list for the key/sequence rate dropdown: the note-value grid, a full-width
+// divider, then the clock-division grid (also 3 columns). { divider: true } renders as a
+// section separator spanning the grid.
+export const RATE_DROPDOWN_OPTIONS = [...RATE_GRID, { divider: true }, ...CLOCK_RATES]
+
 function themedIcon(icon: string, theme: string) {
   switch (icon) {
     case 'sine':

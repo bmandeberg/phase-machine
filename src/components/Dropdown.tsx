@@ -38,7 +38,11 @@ function longestText(options: DropdownOption[], graphicOptions: boolean) {
   if (options.length) {
     let longestOption = ''
     for (let i = 0; i < options.length; i++) {
-      const option = typeof options[i] === 'object' ? options[i].label.trim() : options[i].trim()
+      // labels are strings on plain options and on { value, label } options; dividers and
+      // grid gaps carry no text and are skipped.
+      const label = typeof options[i] === 'object' ? options[i].label : options[i]
+      if (typeof label !== 'string') continue
+      const option = label.trim()
       if (option.length > longestOption.length) {
         longestOption = option
       }
@@ -156,6 +160,10 @@ export default function Dropdown({
     () =>
       options.length ? (
         options.map((option) => {
+          // A full-width divider between grid sections (non-interactive).
+          if (typeof option === 'object' && option.divider) {
+            return <div key={uuid()} className="dropdown-divider" />
+          }
           const optionValue = typeof option === 'object' ? option.value : option
           const optionLabel = typeof option === 'object' ? option.label : option
           // An empty-string option is a grid gap (a cell with no rate) — render a

@@ -79,12 +79,17 @@ export function constrain(n: number, min: number, max: number) {
   return Math.min(Math.max(n, min), max)
 }
 
-// Convert a Tone-style rate notation (e.g. '4n', '8n.', '8t', '1m') to seconds at
-// the given tempo, assuming 4/4. Pure equivalent of Tone.Transport.toSeconds(rate)
-// that depends on `bpm` directly (not the live Transport), so tempo-synced values
-// can be recomputed deterministically when global tempo changes. See RATES.
+// Convert a rate to seconds at the given tempo, assuming 4/4. Handles Tone-style note
+// notation (e.g. '4n', '8n.', '8t', '1m') and clock divisions relative to the beat
+// (quarter note): '/N' divides the beat (N times slower) and '*N' multiplies it (N times
+// faster), so '*1' == '4n'. Pure equivalent of Tone.Transport.toSeconds for note values
+// that depends on `bpm` directly (not the live Transport), so values can be recomputed
+// deterministically when global tempo changes. See RATES / CLOCK_RATES.
 export function rateToSeconds(rate: string, bpm: number) {
   const quarterNote = 60 / bpm
+  // clock divisions/multiplications, relative to the beat
+  if (rate[0] === '/') return quarterNote * parseInt(rate.slice(1), 10)
+  if (rate[0] === '*') return quarterNote / parseInt(rate.slice(1), 10)
   // beats are in quarter-note units. Measures ('Nm') are N * 4 beats in 4/4 ('1m' = 4,
   // '2m' = 8, '4m' = 16); note values ('Nn') are 4 / N beats ('1n' = 4, '4n' = 1, '8n' = 0.5).
   let beats = rate.endsWith('m') ? parseInt(rate, 10) * 4 : 4 / parseInt(rate, 10)

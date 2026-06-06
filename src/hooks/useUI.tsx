@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, ChangeEvent } from 'react'
 import { ReactDOMAttributes } from '@use-gesture/react/dist/declarations/src/types'
 import { Setter } from '../types'
-import { RATE_GRID, MOVEMENTS, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN, themedSwitch } from '../globals'
+import { RATE_DROPDOWN_OPTIONS, MOVEMENTS, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN, themedSwitch } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
 import NumInput from '../components/NumInput'
@@ -404,7 +404,7 @@ export default function useUI(
       <Dropdown
         className="channel-module key-rate"
         label="Rate"
-        options={RATE_GRID}
+        options={RATE_DROPDOWN_OPTIONS}
         gridColumns={3}
         setValue={setKeyRate}
         value={keyRate}
@@ -528,7 +528,7 @@ export default function useUI(
         <Dropdown
           className="channel-module"
           label="Rate"
-          options={RATE_GRID}
+          options={RATE_DROPDOWN_OPTIONS}
           gridColumns={3}
           setValue={setSeqRate}
           value={seqRate}

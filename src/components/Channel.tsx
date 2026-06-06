@@ -498,7 +498,7 @@ export default function Channel({
       playingNoteRef.current = noteIndex.current
       // schedule note-off if we are not hold or if the next step is off
       if (unheldNote) {
-        const sustainTime = Math.max(sustain * Tone.getTransport().toSeconds(keyRate), 0.08)
+        const sustainTime = Math.max(sustain * rateToSeconds(keyRate, Tone.getTransport().bpm.value), 0.08)
         Tone.getContext().clearTimeout(noteOffTimeout.current)
         noteOffTimeout.current = Tone.getContext().setTimeout(() => {
           noteOff(channel, note, midiOutObj, false, null)
@@ -532,7 +532,7 @@ export default function Channel({
       if (midiOutObj) {
         midiOutObj.playNote(note, { channels: channel, attack: velocity })
       }
-      const sustainTime = Math.max(sustain * Tone.getTransport().toSeconds(keyRate), 0.08)
+      const sustainTime = Math.max(sustain * rateToSeconds(keyRate, Tone.getTransport().bpm.value), 0.08)
       Tone.getContext().setTimeout(() => {
         if (instrument.current && instrumentType === 'synth') {
           instrument.current.triggerRelease()
