@@ -569,6 +569,7 @@ export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: bool
   instrumentParams: {
     gain: 1,
     synthType: 'triangle',
+    poly: false,
     portamento: 0,
     modulationType: 'square',
     harmonicity: 1,

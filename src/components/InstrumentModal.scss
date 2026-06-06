@@ -96,6 +96,24 @@
   .switch-container {
     margin-top: 12px;
   }
+  .poly-switch {
+    margin-top: 13px;
+    display: flex;
+    align-items: center;
+    .switch {
+      margin: 0 8px;
+    }
+    .poly-switch-label {
+      @extend .no-select;
+      font-size: 16px;
+      text-transform: uppercase;
+      color: $lightTextGray;
+      &.active {
+        color: inherit;
+        font-weight: 700;
+      }
+    }
+  }
   .envelope-controls {
     .knob-container {
       width: 66px;

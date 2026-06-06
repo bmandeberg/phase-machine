@@ -50,7 +50,7 @@ export default function useInstruments(
 
   const initInstrumentType = useRef(instrumentType)
   const gainNode: GainRef = useRef<Tone.Gain | null>(null)
-  const synthInstrument = useRef<Tone.MonoSynth | null>(null)
+  const synthInstrument = useRef<Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null>(null)
   const drumsInstrument = useRef<Tone.Sampler | null>(null)
   const drumMachineInstrument = useRef<Tone.Sampler | null>(null)
   const pianoInstrument = useRef<Tone.Sampler | null>(null)
@@ -100,7 +100,11 @@ export default function useInstruments(
       }
       // synthType/modulationType are stored as free strings; Tone types them as
       // strict oscillator-type unions, so widen through unknown at the boundary.
-      synthInstrument.current = new Tone.MonoSynth(synthOptions as unknown as Tone.MonoSynthOptions)
+      // Poly mode wraps the same MonoSynth voice options in a PolySynth so a
+      // note's release can ring while the next step plays (mono cuts it off).
+      synthInstrument.current = instrumentParamsRef.current.poly
+        ? new Tone.PolySynth(Tone.MonoSynth, synthOptions as unknown as Tone.MonoSynthOptions)
+        : new Tone.MonoSynth(synthOptions as unknown as Tone.MonoSynthOptions)
       synthInstrument.current.connect(getCurrentEffect())
     }
   }, [getCurrentEffect])
@@ -261,10 +265,33 @@ export default function useInstruments(
     if (instrument.current) {
       // Monophonic's triggerRelease is arg-less while Sampler's requires a note;
       // releasing the active note with no arg is valid for both at runtime.
-      ;(instrument.current as Tone.MonoSynth).triggerRelease()
+      // PolySynth's triggerRelease needs a note, so release every voice instead.
+      if (instrument.current instanceof Tone.PolySynth) {
+        instrument.current.releaseAll()
+      } else {
+        ;(instrument.current as Tone.MonoSynth).triggerRelease()
+      }
     }
     activateInstrument(instrumentType)
   }, [activateInstrument, instrument, instrumentType])
+
+  // Swap the synth node when the mono/poly flag changes. The node *type* differs
+  // (MonoSynth vs PolySynth), so we dispose and rebuild rather than .set(). Guard
+  // on a ref so this skips the initial mount (the synth is built lazily above).
+  const polyRef = useRef(instrumentParams.poly)
+  useEffect(() => {
+    if (polyRef.current === instrumentParams.poly) return
+    polyRef.current = instrumentParams.poly
+    if (synthInstrument.current) {
+      const wasActive = instrument.current === synthInstrument.current
+      synthInstrument.current.dispose()
+      synthInstrument.current = null
+      initSynthInstrument()
+      if (wasActive) {
+        instrument.current = synthInstrument.current
+      }
+    }
+  }, [initSynthInstrument, instrument, instrumentParams.poly])
 
   const openInstrumentModal = useCallback(() => {
     setModalType('instrument')
@@ -330,7 +357,7 @@ export default function useInstruments(
 
 export function updateInstruments(
   gainNode: Tone.Gain,
-  synthInstrument: Tone.MonoSynth | null | undefined,
+  synthInstrument: Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null | undefined,
   samplerInstruments: Array<Tone.Sampler | null | undefined>,
   chorusEffect: Tone.Chorus | null | undefined,
   distortionEffect: Tone.Distortion,
@@ -397,7 +424,9 @@ export function updateInstruments(
   if (synthInstrument) {
     // synthType/modulationType are stored as free strings; Tone types them as
     // strict oscillator-type unions, so widen through unknown at the boundary.
-    synthInstrument.set({
+    // MonoSynth and PolySynth take the same nested voice options at runtime, so
+    // type the receiver as MonoSynth to satisfy the union method-call check.
+    ;(synthInstrument as Tone.MonoSynth).set({
       portamento: instrumentParams.portamento,
       oscillator: {
         type: instrumentParams.synthType,

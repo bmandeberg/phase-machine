@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react'
+import Switch from 'react-switch'
+import classNames from 'classnames'
 import RotaryKnob from '../RotaryKnob'
 import Dropdown from '../Dropdown'
 import NumInput from '../NumInput'
 import EnvelopeControls from './EnvelopeControls'
-import { SIGNAL_TYPES, SYNTH_TYPES } from '../../globals'
+import { SIGNAL_TYPES, SYNTH_TYPES, themedSwitch } from '../../globals'
 import useSynthParams, { oscModifiers } from './useSynthParams'
 import { Setter } from '../../types'
 
@@ -18,6 +20,8 @@ type SynthControlsProps = ReturnType<typeof useSynthParams> & {
 function SynthControls({
   synthType,
   oscModifier,
+  poly,
+  setPoly,
   portamento,
   setPortamento,
   modulationType,
@@ -79,10 +83,34 @@ function SynthControls({
       })),
     [theme]
   )
+  const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
+  const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
+  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
+  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
 
   return (
     <div className="synth-controls">
       <div className="controls-row">
+        <div className="controls-module">
+          <p className="controls-label">Voicing</p>
+          <div className="poly-switch instrument-item">
+            <span className={classNames('poly-switch-label', { active: !poly })}>Mono</span>
+            <Switch
+              className="switch"
+              onChange={setPoly}
+              checked={poly}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              offColor={offColor}
+              onColor={onColor}
+              offHandleColor={offHandleColor}
+              onHandleColor={onHandleColor}
+              width={48}
+              height={24}
+            />
+            <span className={classNames('poly-switch-label', { active: poly })}>Poly</span>
+          </div>
+        </div>
         <div className="controls-module">
           <p className="controls-label">Oscillator</p>
           <Dropdown

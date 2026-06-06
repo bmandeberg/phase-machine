@@ -26,6 +26,7 @@ export default function useSynthParams(
     }
     return oscModifiers[0]
   })
+  const [poly, setPoly] = useState(instrumentParams.poly)
   const [portamento, setPortamento] = useState(instrumentParams.portamento)
   const [modulationType, setModulationType] = useState(instrumentParams.modulationType)
   const [harmonicity, setHarmonicity] = useState(instrumentParams.harmonicity)
@@ -55,136 +56,124 @@ export default function useSynthParams(
     updateInstrumentParams('synthType', synthType)
   }, [instruments.synthInstrument, synthType, updateInstrumentParams])
 
+  // Persist the mono/poly flag; the actual MonoSynth<->PolySynth node swap is done
+  // by a dedicated effect in useInstruments keyed on instrumentParams.poly.
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.portamento = portamento
-    }
+    updateInstrumentParams('poly', poly)
+  }, [poly, updateInstrumentParams])
+
+  // Param changes are pushed to the live node via .set() rather than direct
+  // property assignment: PolySynth (poly mode) only exposes .set()/.get(), while
+  // MonoSynth accepts the same nested options — so one path covers both. The node
+  // is cast to MonoSynth so the union's .set() arg type resolves (the options are
+  // identical at runtime). Oscillator sub-options (spread/count/width/etc.) live
+  // on specific oscillator subtypes, so those args widen through unknown.
+  useEffect(() => {
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ portamento })
     updateInstrumentParams('portamento', portamento)
   }, [instruments.synthInstrument, portamento, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.oscillator.modulationType = modulationType as Tone.ToneOscillatorType
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+      oscillator: { modulationType },
+    } as unknown as Tone.MonoSynthOptions)
     updateInstrumentParams('modulationType', modulationType)
   }, [instruments.synthInstrument, modulationType, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.oscillator.set({ harmonicity })
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+      oscillator: { harmonicity },
+    } as unknown as Tone.MonoSynthOptions)
     updateInstrumentParams('harmonicity', harmonicity)
   }, [harmonicity, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.oscillator.spread = fatSpread
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+      oscillator: { spread: fatSpread },
+    } as unknown as Tone.MonoSynthOptions)
     updateInstrumentParams('fatSpread', fatSpread)
   }, [fatSpread, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.oscillator.count = fatCount
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+      oscillator: { count: fatCount },
+    } as unknown as Tone.MonoSynthOptions)
     updateInstrumentParams('fatCount', fatCount)
   }, [fatCount, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.oscillator.set({ width: pulseWidth })
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+      oscillator: { width: pulseWidth },
+    } as unknown as Tone.MonoSynthOptions)
     updateInstrumentParams('pulseWidth', pulseWidth)
   }, [instruments.synthInstrument, pulseWidth, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.oscillator.set({ modulationFrequency: pwmFreq })
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+      oscillator: { modulationFrequency: pwmFreq },
+    } as unknown as Tone.MonoSynthOptions)
     updateInstrumentParams('pwmFreq', pwmFreq)
   }, [instruments.synthInstrument, pwmFreq, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.envelope.attack = envAttack
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ envelope: { attack: envAttack } })
     updateInstrumentParams('envAttack', envAttack)
   }, [envAttack, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.envelope.decay = envDecay
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ envelope: { decay: envDecay } })
     updateInstrumentParams('envDecay', envDecay)
   }, [envDecay, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.envelope.sustain = envSustain
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ envelope: { sustain: envSustain } })
     updateInstrumentParams('envSustain', envSustain)
   }, [envSustain, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.envelope.release = envRelease
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ envelope: { release: envRelease } })
     updateInstrumentParams('envRelease', envRelease)
   }, [envRelease, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filter.set({ Q: resonance })
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ filter: { Q: resonance } })
     updateInstrumentParams('resonance', resonance)
   }, [instruments.synthInstrument, resonance, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filter.rolloff = rolloff as Tone.FilterRollOff
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+      filter: { rolloff: rolloff as Tone.FilterRollOff },
+    })
     updateInstrumentParams('rolloff', rolloff)
   }, [instruments.synthInstrument, rolloff, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filterEnvelope.baseFrequency = cutoff
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ filterEnvelope: { baseFrequency: cutoff } })
     updateInstrumentParams('cutoff', cutoff)
   }, [cutoff, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filterEnvelope.attack = filterAttack
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ filterEnvelope: { attack: filterAttack } })
     updateInstrumentParams('filterAttack', filterAttack)
   }, [filterAttack, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filterEnvelope.decay = filterDecay
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ filterEnvelope: { decay: filterDecay } })
     updateInstrumentParams('filterDecay', filterDecay)
   }, [filterDecay, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filterEnvelope.sustain = filterSustain
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ filterEnvelope: { sustain: filterSustain } })
     updateInstrumentParams('filterSustain', filterSustain)
   }, [filterSustain, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filterEnvelope.release = filterRelease
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ filterEnvelope: { release: filterRelease } })
     updateInstrumentParams('filterRelease', filterRelease)
   }, [filterRelease, instruments.synthInstrument, updateInstrumentParams])
 
   useEffect(() => {
-    if (instruments.synthInstrument.current) {
-      instruments.synthInstrument.current.filterEnvelope.octaves = filterAmount
-    }
+    ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({ filterEnvelope: { octaves: filterAmount } })
     updateInstrumentParams('filterAmount', filterAmount)
   }, [filterAmount, instruments.synthInstrument, updateInstrumentParams])
 
@@ -202,11 +191,11 @@ export default function useSynthParams(
         oscModifier !== oscModifiers[0] && Object.keys(SIGNAL_TYPES).includes(newType) ? oscModifier + newType : newType
       setSynthType(updatedType)
       // harmonicity only exists on AM/FM oscillator option subtypes; widen the
-      // arg to the oscillator's own set() param type at this free-string boundary.
-      instruments.synthInstrument.current?.oscillator.set({
-        harmonicity,
-        type: updatedType,
-      } as unknown as Parameters<Tone.MonoSynth['oscillator']['set']>[0])
+      // arg through unknown at this free-string boundary. Go through the synth's
+      // own .set() (not .oscillator.set) so it works on PolySynth too.
+      ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+        oscillator: { harmonicity, type: updatedType },
+      } as unknown as Tone.MonoSynthOptions)
     },
     [harmonicity, instruments.synthInstrument, oscModifier]
   )
@@ -214,10 +203,9 @@ export default function useSynthParams(
     (modifier: string) => {
       const updatedModifier = modifier === oscModifiers[0] ? '' : modifier
       setSynthType(updatedModifier + synthBase)
-      instruments.synthInstrument.current?.oscillator.set({
-        harmonicity,
-        type: updatedModifier + synthBase,
-      } as unknown as Parameters<Tone.MonoSynth['oscillator']['set']>[0])
+      ;(instruments.synthInstrument.current as Tone.MonoSynth | null)?.set({
+        oscillator: { harmonicity, type: updatedModifier + synthBase },
+      } as unknown as Tone.MonoSynthOptions)
       setOscModifier(modifier)
     },
     [harmonicity, instruments.synthInstrument, synthBase]
@@ -226,6 +214,8 @@ export default function useSynthParams(
   return {
     synthType,
     oscModifier,
+    poly,
+    setPoly,
     portamento,
     setPortamento,
     modulationType,

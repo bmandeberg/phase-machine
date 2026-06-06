@@ -351,7 +351,12 @@ export default function Channel({
     if (notePlaying.current && noteIndex.current !== undefined) {
       Tone.getContext().clearTimeout(noteOffTimeout.current)
       if (instrument.current) {
-        instrument.current.triggerRelease()
+        // PolySynth (poly mode) releases by note, so drop all voices instead.
+        if (instrument.current instanceof Tone.PolySynth) {
+          instrument.current.releaseAll()
+        } else {
+          instrument.current.triggerRelease()
+        }
       }
       const channel = customMidiOutChannelRef.current ? midiOutChannelRef.current : channelNumRef.current + 1
       const note = noteString(noteIndex.current)
@@ -386,7 +391,9 @@ export default function Channel({
 
   const noteOff = useCallback(
     (channel: any, note: any, midiOutObj: any, delay?: any, offTime?: any, clockOffset?: any) => {
-      if (instrument.current && instrumentType === 'synth') {
+      // In poly mode the synth voice self-releases (triggerAttackRelease), so we
+      // must not cut it here — that would defeat overlapping notes ringing out.
+      if (instrument.current && instrumentType === 'synth' && !instrumentParams.poly) {
         instrument.current.triggerRelease(offTime ?? undefined)
       }
       if (midiOutObj) {
@@ -405,7 +412,7 @@ export default function Channel({
         notePlaying.current = false
       }
     },
-    [instrument, instrumentType]
+    [instrument, instrumentType, instrumentParams.poly]
   )
 
   const getChannelData = useCallback(() => {
@@ -471,6 +478,13 @@ export default function Channel({
             time,
             velocity
           )
+        } else if (instrumentParams.poly) {
+          // Poly synth self-releases per voice so notes can overlap; match the
+          // note length the mono path would have scheduled (its sustainTime).
+          const polyDuration = unheldNote
+            ? Math.max(sustain * Tone.getTransport().toSeconds(keyRate), 0.08)
+            : SAMPLE_MAX_TIME
+          instrument.current.triggerAttackRelease(note, polyDuration, time, velocity)
         } else {
           instrument.current.triggerAttack(note, time, velocity)
         }
@@ -493,7 +507,19 @@ export default function Channel({
         noNoteOffScheduled.current = true
       }
     },
-    [getChannelData, hold, instrument, instrumentOn, instrumentType, keyRate, noteOff, seqSteps, sustain, velocity]
+    [
+      getChannelData,
+      hold,
+      instrument,
+      instrumentOn,
+      instrumentType,
+      instrumentParams.poly,
+      keyRate,
+      noteOff,
+      seqSteps,
+      sustain,
+      velocity,
+    ]
   )
 
   // fire individual notes, like on an ALT+Click
@@ -511,6 +537,13 @@ export default function Channel({
             undefined,
             velocity
           )
+        } else if (instrumentParams.poly) {
+          instrument.current.triggerAttackRelease(
+            note,
+            Math.max(sustain * Tone.getTransport().toSeconds(keyRate), 0.08),
+            undefined,
+            velocity
+          )
         } else {
           instrument.current.triggerAttack(note, undefined, velocity)
         }
@@ -520,7 +553,8 @@ export default function Channel({
       }
       const sustainTime = Math.max(sustain * Tone.getTransport().toSeconds(keyRate), 0.08)
       Tone.getContext().setTimeout(() => {
-        if (instrument.current && instrumentType === 'synth') {
+        // Poly preview notes self-release via triggerAttackRelease above.
+        if (instrument.current && instrumentType === 'synth' && !instrumentParams.poly) {
           instrument.current.triggerRelease()
         }
         if (midiOutObj) {
@@ -535,6 +569,7 @@ export default function Channel({
       instrument,
       instrumentOn,
       instrumentType,
+      instrumentParams.poly,
       keyRate,
       midiOut,
       midiOutChannel,

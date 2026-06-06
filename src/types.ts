@@ -13,7 +13,9 @@ export type Section = 'key' | 'piano' | 'sequence'
 export type Setter<T> = Dispatch<SetStateAction<T>>
 
 // ---- Tone.js audio nodes used across the app ----
-export type SynthInstrument = Tone.MonoSynth
+// The synth is a MonoSynth in mono mode and a PolySynth wrapping MonoSynth
+// voices in poly mode (see InstrumentParams.poly / useInstruments).
+export type SynthInstrument = Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth>
 export type SamplerInstrument = Tone.Sampler
 export type Instrument = SynthInstrument | SamplerInstrument
 export type ToneEffectNode = Tone.Chorus | Tone.Distortion | Tone.FeedbackDelay | Tone.Reverb | Tone.Vibrato
@@ -68,6 +70,8 @@ export type MidiInRef = MutableRefObject<MidiInputLike | null | undefined>
 export interface InstrumentParams {
   gain: number
   synthType: string
+  // false = monophonic MonoSynth, true = polyphonic PolySynth (synth audio only).
+  poly: boolean
   portamento: number
   modulationType: string
   harmonicity: number
