@@ -148,6 +148,10 @@ export default function App() {
   }, [presetsRestartTransport])
 
   useEffect(() => {
+    window.localStorage.setItem('presetsStopTransport', presetsStopTransport)
+  }, [presetsStopTransport])
+
+  useEffect(() => {
     window.localStorage.setItem('ignorePresetsTempo', ignorePresetsTempo)
   }, [ignorePresetsTempo])
 
