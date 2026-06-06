@@ -168,9 +168,9 @@ export default function Channel({
   const midiInRef = useRef<any>(undefined)
   const [midiHold, setMidiHold] = useState(initState.midiHold)
   const midiHoldRef = useRef<any>(undefined)
-  const [customMidiOutChannel, setCustomMidiOutChannel] = useState(false)
+  const [customMidiOutChannel, setCustomMidiOutChannel] = useState(initState.customMidiOutChannel)
   const customMidiOutChannelRef = useRef(customMidiOutChannel)
-  const [midiOutChannel, setMidiOutChannel] = useState(1)
+  const [midiOutChannel, setMidiOutChannel] = useState(initState.midiOutChannel)
   const midiOutChannelRef = useRef(midiOutChannel)
   const midiOutRef = useRef(midiOut)
 
