@@ -4,6 +4,7 @@ import * as Tone from 'tone'
 import { VIEWS, SECTIONS, MAX_CHANNELS, ALT } from '../globals'
 import { midiStartContinue, midiStop } from '../hooks/useMIDI'
 import NumInput from './NumInput'
+import RotaryKnob from './RotaryKnob'
 import Dropdown from './Dropdown'
 import Presets from './Presets'
 import RadioButtons from './RadioButtons'
@@ -52,6 +53,10 @@ interface HeaderProps {
   setModalType: any
   theme: string
   triggerTransportReset: any
+  globalVolume: number
+  setGlobalVolume: any
+  grabbing?: boolean
+  setGrabbing?: any
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -214,6 +219,19 @@ export default class Header extends React.Component<HeaderProps> {
             setSelected={this.props.setScrollTo}
           />
         )}
+        <RotaryKnob
+          className="header-item global-volume"
+          min={0}
+          max={1}
+          value={this.props.globalVolume}
+          setValue={this.props.setGlobalVolume}
+          label="Volume"
+          setGrabbing={this.props.setGrabbing}
+          grabbing={this.props.grabbing}
+          inline={true}
+          mute={false}
+          theme={this.props.theme}
+        />
         <div className="header-aux">
           <div className="aux-item header-about" onClick={this.openAbout.bind(this)} title="About"></div>
           <div className="aux-item header-settings" onClick={this.openSettings.bind(this)} title="Settings"></div>

@@ -92,6 +92,37 @@ $margin: 12px;
   margin-right: $margin;
 }
 
+// Shrink the global volume knob so its label matches the header label text size
+// (~15px) and the knob sits about as tall as the dropdowns. We use the `inline`
+// knob (for its compact 39x35 size) but stack it knob-above-label like the rest
+// of the header items, then scale the whole thing down.
+.global-volume {
+  align-self: flex-start;
+  margin-left: -6px;
+  transform: scale(0.75);
+  transform-origin: left top;
+}
+// Higher specificity than RotaryKnob's `.knob-container.inline-knob` so both the
+// stacked layout and the top margin win regardless of stylesheet order (the base
+// inline-knob rule sets margin-top: 8px, which pushed the knob too low).
+.knob-container.global-volume.inline-knob {
+  margin-top: -4px;
+  text-align: center;
+  .knob {
+    display: block;
+    margin: 0 auto;
+  }
+  .knob-label {
+    display: block;
+    margin-left: 0;
+    line-height: normal;
+    margin-top: 8px;
+    // base is 24px; with the 0.75 scale this lands ~15px to match header labels.
+    font-size: 20px;
+    height: auto;
+  }
+}
+
 .view-dropdown {
   display: none;
 }

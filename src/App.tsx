@@ -131,6 +131,11 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('ignorePresetsTempo') as string) ?? false
   )
 
+  // Global output attenuator (0..1, 1 = unity / 100%). Applied to the master.
+  const [globalVolume, setGlobalVolume] = useState(
+    JSON.parse(window.localStorage.getItem('globalVolume') as string) ?? 1
+  )
+
   useEffect(() => {
     window.localStorage.setItem('showStepNumbers', showStepNumbers)
   }, [showStepNumbers])
@@ -154,6 +159,12 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('ignorePresetsTempo', ignorePresetsTempo)
   }, [ignorePresetsTempo])
+
+  useEffect(() => {
+    window.localStorage.setItem('globalVolume', globalVolume)
+    // Convert the 0..1 linear attenuator to the master volume Param (dB).
+    Tone.getDestination().volume.value = Tone.gainToDb(globalVolume)
+  }, [globalVolume])
 
   useEffect(() => {
     window.localStorage.setItem('view', view)
@@ -450,6 +461,10 @@ export default function App() {
         setModalType={setModalType}
         theme={theme}
         triggerTransportReset={triggerTransportReset}
+        globalVolume={globalVolume}
+        setGlobalVolume={setGlobalVolume}
+        grabbing={grabbing}
+        setGrabbing={setGrabbing}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>
