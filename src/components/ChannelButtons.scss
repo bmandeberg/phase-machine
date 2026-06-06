@@ -28,11 +28,14 @@
       // brighten it on hover.
       height: 15px !important;
       width: auto !important;
-      filter: brightness(0.6);
+      // light theme: the icon asset is a dark gray (#666) — lighten it a touch at
+      // rest and darken (more prominent) on hover. Dark/contrast themes invert
+      // this in their theme files (their icon assets are light/dark accordingly).
+      filter: brightness(1.2);
       transition: filter $transitionTime;
     }
     &:hover .wave-icon {
-      filter: brightness(1);
+      filter: brightness(0.8);
     }
   }
 

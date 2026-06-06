@@ -219,6 +219,14 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
   }
 
   .channel-buttons {
+    // icon asset is dark (#383842) on the dark bg — lighten it to stay visible,
+    // brighter still on hover
+    .channel-instrument-button .wave-icon {
+      filter: brightness(1.6);
+    }
+    .channel-instrument-button:hover .wave-icon {
+      filter: brightness(2.2);
+    }
     .channel-menu-button span {
       background-color: $lightMediumGray;
     }

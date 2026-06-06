@@ -223,6 +223,13 @@ $headerDarkBlue: #0f182d;
   }
 
   .channel-buttons {
+    // icon asset is light (#A0A0B4) on the dark bg — dim at rest, full on hover
+    .channel-instrument-button .wave-icon {
+      filter: brightness(0.6);
+    }
+    .channel-instrument-button:hover .wave-icon {
+      filter: brightness(1);
+    }
     .channel-menu-button span {
       background-color: $darkMediumGray;
     }
