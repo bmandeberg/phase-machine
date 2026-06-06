@@ -162,10 +162,29 @@ export default function useUI(
             draggable="false">
             {channelNum + 1}
           </div>
+          {/* Mute/solo pinned inside the sticky channel-number-container so it
+              stays beneath the channel number on horizontal scroll. In the aux
+              (sequencer) channel it's always shown; in the main channel it carries
+              the `mute-solo-scroll` class and only animates in once the channel has
+              scrolled past the (absolute, scroll-away) duplicate/delete buttons. */}
+          <div className={classNames('channel-mute-solo', { 'mute-solo-scroll': !auxiliary })}>
+            <div
+              className={classNames('channel-mute-solo-button', { muted: mute })}
+              onClick={() => setMute((m) => !m)}
+              title="Mute channel">
+              M
+            </div>
+            <div
+              className={classNames('channel-mute-solo-button solo', { soloed: solo })}
+              onClick={() => setSolo((s) => !s)}
+              title="Solo channel">
+              S
+            </div>
+          </div>
         </div>
       )
     },
-    [channelNum, color, drag, draggingChannel]
+    [channelNum, color, drag, draggingChannel, mute, solo, setMute, setSolo]
   )
 
   const channelNumNormal = useMemo(() => channelNumEl(false), [channelNumEl])

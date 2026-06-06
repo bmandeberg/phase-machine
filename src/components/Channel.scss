@@ -27,6 +27,72 @@
     pointer-events: auto;
     touch-action: none;
   }
+  // Small M/S buttons styled like the duplicate/delete buttons and pinned inside
+  // the sticky channel-number-container so they stay beneath the number on
+  // horizontal scroll. Used always-on in the stacked auxiliary (sequencer) channel
+  // and, via .mute-solo-scroll below, scroll-revealed in the main channel.
+  .channel-mute-solo {
+    @extend .no-select;
+    position: absolute;
+    top: 41px;
+    width: 100%;
+    .channel-mute-solo-button {
+      pointer-events: auto;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      margin: 0 auto;
+      font-size: 17px;
+      font-weight: bold;
+      line-height: 20px;
+      text-align: center;
+      // matches the duplicate/delete icon gray in the primary row (light theme);
+      // dark/contrast themes override this below.
+      color: $lightGray;
+      // subtle glow matching the background so the letters read over the
+      // scrolling sequencer content (same trick as .channel-number).
+      text-shadow: 0 0 5px #ffffff;
+      transition: color $transitionTime;
+      &:hover {
+        color: $darkGray;
+      }
+      &.muted {
+        color: $red;
+        &:hover {
+          color: $redHover;
+        }
+      }
+      &.soloed {
+        color: $green;
+        &:hover {
+          color: $greenHover;
+        }
+      }
+    }
+    .solo {
+      margin-top: 6px;
+    }
+  }
+  // Main-channel mute/solo: hidden and shifted left until the channel is scrolled
+  // past the duplicate/delete buttons (see #container.scrolled-x below), then it
+  // animates in from the left. Must come after .channel-mute-solo so the hidden
+  // pointer-events wins the equal-specificity tie by source order.
+  .mute-solo-scroll {
+    opacity: 0;
+    transform: translateX(-14px);
+    transition: opacity $transitionTime, transform $transitionTime;
+    .channel-mute-solo-button {
+      pointer-events: none;
+    }
+  }
+}
+
+#container.scrolled-x .channel-horizontal .mute-solo-scroll {
+  opacity: 1;
+  transform: translateX(0);
+  .channel-mute-solo-button {
+    pointer-events: auto;
+  }
 }
 
 .channel {

@@ -33,6 +33,9 @@ if (!window.localStorage.getItem('presets')) {
 
 const PIANO_SCROLL = 60
 const SEQ_SCROLL = 76
+// How far the channel must scroll horizontally before the (absolute, scroll-away)
+// duplicate/delete buttons are gone and the sticky mute/solo buttons animate in.
+const MUTE_SOLO_SCROLL = 40
 
 export default function App() {
   const [presets, setPresets] = useState(initializePresets)
@@ -200,6 +203,9 @@ export default function App() {
       if (topGradient.current) {
         topGradient.current.style.top = 44 + Math.min(containerEl!.scrollTop, 16) + 'px'
       }
+      // Reveal the sticky mute/solo buttons once scrolled past the duplicate/delete
+      // buttons. Plain class toggle (no React state) so it doesn't re-render channels.
+      containerEl!.classList.toggle('scrolled-x', containerEl!.scrollLeft > MUTE_SOLO_SCROLL)
     }
     containerEl.addEventListener('scroll', handleScroll)
     return () => {

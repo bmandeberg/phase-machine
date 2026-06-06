@@ -201,6 +201,14 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
       .channel-number {
         text-shadow: 0 0 5px $darkBackground;
       }
+      // Resting mute/solo color matches the contrast-theme duplicate/delete icon
+      // color; :not() keeps the active red/green states from the base stylesheet.
+      .channel-mute-solo .channel-mute-solo-button:not(.muted):not(.soloed) {
+        color: $lightMediumGray;
+      }
+      .channel-mute-solo .channel-mute-solo-button {
+        text-shadow: 0 0 5px $darkBackground;
+      }
     }
     &.channel-in-active {
       background-color: color.adjust($green, $lightness: -35%);

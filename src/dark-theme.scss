@@ -205,6 +205,14 @@ $headerDarkBlue: #0f182d;
       .channel-number {
         text-shadow: 0 0 5px $darkBackground;
       }
+      // Resting mute/solo color matches the dark-theme duplicate/delete icon gray;
+      // :not() keeps the active red/green states from the base stylesheet.
+      .channel-mute-solo .channel-mute-solo-button:not(.muted):not(.soloed) {
+        color: $darkMediumGray;
+      }
+      .channel-mute-solo .channel-mute-solo-button {
+        text-shadow: 0 0 5px $darkBackground;
+      }
     }
     &.channel-in-active {
       background-color: $darkestGreen;
