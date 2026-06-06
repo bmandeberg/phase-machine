@@ -79,7 +79,7 @@ export default function useInstruments(
     if (!synthInstrument.current) {
       const synthOptions = {
         portamento: instrumentParamsRef.current.portamento,
-        volume: -8,
+        volume: -15,
         oscillator: {
           type: instrumentParamsRef.current.synthType,
           modulationType: instrumentParamsRef.current.modulationType,
