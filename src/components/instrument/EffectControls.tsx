@@ -2,8 +2,8 @@ import React, { useMemo, useCallback } from 'react'
 import RotaryKnob from '../RotaryKnob'
 import Dropdown from '../Dropdown'
 import Switch from 'react-switch'
-import * as Tone from 'tone'
 import { EFFECTS, themedSwitch, RATES } from '../../globals'
+import { rateToSeconds } from '../../math'
 import useEffectParams from './useEffectParams'
 import { EffectRefs, Setter } from '../../types'
 
@@ -12,6 +12,7 @@ type EffectControlsProps = ReturnType<typeof useEffectParams> & {
   theme: string
   grabbing?: boolean
   setGrabbing: Setter<boolean>
+  tempo: number
 }
 
 function EffectControls({
@@ -47,29 +48,38 @@ function EffectControls({
   theme,
   grabbing,
   setGrabbing,
+  tempo,
 }: EffectControlsProps) {
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
 
-  const setSyncedDelay = useCallback(
-    (rate: string) => {
-      setDelayTime(Tone.getTransport().toSeconds(rate))
-    },
-    [setDelayTime]
-  )
-  const syncedDelayOptions = useMemo(() => {
-    return RATES.filter((rate) => Tone.getTransport().toSeconds(rate) <= 1)
-  }, [])
-  const syncedDelay = useMemo(() => {
-    for (let i = 0; i < RATES.length; i++) {
-      if (delayTime === Tone.getTransport().toSeconds(RATES[i])) {
-        return RATES[i]
+  // The synced rate (e.g. '8n') is stored in syncDelayTime; useEffectParams derives
+  // the actual delayTime seconds from it + the current tempo, so it tracks BPM.
+  const syncedDelayOptions = useMemo(() => RATES.filter((rate) => rateToSeconds(rate, tempo) <= 1), [tempo])
+  const syncedDelay = useMemo(() => (typeof syncDelayTime === 'string' ? syncDelayTime : null), [syncDelayTime])
+  const setSyncedDelay = useCallback((rate: string) => setSyncDelayTime(rate), [setSyncDelayTime])
+  const toggleSyncDelay = useCallback(
+    (on: boolean) => {
+      if (!on) {
+        setSyncDelayTime(false)
+        return
       }
-    }
-    return null
-  }, [delayTime])
+      // Enabling sync: snap the current free delay time to the nearest musical rate.
+      let nearest = syncedDelayOptions[0]
+      let bestDiff = Infinity
+      for (const rate of syncedDelayOptions) {
+        const diff = Math.abs(rateToSeconds(rate, tempo) - delayTime)
+        if (diff < bestDiff) {
+          bestDiff = diff
+          nearest = rate
+        }
+      }
+      setSyncDelayTime(nearest)
+    },
+    [setSyncDelayTime, syncedDelayOptions, tempo, delayTime]
+  )
 
   return (
     <div className="controls-row">
@@ -183,7 +193,7 @@ function EffectControls({
             <div className="switch-container instrument-item">
               <Switch
                 className="switch"
-                onChange={setSyncDelayTime}
+                onChange={toggleSyncDelay}
                 checked={!!syncDelayTime}
                 uncheckedIcon={false}
                 checkedIcon={false}

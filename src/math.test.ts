@@ -10,6 +10,7 @@ import {
   scaleToRange,
   expInterpolate,
   constrain,
+  rateToSeconds,
 } from './math'
 
 const P = (...trueIndexes: number[]) => Array.from({ length: 12 }, (_, i) => trueIndexes.includes(i))
@@ -134,5 +135,30 @@ describe('constrain', () => {
     expect(constrain(5, 0, 10)).toBe(5)
     expect(constrain(-3, 0, 10)).toBe(0)
     expect(constrain(42, 0, 10)).toBe(10)
+  })
+})
+
+describe('rateToSeconds', () => {
+  it('converts plain note rates at 120 BPM (quarter note = 0.5s)', () => {
+    expect(rateToSeconds('4n', 120)).toBeCloseTo(0.5)
+    expect(rateToSeconds('8n', 120)).toBeCloseTo(0.25)
+    expect(rateToSeconds('16n', 120)).toBeCloseTo(0.125)
+    expect(rateToSeconds('1n', 120)).toBeCloseTo(2)
+    expect(rateToSeconds('2n', 120)).toBeCloseTo(1)
+  })
+  it('treats a measure (1m) as a whole note in 4/4', () => {
+    expect(rateToSeconds('1m', 120)).toBeCloseTo(2)
+    expect(rateToSeconds('1m', 60)).toBeCloseTo(4)
+  })
+  it('applies dotted (x1.5) and triplet (x2/3) modifiers', () => {
+    expect(rateToSeconds('8n.', 120)).toBeCloseTo(0.375)
+    expect(rateToSeconds('8t', 120)).toBeCloseTo(0.25 * (2 / 3))
+    expect(rateToSeconds('4n.', 120)).toBeCloseTo(0.75)
+  })
+  it('scales inversely with tempo (the bug: synced delay must track BPM)', () => {
+    expect(rateToSeconds('8n', 60)).toBeCloseTo(0.5)
+    expect(rateToSeconds('8n', 240)).toBeCloseTo(0.125)
+    // halving the tempo doubles the synced delay time
+    expect(rateToSeconds('4n', 90)).toBeCloseTo(rateToSeconds('4n', 180) * 2)
   })
 })

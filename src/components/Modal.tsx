@@ -41,6 +41,7 @@ interface ModalProps {
   effects?: any
   grabbing?: boolean
   setGrabbing?: any
+  tempo?: number
   presetsRestartTransport?: boolean
   setPresetsRestartTransport?: any
   midiClockIn?: boolean
@@ -85,6 +86,7 @@ export default function Modal({
   effects,
   grabbing,
   setGrabbing,
+  tempo,
   presetsRestartTransport,
   setPresetsRestartTransport,
   midiClockIn,
@@ -214,6 +216,7 @@ export default function Modal({
         theme={theme}
         grabbing={grabbing}
         setGrabbing={setGrabbing}
+        tempo={tempo as number}
       />
     ),
     [
@@ -229,6 +232,7 @@ export default function Modal({
       setInstrumentParams,
       setInstrumentType,
       theme,
+      tempo,
     ]
   )
   const aboutEl = useMemo(() => <AboutModal theme={theme} />, [theme])

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { CHORUS_ENABLED } from '../../globals'
+import { rateToSeconds } from '../../math'
 import { InstrumentParams, InstrumentRefs, EffectRefs, GainRef, SignalDestination } from '../../types'
 
 // Owns all effect parameter state plus the signal-routing effect (connect /
@@ -11,7 +12,8 @@ export default function useEffectParams(
   effects: EffectRefs,
   gainNode: GainRef,
   instrumentParams: InstrumentParams,
-  updateInstrumentParams: (param: string, value: InstrumentParams[keyof InstrumentParams]) => void
+  updateInstrumentParams: (param: string, value: InstrumentParams[keyof InstrumentParams]) => void,
+  tempo: number
 ) {
   const [effectType, setEffectType] = useState(instrumentParams.effectType)
   const [effectWet, setEffectWet] = useState(instrumentParams.effectWet)
@@ -120,6 +122,16 @@ export default function useEffectParams(
   useEffect(() => {
     updateInstrumentParams('syncDelayTime', syncDelayTime)
   }, [syncDelayTime, updateInstrumentParams])
+
+  // When the delay is tempo-synced, syncDelayTime holds the note rate (e.g. '8n').
+  // Recompute the actual delay time from the current tempo so it tracks global BPM
+  // changes (and self-heals a preset loaded at a different tempo). setDelayTime then
+  // flows into the effect below, which pushes the value to the live node + persists.
+  useEffect(() => {
+    if (typeof syncDelayTime === 'string') {
+      setDelayTime(rateToSeconds(syncDelayTime, tempo))
+    }
+  }, [tempo, syncDelayTime])
 
   useEffect(() => {
     effects.delayEffect.current!.set({ delayTime })

@@ -24,6 +24,7 @@ interface InstrumentModalProps {
   effects: EffectRefs
   grabbing?: boolean
   setGrabbing: Setter<boolean>
+  tempo: number
 }
 
 export default function InstrumentModal({
@@ -39,6 +40,7 @@ export default function InstrumentModal({
   effects,
   grabbing,
   setGrabbing,
+  tempo,
 }: InstrumentModalProps) {
   const [gain, setGain] = useState(instrumentParams.gain)
 
@@ -72,7 +74,7 @@ export default function InstrumentModal({
   // inline at the top of this component.
   const synthParams = useSynthParams(instruments, instrumentParams, updateInstrumentParams)
   const samplerParams = useSamplerParams(instruments, instrumentParams, updateInstrumentParams)
-  const effectParams = useEffectParams(instruments, effects, gainNode, instrumentParams, updateInstrumentParams)
+  const effectParams = useEffectParams(instruments, effects, gainNode, instrumentParams, updateInstrumentParams, tempo)
 
   return (
     <div className={classNames('instrument-modal', { short: instrumentType !== 'synth' })}>
@@ -109,7 +111,14 @@ export default function InstrumentModal({
         {instrumentType !== 'synth' && (
           <SamplerControls {...samplerParams} theme={theme} grabbing={grabbing} setGrabbing={setGrabbing} />
         )}
-        <EffectControls {...effectParams} effects={effects} theme={theme} grabbing={grabbing} setGrabbing={setGrabbing} />
+        <EffectControls
+          {...effectParams}
+          effects={effects}
+          theme={theme}
+          grabbing={grabbing}
+          setGrabbing={setGrabbing}
+          tempo={tempo}
+        />
       </div>
     </div>
   )

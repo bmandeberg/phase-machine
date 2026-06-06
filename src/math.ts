@@ -78,3 +78,19 @@ export function expInterpolate(min: number, max: number, value: number, invert =
 export function constrain(n: number, min: number, max: number) {
   return Math.min(Math.max(n, min), max)
 }
+
+// Convert a Tone-style rate notation (e.g. '4n', '8n.', '8t', '1m') to seconds at
+// the given tempo, assuming 4/4. Pure equivalent of Tone.Transport.toSeconds(rate)
+// that depends on `bpm` directly (not the live Transport), so tempo-synced values
+// can be recomputed deterministically when global tempo changes. See RATES.
+export function rateToSeconds(rate: string, bpm: number) {
+  const quarterNote = 60 / bpm
+  // beats are in quarter-note units: '1m'/'1n' = 4, '2n' = 2, '4n' = 1, '8n' = 0.5, ...
+  let beats = rate === '1m' ? 4 : 4 / parseInt(rate, 10)
+  if (rate.endsWith('t')) {
+    beats *= 2 / 3 // triplet
+  } else if (rate.endsWith('.')) {
+    beats *= 1.5 // dotted
+  }
+  return beats * quarterNote
+}

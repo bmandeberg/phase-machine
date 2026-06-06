@@ -16,7 +16,7 @@ import {
   SUSTAIN_MIN,
   KNOB_MAX,
 } from '../globals'
-import { pitchesInRange, constrain, scaleToRange } from '../math'
+import { pitchesInRange, constrain, scaleToRange, rateToSeconds } from '../math'
 import classNames from 'classnames'
 import Modal from './Modal'
 import StackedView from './channel/StackedView'
@@ -383,6 +383,20 @@ export default function Channel({
     instruments,
     effects,
   } = useInstruments(instrument, instrumentParams, instrumentType, cleanupInstruments, setModalType)
+
+  // Keep a tempo-synced delay locked to the global tempo even while the instrument
+  // modal (where useEffectParams lives) is closed. syncDelayTime holds the note rate
+  // (e.g. '8n') when synced; recompute the delay seconds from the current tempo and
+  // push it to the live node + instrumentParams so it persists.
+  useEffect(() => {
+    if (typeof instrumentParams.syncDelayTime === 'string' && delayEffect.current) {
+      const seconds = rateToSeconds(instrumentParams.syncDelayTime, tempo)
+      delayEffect.current.set({ delayTime: seconds })
+      setInstrumentParams((params) =>
+        params.delayTime === seconds ? params : Object.assign({}, params, { delayTime: seconds })
+      )
+    }
+  }, [tempo, instrumentParams.syncDelayTime, delayEffect])
 
   const noteOff = useCallback(
     (channel: any, note: any, midiOutObj: any, delay?: any, offTime?: any, clockOffset?: any) => {
@@ -979,6 +993,7 @@ export default function Channel({
           effects={effects}
           grabbing={grabbing}
           setGrabbing={setGrabbing}
+          tempo={tempo}
         />
       </CSSTransition>
     ),
@@ -999,6 +1014,7 @@ export default function Channel({
       modalType,
       setGrabbing,
       showModal,
+      tempo,
       theme,
     ]
   )
