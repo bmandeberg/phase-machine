@@ -439,6 +439,9 @@ $headerDarkBlue: #0f182d;
       }
       &.white-key {
         background-color: $darkMediumGray;
+        // explicit so the light theme's base .white-key separator border (equal specificity,
+        // emitted later as component CSS) doesn't leak into dark mode
+        border-color: $darkBackground;
         &.in-range {
           background-color: $inRangeColor;
           border-color: $inRangeBorderColor;
@@ -558,7 +561,9 @@ $headerDarkBlue: #0f182d;
   }
 
   .notes-mode {
-    .notes-mode-selected {
+    // Match NotesMode.scss's selector depth (.notes-mode-label.notes-mode-selected) so this
+    // wins the specificity tie — component CSS is emitted after this theme CSS.
+    .notes-mode-label.notes-mode-selected {
       color: $darkGreen;
     }
   }

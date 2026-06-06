@@ -436,6 +436,9 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
       }
       &.white-key {
         background-color: $pitchClassGray;
+        // explicit so the light theme's base .white-key separator border (equal specificity,
+        // emitted later as component CSS) doesn't leak into contrast mode
+        border-color: $darkBackground;
         &.in-range {
           background-color: $lightMediumGray;
           border-color: $inRangeBorderColor;
@@ -555,7 +558,9 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
   }
 
   .notes-mode {
-    .notes-mode-selected {
+    // Match NotesMode.scss's selector depth so this wins the specificity tie — component
+    // CSS is emitted after this theme CSS.
+    .notes-mode-label.notes-mode-selected {
       color: $green;
     }
   }

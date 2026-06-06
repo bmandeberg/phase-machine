@@ -13,7 +13,9 @@
     @extend .no-select;
     width: 10px;
     height: 57px;
-    background-color: $lightTextGray;
+    // out-of-range (and keyboard-mode) black keys — dark enough to read clearly against
+    // the light white keys (light theme only; dark/contrast override below)
+    background-color: $darkGray;
     border-width: 2px;
     border-style: solid;
     border-color: #ffffff;
@@ -67,6 +69,8 @@
       margin-left: 0;
       height: 100%;
       background-color: $lightGray;
+      // visible separator between out-of-range/keyboard white keys (light theme only)
+      border-color: $mediumGray;
       z-index: 1;
       &.in-range {
         background-color: #ffffff;
