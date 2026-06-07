@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, ChangeEvent } from 'react'
 import { ReactDOMAttributes } from '@use-gesture/react/dist/declarations/src/types'
-import { Setter } from '../types'
+import { Setter, Channel as ChannelType } from '../types'
 import { RATE_DROPDOWN_OPTIONS, MOVEMENTS, MAX_SEQUENCE_LENGTH, MAX_SWING_LENGTH, SUSTAIN_MIN, themedSwitch } from '../globals'
 import classNames from 'classnames'
 import RotaryKnob from '../components/RotaryKnob'
@@ -126,7 +126,10 @@ export default function useUI(
   openMidiModal: () => void,
   openInstrumentModal: () => void,
   updateOnce: boolean,
-  triggerNote: (i: number, callback: () => void) => void
+  triggerNote: (i: number, callback: () => void) => void,
+  // the saved version of this channel in the current preset — supplies each knob's
+  // double-click reset target.
+  channelPreset?: ChannelType
 ) {
   const updateScribbler = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -478,10 +481,11 @@ export default function useUI(
           mute={muted}
           theme={theme}
           updateOnce={updateOnce}
+          resetValue={channelPreset?.sustain}
         />
       )
     },
-    [sustain, setSustain, setGrabbing, grabbing, muted, theme, updateOnce]
+    [sustain, setSustain, setGrabbing, grabbing, muted, theme, updateOnce, channelPreset?.sustain]
   )
 
   const sustainNormal = useMemo(() => sustainEl(false), [sustainEl])
@@ -503,6 +507,7 @@ export default function useUI(
             mute={mute}
             theme={theme}
             updateOnce={updateOnce}
+            resetValue={channelPreset?.keySwing}
           />
           <NumInput
             value={keySwingLength}
@@ -525,6 +530,7 @@ export default function useUI(
       setKeySwingLength,
       theme,
       updateOnce,
+      channelPreset?.keySwing,
     ]
   )
 
@@ -639,6 +645,7 @@ export default function useUI(
             mute={mute}
             theme={theme}
             updateOnce={updateOnce}
+            resetValue={channelPreset?.seqSwing}
           />
           <NumInput
             value={seqSwingLength}
@@ -662,6 +669,7 @@ export default function useUI(
       setSeqSwingLength,
       theme,
       updateOnce,
+      channelPreset?.seqSwing,
     ]
   )
 

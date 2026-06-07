@@ -19,6 +19,7 @@ interface InstrumentModalProps {
   theme: string
   instrumentParams: InstrumentParams
   setInstrumentParams: Setter<InstrumentParams>
+  savedInstrumentParams?: InstrumentParams
   instruments: InstrumentRefs
   gainNode: GainRef
   pannerNode: PannerRef
@@ -37,6 +38,7 @@ export default function InstrumentModal({
   theme,
   instrumentParams,
   setInstrumentParams,
+  savedInstrumentParams,
   instruments,
   gainNode,
   pannerNode,
@@ -115,6 +117,7 @@ export default function InstrumentModal({
           inline={true}
           mute={false}
           theme={theme}
+          resetValue={savedInstrumentParams?.gain}
         />
         <RotaryKnob
           className="instrument-item pan-knob"
@@ -129,17 +132,31 @@ export default function InstrumentModal({
           inline={true}
           mute={false}
           theme={theme}
+          resetValue={savedInstrumentParams?.pan}
         />
       </div>
       <div className="instrument-controls">
         {instrumentType === 'synth' && (
-          <SynthControls {...synthParams} theme={theme} grabbing={grabbing} setGrabbing={setGrabbing} />
+          <SynthControls
+            {...synthParams}
+            savedInstrumentParams={savedInstrumentParams}
+            theme={theme}
+            grabbing={grabbing}
+            setGrabbing={setGrabbing}
+          />
         )}
         {instrumentType !== 'synth' && (
-          <SamplerControls {...samplerParams} theme={theme} grabbing={grabbing} setGrabbing={setGrabbing} />
+          <SamplerControls
+            {...samplerParams}
+            savedInstrumentParams={savedInstrumentParams}
+            theme={theme}
+            grabbing={grabbing}
+            setGrabbing={setGrabbing}
+          />
         )}
         <EffectControls
           {...effectParams}
+          savedInstrumentParams={savedInstrumentParams}
           effects={effects}
           theme={theme}
           grabbing={grabbing}

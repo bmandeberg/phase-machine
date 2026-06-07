@@ -40,6 +40,10 @@ interface RotaryKnobProps {
   // color the knob to match the header UI accent (blue in dark/contrast, orange
   // in light) instead of the default neutral channel-knob palette.
   headerStyle?: boolean
+  // double-click target. When provided (e.g. the value saved in the current
+  // preset), a double-click resets the knob to it; otherwise it falls back to the
+  // center (detent knobs) or the minimum (everything else).
+  resetValue?: number
 }
 
 export default function RotaryKnob({
@@ -71,6 +75,7 @@ export default function RotaryKnob({
   logarithmic,
   updateOnce,
   headerStyle,
+  resetValue,
 }: RotaryKnobProps) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -118,6 +123,21 @@ export default function RotaryKnob({
   const stopTurningKnob = useCallback(() => {
     setGrabbing?.(false)
   }, [setGrabbing])
+
+  // double-click resets the knob: to its saved preset value when one is supplied,
+  // otherwise to the center (detent knobs) or the minimum (everything else).
+  const handleDoubleClick = useCallback(() => {
+    let target: number
+    if (resetValue != null) {
+      target = resetValue
+    } else if (detent) {
+      target = (maxVal - minVal) / 2 + minVal
+    } else {
+      target = minVal
+    }
+    setInternalValue(logarithmic ? expInterpolate(minVal, maxVal, target, true) : target)
+    setValue(target)
+  }, [resetValue, detent, logarithmic, maxVal, minVal, setValue])
 
   const knobSize = useMemo<React.CSSProperties>(() => {
     if (axisKnobLarge) {
@@ -495,6 +515,7 @@ export default function RotaryKnob({
   return (
     <div
       style={knobStyle}
+      onDoubleClick={axisKnob ? undefined : handleDoubleClick}
       className={classNames('knob-container', className, {
         'axis-knob': axisKnob,
         'axis-knob-large': axisKnobLarge,

@@ -7,7 +7,7 @@ import NumInput from '../NumInput'
 import EnvelopeControls from './EnvelopeControls'
 import { SIGNAL_TYPES, SYNTH_TYPES, themedSwitch } from '../../globals'
 import useSynthParams, { oscModifiers } from './useSynthParams'
-import { Setter } from '../../types'
+import { Setter, InstrumentParams } from '../../types'
 
 const rolloffOptions = ['-12', '-24', '-48', '-96']
 
@@ -15,6 +15,7 @@ type SynthControlsProps = ReturnType<typeof useSynthParams> & {
   theme: string
   grabbing?: boolean
   setGrabbing: Setter<boolean>
+  savedInstrumentParams?: InstrumentParams
 }
 
 function SynthControls({
@@ -66,6 +67,7 @@ function SynthControls({
   theme,
   grabbing,
   setGrabbing,
+  savedInstrumentParams,
 }: SynthControlsProps) {
   const signalTypeOptions = useMemo(
     () =>
@@ -141,6 +143,7 @@ function SynthControls({
             inline={false}
             mute={false}
             theme={theme}
+            resetValue={savedInstrumentParams?.portamento}
           />
           {(synthType.startsWith('am') || synthType.startsWith('fm')) && (
             <div className="controls-aux">
@@ -165,6 +168,7 @@ function SynthControls({
                 inline={false}
                 mute={false}
                 theme={theme}
+                resetValue={savedInstrumentParams?.harmonicity}
               />
             </div>
           )}
@@ -182,6 +186,7 @@ function SynthControls({
                 inline={false}
                 mute={false}
                 theme={theme}
+                resetValue={savedInstrumentParams?.fatSpread}
               />
               <NumInput
                 className="instrument-item fat-count"
@@ -209,6 +214,7 @@ function SynthControls({
                 inline={false}
                 mute={false}
                 theme={theme}
+                resetValue={savedInstrumentParams?.pulseWidth}
               />
             </div>
           )}
@@ -226,6 +232,7 @@ function SynthControls({
                 inline={false}
                 mute={false}
                 theme={theme}
+                resetValue={savedInstrumentParams?.pwmFreq}
               />
             </div>
           )}
@@ -242,6 +249,10 @@ function SynthControls({
           setSustain={setEnvSustain}
           release={envRelease}
           setRelease={setEnvRelease}
+          attackReset={savedInstrumentParams?.envAttack}
+          decayReset={savedInstrumentParams?.envDecay}
+          sustainReset={savedInstrumentParams?.envSustain}
+          releaseReset={savedInstrumentParams?.envRelease}
           theme={theme}
           grabbing={grabbing}
           setGrabbing={setGrabbing}
@@ -263,6 +274,7 @@ function SynthControls({
             mute={false}
             theme={theme}
             logarithmic
+            resetValue={savedInstrumentParams?.cutoff}
           />
           <RotaryKnob
             className="instrument-item"
@@ -276,6 +288,7 @@ function SynthControls({
             inline={false}
             mute={false}
             theme={theme}
+            resetValue={savedInstrumentParams?.resonance}
           />
           <Dropdown
             className="instrument-item"
@@ -297,6 +310,11 @@ function SynthControls({
           setRelease={setFilterRelease}
           amount={filterAmount}
           setAmount={setFilterAmount}
+          attackReset={savedInstrumentParams?.filterAttack}
+          decayReset={savedInstrumentParams?.filterDecay}
+          sustainReset={savedInstrumentParams?.filterSustain}
+          releaseReset={savedInstrumentParams?.filterRelease}
+          amountReset={savedInstrumentParams?.filterAmount}
           theme={theme}
           grabbing={grabbing}
           setGrabbing={setGrabbing}

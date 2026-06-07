@@ -15,6 +15,12 @@ interface EnvelopeControlsProps {
   // The filter envelope adds an "Amount" (octaves) knob; the amp envelope omits it.
   amount?: number
   setAmount?: Setter<number>
+  // double-click reset targets (the values saved in the current preset)
+  attackReset?: number
+  decayReset?: number
+  sustainReset?: number
+  releaseReset?: number
+  amountReset?: number
   theme: string
   grabbing?: boolean
   setGrabbing: Setter<boolean>
@@ -34,6 +40,11 @@ function EnvelopeControls({
   setRelease,
   amount,
   setAmount,
+  attackReset,
+  decayReset,
+  sustainReset,
+  releaseReset,
+  amountReset,
   theme,
   grabbing,
   setGrabbing,
@@ -53,6 +64,7 @@ function EnvelopeControls({
         inline={false}
         mute={false}
         theme={theme}
+        resetValue={attackReset}
       />
       <RotaryKnob
         className="instrument-item"
@@ -66,6 +78,7 @@ function EnvelopeControls({
         inline={false}
         mute={false}
         theme={theme}
+        resetValue={decayReset}
       />
       <RotaryKnob
         className="instrument-item"
@@ -79,6 +92,7 @@ function EnvelopeControls({
         inline={false}
         mute={false}
         theme={theme}
+        resetValue={sustainReset}
       />
       <RotaryKnob
         className="instrument-item"
@@ -92,6 +106,7 @@ function EnvelopeControls({
         inline={false}
         mute={false}
         theme={theme}
+        resetValue={releaseReset}
       />
       {setAmount && (
         <RotaryKnob
@@ -106,6 +121,7 @@ function EnvelopeControls({
           inline={false}
           mute={false}
           theme={theme}
+          resetValue={amountReset}
         />
       )}
     </div>
