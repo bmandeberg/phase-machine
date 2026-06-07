@@ -343,7 +343,7 @@ export default function App() {
 
   const channels = useMemo(
     () =>
-      uiState.channels.map((d: ChannelType, i: number) => (
+      uiState.channels.map((d: ChannelType) => (
         <Channel
           numChannels={numChannels}
           key={d.id}
@@ -360,7 +360,10 @@ export default function App() {
           showStepNumbers={showStepNumbers}
           midiOut={midiOut}
           setChannelState={setChannelState}
-          channelPreset={currentPreset.channels[i]}
+          // match by id (not index) so a freshly added channel — whose id isn't in the
+          // current preset — gets no preset applied and stays blank, instead of inheriting
+          // the preset's channel at that position.
+          channelPreset={currentPreset.channels.find((c: ChannelType) => c.id === d.id)}
           duplicateChannel={duplicateChannel}
           deleteChannel={deleteChannel}
           initState={d}

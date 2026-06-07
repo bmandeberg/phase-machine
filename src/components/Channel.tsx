@@ -56,7 +56,7 @@ interface ChannelProps {
   showStepNumbers: boolean
   midiOut: string | null
   setChannelState: (id: string, state: ChannelType) => void
-  channelPreset: ChannelType
+  channelPreset?: ChannelType
   duplicateChannel: (id: string) => void
   deleteChannel: (id: string) => void
   initState: ChannelType
