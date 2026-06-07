@@ -6,7 +6,7 @@ import type { Dispatch, SetStateAction, MutableRefObject } from 'react'
 import type * as Tone from 'tone'
 
 export type Theme = 'dark' | 'light' | 'contrast'
-export type View = 'horizontal' | 'stacked' | 'clock'
+export type View = 'horizontal' | 'stacked' | 'condensed' | 'clock'
 export type Section = 'key' | 'piano' | 'sequence'
 
 // Shorthand for a React state setter (the second tuple element of useState).

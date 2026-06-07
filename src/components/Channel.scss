@@ -489,6 +489,26 @@
   }
 }
 
+// Condensed view: stack the mute/solo blocky buttons vertically, and keep the
+// swing knobs while hiding their Length NumInputs.
+.channel-condensed {
+  .channel-primary {
+    margin-right: 14px;
+  }
+  .mute-solo {
+    .button {
+      display: block;
+    }
+    .mute {
+      margin-right: 0;
+      margin-bottom: 8px;
+    }
+  }
+  .swing-module .num-input {
+    display: none;
+  }
+}
+
 .border {
   height: 100%;
   border-right: 1px solid $lightMediumGray;

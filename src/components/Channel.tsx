@@ -20,6 +20,7 @@ import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds } from
 import classNames from 'classnames'
 import Modal from './Modal'
 import StackedView from './channel/StackedView'
+import CondensedView from './channel/CondensedView'
 import HorizontalView from './channel/HorizontalView'
 import ClockView from './channel/ClockView'
 import useLoop from '../hooks/useLoop'
@@ -334,7 +335,7 @@ export default function Channel({
   const drag = useGesture({
     onDrag: ({ event, xy: [x, y] }) => {
       let hoveredChannel: any
-      if (view === 'stacked' || view === 'horizontal') {
+      if (view === 'stacked' || view === 'horizontal' || view === 'condensed') {
         const topOffset =
           62 +
           ((event.target as HTMLElement).classList.contains('auxiliary') ? numChannels * CHANNEL_HEIGHT : 0) -
@@ -1251,6 +1252,28 @@ export default function Channel({
           numChannels={numChannels}
           rangeMode={rangeMode}
           arrowSmallGraphic={arrowSmallGraphic}
+          seqSteps={seqSteps}
+          setSeqSteps={setSeqSteps}
+          seqLength={seqLength}
+          seqPreview={seqPreview}
+          showSeqPreview={showSeqPreview}
+          playingStep={playingStep}
+          showStepNumbers={showStepNumbers}
+          longestSequence={longestSequence}
+          draggingChannel={draggingChannel}
+          dragTarget={dragTarget}
+          dragTargetHorizontal={dragTargetHorizontal}
+          modalEl={modalEl}
+        />
+      )
+    case 'condensed':
+      return (
+        <CondensedView
+          {...ui}
+          muted={muted}
+          color={color}
+          channelNum={channelNum}
+          numChannels={numChannels}
           seqSteps={seqSteps}
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
