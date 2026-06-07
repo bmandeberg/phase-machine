@@ -13,6 +13,13 @@
   // these buttons and was otherwise stealing clicks on the lower half of the "...".
   z-index: 2000;
 
+  // In clock view the channel number sits at the flow start (~22px center) rather
+  // than the sticky 18px of the other views, so the default left:14px lands the
+  // icons too far right. Shift them left to fall beneath the number.
+  .channel-clock & {
+    left: -3px;
+  }
+
   .channel-instrument-button {
     // block + auto-margin icon keeps it centered in the full button width
     display: block;
