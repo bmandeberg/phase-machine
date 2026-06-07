@@ -68,6 +68,11 @@ export default function useMIDI(setPlaying: any, setResetTransport: any) {
     }
     WebMidi.enable()
       .then(() => {
+        // Populate the device lists from the ports that are already present at enable time.
+        // The 'connected'/'disconnected' listeners below only cover changes afterward, and
+        // can't be relied on to fire (or to fire after they're attached) for pre-existing
+        // ports — so without this the dropdowns stay empty even though MIDI is enabled.
+        connectMidi()
         // initialize MIDI I/O
         const mo = window.localStorage.getItem('midiOut')
         setMidiOut(() => (mo !== null && WebMidi.outputs.map((o) => o.name).includes(mo) && mo) || null)
