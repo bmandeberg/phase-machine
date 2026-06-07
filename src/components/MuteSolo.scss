@@ -33,9 +33,9 @@ $buttonSize: 28px;
   .solo {
     &.soloed {
       color: #ffffff;
-      background: $green;
+      background: var(--channel-color);
       &:hover {
-        background: $greenHover;
+        background: var(--channel-color-hover);
       }
     }
   }

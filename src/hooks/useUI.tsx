@@ -317,7 +317,8 @@ export default function useUI(
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
-  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+  // per-channel switch "on" handles use the channel color (on = channel color)
+  const onHandleColor = color
 
   const clearResetEl = useMemo(
     () => (
@@ -334,13 +335,13 @@ export default function useUI(
   )
 
   const midiInputModeEl = useMemo(
-    () => <MidiInputMode midiHold={midiHold} setMidiHold={setMidiHold} theme={theme} />,
-    [midiHold, setMidiHold, theme]
+    () => <MidiInputMode midiHold={midiHold} setMidiHold={setMidiHold} theme={theme} color={color} />,
+    [midiHold, setMidiHold, theme, color]
   )
 
   const notesModeEl = useMemo(() => {
-    return <NotesMode rangeMode={rangeMode} setRangeMode={setRangeMode} theme={theme} />
-  }, [rangeMode, setRangeMode, theme])
+    return <NotesMode rangeMode={rangeMode} setRangeMode={setRangeMode} theme={theme} color={color} />
+  }, [rangeMode, setRangeMode, theme, color])
 
   const pianoEl = useMemo(() => {
     return (
@@ -682,10 +683,11 @@ export default function useUI(
           mute={mute}
           openInstrumentModal={openInstrumentModal}
           inModal={false}
+          color={color}
         />
       )
     },
-    [instrumentOn, instrumentType, mute, openInstrumentModal, setInstrumentOn, setInstrumentType, theme]
+    [color, instrumentOn, instrumentType, mute, openInstrumentModal, setInstrumentOn, setInstrumentType, theme]
   )
 
   const instrumentNormal = useMemo(() => instrumentEl(false), [instrumentEl])

@@ -541,6 +541,12 @@ export function patchPreset(preset: Preset, updated?: boolean) {
 export function patchChannel(channel: ChannelType, updated?: boolean) {
   const defaultChannel = DEFAULT_PRESET.channels[0]
   const c = channel as unknown as Record<string, unknown>
+  // Migrate the retired orange channel color to baby pink so orange is reserved for the
+  // "playing" indicator (channel/instrument selected/on now uses the channel color).
+  if (c.color === '#ff9700') {
+    c.color = '#ff85de'
+    updated = true
+  }
   const cParams = channel.instrumentParams as unknown as Record<string, unknown>
   const dc = defaultChannel as unknown as Record<string, unknown>
   const dcParams = defaultChannel.instrumentParams as unknown as Record<string, unknown>

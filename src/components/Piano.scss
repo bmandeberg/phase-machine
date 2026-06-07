@@ -59,7 +59,7 @@
         background-color: color.adjust($lightTextGray, $lightness: -5%);
       }
       &.selected.mute:hover {
-        background-color: $greenHover;
+        background-color: var(--channel-color-hover);
       }
     }
     &.white-key {
@@ -77,7 +77,7 @@
         border-color: $mediumGray;
         transform: none;
         &.selected {
-          background-color: $green;
+          background-color: var(--channel-color);
         }
       }
       &:first-of-type {
@@ -94,14 +94,14 @@
           background-color: color.adjust($lightGray, $lightness: -5%);
         }
         &.selected:hover {
-          background-color: $greenHover;
+          background-color: var(--channel-color-hover);
         }
       }
     }
     &.selected {
-      background-color: $green;
+      background-color: var(--channel-color);
       &:hover {
-        background-color: $greenHover;
+        background-color: var(--channel-color-hover);
       }
     }
     &.playing,
@@ -242,7 +242,7 @@
     touch-action: none;
     path {
       fill: none;
-      stroke: $green;
+      stroke: var(--channel-color);
       stroke-width: 2px;
       transition: filter 1.5s;
     }

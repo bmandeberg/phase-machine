@@ -78,9 +78,9 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     .solo {
       &.soloed {
         color: $darkBackground;
-        background: $green;
+        background: var(--channel-color);
         &:hover {
-          background: $greenHover;
+          background: var(--channel-color-hover);
         }
       }
     }
@@ -96,10 +96,10 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
         background-color: color.adjust($darkerMediumGray, $lightness: -3%);
       }
       &.midi-active {
-        background-color: $green;
+        background-color: var(--channel-color);
         color: $darkBackground;
         &:hover {
-          background-color: $greenHover;
+          background-color: var(--channel-color-hover);
         }
       }
     }
@@ -107,7 +107,7 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
 
   .midi-modal {
     .channel-num {
-      color: $green;
+      color: var(--channel-color);
     }
     border-right: 1px solid $darkBackground;
   }
@@ -165,7 +165,7 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
 
   .switch-label {
     &.selected {
-      color: $green;
+      color: var(--channel-color);
     }
   }
 
@@ -281,9 +281,9 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
       transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2),
         background-color math.div($transitionTime, 4);
       &.selected {
-        background-color: $green !important;
+        background-color: var(--channel-color) !important;
         &:hover {
-          background-color: $greenHover !important;
+          background-color: var(--channel-color-hover) !important;
         }
       }
       &.playing {
@@ -443,7 +443,7 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
           background-color: $lightMediumGray;
           border-color: $inRangeBorderColor;
           &.selected {
-            background-color: $darkGreen;
+            background-color: var(--channel-color);
             border-color: $lighterDarkGreen;
           }
         }
@@ -455,11 +455,11 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
         }
       }
       &.selected {
-        background-color: $darkGreen;
+        background-color: var(--channel-color);
         &.interactive:hover {
-          background-color: $darkGreenHover;
+          background-color: var(--channel-color-hover);
           &.mute {
-            background-color: $darkGreenHover;
+            background-color: var(--channel-color-hover);
           }
         }
       }
@@ -548,7 +548,7 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     }
     .piano-range {
       path {
-        stroke: $green;
+        stroke: var(--channel-color);
       }
     }
     .piano-border {
@@ -561,7 +561,7 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     // Match NotesMode.scss's selector depth so this wins the specificity tie — component
     // CSS is emitted after this theme CSS.
     .notes-mode-label.notes-mode-selected {
-      color: $green;
+      color: var(--channel-color);
     }
   }
 
@@ -837,12 +837,11 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
       background-color: $darkerMediumGrayActive;
     }
     &.selected {
-      background-color: $green;
-      // Explicit text color so the base `.sequence-step.selected` (#00ad00) doesn't
-      // win the specificity tie and leave an unreadable step number on green.
+      background-color: var(--channel-color);
+      // Explicit dark text so the step number stays readable on the channel color.
       color: $darkBackground;
       &:hover {
-        background-color: $greenHover;
+        background-color: var(--channel-color-hover);
       }
     }
     &.playing {
@@ -883,9 +882,9 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
         border-top: $arrow-size - 3px solid $darkTextGray;
       }
       &.drawer-open {
-        background: $green;
+        background: var(--channel-color);
         &:hover {
-          background: $greenHover;
+          background: var(--channel-color-hover);
         }
         .arrow-down {
           border-top: $arrow-size - 3px solid $darkBackground;
@@ -1033,9 +1032,9 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
           background-color: $muteGrayHover !important;
         }
         &.selected {
-          background-color: $green !important;
+          background-color: var(--channel-color) !important;
           &:hover {
-            background-color: $greenHover !important;
+            background-color: var(--channel-color-hover) !important;
           }
         }
         &.playing {

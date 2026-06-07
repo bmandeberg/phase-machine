@@ -7,6 +7,7 @@ import { UIElements } from '../../hooks/useUI'
 
 type HorizontalViewProps = UIElements & {
   muted: boolean
+  color: string
   channelNum: number
   rangeMode: boolean
   arrowSmallGraphic: string | null
@@ -24,6 +25,7 @@ type HorizontalViewProps = UIElements & {
 
 function HorizontalView({
   muted,
+  color,
   channelNum,
   rangeMode,
   arrowSmallGraphic,
@@ -72,7 +74,10 @@ function HorizontalView({
       appear={true}
       classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
       nodeRef={horizontalViewRef}>
-      <div ref={horizontalViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
+      <div
+        ref={horizontalViewRef}
+        className={classNames('channel channel-horizontal', { mute: muted })}
+        style={{ '--channel-color': color } as React.CSSProperties}>
         {scribblerEl}
         {channelNumNormal}
         {duplicateDeleteEl}

@@ -13,6 +13,7 @@ type EffectControlsProps = ReturnType<typeof useEffectParams> & {
   grabbing?: boolean
   setGrabbing: Setter<boolean>
   tempo: number
+  color: string
 }
 
 function EffectControls({
@@ -49,11 +50,13 @@ function EffectControls({
   grabbing,
   setGrabbing,
   tempo,
+  color,
 }: EffectControlsProps) {
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
-  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+  // effect-enable handles use the channel color when on (on = channel color)
+  const onHandleColor = color
 
   // The synced rate (e.g. '8n') is stored in syncDelayTime; useEffectParams derives
   // the actual delayTime seconds from it + the current tempo, so it tracks BPM.

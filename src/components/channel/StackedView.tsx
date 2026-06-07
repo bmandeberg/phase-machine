@@ -8,6 +8,7 @@ import { UIElements } from '../../hooks/useUI'
 
 type StackedViewProps = UIElements & {
   muted: boolean
+  color: string
   channelNum: number
   numChannels: number
   rangeMode: boolean
@@ -26,6 +27,7 @@ type StackedViewProps = UIElements & {
 
 function StackedView({
   muted,
+  color,
   channelNum,
   numChannels,
   rangeMode,
@@ -76,7 +78,10 @@ function StackedView({
       appear={true}
       classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
       nodeRef={stackedViewRef}>
-      <div ref={stackedViewRef} className={classNames('channel channel-horizontal', { mute: muted })}>
+      <div
+        ref={stackedViewRef}
+        className={classNames('channel channel-horizontal', { mute: muted })}
+        style={{ '--channel-color': color } as React.CSSProperties}>
         {scribblerEl}
         {channelNumNormal}
         {duplicateDeleteEl}

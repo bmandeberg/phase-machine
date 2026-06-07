@@ -25,6 +25,7 @@ interface InstrumentModalProps {
   grabbing?: boolean
   setGrabbing: Setter<boolean>
   tempo: number
+  color: string
 }
 
 export default function InstrumentModal({
@@ -41,6 +42,7 @@ export default function InstrumentModal({
   grabbing,
   setGrabbing,
   tempo,
+  color,
 }: InstrumentModalProps) {
   const [gain, setGain] = useState(instrumentParams.gain)
 
@@ -89,6 +91,7 @@ export default function InstrumentModal({
           theme={theme}
           mute={false}
           inModal={true}
+          color={color}
         />
         <RotaryKnob
           className="instrument-item"
@@ -118,6 +121,7 @@ export default function InstrumentModal({
           grabbing={grabbing}
           setGrabbing={setGrabbing}
           tempo={tempo}
+          color={color}
         />
       </div>
     </div>

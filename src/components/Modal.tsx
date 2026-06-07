@@ -23,6 +23,7 @@ interface ModalProps {
   setTheme?: any
   midiHold?: boolean
   setMidiHold?: any
+  color?: string
   customMidiOutChannel?: boolean
   setCustomMidiOutChannel?: any
   channelNum?: number
@@ -67,6 +68,7 @@ export default function Modal({
   setTheme,
   midiHold,
   setMidiHold,
+  color,
   customMidiOutChannel,
   setCustomMidiOutChannel,
   channelNum,
@@ -188,10 +190,12 @@ export default function Modal({
         theme={theme}
         midiOutChannel={midiOutChannel}
         setMidiOutChannel={setMidiOutChannel}
+        color={color as string}
       />
     ),
     [
       channelNum,
+      color,
       customMidiOutChannel,
       midiHold,
       midiOutChannel,
@@ -217,9 +221,11 @@ export default function Modal({
         grabbing={grabbing}
         setGrabbing={setGrabbing}
         tempo={tempo as number}
+        color={color as string}
       />
     ),
     [
+      color,
       effects,
       gainNode,
       grabbing,

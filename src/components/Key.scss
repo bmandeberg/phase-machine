@@ -93,9 +93,9 @@
     border-width: 0;
     transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2), background-color math.div($transitionTime, 4);
     &.selected {
-      background-color: $green !important;
+      background-color: var(--channel-color) !important;
       &:hover {
-        background-color: $greenHover !important;
+        background-color: var(--channel-color-hover) !important;
       }
     }
     &.playing {

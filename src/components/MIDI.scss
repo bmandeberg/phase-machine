@@ -16,9 +16,9 @@
     width: 28px;
     background-color: $lightAlternateGray;
     &.midi-active {
-      background-color: $green;
+      background-color: var(--channel-color);
       &:hover {
-        background-color: $greenHover;
+        background-color: var(--channel-color-hover);
       }
     }
   }

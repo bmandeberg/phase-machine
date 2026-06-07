@@ -976,6 +976,7 @@ export default function Channel({
           setModalType={setModalType}
           midiHold={midiHold}
           setMidiHold={setMidiHold}
+          color={color}
           theme={theme}
           customMidiOutChannel={customMidiOutChannel}
           setCustomMidiOutChannel={setCustomMidiOutChannel}
@@ -999,6 +1000,7 @@ export default function Channel({
     ),
     [
       channelNum,
+      color,
       customMidiOutChannel,
       effects,
       gainNode,
@@ -1176,6 +1178,7 @@ export default function Channel({
         <StackedView
           {...ui}
           muted={muted}
+          color={color}
           channelNum={channelNum}
           numChannels={numChannels}
           rangeMode={rangeMode}
@@ -1197,6 +1200,7 @@ export default function Channel({
         <HorizontalView
           {...ui}
           muted={muted}
+          color={color}
           channelNum={channelNum}
           rangeMode={rangeMode}
           arrowSmallGraphic={arrowSmallGraphic}
@@ -1217,6 +1221,7 @@ export default function Channel({
         <ClockView
           {...ui}
           muted={muted}
+          color={color}
           channelNum={channelNum}
           rangeMode={rangeMode}
           arrowClockGraphic={arrowClockGraphic}
