@@ -5,6 +5,7 @@ import MultiSelect from './MultiSelect'
 import { THEMES, themedSwitch } from '../globals'
 import classNames from 'classnames'
 import { Preset } from '../types'
+import { alertDialog, confirmDialog } from '../dialog'
 import './Settings.scss'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -84,16 +85,19 @@ export default function Settings({
     const exportPresets = selectedPresets.map((sp) => presets.find((p) => p.name === sp))
     navigator.clipboard.writeText(JSON.stringify(exportPresets)).then(
       () => {
-        alert('Presets copied to clipboard!')
+        alertDialog('Presets copied to clipboard!')
       },
       () => {
-        alert('Unable to copy presets to clipboard!')
+        alertDialog('Unable to copy presets to clipboard!')
       }
     )
   }, [presets, selectedPresets])
 
-  const clearLocalStorage = useCallback(() => {
-    const confirmClear = window.confirm('Are you sure you want to delete all presets and settings ⁉️')
+  const clearLocalStorage = useCallback(async () => {
+    const confirmClear = await confirmDialog('Are you sure you want to delete all presets and settings ⁉️', {
+      danger: true,
+      confirmText: 'Delete',
+    })
     if (confirmClear) {
       localStorage.clear()
       window.location.reload()

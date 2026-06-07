@@ -34,10 +34,10 @@
     box-shadow: inset 0 0 0 3px $pink;
   }
   &.selected {
-    background-color: $green;
-    color: #00ad00;
+    background-color: var(--channel-color);
+    color: color-mix(in srgb, var(--channel-color), black 45%);
     &:hover {
-      background-color: $greenHover;
+      background-color: var(--channel-color-hover);
     }
   }
   &.playing {

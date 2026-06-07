@@ -23,6 +23,7 @@ interface ModalProps {
   setTheme?: any
   midiHold?: boolean
   setMidiHold?: any
+  color?: string
   customMidiOutChannel?: boolean
   setCustomMidiOutChannel?: any
   channelNum?: number
@@ -42,6 +43,7 @@ interface ModalProps {
   effects?: any
   grabbing?: boolean
   setGrabbing?: any
+  tempo?: number
   presetsRestartTransport?: boolean
   setPresetsRestartTransport?: any
   midiClockIn?: boolean
@@ -67,6 +69,7 @@ export default function Modal({
   setTheme,
   midiHold,
   setMidiHold,
+  color,
   customMidiOutChannel,
   setCustomMidiOutChannel,
   channelNum,
@@ -87,6 +90,7 @@ export default function Modal({
   effects,
   grabbing,
   setGrabbing,
+  tempo,
   presetsRestartTransport,
   setPresetsRestartTransport,
   midiClockIn,
@@ -188,10 +192,12 @@ export default function Modal({
         theme={theme}
         midiOutChannel={midiOutChannel}
         setMidiOutChannel={setMidiOutChannel}
+        color={color as string}
       />
     ),
     [
       channelNum,
+      color,
       customMidiOutChannel,
       midiHold,
       midiOutChannel,
@@ -217,9 +223,12 @@ export default function Modal({
         theme={theme}
         grabbing={grabbing}
         setGrabbing={setGrabbing}
+        tempo={tempo as number}
+        color={color as string}
       />
     ),
     [
+      color,
       effects,
       gainNode,
       pannerNode,
@@ -233,6 +242,7 @@ export default function Modal({
       setInstrumentParams,
       setInstrumentType,
       theme,
+      tempo,
     ]
   )
   const aboutEl = useMemo(() => <AboutModal theme={theme} />, [theme])

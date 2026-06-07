@@ -20,6 +20,7 @@ import {
 import Header from './components/Header'
 import Channel from './components/Channel'
 import Modal from './components/Modal'
+import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import { Channel as ChannelType, Preset } from './types'
@@ -363,7 +364,7 @@ export default function App() {
 
   const channels = useMemo(
     () =>
-      uiState.channels.map((d: ChannelType, i: number) => (
+      uiState.channels.map((d: ChannelType) => (
         <Channel
           numChannels={numChannels}
           key={d.id}
@@ -380,7 +381,10 @@ export default function App() {
           showStepNumbers={showStepNumbers}
           midiOut={midiOut}
           setChannelState={setChannelState}
-          channelPreset={currentPreset.channels[i]}
+          // match by id (not index) so a freshly added channel — whose id isn't in the
+          // current preset — gets no preset applied and stays blank, instead of inheriting
+          // the preset's channel at that position.
+          channelPreset={currentPreset.channels.find((c: ChannelType) => c.id === d.id)}
           duplicateChannel={duplicateChannel}
           deleteChannel={deleteChannel}
           initState={d}
@@ -528,6 +532,7 @@ export default function App() {
           setPresetsStopTransport={setPresetsStopTransport}
         />
       </CSSTransition>
+      <AlertDialog />
     </div>
   )
 }
@@ -564,6 +569,12 @@ export function patchPreset(preset: Preset, updated?: boolean) {
 export function patchChannel(channel: ChannelType, updated?: boolean) {
   const defaultChannel = DEFAULT_PRESET.channels[0]
   const c = channel as unknown as Record<string, unknown>
+  // Migrate the retired orange channel color to baby pink so orange is reserved for the
+  // "playing" indicator (channel/instrument selected/on now uses the channel color).
+  if (c.color === '#ff9700') {
+    c.color = '#ff85de'
+    updated = true
+  }
   const cParams = channel.instrumentParams as unknown as Record<string, unknown>
   const dc = defaultChannel as unknown as Record<string, unknown>
   const dcParams = defaultChannel.instrumentParams as unknown as Record<string, unknown>

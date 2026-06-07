@@ -4,6 +4,7 @@ import { PRESET_HOLD_TIME } from '../globals'
 import { midiStartContinue, midiStop } from './useMIDI'
 import { patchPresetAndChannels } from '../App'
 import * as Tone from 'tone'
+import { alertDialog } from '../dialog'
 import { Channel, Preset, Setter, MidiOutRef, MidiInRef } from '../types'
 
 export default function usePresets(
@@ -407,7 +408,7 @@ export default function usePresets(
           for (let i = 0; i < parsedPresets.length; i++) {
             patchPresetAndChannels(parsedPresets[i])
             if (!validPreset(parsedPresets[i])) {
-              alert('Some presets are invalid format!')
+              alertDialog('Some presets are invalid format!')
               return
             }
           }
@@ -420,10 +421,10 @@ export default function usePresets(
             return presetsCopy
           })
           /* eslint-enable @typescript-eslint/no-explicit-any */
-          alert(`${parsedPresets.length} Preset${parsedPresets.length !== 1 ? 's' : ''} imported`)
-        } else alert('No valid presets to import')
+          alertDialog(`${parsedPresets.length} Preset${parsedPresets.length !== 1 ? 's' : ''} imported`)
+        } else alertDialog('No valid presets to import')
       } catch {
-        alert('Invalid presets!')
+        alertDialog('Invalid presets!')
       }
     },
     [dedupName, setPresets, validPreset]

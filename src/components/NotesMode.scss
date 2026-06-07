@@ -1,5 +1,4 @@
 @use '../sass-globals' as *;
-@use 'sass:color';
 
 .notes-mode {
   position: relative;
@@ -27,7 +26,7 @@
     cursor: pointer;
     transition: color $transitionTime;
     &.notes-mode-selected {
-      color: color.adjust($green, $lightness: -10%);
+      color: var(--channel-color);
     }
     &:last-of-type {
       margin-top: 5px;

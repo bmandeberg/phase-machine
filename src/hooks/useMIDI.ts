@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { WebMidi } from 'webmidi'
 import * as Tone from 'tone'
+import { alertDialog } from '../dialog'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // WebMidi / Tone transport carry custom runtime props (midiClockIn/Out,
@@ -67,6 +68,11 @@ export default function useMIDI(setPlaying: any, setResetTransport: any) {
     }
     WebMidi.enable()
       .then(() => {
+        // Populate the device lists from the ports that are already present at enable time.
+        // The 'connected'/'disconnected' listeners below only cover changes afterward, and
+        // can't be relied on to fire (or to fire after they're attached) for pre-existing
+        // ports — so without this the dropdowns stay empty even though MIDI is enabled.
+        connectMidi()
         // initialize MIDI I/O
         const mo = window.localStorage.getItem('midiOut')
         setMidiOut(() => (mo !== null && WebMidi.outputs.map((o) => o.name).includes(mo) && mo) || null)
@@ -113,7 +119,7 @@ export default function useMIDI(setPlaying: any, setResetTransport: any) {
     }
     if (midiIn) {
       if (midiIn === midiOutRef.current && MIDI_IO_CHANGED.IN > 2) {
-        alert(
+        alertDialog(
           'Setting MIDI input to current MIDI output - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
         )
       }
@@ -168,7 +174,7 @@ export default function useMIDI(setPlaying: any, setResetTransport: any) {
 
   useEffect(() => {
     if (midiOut && midiInRef.current && midiOut === midiInRef.current.name && MIDI_IO_CHANGED.OUT > 2) {
-      alert(
+      alertDialog(
         'Setting MIDI output to current MIDI input - to avoid circular MIDI, the MIDI input will only receive MIDI clock, and the MIDI output will not send MIDI clock.'
       )
     }

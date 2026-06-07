@@ -7,6 +7,7 @@ import { UIElements } from '../../hooks/useUI'
 
 type ClockViewProps = UIElements & {
   muted: boolean
+  color: string
   channelNum: number
   rangeMode: boolean
   arrowClockGraphic: string | null
@@ -27,6 +28,7 @@ type ClockViewProps = UIElements & {
 
 function ClockView({
   muted,
+  color,
   channelNum,
   rangeMode,
   arrowClockGraphic,
@@ -78,7 +80,10 @@ function ClockView({
       appear={true}
       classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
       nodeRef={clockViewRef}>
-      <div ref={clockViewRef} className={classNames('channel channel-clock', { mute: muted })}>
+      <div
+        ref={clockViewRef}
+        className={classNames('channel channel-clock', { mute: muted })}
+        style={{ '--channel-color': color } as React.CSSProperties}>
         <div className="channel-clock-top">
           {scribblerEl}
           {channelNumNormal}

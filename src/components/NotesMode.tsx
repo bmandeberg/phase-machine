@@ -8,15 +8,17 @@ interface NotesModeProps {
   rangeMode?: boolean
   setRangeMode: (rangeMode: boolean) => void
   theme: string
+  color: string
 }
 
-export default function NotesMode({ rangeMode, setRangeMode, theme }: NotesModeProps) {
+export default function NotesMode({ rangeMode, setRangeMode, theme, color }: NotesModeProps) {
   const setRangeModeTrue = useCallback(() => setRangeMode(true), [setRangeMode])
   const setRangeModeFalse = useCallback(() => setRangeMode(false), [setRangeMode])
 
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
-  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+  // the toggle handle uses the channel color (on/selected = channel color)
+  const onHandleColor = color
 
   return (
     <div className="notes-mode">

@@ -165,7 +165,10 @@ export default function Piano({
             'prev-black-key-far': prevBlackKey.far(i),
             'black-key-left': blackKeyLeft(i),
             'black-key-right': blackKeyRight(i),
-            'in-range': !mute && (!rangeMode || (i >= rangeStart && i < rangeEnd)),
+            // Only range mode marks in-range keys (the inset highlight). Keyboard-mode keys
+            // are left as default (out-of-range) keys, so they match out-of-range styling
+            // exactly — color, border, and flush geometry. Selected/playing override.
+            'in-range': !mute && rangeMode && i >= rangeStart && i < rangeEnd,
             selected: !rangeMode && keybdPitches.includes(i),
             interactive: !rangeMode,
             mute,

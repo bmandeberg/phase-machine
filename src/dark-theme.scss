@@ -82,9 +82,9 @@ $headerDarkBlue: #0f182d;
     .solo {
       &.soloed {
         color: $darkBackground;
-        background: $darkGreen;
+        background: var(--channel-color);
         &:hover {
-          background: $darkGreenHover;
+          background: var(--channel-color-hover);
         }
       }
     }
@@ -100,10 +100,10 @@ $headerDarkBlue: #0f182d;
         background-color: color.adjust($splitButtonAction, $lightness: -3%);
       }
       &.midi-active {
-        background-color: $darkGreen;
+        background-color: var(--channel-color);
         color: $darkBackground;
         &:hover {
-          background-color: $darkGreenHover;
+          background-color: var(--channel-color-hover);
         }
       }
     }
@@ -111,7 +111,7 @@ $headerDarkBlue: #0f182d;
 
   .midi-modal {
     .channel-num {
-      color: $darkGreen;
+      color: var(--channel-color);
     }
   }
 
@@ -168,7 +168,7 @@ $headerDarkBlue: #0f182d;
 
   .switch-label {
     &.selected {
-      color: $darkGreen;
+      color: var(--channel-color);
     }
   }
 
@@ -286,9 +286,9 @@ $headerDarkBlue: #0f182d;
       transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2),
         background-color math.div($transitionTime, 4);
       &.selected {
-        background-color: $darkGreen !important;
+        background-color: var(--channel-color) !important;
         &:hover {
-          background-color: $darkGreenHover !important;
+          background-color: var(--channel-color-hover) !important;
         }
       }
       &.playing {
@@ -443,11 +443,14 @@ $headerDarkBlue: #0f182d;
       }
       &.white-key {
         background-color: $darkMediumGray;
+        // explicit so the light theme's base .white-key separator border (equal specificity,
+        // emitted later as component CSS) doesn't leak into dark mode
+        border-color: $darkBackground;
         &.in-range {
           background-color: $inRangeColor;
           border-color: $inRangeBorderColor;
           &.selected {
-            background-color: $darkGreen;
+            background-color: var(--channel-color);
           }
         }
         &.interactive:hover {
@@ -456,14 +459,14 @@ $headerDarkBlue: #0f182d;
             background-color: color.adjust($darkMediumGray, $lightness: 3%);
           }
           &.selected {
-            background-color: $darkGreenHover;
+            background-color: var(--channel-color-hover);
           }
         }
       }
       &.selected {
-        background-color: $darkGreen;
+        background-color: var(--channel-color);
         &.interactive:hover {
-          background-color: $darkGreenHover;
+          background-color: var(--channel-color-hover);
         }
       }
       &.playing,
@@ -552,7 +555,7 @@ $headerDarkBlue: #0f182d;
     }
     .piano-range {
       path {
-        stroke: $darkGreen;
+        stroke: var(--channel-color);
       }
     }
     .piano-border {
@@ -562,8 +565,10 @@ $headerDarkBlue: #0f182d;
   }
 
   .notes-mode {
-    .notes-mode-selected {
-      color: $darkGreen;
+    // Match NotesMode.scss's selector depth so this wins the specificity tie (component CSS
+    // is emitted after this theme CSS) and the selected label uses the channel color.
+    .notes-mode-label.notes-mode-selected {
+      color: var(--channel-color);
     }
   }
 
@@ -831,13 +836,11 @@ $headerDarkBlue: #0f182d;
       background-color: $darkMediumGrayActive;
     }
     &.selected {
-      background-color: $darkGreen;
-      // Explicit text color: base `.sequence-step.selected` (#00ad00) ties this
-      // rule's specificity, so without this the green-on-green base color leaks
-      // through and the step number is unreadable on the dark-green background.
+      background-color: var(--channel-color);
+      // Explicit dark text so the step number stays readable on the channel color.
       color: $darkBackground;
       &:hover {
-        background-color: $darkGreenHover;
+        background-color: var(--channel-color-hover);
       }
     }
     &.playing {
@@ -878,9 +881,9 @@ $headerDarkBlue: #0f182d;
         border-top: $arrow-size - 3px solid $darkLightGray;
       }
       &.drawer-open {
-        background: $darkGreen;
+        background: var(--channel-color);
         &:hover {
-          background: $darkGreenHover;
+          background: var(--channel-color-hover);
         }
         .arrow-down {
           border-top: $arrow-size - 3px solid $darkBackground;
@@ -1012,9 +1015,9 @@ $headerDarkBlue: #0f182d;
           background-color: $muteGrayHover !important;
         }
         &.selected {
-          background-color: $darkGreen !important;
+          background-color: var(--channel-color) !important;
           &:hover {
-            background-color: $darkGreenHover !important;
+            background-color: var(--channel-color-hover) !important;
           }
         }
         &.playing {

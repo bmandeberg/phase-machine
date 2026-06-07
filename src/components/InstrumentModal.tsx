@@ -25,6 +25,8 @@ interface InstrumentModalProps {
   effects: EffectRefs
   grabbing?: boolean
   setGrabbing: Setter<boolean>
+  tempo: number
+  color: string
 }
 
 export default function InstrumentModal({
@@ -41,6 +43,8 @@ export default function InstrumentModal({
   effects,
   grabbing,
   setGrabbing,
+  tempo,
+  color,
 }: InstrumentModalProps) {
   const [gain, setGain] = useState(instrumentParams.gain)
   const [pan, setPan] = useState(instrumentParams.pan)
@@ -82,7 +86,7 @@ export default function InstrumentModal({
   // inline at the top of this component.
   const synthParams = useSynthParams(instruments, instrumentParams, updateInstrumentParams)
   const samplerParams = useSamplerParams(instruments, instrumentParams, updateInstrumentParams)
-  const effectParams = useEffectParams(instruments, effects, gainNode, instrumentParams, updateInstrumentParams)
+  const effectParams = useEffectParams(instruments, effects, gainNode, instrumentParams, updateInstrumentParams, tempo)
 
   return (
     <div className={classNames('instrument-modal', { short: instrumentType !== 'synth' })}>
@@ -97,6 +101,7 @@ export default function InstrumentModal({
           theme={theme}
           mute={false}
           inModal={true}
+          color={color}
         />
         <RotaryKnob
           className="instrument-item"
@@ -133,7 +138,15 @@ export default function InstrumentModal({
         {instrumentType !== 'synth' && (
           <SamplerControls {...samplerParams} theme={theme} grabbing={grabbing} setGrabbing={setGrabbing} />
         )}
-        <EffectControls {...effectParams} effects={effects} theme={theme} grabbing={grabbing} setGrabbing={setGrabbing} />
+        <EffectControls
+          {...effectParams}
+          effects={effects}
+          theme={theme}
+          grabbing={grabbing}
+          setGrabbing={setGrabbing}
+          tempo={tempo}
+          color={color}
+        />
       </div>
     </div>
   )

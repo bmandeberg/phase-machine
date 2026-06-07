@@ -8,12 +8,14 @@ interface MidiInputModeProps {
   midiHold?: boolean
   setMidiHold: (midiHold: boolean) => void
   theme: string
+  color: string
 }
 
-export default function MidiInputMode({ midiHold, setMidiHold, theme }: MidiInputModeProps) {
+export default function MidiInputMode({ midiHold, setMidiHold, theme, color }: MidiInputModeProps) {
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
-  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+  // the toggle handle uses the channel color (on/selected = channel color)
+  const onHandleColor = color
 
   const setToggle = useCallback(() => {
     setMidiHold(false)

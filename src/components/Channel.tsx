@@ -16,7 +16,7 @@ import {
   SUSTAIN_MIN,
   KNOB_MAX,
 } from '../globals'
-import { pitchesInRange, constrain, scaleToRange, shiftSeq } from '../math'
+import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds } from '../math'
 import classNames from 'classnames'
 import Modal from './Modal'
 import StackedView from './channel/StackedView'
@@ -56,7 +56,7 @@ interface ChannelProps {
   showStepNumbers: boolean
   midiOut: string | null
   setChannelState: (id: string, state: ChannelType) => void
-  channelPreset: ChannelType
+  channelPreset?: ChannelType
   duplicateChannel: (id: string) => void
   deleteChannel: (id: string) => void
   initState: ChannelType
@@ -417,6 +417,20 @@ export default function Channel({
     effects,
   } = useInstruments(instrument, instrumentParams, instrumentType, cleanupInstruments, setModalType)
 
+  // Keep a tempo-synced delay locked to the global tempo even while the instrument
+  // modal (where useEffectParams lives) is closed. syncDelayTime holds the note rate
+  // (e.g. '8n') when synced; recompute the delay seconds from the current tempo and
+  // push it to the live node + instrumentParams so it persists.
+  useEffect(() => {
+    if (typeof instrumentParams.syncDelayTime === 'string' && delayEffect.current) {
+      const seconds = rateToSeconds(instrumentParams.syncDelayTime, tempo)
+      delayEffect.current.set({ delayTime: seconds })
+      setInstrumentParams((params) =>
+        params.delayTime === seconds ? params : Object.assign({}, params, { delayTime: seconds })
+      )
+    }
+  }, [tempo, instrumentParams.syncDelayTime, delayEffect])
+
   const noteOff = useCallback(
     (channel: any, note: any, midiOutObj: any, delay?: any, offTime?: any, clockOffset?: any) => {
       // In poly mode the synth voice self-releases (triggerAttackRelease), so we
@@ -498,7 +512,7 @@ export default function Channel({
         }
       }
       const unheldNote = !hold || !seqSteps[nextStep.current]
-      const sustainTime = Math.max(sustain * Tone.getTransport().toSeconds(keyRate), 0.08)
+      const sustainTime = Math.max(sustain * rateToSeconds(keyRate, Tone.getTransport().bpm.value), 0.08)
       if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
         if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
@@ -554,7 +568,7 @@ export default function Channel({
       if (!note) return
       const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
       const midiOutObj = midiOut ? (WebMidi.getOutputByName(midiOut) as any) : null
-      const sustainTime = Math.max(sustain * Tone.getTransport().toSeconds(keyRate), 0.08)
+      const sustainTime = Math.max(sustain * rateToSeconds(keyRate, Tone.getTransport().bpm.value), 0.08)
       if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
         if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
@@ -1026,6 +1040,7 @@ export default function Channel({
           setModalType={setModalType}
           midiHold={midiHold}
           setMidiHold={setMidiHold}
+          color={color}
           theme={theme}
           customMidiOutChannel={customMidiOutChannel}
           setCustomMidiOutChannel={setCustomMidiOutChannel}
@@ -1044,11 +1059,13 @@ export default function Channel({
           effects={effects}
           grabbing={grabbing}
           setGrabbing={setGrabbing}
+          tempo={tempo}
         />
       </CSSTransition>
     ),
     [
       channelNum,
+      color,
       customMidiOutChannel,
       effects,
       gainNode,
@@ -1065,6 +1082,7 @@ export default function Channel({
       modalType,
       setGrabbing,
       showModal,
+      tempo,
       theme,
     ]
   )
@@ -1228,6 +1246,7 @@ export default function Channel({
         <StackedView
           {...ui}
           muted={muted}
+          color={color}
           channelNum={channelNum}
           numChannels={numChannels}
           rangeMode={rangeMode}
@@ -1251,6 +1270,7 @@ export default function Channel({
         <HorizontalView
           {...ui}
           muted={muted}
+          color={color}
           channelNum={channelNum}
           rangeMode={rangeMode}
           arrowSmallGraphic={arrowSmallGraphic}
@@ -1273,6 +1293,7 @@ export default function Channel({
         <ClockView
           {...ui}
           muted={muted}
+          color={color}
           channelNum={channelNum}
           rangeMode={rangeMode}
           arrowClockGraphic={arrowClockGraphic}

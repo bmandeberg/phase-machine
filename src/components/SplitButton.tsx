@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import classNames from 'classnames'
+import { alertDialog } from '../dialog'
 import './SplitButton.scss'
 
 interface SplitButtonProps {
@@ -13,7 +14,7 @@ interface SplitButtonProps {
 }
 
 function notImplemented() {
-  alert('Not implemented yet 😉')
+  alertDialog('Not implemented yet 😉')
 }
 
 export default function SplitButton(props: SplitButtonProps) {

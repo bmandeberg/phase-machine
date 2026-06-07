@@ -28,6 +28,7 @@ interface DropdownProps {
   showNumInputs?: boolean
   container?: string
   minWidth?: number
+  gridColumns?: number
 }
 
 function longestText(options: DropdownOption[], graphicOptions: boolean) {
@@ -37,7 +38,11 @@ function longestText(options: DropdownOption[], graphicOptions: boolean) {
   if (options.length) {
     let longestOption = ''
     for (let i = 0; i < options.length; i++) {
-      const option = typeof options[i] === 'object' ? options[i].label.trim() : options[i].trim()
+      // labels are strings on plain options and on { value, label } options; dividers and
+      // grid gaps carry no text and are skipped.
+      const label = typeof options[i] === 'object' ? options[i].label : options[i]
+      if (typeof label !== 'string') continue
+      const option = label.trim()
       if (option.length > longestOption.length) {
         longestOption = option
       }
@@ -66,6 +71,7 @@ export default function Dropdown({
   showNumInputs,
   container,
   minWidth,
+  gridColumns,
 }: DropdownProps) {
   const [open, setOpen] = useState(false)
   const [menuAbove, setMenuAbove] = useState(false)
@@ -106,7 +112,16 @@ export default function Dropdown({
 
   const optionHeight = useMemo(() => (small ? 20 : 27), [small])
 
-  const menuHeight = useMemo(() => Math.min(options.length * optionHeight, 200), [optionHeight, options])
+  // In grid mode the menu is `gridColumns` wide, so its height is driven by the row
+  // count, not the total option count.
+  const menuRows = useMemo(
+    () => (gridColumns ? Math.ceil(options.length / gridColumns) : options.length),
+    [gridColumns, options.length]
+  )
+  const menuHeight = useMemo(
+    () => Math.min(menuRows * optionHeight, gridColumns ? 400 : 200),
+    [menuRows, optionHeight, gridColumns]
+  )
 
   const toggleOpen = useCallback(() => {
     if (!open && dropdownRef.current) {
@@ -134,19 +149,28 @@ export default function Dropdown({
   )
 
   useEffect(() => {
-    if (open) {
+    if (open && !gridColumns) {
       if (selectedIndex !== -1) {
         menuRef.current?.scroll({ top: selectedIndex * optionHeight })
       }
     }
-  }, [open, optionHeight, selectedIndex])
+  }, [open, optionHeight, selectedIndex, gridColumns])
 
   const optionEls = useMemo(
     () =>
       options.length ? (
         options.map((option) => {
+          // A full-width divider between grid sections (non-interactive).
+          if (typeof option === 'object' && option.divider) {
+            return <div key={uuid()} className="dropdown-divider" />
+          }
           const optionValue = typeof option === 'object' ? option.value : option
           const optionLabel = typeof option === 'object' ? option.label : option
+          // An empty-string option is a grid gap (a cell with no rate) — render a
+          // non-interactive placeholder so the grid columns stay aligned.
+          if (optionValue === '') {
+            return <div key={uuid()} className="dropdown-option dropdown-option-empty" />
+          }
           return (
             <div
               key={uuid()}
@@ -169,10 +193,12 @@ export default function Dropdown({
     const top = menuAbove ? menuHeight * -1 + 2 + 'px' : '100%'
     return container ? { top: `calc(${top} - ${scrollTop}px)` } : { top }
   }, [container, menuAbove, menuHeight, scrollTop])
-  const menuStyle = useMemo<React.CSSProperties | undefined>(
-    () => (container ? { width: dropdownWidth } : undefined),
-    [container, dropdownWidth]
-  )
+  const menuStyle = useMemo<React.CSSProperties | undefined>(() => {
+    const style: React.CSSProperties = {}
+    if (container) style.width = dropdownWidth
+    if (gridColumns) style.gridTemplateColumns = `repeat(${gridColumns}, minmax(0, 1fr))`
+    return Object.keys(style).length ? style : undefined
+  }, [container, dropdownWidth, gridColumns])
 
   const dropdownLabel = useMemo(() => <p className="dropdown-label no-select">{label}</p>, [label])
   const numInputs = useMemo(
@@ -211,7 +237,10 @@ export default function Dropdown({
           <div
             className={classNames('dropdown-menu-wrapper', { open, 'menu-above': menuAbove })}
             style={menuWrapperStyle}>
-            <div ref={menuRef} className={classNames('dropdown-menu', { 'fixed-menu': container })} style={menuStyle}>
+            <div
+              ref={menuRef}
+              className={classNames('dropdown-menu', { 'fixed-menu': container, 'grid-menu': gridColumns })}
+              style={menuStyle}>
               {optionEls}
             </div>
           </div>

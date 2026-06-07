@@ -13,7 +13,9 @@
     @extend .no-select;
     width: 10px;
     height: 57px;
-    background-color: $lightTextGray;
+    // out-of-range (and keyboard-mode) black keys — dark enough to read clearly against
+    // the light white keys (light theme only; dark/contrast override below)
+    background-color: $darkGray;
     border-width: 2px;
     border-style: solid;
     border-color: #ffffff;
@@ -57,7 +59,7 @@
         background-color: color.adjust($lightTextGray, $lightness: -5%);
       }
       &.selected.mute:hover {
-        background-color: $greenHover;
+        background-color: var(--channel-color-hover);
       }
     }
     &.white-key {
@@ -67,13 +69,15 @@
       margin-left: 0;
       height: 100%;
       background-color: $lightGray;
+      // visible separator between out-of-range/keyboard white keys (light theme only)
+      border-color: $mediumGray;
       z-index: 1;
       &.in-range {
         background-color: #ffffff;
         border-color: $mediumGray;
         transform: none;
         &.selected {
-          background-color: $green;
+          background-color: var(--channel-color);
         }
       }
       &:first-of-type {
@@ -90,14 +94,14 @@
           background-color: color.adjust($lightGray, $lightness: -5%);
         }
         &.selected:hover {
-          background-color: $greenHover;
+          background-color: var(--channel-color-hover);
         }
       }
     }
     &.selected {
-      background-color: $green;
+      background-color: var(--channel-color);
       &:hover {
-        background-color: $greenHover;
+        background-color: var(--channel-color-hover);
       }
     }
     &.playing,
@@ -238,7 +242,7 @@
     touch-action: none;
     path {
       fill: none;
-      stroke: $green;
+      stroke: var(--channel-color);
       stroke-width: 2px;
       transition: filter 1.5s;
     }

@@ -1,6 +1,6 @@
 import { Bezier } from 'bezier-js'
 import * as Tone from 'tone'
-import { lerp, scaleToRange } from '../math'
+import { lerp, scaleToRange, rateToSeconds } from '../math'
 
 type LoopCallback = (time: number, interval: number) => void
 
@@ -18,7 +18,7 @@ export default class Loop {
 
   constructor(callback: LoopCallback) {
     this.rate = '4n'
-    this.interval = Tone.getTransport().toSeconds(this.rate)
+    this.interval = rateToSeconds(this.rate, Tone.getTransport().bpm.value)
     this.swingAmt = 0.5
     this.swingPhraseLength = 2
     this.swingEnable = false
@@ -99,7 +99,7 @@ export default class Loop {
   }
 
   updateInterval() {
-    this.interval = Tone.getTransport().toSeconds(this.rate)
+    this.interval = rateToSeconds(this.rate, Tone.getTransport().bpm.value)
     this.loop.interval = this.interval * (this.swingEnable ? this.swingPhraseLength : 1)
   }
 

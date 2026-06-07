@@ -19,6 +19,7 @@ interface InstrumentProps {
   mute?: boolean
   openInstrumentModal?: () => void
   inModal?: boolean
+  color: string
 }
 
 export default function Instrument({
@@ -32,6 +33,7 @@ export default function Instrument({
   mute,
   openInstrumentModal,
   inModal,
+  color,
 }: InstrumentProps) {
   const incrementInstrument = useCallback(
     (next: boolean) => {
@@ -61,7 +63,8 @@ export default function Instrument({
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
-  const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+  // the instrument on/off handle uses the channel color when on (on = channel color)
+  const onHandleColor = color
 
   const splitButtonContent = useMemo(() => INSTRUMENT_TYPES[instrumentType](theme), [instrumentType, theme])
   const splitButtonRight = useCallback(() => incrementInstrument(true), [incrementInstrument])

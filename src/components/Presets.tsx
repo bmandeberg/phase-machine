@@ -2,6 +2,7 @@ import React, { useMemo, useCallback } from 'react'
 import classNames from 'classnames'
 import Dropdown from './Dropdown'
 import { BROWSER } from '../globals'
+import { confirmDialog } from '../dialog'
 import { Preset } from '../types'
 import addIcon from '../assets/plus-icon-orange.svg'
 import addIconBlue from '../assets/plus-icon-blue.svg'
@@ -108,11 +109,17 @@ export default function Presets({
     }
   }, [preset.placeholder, presetDirty, savePreset])
 
-  const doDelete = useCallback(() => {
+  const doDelete = useCallback(async () => {
     if (!preset.placeholder) {
-      deletePreset()
+      const confirmed = await confirmDialog(`Are you sure you want to delete the preset "${preset.name}" ⁉️`, {
+        danger: true,
+        confirmText: 'Delete',
+      })
+      if (confirmed) {
+        deletePreset()
+      }
     }
-  }, [deletePreset, preset.placeholder])
+  }, [deletePreset, preset.placeholder, preset.name])
 
   const presetEdited = useMemo(() => <img className="preset-edited" src={edited} alt="" />, [])
   const presetHotkeyEl = useMemo(
