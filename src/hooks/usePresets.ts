@@ -335,6 +335,7 @@ export default function usePresets(
         invalidProp(channel, 'rangeEnd', 'number') ||
         invalidProp(channel, 'seqSteps', 'object') ||
         invalidProp(channel, 'seqLength', 'number') ||
+        invalidProp(channel, 'seqShiftAmt', 'number') ||
         invalidProp(channel, 'seqRate', 'string') ||
         invalidProp(channel, 'seqMovement', 'string') ||
         invalidProp(channel, 'seqArpInc1', 'number') ||

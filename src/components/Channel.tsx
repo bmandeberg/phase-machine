@@ -16,7 +16,7 @@ import {
   SUSTAIN_MIN,
   KNOB_MAX,
 } from '../globals'
-import { pitchesInRange, constrain, scaleToRange } from '../math'
+import { pitchesInRange, constrain, scaleToRange, shiftSeq } from '../math'
 import classNames from 'classnames'
 import Modal from './Modal'
 import StackedView from './channel/StackedView'
@@ -138,6 +138,33 @@ export default function Channel({
   const noNoteOffScheduled = useRef(false)
   const [seqSteps, setSeqSteps] = useState(initState.seqSteps)
   const [seqLength, setSeqLength] = useState(initState.seqLength)
+  const [seqShiftAmt, setSeqShiftAmt] = useState(initState.seqShiftAmt)
+  const [seqShiftDirectionForward, setSeqShiftDirectionForward] = useState(true)
+  const [seqPreview, setSeqPreview] = useState<boolean[]>(initState.seqSteps)
+  const [showSeqPreview, setShowSeqPreview] = useState(false)
+  // Sequencer shift, mirroring the key shift: a non-zero amount (skips 0 like the
+  // key) that rotates the active steps, with a live preview of the result.
+  const previewSeqShift = useCallback(
+    (forward = seqShiftDirectionForward, newShift = seqShiftAmt, previewSteps = seqSteps) => {
+      if (newShift === 0) newShift = forward ? 1 : -1
+      setSeqPreview(shiftSeq(newShift, previewSteps, seqLength))
+      setShowSeqPreview(true)
+    },
+    [seqShiftAmt, seqShiftDirectionForward, seqSteps, seqLength]
+  )
+  const updateSeqShift = useCallback(
+    (newShift: number) => {
+      if (newShift === 0) newShift = seqShiftDirectionForward ? 1 : -1
+      setSeqShiftAmt(newShift)
+      previewSeqShift(seqShiftDirectionForward, newShift)
+    },
+    [previewSeqShift, seqShiftDirectionForward]
+  )
+  const doSeqShift = useCallback(() => {
+    const shifted = shiftSeq(seqShiftAmt, seqSteps, seqLength)
+    setSeqSteps(shifted)
+    previewSeqShift(seqShiftDirectionForward, seqShiftAmt, shifted)
+  }, [seqShiftAmt, seqSteps, seqLength, previewSeqShift, seqShiftDirectionForward])
   const [playingStep, setPlayingStep] = useState<any>()
   const prevStep = useRef<any>(undefined)
   const currentStep = useRef<any>(undefined)
@@ -746,6 +773,7 @@ export default function Channel({
         setRangeEnd(channelPreset.rangeEnd)
         setSeqSteps(channelPreset.seqSteps.slice())
         setSeqLength(channelPreset.seqLength)
+        setSeqShiftAmt(channelPreset.seqShiftAmt)
         setSeqRate(channelPreset.seqRate)
         setSeqMovement(channelPreset.seqMovement)
         setSeqArpInc1(channelPreset.seqArpInc1)
@@ -945,6 +973,12 @@ export default function Channel({
     setSeqSwing,
     seqSwingLength,
     setSeqSwingLength,
+    seqShiftAmt,
+    updateSeqShift,
+    previewSeqShift,
+    setShowSeqPreview,
+    setSeqShiftDirectionForward,
+    doSeqShift,
     setHold,
     hold,
     instrumentOn,
@@ -1101,6 +1135,7 @@ export default function Channel({
         rangeEnd,
         seqSteps,
         seqLength,
+        seqShiftAmt,
         seqRate,
         seqMovement,
         seqArpInc1,
@@ -1150,6 +1185,7 @@ export default function Channel({
     seqMovement,
     seqLength,
     seqRate,
+    seqShiftAmt,
     seqSteps,
     seqSwing,
     seqSwingLength,
@@ -1199,6 +1235,8 @@ export default function Channel({
           seqSteps={seqSteps}
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
+          seqPreview={seqPreview}
+          showSeqPreview={showSeqPreview}
           playingStep={playingStep}
           showStepNumbers={showStepNumbers}
           longestSequence={longestSequence}
@@ -1219,6 +1257,8 @@ export default function Channel({
           seqSteps={seqSteps}
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
+          seqPreview={seqPreview}
+          showSeqPreview={showSeqPreview}
           playingStep={playingStep}
           showStepNumbers={showStepNumbers}
           longestSequence={longestSequence}
@@ -1239,6 +1279,8 @@ export default function Channel({
           seqSteps={seqSteps}
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
+          seqPreview={seqPreview}
+          showSeqPreview={showSeqPreview}
           playingStep={playingStep}
           showStepNumbers={showStepNumbers}
           draggingChannel={draggingChannel}

@@ -13,6 +13,8 @@ type HorizontalViewProps = UIElements & {
   seqSteps: boolean[]
   setSeqSteps: Setter<boolean[]>
   seqLength: number
+  seqPreview: boolean[]
+  showSeqPreview: boolean
   playingStep?: number
   showStepNumbers: boolean
   longestSequence: number
@@ -30,6 +32,8 @@ function HorizontalView({
   seqSteps,
   setSeqSteps,
   seqLength,
+  seqPreview,
+  showSeqPreview,
   playingStep,
   showStepNumbers,
   longestSequence,
@@ -56,6 +60,7 @@ function HorizontalView({
   sustainNormal,
   keySwingNormal,
   seqLengthInline,
+  seqShiftInline,
   seqRateInline,
   seqMovementInline,
   seqSwingInline,
@@ -102,6 +107,8 @@ function HorizontalView({
           seqSteps={seqSteps}
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}
+          seqPreview={seqPreview}
+          showSeqPreview={showSeqPreview}
           playingStep={playingStep}
           showStepNumbers={showStepNumbers}
           longestSequence={longestSequence}>
@@ -113,6 +120,7 @@ function HorizontalView({
             {holdInline}
             {seqRestartEl}
             {seqOppositeEl}
+            {seqShiftInline}
           </div>
         </Sequencer>
         <div className="channel-module border"></div>

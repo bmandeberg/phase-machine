@@ -551,6 +551,7 @@ export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: bool
   rangeEnd: MIDDLE_C + 12,
   seqSteps: [...Array(MAX_SEQUENCE_LENGTH)].map(() => false),
   seqLength: 16,
+  seqShiftAmt: 1,
   seqRate: DEFAULT_TIME_DIVISION,
   seqMovement: Object.keys(MOVEMENTS)[0],
   seqArpInc1: 2,

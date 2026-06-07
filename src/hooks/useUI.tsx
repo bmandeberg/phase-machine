@@ -92,6 +92,12 @@ export default function useUI(
   setSeqSwing: Setter<number>,
   seqSwingLength: number,
   setSeqSwingLength: Setter<number>,
+  seqShiftAmt: number,
+  updateSeqShift: (n: number) => void,
+  previewSeqShift: (forward?: boolean, newShift?: number, previewSteps?: boolean[]) => void,
+  setShowSeqPreview: Setter<boolean>,
+  setSeqShiftDirectionForward: Setter<boolean>,
+  doSeqShift: () => void,
   setHold: Setter<boolean>,
   hold: boolean,
   instrumentOn: boolean,
@@ -544,6 +550,32 @@ export default function useUI(
   const seqLengthNormal = useMemo(() => seqLengthEl(false), [seqLengthEl])
   const seqLengthInline = useMemo(() => seqLengthEl(true), [seqLengthEl])
 
+  const seqShiftEl = useCallback(
+    (inline: boolean) => {
+      return (
+        <NumInput
+          className="channel-module"
+          value={seqShiftAmt}
+          setValue={updateSeqShift}
+          label="Shift"
+          min={-(seqLength - 1)}
+          max={seqLength - 1}
+          preview={previewSeqShift}
+          setShowKeyPreview={setShowSeqPreview}
+          setDirectionForward={setSeqShiftDirectionForward}
+          buttonText="Shift"
+          buttonAction={doSeqShift}
+          inline={inline}
+          short={!inline}
+        />
+      )
+    },
+    [seqShiftAmt, updateSeqShift, seqLength, previewSeqShift, setShowSeqPreview, setSeqShiftDirectionForward, doSeqShift]
+  )
+
+  const seqShiftNormal = useMemo(() => seqShiftEl(false), [seqShiftEl])
+  const seqShiftInline = useMemo(() => seqShiftEl(true), [seqShiftEl])
+
   const seqRateEl = useCallback(
     (inline: boolean) => {
       return (
@@ -732,6 +764,8 @@ export default function useUI(
     keySwingVertical,
     seqLengthNormal,
     seqLengthInline,
+    seqShiftNormal,
+    seqShiftInline,
     seqRateNormal,
     seqRateInline,
     seqMovementNormal,

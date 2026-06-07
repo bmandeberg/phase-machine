@@ -134,6 +134,7 @@ export interface Channel {
   rangeEnd: number
   seqSteps: boolean[]
   seqLength: number
+  seqShiftAmt: number
   seqRate: string
   seqMovement: string
   seqArpInc1: number

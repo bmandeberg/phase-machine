@@ -5,6 +5,7 @@ import {
   opposite,
   shiftWrapper,
   shift,
+  shiftSeq,
   pitchesInRange,
   lerp,
   scaleToRange,
@@ -57,6 +58,25 @@ describe('shift', () => {
   })
   it('is identity for a shift of 0', () => {
     expect(shift(0, P(3, 7))).toEqual(P(3, 7))
+  })
+})
+
+describe('shiftSeq', () => {
+  it('rotates the active steps to the right', () => {
+    expect(shiftSeq(1, [true, false, false, false], 4)).toEqual([false, true, false, false])
+    expect(shiftSeq(2, [true, false, true, false], 4)).toEqual([true, false, true, false])
+  })
+  it('wraps within seqLength', () => {
+    expect(shiftSeq(1, [false, false, false, true], 4)).toEqual([true, false, false, false])
+    expect(shiftSeq(-1, [true, false, false, false], 4)).toEqual([false, false, false, true])
+  })
+  it('leaves steps beyond seqLength untouched', () => {
+    // only the first 2 steps are active; the trailing steps stay put
+    expect(shiftSeq(1, [true, false, true, true], 2)).toEqual([false, true, true, true])
+  })
+  it('is identity for a shift of 0 or a full rotation', () => {
+    expect(shiftSeq(0, [true, false, true], 3)).toEqual([true, false, true])
+    expect(shiftSeq(3, [true, false, true], 3)).toEqual([true, false, true])
   })
 })
 

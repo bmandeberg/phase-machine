@@ -48,6 +48,19 @@ export function shift(shiftAmt: number, key: boolean[]) {
   return shiftedPitchClasses
 }
 
+// Rotate the active portion (the first seqLength steps) of a sequence by
+// shiftAmt, wrapping within that length and leaving any steps beyond seqLength
+// untouched. A positive shift moves each step later (to the right).
+export function shiftSeq(shiftAmt: number, seqSteps: boolean[], seqLength: number) {
+  const shifted = seqSteps.slice()
+  if (seqLength <= 0) return shifted
+  const n = (((shiftAmt % seqLength) + seqLength) % seqLength) || 0
+  for (let i = 0; i < seqLength; i++) {
+    shifted[(i + n) % seqLength] = seqSteps[i]
+  }
+  return shifted
+}
+
 export function pitchesInRange(rangeStart: number, rangeEnd: number, key: boolean[]) {
   const pitchIndexes: number[] = []
   key.forEach((pitchClass, i) => {

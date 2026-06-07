@@ -28,6 +28,11 @@
   &:hover {
     background-color: $darkGrayHover;
   }
+  // preview of where steps would land after a sequencer shift — same pink as the
+  // key's shift preview (a ring so it reads over both on and off steps)
+  &.previewed {
+    box-shadow: inset 0 0 0 3px $pink;
+  }
   &.selected {
     background-color: $green;
     color: #00ad00;

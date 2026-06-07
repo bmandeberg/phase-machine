@@ -13,6 +13,8 @@ type ClockViewProps = UIElements & {
   seqSteps: boolean[]
   setSeqSteps: Setter<boolean[]>
   seqLength: number
+  seqPreview: boolean[]
+  showSeqPreview: boolean
   playingStep?: number
   showStepNumbers: boolean
   draggingChannel: boolean
@@ -31,6 +33,8 @@ function ClockView({
   seqSteps,
   setSeqSteps,
   seqLength,
+  seqPreview,
+  showSeqPreview,
   playingStep,
   showStepNumbers,
   draggingChannel,
@@ -57,6 +61,7 @@ function ClockView({
   keySwingVertical,
   pianoEl,
   seqLengthNormal,
+  seqShiftNormal,
   seqRateNormal,
   seqMovementNormal,
   seqSwingNormal,
@@ -119,6 +124,8 @@ function ClockView({
               seqSteps={seqSteps}
               setSeqSteps={setSeqSteps}
               seqLength={seqLength}
+              seqPreview={seqPreview}
+              showSeqPreview={showSeqPreview}
               playingStep={playingStep}
               showStepNumbers={showStepNumbers}
             />
@@ -129,6 +136,7 @@ function ClockView({
               {seqSwingNormal}
               {holdNormal}
               {seqOppositeRestartEl}
+              {seqShiftNormal}
               {instrumentSmall}
             </div>
           </div>

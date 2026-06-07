@@ -15,6 +15,8 @@ type StackedViewProps = UIElements & {
   seqSteps: boolean[]
   setSeqSteps: Setter<boolean[]>
   seqLength: number
+  seqPreview: boolean[]
+  showSeqPreview: boolean
   playingStep?: number
   showStepNumbers: boolean
   longestSequence: number
@@ -33,6 +35,8 @@ function StackedView({
   seqSteps,
   setSeqSteps,
   seqLength,
+  seqPreview,
+  showSeqPreview,
   playingStep,
   showStepNumbers,
   longestSequence,
@@ -60,6 +64,7 @@ function StackedView({
   sustainNormal,
   keySwingNormal,
   seqLengthInline,
+  seqShiftInline,
   seqRateInline,
   seqMovementInline,
   seqSwingInline,
@@ -113,6 +118,8 @@ function StackedView({
             seqSteps={seqSteps}
             setSeqSteps={setSeqSteps}
             seqLength={seqLength}
+            seqPreview={seqPreview}
+            showSeqPreview={showSeqPreview}
             playingStep={playingStep}
             showStepNumbers={showStepNumbers}
             longestSequence={longestSequence}>
@@ -124,6 +131,7 @@ function StackedView({
               {holdInline}
               {seqRestartEl}
               {seqOppositeEl}
+              {seqShiftInline}
             </div>
           </Sequencer>
           <div className="channel-module border"></div>

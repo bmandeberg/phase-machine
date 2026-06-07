@@ -8,6 +8,8 @@ interface SequencerProps {
   seqSteps: boolean[]
   setSeqSteps: React.Dispatch<React.SetStateAction<boolean[]>>
   seqLength: number
+  seqPreview?: boolean[]
+  showSeqPreview?: boolean
   playingStep?: number
   children?: React.ReactNode
   showStepNumbers?: boolean
@@ -19,6 +21,8 @@ export default function Sequencer({
   seqSteps,
   setSeqSteps,
   seqLength,
+  seqPreview,
+  showSeqPreview,
   playingStep,
   children,
   showStepNumbers,
@@ -47,6 +51,7 @@ export default function Sequencer({
         <div
           className={classNames('sequence-step', {
             selected: seqSteps[i],
+            previewed: showSeqPreview && seqPreview?.[i],
             playing: playingStep === i,
             hidden: i >= seqLength,
           })}
@@ -55,7 +60,7 @@ export default function Sequencer({
           {showStepNumbers && i + 1}
         </div>
       )),
-    [playingStep, seqLength, seqSteps, showStepNumbers, updateSeq]
+    [playingStep, seqLength, seqSteps, seqPreview, showSeqPreview, showStepNumbers, updateSeq]
   )
 
   return (
