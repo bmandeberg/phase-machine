@@ -144,6 +144,7 @@ export default function Presets({
           {presetHotkey !== null && presetHotkeyEl}
         </div>
         <Dropdown
+          className="preset-dropdown"
           options={presetOptions ?? []}
           value={preset.id}
           placeholder="New Preset"
