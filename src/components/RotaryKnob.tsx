@@ -37,6 +37,9 @@ interface RotaryKnobProps {
   rangeMode?: boolean
   logarithmic?: boolean
   updateOnce?: boolean
+  // color the knob to match the header UI accent (blue in dark/contrast, orange
+  // in light) instead of the default neutral channel-knob palette.
+  headerStyle?: boolean
 }
 
 export default function RotaryKnob({
@@ -67,6 +70,7 @@ export default function RotaryKnob({
   rangeMode,
   logarithmic,
   updateOnce,
+  headerStyle,
 }: RotaryKnobProps) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
@@ -141,6 +145,11 @@ export default function RotaryKnob({
   }, [axisKnob, axisKnobLarge, inline])
 
   const knobColor = useMemo(() => {
+    if (headerStyle) {
+      if (theme === 'light') return 'FFE4D1'
+      if (theme === 'contrast') return '008DFF' // header accent blue
+      return '17326D'
+    }
     switch (theme) {
       case 'light':
         return mute ? 'D8D8D8' : 'E6E6E6'
@@ -151,9 +160,10 @@ export default function RotaryKnob({
       default:
         return mute ? 'D8D8D8' : 'E6E6E6'
     }
-  }, [mute, theme])
+  }, [mute, theme, headerStyle])
 
   const knobInnerStroke = useMemo(() => {
+    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FFFFFF' : '0F182D'
     switch (theme) {
       case 'light':
         return 'FFFFFF'
@@ -164,9 +174,10 @@ export default function RotaryKnob({
       default:
         return 'FFFFFF'
     }
-  }, [theme])
+  }, [theme, headerStyle])
 
   const knobOuterStroke = useMemo(() => {
+    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FF9700' : '0F182D'
     switch (theme) {
       case 'light':
         return 'CCCCCC'
@@ -177,9 +188,10 @@ export default function RotaryKnob({
       default:
         return 'CCCCCC'
     }
-  }, [mute, theme])
+  }, [mute, theme, headerStyle])
 
   const knobIndicator = useMemo(() => {
+    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FF9700' : '008DFF'
     switch (theme) {
       case 'light':
         return '666666'
@@ -190,9 +202,10 @@ export default function RotaryKnob({
       default:
         return '666666'
     }
-  }, [mute, theme])
+  }, [mute, theme, headerStyle])
 
   const knobTicks = useMemo(() => {
+    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FF9700' : '008DFF'
     switch (theme) {
       case 'light':
         return '999999'
@@ -203,7 +216,7 @@ export default function RotaryKnob({
       default:
         return '999999'
     }
-  }, [theme])
+  }, [theme, headerStyle])
 
   const skin = useMemo(() => {
     const st0 = Math.round(Math.random() * RANDOM_RANGE)

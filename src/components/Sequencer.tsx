@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import classNames from 'classnames'
 
 import './Sequencer.scss'
@@ -28,16 +28,48 @@ export default function Sequencer({
   showStepNumbers,
   longestSequence,
 }: SequencerProps) {
-  const updateSeq = useCallback(
-    (i: number) => {
+  // Click-drag painting: mousedown toggles the first step and records its new
+  // value; dragging over subsequent steps paints that same value across them.
+  const dragging = useRef(false)
+  const paintValue = useRef(false)
+
+  const handleStepMouseDown = useCallback(
+    (e: React.MouseEvent, i: number) => {
+      if (e.button !== 0) return // left-click only
+      e.preventDefault() // avoid text/drag selection while painting
+      const newVal = !seqSteps[i]
+      paintValue.current = newVal
+      dragging.current = true
       setSeqSteps((seq) => {
         const seqCopy = seq.slice()
-        seqCopy[i] = !seqCopy[i]
+        seqCopy[i] = newVal
+        return seqCopy
+      })
+    },
+    [seqSteps, setSeqSteps]
+  )
+
+  const handleStepMouseEnter = useCallback(
+    (i: number) => {
+      if (!dragging.current) return
+      setSeqSteps((seq) => {
+        if (seq[i] === paintValue.current) return seq
+        const seqCopy = seq.slice()
+        seqCopy[i] = paintValue.current
         return seqCopy
       })
     },
     [setSeqSteps]
   )
+
+  // End the drag wherever the mouse is released (even outside the steps).
+  useEffect(() => {
+    const stopDragging = () => {
+      dragging.current = false
+    }
+    window.addEventListener('mouseup', stopDragging)
+    return () => window.removeEventListener('mouseup', stopDragging)
+  }, [])
 
   useEffect(() => {
     setSeqSteps((seqSteps) => {
@@ -55,12 +87,22 @@ export default function Sequencer({
             playing: playingStep === i,
             hidden: i >= seqLength,
           })}
-          onClick={() => updateSeq(i)}
+          onMouseDown={(e) => handleStepMouseDown(e, i)}
+          onMouseEnter={() => handleStepMouseEnter(i)}
           key={i}>
           {showStepNumbers && i + 1}
         </div>
       )),
-    [playingStep, seqLength, seqSteps, seqPreview, showSeqPreview, showStepNumbers, updateSeq]
+    [
+      playingStep,
+      seqLength,
+      seqSteps,
+      seqPreview,
+      showSeqPreview,
+      showStepNumbers,
+      handleStepMouseDown,
+      handleStepMouseEnter,
+    ]
   )
 
   return (

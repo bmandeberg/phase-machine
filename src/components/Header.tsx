@@ -231,6 +231,7 @@ export default class Header extends React.Component<HeaderProps> {
           inline={true}
           mute={false}
           theme={this.props.theme}
+          headerStyle
         />
         <div className="header-aux">
           <div className="aux-item header-about" onClick={this.openAbout.bind(this)} title="About"></div>
