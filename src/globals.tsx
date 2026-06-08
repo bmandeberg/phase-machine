@@ -45,7 +45,7 @@ import lightChoral from './assets/samples-choral-light.svg'
 import darkChoral from './assets/samples-choral-dark.svg'
 import { rangeWrapper } from './math'
 import { alertDialog } from './dialog'
-import { Channel, Preset } from './types'
+import { Channel, Preset, EffectSlot, EffectSlots } from './types'
 
 const uaParser = new UAParser()
 export const BROWSER = uaParser.getBrowser()
@@ -469,7 +469,113 @@ export const SUSTAIN_MIN = 0.2
 
 export const MAX_CHANNELS = 8
 
-export const EFFECTS = ['none', 'chorus', 'distortion', 'delay', 'reverb', 'vibrato']
+export const EFFECTS = [
+  'none',
+  'chorus',
+  'distortion',
+  'delay',
+  'reverb',
+  'vibrato',
+  'bitcrusher',
+  'pitch',
+  'phaser',
+  'compressor',
+  'multibandComp',
+  'eq',
+]
+
+// Effects that have a native Tone `wet` (so a per-slot Amount knob makes sense).
+// The processors — compressor / multibandComp / eq — operate on the full signal
+// and have no dry/wet, so their Amount knob is hidden in the UI.
+export const WET_EFFECTS = ['chorus', 'distortion', 'delay', 'reverb', 'vibrato', 'bitcrusher', 'pitch', 'phaser']
+
+// A fresh, fully-populated effect slot. ALWAYS call this (never share a literal)
+// so each channel/slot gets its own object — patchChannel relies on this to avoid
+// aliasing one default array across every channel.
+export const BLANK_EFFECT_SLOT = (): EffectSlot => ({
+  type: 'none',
+  wet: 1,
+  chorusDepth: 0.5,
+  chorusDelayTime: 2.5,
+  chorusFreq: 4,
+  chorusSpread: 0,
+  distortion: 1,
+  syncDelayTime: false,
+  delayTime: 0.25,
+  delayFeedback: 0.5,
+  reverbDecay: 1.5,
+  reverbPreDelay: 0.01,
+  vibratoDepth: 0.1,
+  vibratoFreq: 5,
+  bits: 4,
+  pitchShift: 0,
+  pitchFeedback: 0,
+  phaserFreq: 0.5,
+  phaserOctaves: 3,
+  phaserBaseFreq: 350,
+  phaserQ: 10,
+  compThreshold: -24,
+  compRatio: 4,
+  compAttack: 0.003,
+  compRelease: 0.25,
+  mbLowThreshold: -24,
+  mbMidThreshold: -24,
+  mbHighThreshold: -24,
+  mbRatio: 4,
+  mbAttack: 0.005,
+  mbRelease: 0.1,
+  mbLowFreq: 250,
+  mbHighFreq: 2000,
+  eqLowFreq: 200,
+  eqLowGain: 0,
+  eqMidFreq: 1000,
+  eqMidGain: 0,
+  eqMidQ: 1,
+  eqHighFreq: 5000,
+  eqHighGain: 0,
+})
+
+export const BLANK_EFFECT_SLOTS = (): EffectSlots => [BLANK_EFFECT_SLOT(), BLANK_EFFECT_SLOT(), BLANK_EFFECT_SLOT()]
+
+// The legacy single-effect flat fields that map into slot 0 of the new model.
+const LEGACY_EFFECT_FIELDS = [
+  'chorusDepth',
+  'chorusDelayTime',
+  'chorusFreq',
+  'chorusSpread',
+  'distortion',
+  'syncDelayTime',
+  'delayTime',
+  'delayFeedback',
+  'reverbDecay',
+  'reverbPreDelay',
+  'vibratoDepth',
+  'vibratoFreq',
+]
+
+// Build a channel's 3-slot `effects` array. Pure + idempotent:
+//  • no `effects` yet (legacy preset) → migrate the old single effect into slot 0
+//    (type=effectType, wet=effectWet, copy the per-effect params), slots 1-2 blank.
+//  • already has `effects` → normalize to exactly 3 slots, backfilling any missing
+//    per-slot params from BLANK_EFFECT_SLOT so partial/old slots stay valid.
+// Always returns fresh slot objects (never shares references across channels).
+export function migrateEffectSlots(params: Record<string, unknown>): EffectSlots {
+  if (params.effects === undefined) {
+    const slot0 = BLANK_EFFECT_SLOT() as unknown as Record<string, unknown>
+    slot0.type = typeof params.effectType === 'string' ? params.effectType : 'none'
+    if (typeof params.effectWet === 'number') slot0.wet = params.effectWet
+    for (const k of LEGACY_EFFECT_FIELDS) {
+      if (params[k] !== undefined) slot0[k] = params[k]
+    }
+    return [slot0 as unknown as EffectSlot, BLANK_EFFECT_SLOT(), BLANK_EFFECT_SLOT()]
+  }
+  const arr = Array.isArray(params.effects) ? (params.effects as Record<string, unknown>[]) : []
+  const slots: EffectSlot[] = []
+  for (let i = 0; i < 3; i++) {
+    slots.push({ ...BLANK_EFFECT_SLOT(), ...(arr[i] || {}) } as EffectSlot)
+  }
+  return slots as EffectSlots
+}
 
 export const BLANK_PITCH_CLASSES = () => [
   false,
@@ -632,20 +738,7 @@ export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: bool
     filterAmount: 3,
     samplerAttack: 0,
     samplerRelease: 1,
-    effectType: EFFECTS[0],
-    effectWet: 1,
-    chorusDepth: 0.5,
-    chorusDelayTime: 2.5,
-    chorusFreq: 4,
-    chorusSpread: 0,
-    distortion: 1,
-    syncDelayTime: false,
-    delayTime: 0.25,
-    delayFeedback: 0.5,
-    reverbDecay: 1.5,
-    reverbPreDelay: 0.01,
-    vibratoDepth: 0.1,
-    vibratoFreq: 5,
+    effects: BLANK_EFFECT_SLOTS(),
   },
 })
 

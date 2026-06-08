@@ -18,20 +18,17 @@ export type Setter<T> = Dispatch<SetStateAction<T>>
 export type SynthInstrument = Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth>
 export type SamplerInstrument = Tone.Sampler
 export type Instrument = SynthInstrument | SamplerInstrument
-export type ToneEffectNode = Tone.Chorus | Tone.Distortion | Tone.FeedbackDelay | Tone.Reverb | Tone.Vibrato
-// Any node an instrument can be connected to (the gain node or an effect).
-export type SignalDestination = Tone.Gain | ToneEffectNode
 
 // Refs to those nodes. They start undefined, get assigned on init, and are
 // nulled on dispose (see useInstruments cleanup), hence the `| null | undefined`.
+// (Effect nodes are owned by the SlotNode handles in useInstruments, not typed here.)
 export type SynthRef = MutableRefObject<SynthInstrument | null | undefined>
 export type SamplerRef = MutableRefObject<SamplerInstrument | null | undefined>
 export type InstrumentRef = MutableRefObject<Instrument | null | undefined>
-export type ToneEffectRef = MutableRefObject<ToneEffectNode | null | undefined>
 export type GainRef = MutableRefObject<Tone.Gain | null | undefined>
 export type PannerRef = MutableRefObject<Tone.Panner | null | undefined>
 
-// The bundles useInstruments groups its refs into and hands to InstrumentModal.
+// The bundle useInstruments groups its instrument refs into and hands to InstrumentModal.
 export interface InstrumentRefs {
   synthInstrument: SynthRef
   pianoInstrument: SamplerRef
@@ -42,16 +39,6 @@ export interface InstrumentRefs {
   choralInstrument: SamplerRef
   drumsInstrument: SamplerRef
   drumMachineInstrument: SamplerRef
-}
-// Per-effect refs keep their concrete Tone type (so effect-specific properties
-// like Chorus.depth or Reverb.decay remain accessible), unlike the generic
-// ToneEffectRef union used where only the shared node interface matters.
-export interface EffectRefs {
-  chorusEffect: MutableRefObject<Tone.Chorus | null | undefined>
-  distortionEffect: MutableRefObject<Tone.Distortion | null | undefined>
-  delayEffect: MutableRefObject<Tone.FeedbackDelay | null | undefined>
-  reverbEffect: MutableRefObject<Tone.Reverb | null | undefined>
-  vibratoEffect: MutableRefObject<Tone.Vibrato | null | undefined>
 }
 
 // ---- MIDI ----
@@ -67,6 +54,81 @@ export interface MidiNoteEvent {
 }
 export type MidiOutRef = MutableRefObject<string | null | undefined>
 export type MidiInRef = MutableRefObject<MidiInputLike | null | undefined>
+
+// The set of effects a slot can host. 'none' = passthrough.
+export type EffectType =
+  | 'none'
+  | 'chorus'
+  | 'distortion'
+  | 'delay'
+  | 'reverb'
+  | 'vibrato'
+  | 'bitcrusher'
+  | 'pitch'
+  | 'phaser'
+  | 'compressor'
+  | 'multibandComp'
+  | 'eq'
+
+// One effect slot. Each slot carries EVERY effect's params so switching a slot's
+// type away and back keeps its settings "warm" (the live Tone node is created on
+// demand; the params persist in state). `wet` is the per-slot Amount (only the
+// effects with a native Tone `wet` use it; the processors — comp/eq — ignore it).
+export interface EffectSlot {
+  type: EffectType
+  wet: number
+  // chorus
+  chorusDepth: number
+  chorusDelayTime: number
+  chorusFreq: number
+  chorusSpread: number
+  // distortion
+  distortion: number
+  // delay (syncDelayTime: false = free seconds, string note-rate = tempo-synced)
+  syncDelayTime: boolean | string
+  delayTime: number
+  delayFeedback: number
+  // reverb
+  reverbDecay: number
+  reverbPreDelay: number
+  // vibrato
+  vibratoDepth: number
+  vibratoFreq: number
+  // bitcrusher
+  bits: number
+  // pitch shift (semitones, plus feedback for cascading repitch)
+  pitchShift: number
+  pitchFeedback: number
+  // phaser
+  phaserFreq: number
+  phaserOctaves: number
+  phaserBaseFreq: number
+  phaserQ: number
+  // compressor
+  compThreshold: number
+  compRatio: number
+  compAttack: number
+  compRelease: number
+  // multiband compressor
+  mbLowThreshold: number
+  mbMidThreshold: number
+  mbHighThreshold: number
+  mbRatio: number
+  mbAttack: number
+  mbRelease: number
+  mbLowFreq: number
+  mbHighFreq: number
+  // parametric EQ: low-shelf · mid peak · high-shelf
+  eqLowFreq: number
+  eqLowGain: number
+  eqMidFreq: number
+  eqMidGain: number
+  eqMidQ: number
+  eqHighFreq: number
+  eqHighGain: number
+}
+
+export type EffectSlots = [EffectSlot, EffectSlot, EffectSlot]
 
 export interface InstrumentParams {
   gain: number
@@ -96,20 +158,10 @@ export interface InstrumentParams {
   filterAmount: number
   samplerAttack: number
   samplerRelease: number
-  effectType: string
-  effectWet: number
-  chorusDepth: number
-  chorusDelayTime: number
-  chorusFreq: number
-  chorusSpread: number
-  distortion: number
-  syncDelayTime: boolean | string
-  delayTime: number
-  delayFeedback: number
-  reverbDecay: number
-  reverbPreDelay: number
-  vibratoDepth: number
-  vibratoFreq: number
+  // 3 serial effect slots (instruments -> effects[0] -> [1] -> [2] -> gain).
+  // Legacy presets used flat effect fields here; patchChannel migrates them into
+  // effects[0] (see migrateEffectSlots), so effects[] is the sole source of truth.
+  effects: EffectSlots
 }
 
 export interface Channel {

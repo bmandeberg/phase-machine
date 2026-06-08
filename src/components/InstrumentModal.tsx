@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Instrument from './Instrument'
 import RotaryKnob from './RotaryKnob'
 import classNames from 'classnames'
-import { InstrumentParams, InstrumentRefs, EffectRefs, GainRef, PannerRef, Setter } from '../types'
+import { InstrumentParams, InstrumentRefs, EffectSlot, EffectSlots, GainRef, PannerRef, Setter } from '../types'
+import { SlotNodesRef } from '../hooks/useInstruments'
 import useSynthParams from './instrument/useSynthParams'
 import useSamplerParams from './instrument/useSamplerParams'
 import useEffectParams from './instrument/useEffectParams'
@@ -23,7 +24,8 @@ interface InstrumentModalProps {
   instruments: InstrumentRefs
   gainNode: GainRef
   pannerNode: PannerRef
-  effects: EffectRefs
+  slotNodesRef: SlotNodesRef
+  rebuildEffectChain: (slots: EffectSlots) => void
   grabbing?: boolean
   setGrabbing: Setter<boolean>
   tempo: number
@@ -42,7 +44,8 @@ export default function InstrumentModal({
   instruments,
   gainNode,
   pannerNode,
-  effects,
+  slotNodesRef,
+  rebuildEffectChain,
   grabbing,
   setGrabbing,
   tempo,
@@ -60,18 +63,51 @@ export default function InstrumentModal({
   // the derived delayTime update landed last and the syncDelayTime write was lost).
   const instrumentParamsDebounce = useRef<ReturnType<typeof setTimeout>>(undefined)
   const pendingInstrumentParams = useRef<Partial<InstrumentParams>>({})
+  // pending per-slot field edits, keyed by slot index, merged into effects[] on flush
+  const pendingSlots = useRef<Record<number, Partial<EffectSlot>>>({})
+
+  const flushParams = useCallback(() => {
+    const flat = pendingInstrumentParams.current
+    const slotEdits = pendingSlots.current
+    pendingInstrumentParams.current = {}
+    pendingSlots.current = {}
+    setInstrumentParams((prev: InstrumentParams) => {
+      const next = Object.assign({}, prev, flat)
+      const indices = Object.keys(slotEdits)
+      if (indices.length) {
+        next.effects = prev.effects.map((slot, i) =>
+          slotEdits[i] ? Object.assign({}, slot, slotEdits[i]) : slot
+        ) as EffectSlots
+      }
+      return next
+    })
+  }, [setInstrumentParams])
+
+  const scheduleFlush = useCallback(() => {
+    clearTimeout(instrumentParamsDebounce.current)
+    instrumentParamsDebounce.current = setTimeout(flushParams, 200)
+  }, [flushParams])
+
+  // Single debounced writer for the flat (synth/sampler/gain) params. Pending edits
+  // accumulate into a ref keyed by param so a second param updating within the 200ms
+  // window can't clobber the first; the timer only schedules the flush.
   const updateInstrumentParams = useCallback(
     (param: string, value: InstrumentParams[keyof InstrumentParams]) => {
       pendingInstrumentParams.current = Object.assign({}, pendingInstrumentParams.current, { [param]: value })
-      clearTimeout(instrumentParamsDebounce.current)
-      const debounceTime = 200
-      instrumentParamsDebounce.current = setTimeout(() => {
-        const pending = pendingInstrumentParams.current
-        pendingInstrumentParams.current = {}
-        setInstrumentParams((instrumentParams: InstrumentParams) => Object.assign({}, instrumentParams, pending))
-      }, debounceTime)
+      scheduleFlush()
     },
-    [setInstrumentParams]
+    [scheduleFlush]
+  )
+
+  // Nested writer for one effect slot's field — immutably updates effects[index].
+  const updateSlotParam = useCallback(
+    (index: number, field: string, value: number | boolean | string) => {
+      pendingSlots.current = Object.assign({}, pendingSlots.current, {
+        [index]: Object.assign({}, pendingSlots.current[index], { [field]: value }),
+      })
+      scheduleFlush()
+    },
+    [scheduleFlush]
   )
 
   useEffect(() => {
@@ -94,7 +130,7 @@ export default function InstrumentModal({
   // inline at the top of this component.
   const synthParams = useSynthParams(instruments, instrumentParams, updateInstrumentParams)
   const samplerParams = useSamplerParams(instruments, instrumentParams, updateInstrumentParams)
-  const effectParams = useEffectParams(instruments, effects, gainNode, instrumentParams, updateInstrumentParams, tempo)
+  const effectSlots = useEffectParams(slotNodesRef, rebuildEffectChain, instrumentParams.effects, updateSlotParam, tempo)
 
   return (
     <div className={classNames('instrument-modal', { short: instrumentType !== 'synth' })}>
@@ -161,9 +197,8 @@ export default function InstrumentModal({
           />
         )}
         <EffectControls
-          {...effectParams}
+          slots={effectSlots}
           savedInstrumentParams={savedInstrumentParams}
-          effects={effects}
           theme={theme}
           grabbing={grabbing}
           setGrabbing={setGrabbing}

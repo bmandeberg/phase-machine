@@ -126,7 +126,8 @@ $headerDarkBlue: #0f182d;
 
   .instrument-modal {
     .controls-row,
-    .controls-module {
+    .controls-module,
+    .effect-slot {
       border-color: $darkMediumGray;
     }
     .controls-label {

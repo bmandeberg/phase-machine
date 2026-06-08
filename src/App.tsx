@@ -13,6 +13,7 @@ import {
   DEFAULT_PRESET,
   DEFAULT_PRESETS,
   BLANK_CHANNEL,
+  migrateEffectSlots,
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
   SIGNAL_TYPES,
@@ -585,7 +586,17 @@ export function patchChannel(channel: ChannelType, updated?: boolean) {
       updated = true
     }
   }
+  // 3-slot effects: migrate legacy single-effect presets into slot 0 / normalize.
+  // Flag a change only when there was no `effects` yet (avoids spurious re-saves on
+  // every load). NB: must run BEFORE the generic instrumentParams fill, and that
+  // loop must SKIP `effects` so it never aliases DEFAULT_PRESET's slot array onto
+  // every channel (migrateEffectSlots always returns fresh per-channel objects).
+  if (cParams.effects === undefined) {
+    updated = true
+  }
+  cParams.effects = migrateEffectSlots(cParams)
   for (const prop in defaultChannel.instrumentParams) {
+    if (prop === 'effects') continue
     if (cParams[prop] === undefined) {
       cParams[prop] = dcParams[prop]
       updated = true

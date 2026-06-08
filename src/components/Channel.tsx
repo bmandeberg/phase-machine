@@ -26,7 +26,7 @@ import ClockView from './channel/ClockView'
 import useLoop from '../hooks/useLoop'
 import useKeyManipulation from '../hooks/useKeyManipulation'
 import useUI from '../hooks/useUI'
-import useInstruments, { updateInstruments } from '../hooks/useInstruments'
+import useInstruments from '../hooks/useInstruments'
 import arrowSmall from '../assets/arrow-small.svg'
 import arrowSmallDark from '../assets/arrow-small-dark.svg'
 import arrowSmallLight from '../assets/arrow-small-light.svg'
@@ -414,30 +414,37 @@ export default function Channel({
     vibesInstrument,
     harpInstrument,
     choralInstrument,
-    chorusEffect,
-    distortionEffect,
-    delayEffect,
-    reverbEffect,
-    vibratoEffect,
-    getCurrentEffect,
+    slotNodesRef,
+    rebuildEffectChain,
+    reloadInstruments,
     openInstrumentModal,
     instruments,
-    effects,
   } = useInstruments(instrument, instrumentParams, instrumentType, cleanupInstruments, setModalType)
 
-  // Keep a tempo-synced delay locked to the global tempo even while the instrument
-  // modal (where useEffectParams lives) is closed. syncDelayTime holds the note rate
-  // (e.g. '8n') when synced; recompute the delay seconds from the current tempo and
-  // push it to the live node + instrumentParams so it persists.
+  // Keep any tempo-synced delay SLOT locked to the global tempo even while the
+  // instrument modal (where useEffectParams lives) is closed. A delay slot whose
+  // syncDelayTime is a note-rate string derives its delay seconds from the current
+  // tempo; push that to the live node + instrumentParams (immutably) so it persists.
   useEffect(() => {
-    if (typeof instrumentParams.syncDelayTime === 'string' && delayEffect.current) {
-      const seconds = rateToSeconds(instrumentParams.syncDelayTime, tempo)
-      delayEffect.current.set({ delayTime: seconds })
-      setInstrumentParams((params) =>
-        params.delayTime === seconds ? params : Object.assign({}, params, { delayTime: seconds })
-      )
+    const effects = instrumentParams.effects
+    let changed = false
+    const next = effects.map((slot, i) => {
+      if (slot.type === 'delay' && typeof slot.syncDelayTime === 'string') {
+        const seconds = rateToSeconds(slot.syncDelayTime, tempo)
+        if (slot.delayTime !== seconds) {
+          changed = true
+          const updated = { ...slot, delayTime: seconds }
+          const node = slotNodesRef.current[i]
+          if (node && node.type === 'delay') node.setParams(updated)
+          return updated
+        }
+      }
+      return slot
+    })
+    if (changed) {
+      setInstrumentParams((params) => Object.assign({}, params, { effects: next as typeof params.effects }))
     }
-  }, [tempo, instrumentParams.syncDelayTime, delayEffect])
+  }, [tempo, instrumentParams.effects, slotNodesRef, setInstrumentParams])
 
   const noteOff = useCallback(
     (channel: any, note: any, midiOutObj: any, delay?: any, offTime?: any, clockOffset?: any) => {
@@ -813,55 +820,12 @@ export default function Channel({
         setMidiOutChannel(channelPreset.midiOutChannel)
         setInstrumentParams(channelPreset.instrumentParams)
         setModalType(null)
-        updateInstruments(
-          gainNode.current!,
-          pannerNode.current,
-          synthInstrument.current,
-          [
-            pianoInstrument.current,
-            marimbaInstrument.current,
-            drumsInstrument.current,
-            drumMachineInstrument.current,
-            bassInstrument.current,
-            vibesInstrument.current,
-            harpInstrument.current,
-            choralInstrument.current,
-          ],
-          chorusEffect.current,
-          distortionEffect.current!,
-          delayEffect.current!,
-          reverbEffect.current!,
-          vibratoEffect.current!,
-          channelPreset.instrumentParams,
-          getCurrentEffect()
-        )
+        reloadInstruments(channelPreset.instrumentParams)
         setUpdateOnce(true)
       }
       prevChannelPreset.current = channelPreset
     }
-  }, [
-    channelPreset,
-    restartChannels,
-    keyRestart,
-    seqRestart,
-    gainNode,
-    pannerNode,
-    synthInstrument,
-    pianoInstrument,
-    marimbaInstrument,
-    drumsInstrument,
-    drumMachineInstrument,
-    bassInstrument,
-    vibesInstrument,
-    harpInstrument,
-    choralInstrument,
-    chorusEffect,
-    distortionEffect,
-    delayEffect,
-    reverbEffect,
-    vibratoEffect,
-    getCurrentEffect,
-  ])
+  }, [channelPreset, restartChannels, keyRestart, seqRestart, reloadInstruments])
 
   // manage key and notes for range and keybd modes
 
@@ -1067,7 +1031,8 @@ export default function Channel({
           instruments={instruments}
           gainNode={gainNode}
           pannerNode={pannerNode}
-          effects={effects}
+          slotNodesRef={slotNodesRef}
+          rebuildEffectChain={rebuildEffectChain}
           grabbing={grabbing}
           setGrabbing={setGrabbing}
           tempo={tempo}
@@ -1078,7 +1043,8 @@ export default function Channel({
       channelNum,
       color,
       customMidiOutChannel,
-      effects,
+      slotNodesRef,
+      rebuildEffectChain,
       gainNode,
       pannerNode,
       grabbing,

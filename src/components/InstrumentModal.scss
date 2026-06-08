@@ -2,9 +2,11 @@
 
 .instrument-modal {
   width: 637px;
-  height: 490px;
+  // min-height keeps the familiar size; the modal grows downward to fit the 3
+  // effect-slot rows (the modal-content scrolls if it exceeds the viewport).
+  min-height: 490px;
   &.short {
-    height: 260px;
+    min-height: 260px;
   }
   .instrument-controls {
     margin-top: 20px;
@@ -68,6 +70,180 @@
   }
   .effects-controls {
     position: relative;
+    // full-width (not the default inline-block module) so the per-slot divider
+    // lines below span the whole modal like the other controls-row dividers
+    display: block;
+    padding-right: 0;
+  }
+  // 3 serial effect slots, each a horizontal row: [#] [type dropdown] [knobs…].
+  // All three are shown at once so the chain reads top-to-bottom and flows wide.
+  .effect-slots {
+    margin-top: 4px;
+  }
+  .effect-slot {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    column-gap: 8px;
+    padding: 7px 0;
+    border-top: 1px solid $lightMediumGray;
+    &:first-child {
+      border-top: none;
+    }
+    .effect-slot-num {
+      @extend .no-select;
+      font-size: 15px;
+      color: $lightTextGray;
+      width: 12px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    &.active .effect-slot-num {
+      color: $darkGray;
+    }
+    .effect-slot-type {
+      margin-top: 6px;
+      // column so anything below the dropdown (the EQ's Mid Q knob) stacks under it
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      .dropdown-container {
+        margin-top: 0;
+      }
+      // the slot number + dropdown value already identify the slot; the dropdown's
+      // own "Effect" label would just repeat under all 3 rows
+      .dropdown-label {
+        display: none;
+      }
+      // the EQ's Mid Q knob, sitting under the dropdown
+      > * + * {
+        margin-top: 8px;
+      }
+    }
+    // EQ slot: stretch the type column to the graph's height so the Mid Q knob can
+    // sit at the bottom (label flush with the graph bottom) and the right edge
+    // (flush with the dropdown's right edge, closer to the graph)
+    // EQ slot: the type column stretches to the graph's height, and the Mid Q knob
+    // is anchored to its bottom-right — so its label bottom is flush with the graph
+    // bottom and its right edge lines up with the dropdown's, hugging the graph.
+    &.eq-slot .effect-slot-type {
+      align-self: stretch;
+      position: relative;
+      // drop the dropdown's right margin so the column is exactly its width — then
+      // the knob's right:0 lines up with the dropdown's right edge (not its margin)
+      .dropdown-container {
+        margin-right: 0;
+      }
+      .knob-container {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+      }
+    }
+    // the per-effect knobs flow inline beside the type dropdown
+    .effect-slot-controls {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      // the delay's Sync switch and synced-rate dropdown are shorter than the knobs;
+      // bottom-align them so their labels line up with the knob labels
+      .switch-container {
+        margin-right: 10px;
+        align-self: flex-end;
+      }
+      .dropdown-container {
+        align-self: flex-end;
+        // the dropdown's label is absolutely positioned 14px below the container
+        // (unlike the in-flow switch/knob labels), so lift the container 14px to
+        // land its label on the same line as the knob labels
+        margin-top: 0;
+        margin-bottom: 14px;
+      }
+    }
+    // interactive EQ response graph (drag the band nodes). Neutral grey/alpha
+    // colors so it reads on every theme without per-theme overrides.
+    .eq-graph {
+      margin-top: 6px;
+      margin-right: 10px;
+      display: block;
+      background-color: rgba(128, 128, 128, 0.08);
+      border: 1px solid rgba(128, 128, 128, 0.35);
+      border-radius: 2px;
+      .eq-grid {
+        stroke: rgba(128, 128, 128, 0.32);
+        stroke-width: 1;
+      }
+      .eq-zero {
+        stroke: rgba(128, 128, 128, 0.5);
+      }
+      .eq-label {
+        fill: rgba(128, 128, 128, 0.75);
+        font-size: 8px;
+      }
+      .eq-curve {
+        stroke-width: 2;
+      }
+      .eq-node {
+        stroke: rgba(255, 255, 255, 0.9);
+        stroke-width: 1.5;
+        cursor: grab;
+        &:active {
+          cursor: grabbing;
+        }
+      }
+    }
+    // multiband compressor: the frequency split into 3 band regions with draggable
+    // crossover lines and per-band thresholds (shaded "over threshold" zone), with
+    // the Ratio/Attack/Release knobs in a row below the graph.
+    .mb-controls {
+      display: flex;
+      flex-direction: column;
+      margin-top: 6px;
+      margin-right: 10px;
+      .mb-knobs {
+        display: flex;
+        margin-top: 6px;
+      }
+    }
+    .mb-graph {
+      display: block;
+      background-color: rgba(128, 128, 128, 0.08);
+      border: 1px solid rgba(128, 128, 128, 0.35);
+      border-radius: 2px;
+      .mb-grid {
+        stroke: rgba(128, 128, 128, 0.32);
+        stroke-width: 1;
+      }
+      .mb-label {
+        fill: rgba(128, 128, 128, 0.75);
+        font-size: 8px;
+      }
+      .mb-band {
+        fill-opacity: 0.16;
+        pointer-events: none;
+      }
+      .mb-thr {
+        stroke-width: 2;
+      }
+      .mb-thr-hit {
+        fill: transparent;
+        cursor: ns-resize;
+      }
+      .mb-xover {
+        stroke: rgba(128, 128, 128, 0.6);
+        stroke-width: 1;
+        stroke-dasharray: 2 2;
+        pointer-events: none;
+      }
+      .mb-xover-hit {
+        fill: transparent;
+        cursor: ew-resize;
+      }
+      .mb-xover-grip {
+        cursor: ew-resize;
+      }
+    }
   }
   .knob-container {
     margin-top: 0;
