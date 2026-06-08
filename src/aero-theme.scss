@@ -302,6 +302,13 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
   .channel-clock {
     border: 1px solid rgba(255, 255, 255, 0.45);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    // the aero-flat borders make the flip button + the controls above it ~4px
+    // taller, so its center sits ~4px lower than in the other themes; the arrow
+    // is absolutely positioned, so nudge it down to keep pointing at the center
+    // (the extra .channel-clock keeps this above the component's base rule)
+    .arrow-clock {
+      top: 160px;
+    }
   }
   .channel-horizontal {
     .channel-number-container {
@@ -431,6 +438,13 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     // of lightening it
     .fader-knob {
       filter: saturate(0.4) brightness(0.9);
+    }
+    // the axis/clock connector arrows are a single aqua SVG; desaturate + fade
+    // them so they read as muted (rather than maintaining a separate mute asset)
+    .arrow-small,
+    .arrow-clock {
+      filter: saturate(0.3) brightness(1.06);
+      opacity: 0.55;
     }
   }
   .stacked-auxiliary.first-auxiliary::before {

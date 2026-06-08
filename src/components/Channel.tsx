@@ -31,10 +31,12 @@ import arrowSmall from '../assets/arrow-small.svg'
 import arrowSmallDark from '../assets/arrow-small-dark.svg'
 import arrowSmallLight from '../assets/arrow-small-light.svg'
 import arrowSmallLightMute from '../assets/arrow-small-light-mute.svg'
+import arrowSmallAero from '../assets/arrow-small-aero.svg'
 import arrowClock from '../assets/arrow-clock.svg'
 import arrowClockDark from '../assets/arrow-clock-dark.svg'
 import arrowClockLight from '../assets/arrow-clock-light.svg'
 import arrowClockLightMute from '../assets/arrow-clock-light-mute.svg'
+import arrowClockAero from '../assets/arrow-clock-aero.svg'
 import { Channel as ChannelType, Setter, MidiNoteEvent } from '../types'
 import './Channel.scss'
 
@@ -1226,6 +1228,8 @@ export default function Channel({
         return arrowSmallDark
       case 'contrast':
         return mute ? arrowSmallLightMute : arrowSmallLight
+      case 'aero':
+        return arrowSmallAero
       default:
         return null
     }
@@ -1239,6 +1243,8 @@ export default function Channel({
         return arrowClockDark
       case 'contrast':
         return mute ? arrowClockLightMute : arrowClockLight
+      case 'aero':
+        return arrowClockAero
       default:
         return null
     }
