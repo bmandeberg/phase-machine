@@ -5,9 +5,13 @@ import classNames from 'classnames'
 import { InstrumentParams, InstrumentRefs, EffectRefs, GainRef, PannerRef, Setter } from '../types'
 import useSynthParams from './instrument/useSynthParams'
 import useSamplerParams from './instrument/useSamplerParams'
+import useMetalParams from './instrument/useMetalParams'
+import usePluckParams from './instrument/usePluckParams'
 import useEffectParams from './instrument/useEffectParams'
 import SynthControls from './instrument/SynthControls'
 import SamplerControls from './instrument/SamplerControls'
+import MetalControls from './instrument/MetalControls'
+import PluckControls from './instrument/PluckControls'
 import EffectControls from './instrument/EffectControls'
 import './InstrumentModal.scss'
 
@@ -94,6 +98,8 @@ export default function InstrumentModal({
   // inline at the top of this component.
   const synthParams = useSynthParams(instruments, instrumentParams, updateInstrumentParams)
   const samplerParams = useSamplerParams(instruments, instrumentParams, updateInstrumentParams)
+  const metalParams = useMetalParams(instruments, instrumentParams, updateInstrumentParams)
+  const pluckParams = usePluckParams(instruments, instrumentParams, updateInstrumentParams)
   const effectParams = useEffectParams(instruments, effects, gainNode, instrumentParams, updateInstrumentParams, tempo)
 
   return (
@@ -151,7 +157,25 @@ export default function InstrumentModal({
             setGrabbing={setGrabbing}
           />
         )}
-        {instrumentType !== 'synth' && (
+        {instrumentType === 'metal' && (
+          <MetalControls
+            {...metalParams}
+            savedInstrumentParams={savedInstrumentParams}
+            theme={theme}
+            grabbing={grabbing}
+            setGrabbing={setGrabbing}
+          />
+        )}
+        {instrumentType === 'pluck' && (
+          <PluckControls
+            {...pluckParams}
+            savedInstrumentParams={savedInstrumentParams}
+            theme={theme}
+            grabbing={grabbing}
+            setGrabbing={setGrabbing}
+          />
+        )}
+        {instrumentType !== 'synth' && instrumentType !== 'metal' && instrumentType !== 'pluck' && (
           <SamplerControls
             {...samplerParams}
             savedInstrumentParams={savedInstrumentParams}

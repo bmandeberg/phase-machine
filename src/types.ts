@@ -18,9 +18,18 @@ export type Setter<T> = Dispatch<SetStateAction<T>>
 // voices in poly mode (see InstrumentParams.poly / useInstruments).
 export type SynthInstrument = Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth>
 export type SamplerInstrument = Tone.Sampler
+// Extra single-voice Tone synths with their own param sets; they self-release
+// via triggerAttackRelease like the samplers do.
+export type MetalInstrument = Tone.MetalSynth
+export type PluckInstrument = Tone.PluckSynth
 // RhythmSampler is the custom varispeed engine for tempo-synced breakbeats; it
 // implements the Tone.Sampler trigger surface so it shares the instrument path.
-export type Instrument = SynthInstrument | SamplerInstrument | RhythmSampler
+export type Instrument =
+  | SynthInstrument
+  | SamplerInstrument
+  | RhythmSampler
+  | MetalInstrument
+  | PluckInstrument
 export type ToneEffectNode = Tone.Chorus | Tone.Distortion | Tone.FeedbackDelay | Tone.Reverb | Tone.Vibrato
 // Any node an instrument can be connected to (the gain node or an effect).
 export type SignalDestination = Tone.Gain | ToneEffectNode
@@ -47,6 +56,8 @@ export interface InstrumentRefs {
   drumMachineInstrument: SamplerRef
   hxcInstrument: SamplerRef
   rhythmInstrument: MutableRefObject<RhythmSampler | null | undefined>
+  metalInstrument: MutableRefObject<MetalInstrument | null | undefined>
+  pluckInstrument: MutableRefObject<PluckInstrument | null | undefined>
 }
 // Per-effect refs keep their concrete Tone type (so effect-specific properties
 // like Chorus.depth or Reverb.decay remain accessible), unlike the generic
@@ -101,6 +112,19 @@ export interface InstrumentParams {
   filterAmount: number
   samplerAttack: number
   samplerRelease: number
+  // MetalSynth params
+  metalHarmonicity: number
+  metalModulationIndex: number
+  metalResonance: number
+  metalOctaves: number
+  metalAttack: number
+  metalDecay: number
+  metalRelease: number
+  // PluckSynth params
+  pluckAttackNoise: number
+  pluckDampening: number
+  pluckResonance: number
+  pluckRelease: number
   effectType: string
   effectWet: number
   chorusDepth: number

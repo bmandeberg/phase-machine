@@ -380,6 +380,17 @@ export default function usePresets(
         invalidProp(channel.instrumentParams, 'filterAmount', 'number') ||
         invalidProp(channel.instrumentParams, 'samplerAttack', 'number') ||
         invalidProp(channel.instrumentParams, 'samplerRelease', 'number') ||
+        invalidProp(channel.instrumentParams, 'metalHarmonicity', 'number') ||
+        invalidProp(channel.instrumentParams, 'metalModulationIndex', 'number') ||
+        invalidProp(channel.instrumentParams, 'metalResonance', 'number') ||
+        invalidProp(channel.instrumentParams, 'metalOctaves', 'number') ||
+        invalidProp(channel.instrumentParams, 'metalAttack', 'number') ||
+        invalidProp(channel.instrumentParams, 'metalDecay', 'number') ||
+        invalidProp(channel.instrumentParams, 'metalRelease', 'number') ||
+        invalidProp(channel.instrumentParams, 'pluckAttackNoise', 'number') ||
+        invalidProp(channel.instrumentParams, 'pluckDampening', 'number') ||
+        invalidProp(channel.instrumentParams, 'pluckResonance', 'number') ||
+        invalidProp(channel.instrumentParams, 'pluckRelease', 'number') ||
         invalidProp(channel.instrumentParams, 'effectType', 'string') ||
         invalidProp(channel.instrumentParams, 'effectWet', 'number') ||
         invalidProp(channel.instrumentParams, 'chorusDepth', 'number') ||

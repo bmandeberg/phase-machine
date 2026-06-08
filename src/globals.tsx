@@ -49,6 +49,12 @@ import darkRhythmic from './assets/samples-rhythmic-dark.svg'
 import hxc from './assets/samples-hxc.svg'
 import lightHxc from './assets/samples-hxc-light.svg'
 import darkHxc from './assets/samples-hxc-dark.svg'
+import metal from './assets/samples-metal.svg'
+import lightMetal from './assets/samples-metal-light.svg'
+import darkMetal from './assets/samples-metal-dark.svg'
+import pluck from './assets/samples-pluck.svg'
+import lightPluck from './assets/samples-pluck-light.svg'
+import darkPluck from './assets/samples-pluck-dark.svg'
 import { rangeWrapper } from './math'
 import { alertDialog } from './dialog'
 import { Channel, Preset } from './types'
@@ -320,6 +326,28 @@ function themedIcon(icon: string, theme: string) {
         default:
           return hxc
       }
+    case 'metal':
+      switch (theme) {
+        case 'light':
+          return metal
+        case 'dark':
+          return lightMetal
+        case 'contrast':
+          return darkMetal
+        default:
+          return metal
+      }
+    case 'pluck':
+      switch (theme) {
+        case 'light':
+          return pluck
+        case 'dark':
+          return lightPluck
+        case 'contrast':
+          return darkPluck
+        default:
+          return pluck
+      }
     default:
       return null
   }
@@ -434,6 +462,14 @@ export const INSTRUMENT_TYPES: Record<string, (theme: string) => React.JSX.Eleme
   ),
   // Hard-dance one-shot sampler (kicks/snares) — smiley glyph.
   hxc: (theme: string) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('hxc', theme) ?? ''} alt="" />,
+  // Tone.MetalSynth — diamond-plate glyph.
+  metal: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('metal', theme) ?? ''} alt="" />
+  ),
+  // Tone.PluckSynth — lyre glyph.
+  pluck: (theme: string) => (
+    <img className="wave-icon" style={{ height: 22 }} src={themedIcon('pluck', theme) ?? ''} alt="" />
+  ),
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -667,6 +703,17 @@ export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: bool
     filterAmount: 3,
     samplerAttack: 0,
     samplerRelease: 1,
+    metalHarmonicity: 5.1,
+    metalModulationIndex: 32,
+    metalResonance: 4000,
+    metalOctaves: 1.5,
+    metalAttack: 0.001,
+    metalDecay: 1.4,
+    metalRelease: 0.2,
+    pluckAttackNoise: 1,
+    pluckDampening: 4000,
+    pluckResonance: 0.7,
+    pluckRelease: 1,
     effectType: EFFECTS[0],
     effectWet: 1,
     chorusDepth: 0.5,

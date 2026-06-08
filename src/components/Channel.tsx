@@ -416,6 +416,8 @@ export default function Channel({
     harpInstrument,
     choralInstrument,
     rhythmInstrument,
+    metalInstrument,
+    pluckInstrument,
     chorusEffect,
     distortionEffect,
     delayEffect,
@@ -523,7 +525,14 @@ export default function Channel({
       }
       const unheldNote = !hold || !seqSteps[nextStep.current]
       const sustainTime = Math.max(sustain * rateToSeconds(keyRate, Tone.getTransport().bpm.value), 0.08)
-      if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
+      if (
+        instrumentOn &&
+        instrument.current &&
+        (instrumentType === 'synth' ||
+          instrumentType === 'metal' ||
+          instrumentType === 'pluck' ||
+          instrument.current.loaded)
+      ) {
         if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
             note,
@@ -579,7 +588,14 @@ export default function Channel({
       const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
       const midiOutObj = midiOut ? (WebMidi.getOutputByName(midiOut) as any) : null
       const sustainTime = Math.max(sustain * rateToSeconds(keyRate, Tone.getTransport().bpm.value), 0.08)
-      if (instrumentOn && instrument.current && (instrumentType === 'synth' || instrument.current.loaded)) {
+      if (
+        instrumentOn &&
+        instrument.current &&
+        (instrumentType === 'synth' ||
+          instrumentType === 'metal' ||
+          instrumentType === 'pluck' ||
+          instrument.current.loaded)
+      ) {
         if (instrumentType !== 'synth') {
           instrument.current.triggerAttackRelease(
             note,
@@ -831,6 +847,8 @@ export default function Channel({
             choralInstrument.current,
           ],
           rhythmInstrument.current,
+          metalInstrument.current,
+          pluckInstrument.current,
           chorusEffect.current,
           distortionEffect.current!,
           delayEffect.current!,
@@ -861,6 +879,8 @@ export default function Channel({
     harpInstrument,
     choralInstrument,
     rhythmInstrument,
+    metalInstrument,
+    pluckInstrument,
     chorusEffect,
     distortionEffect,
     delayEffect,

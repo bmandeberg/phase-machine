@@ -83,6 +83,8 @@ export default function useInstruments(
   const choralInstrument = useRef<Tone.Sampler | null>(null)
   // Varispeed engine for the single flat rhythmic pack (built lazily on activate).
   const rhythmInstrument = useRef<RhythmSampler | null>(null)
+  const metalInstrument = useRef<Tone.MetalSynth | null>(null)
+  const pluckInstrument = useRef<Tone.PluckSynth | null>(null)
   const chorusEffect = useRef<Tone.Chorus | null>(null)
   const distortionEffect = useRef<Tone.Distortion | null>(null)
   const delayEffect = useRef<Tone.FeedbackDelay | null>(null)
@@ -167,6 +169,34 @@ export default function useInstruments(
     }
   }, [getCurrentEffect])
 
+  const initMetalInstrument = useCallback(() => {
+    if (!metalInstrument.current) {
+      const p = instrumentParamsRef.current
+      metalInstrument.current = new Tone.MetalSynth({
+        harmonicity: p.metalHarmonicity,
+        modulationIndex: p.metalModulationIndex,
+        resonance: p.metalResonance,
+        octaves: p.metalOctaves,
+        envelope: { attack: p.metalAttack, decay: p.metalDecay, release: p.metalRelease },
+        volume: -12,
+      })
+      metalInstrument.current.connect(getCurrentEffect())
+    }
+  }, [getCurrentEffect])
+
+  const initPluckInstrument = useCallback(() => {
+    if (!pluckInstrument.current) {
+      const p = instrumentParamsRef.current
+      pluckInstrument.current = new Tone.PluckSynth({
+        attackNoise: p.pluckAttackNoise,
+        dampening: p.pluckDampening,
+        resonance: p.pluckResonance,
+        release: p.pluckRelease,
+      })
+      pluckInstrument.current.connect(getCurrentEffect())
+    }
+  }, [getCurrentEffect])
+
   // Maps an instrument type string to its sampler ref. The synth is handled
   // separately (it's a MonoSynth, not a Sampler).
   const samplerRefs = useMemo<Record<string, SamplerRef>>(
@@ -193,6 +223,16 @@ export default function useInstruments(
         instrument.current = rhythmInstrument.current
         return
       }
+      if (type === 'metal') {
+        initMetalInstrument()
+        instrument.current = metalInstrument.current
+        return
+      }
+      if (type === 'pluck') {
+        initPluckInstrument()
+        instrument.current = pluckInstrument.current
+        return
+      }
       const config = SAMPLER_CONFIGS[type]
       if (config) {
         const ref = samplerRefs[type]
@@ -203,7 +243,15 @@ export default function useInstruments(
         instrument.current = synthInstrument.current
       }
     },
-    [initRhythmInstrument, initSampler, initSynthInstrument, instrument, samplerRefs]
+    [
+      initRhythmInstrument,
+      initMetalInstrument,
+      initPluckInstrument,
+      initSampler,
+      initSynthInstrument,
+      instrument,
+      samplerRefs,
+    ]
   )
 
   // initialize instruments
@@ -297,6 +345,14 @@ export default function useInstruments(
         hxcInstrument.current.dispose()
         hxcInstrument.current = null
       }
+      if (metalInstrument.current) {
+        metalInstrument.current.dispose()
+        metalInstrument.current = null
+      }
+      if (pluckInstrument.current) {
+        pluckInstrument.current.dispose()
+        pluckInstrument.current = null
+      }
       if (rhythmInstrument.current) {
         rhythmInstrument.current.dispose()
         rhythmInstrument.current = null
@@ -367,6 +423,8 @@ export default function useInstruments(
       drumMachineInstrument,
       hxcInstrument,
       rhythmInstrument,
+      metalInstrument,
+      pluckInstrument,
     }),
     [
       bassInstrument,
@@ -380,6 +438,8 @@ export default function useInstruments(
       vibesInstrument,
       hxcInstrument,
       rhythmInstrument,
+      metalInstrument,
+      pluckInstrument,
     ]
   )
   const effects = useMemo<EffectRefs>(
@@ -407,6 +467,8 @@ export default function useInstruments(
     harpInstrument,
     choralInstrument,
     rhythmInstrument,
+    metalInstrument,
+    pluckInstrument,
     chorusEffect,
     distortionEffect,
     delayEffect,
@@ -425,6 +487,8 @@ export function updateInstruments(
   synthInstrument: Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null | undefined,
   samplerInstruments: Array<Tone.Sampler | null | undefined>,
   rhythmInstrument: RhythmSampler | null | undefined,
+  metalInstrument: Tone.MetalSynth | null | undefined,
+  pluckInstrument: Tone.PluckSynth | null | undefined,
   chorusEffect: Tone.Chorus | null | undefined,
   distortionEffect: Tone.Distortion,
   delayEffect: Tone.FeedbackDelay,
@@ -550,5 +614,34 @@ export function updateInstruments(
       rhythmInstrument.disconnect(currentEffect)
     }
     rhythmInstrument.connect(destination)
+  }
+  if (metalInstrument) {
+    metalInstrument.set({
+      harmonicity: instrumentParams.metalHarmonicity,
+      modulationIndex: instrumentParams.metalModulationIndex,
+      resonance: instrumentParams.metalResonance,
+      octaves: instrumentParams.metalOctaves,
+      envelope: {
+        attack: instrumentParams.metalAttack,
+        decay: instrumentParams.metalDecay,
+        release: instrumentParams.metalRelease,
+      },
+    })
+    if (currentEffect) {
+      metalInstrument.disconnect(currentEffect)
+    }
+    metalInstrument.connect(destination)
+  }
+  if (pluckInstrument) {
+    pluckInstrument.set({
+      attackNoise: instrumentParams.pluckAttackNoise,
+      dampening: instrumentParams.pluckDampening,
+      resonance: instrumentParams.pluckResonance,
+      release: instrumentParams.pluckRelease,
+    })
+    if (currentEffect) {
+      pluckInstrument.disconnect(currentEffect)
+    }
+    pluckInstrument.connect(destination)
   }
 }
