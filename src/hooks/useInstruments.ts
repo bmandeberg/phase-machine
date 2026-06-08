@@ -74,6 +74,7 @@ export default function useInstruments(
   const synthInstrument = useRef<Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null>(null)
   const drumsInstrument = useRef<Tone.Sampler | null>(null)
   const drumMachineInstrument = useRef<Tone.Sampler | null>(null)
+  const hxcInstrument = useRef<Tone.Sampler | null>(null)
   const pianoInstrument = useRef<Tone.Sampler | null>(null)
   const marimbaInstrument = useRef<Tone.Sampler | null>(null)
   const bassInstrument = useRef<Tone.Sampler | null>(null)
@@ -178,6 +179,7 @@ export default function useInstruments(
       choral: choralInstrument,
       drums: drumsInstrument,
       'drum-machine': drumMachineInstrument,
+      hxc: hxcInstrument,
     }),
     []
   )
@@ -291,6 +293,10 @@ export default function useInstruments(
         drumMachineInstrument.current.dispose()
         drumMachineInstrument.current = null
       }
+      if (hxcInstrument.current) {
+        hxcInstrument.current.dispose()
+        hxcInstrument.current = null
+      }
       if (rhythmInstrument.current) {
         rhythmInstrument.current.dispose()
         rhythmInstrument.current = null
@@ -359,6 +365,7 @@ export default function useInstruments(
       choralInstrument,
       drumsInstrument,
       drumMachineInstrument,
+      hxcInstrument,
       rhythmInstrument,
     }),
     [
@@ -371,6 +378,7 @@ export default function useInstruments(
       pianoInstrument,
       synthInstrument,
       vibesInstrument,
+      hxcInstrument,
       rhythmInstrument,
     ]
   )
@@ -393,6 +401,7 @@ export default function useInstruments(
     marimbaInstrument,
     drumsInstrument,
     drumMachineInstrument,
+    hxcInstrument,
     bassInstrument,
     vibesInstrument,
     harpInstrument,

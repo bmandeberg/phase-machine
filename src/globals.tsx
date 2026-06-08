@@ -46,6 +46,9 @@ import darkChoral from './assets/samples-choral-dark.svg'
 import rhythmic from './assets/samples-rhythmic.svg'
 import lightRhythmic from './assets/samples-rhythmic-light.svg'
 import darkRhythmic from './assets/samples-rhythmic-dark.svg'
+import hxc from './assets/samples-hxc.svg'
+import lightHxc from './assets/samples-hxc-light.svg'
+import darkHxc from './assets/samples-hxc-dark.svg'
 import { rangeWrapper } from './math'
 import { alertDialog } from './dialog'
 import { Channel, Preset } from './types'
@@ -306,6 +309,17 @@ function themedIcon(icon: string, theme: string) {
         default:
           return rhythmic
       }
+    case 'hxc':
+      switch (theme) {
+        case 'light':
+          return hxc
+        case 'dark':
+          return lightHxc
+        case 'contrast':
+          return darkHxc
+        default:
+          return hxc
+      }
     default:
       return null
   }
@@ -418,6 +432,8 @@ export const INSTRUMENT_TYPES: Record<string, (theme: string) => React.JSX.Eleme
   rhythmic: (theme: string) => (
     <img className="wave-icon" style={{ height: 20 }} src={themedIcon('rhythmic', theme) ?? ''} alt="" />
   ),
+  // Hard-dance one-shot sampler (kicks/snares) — smiley glyph.
+  hxc: (theme: string) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('hxc', theme) ?? ''} alt="" />,
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

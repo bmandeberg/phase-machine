@@ -45,6 +45,7 @@ export interface InstrumentRefs {
   choralInstrument: SamplerRef
   drumsInstrument: SamplerRef
   drumMachineInstrument: SamplerRef
+  hxcInstrument: SamplerRef
   rhythmInstrument: MutableRefObject<RhythmSampler | null | undefined>
 }
 // Per-effect refs keep their concrete Tone type (so effect-specific properties

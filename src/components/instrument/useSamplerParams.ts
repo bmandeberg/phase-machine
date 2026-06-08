@@ -34,6 +34,9 @@ export default function useSamplerParams(
     if (instruments.drumsInstrument.current) {
       instruments.drumsInstrument.current.attack = samplerAttack
     }
+    if (instruments.hxcInstrument.current) {
+      instruments.hxcInstrument.current.attack = samplerAttack
+    }
     if (instruments.rhythmInstrument.current) {
       instruments.rhythmInstrument.current.attack = samplerAttack
     }
@@ -61,6 +64,9 @@ export default function useSamplerParams(
     }
     if (instruments.drumsInstrument.current) {
       instruments.drumsInstrument.current.release = samplerRelease
+    }
+    if (instruments.hxcInstrument.current) {
+      instruments.hxcInstrument.current.release = samplerRelease
     }
     if (instruments.rhythmInstrument.current) {
       instruments.rhythmInstrument.current.release = samplerRelease
