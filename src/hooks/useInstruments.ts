@@ -11,7 +11,8 @@ import {
   PannerRef,
   SamplerRef,
 } from '../types'
-import { SAMPLER_CONFIGS, SamplerConfig } from '../samplerConfigs'
+import { SAMPLER_CONFIGS, SamplerConfig, RHYTHM_PACK } from '../samplerConfigs'
+import { RhythmSampler } from '../rhythmSampler'
 
 // Tone.Chorus.start()/stop() drive its internal LFOs and are NOT idempotent —
 // starting an already-running LFO (or stopping a stopped one) throws "Start time
@@ -79,6 +80,8 @@ export default function useInstruments(
   const vibesInstrument = useRef<Tone.Sampler | null>(null)
   const harpInstrument = useRef<Tone.Sampler | null>(null)
   const choralInstrument = useRef<Tone.Sampler | null>(null)
+  // Varispeed engine for the single flat rhythmic pack (built lazily on activate).
+  const rhythmInstrument = useRef<RhythmSampler | null>(null)
   const chorusEffect = useRef<Tone.Chorus | null>(null)
   const distortionEffect = useRef<Tone.Distortion | null>(null)
   const delayEffect = useRef<Tone.FeedbackDelay | null>(null)
@@ -150,6 +153,19 @@ export default function useInstruments(
     [getCurrentEffect]
   )
 
+  // Build the rhythmic engine from the single flat pack (if needed). Guards on
+  // `!rhythmInstrument.current` so it's safe to call repeatedly.
+  const initRhythmInstrument = useCallback(() => {
+    if (!rhythmInstrument.current) {
+      rhythmInstrument.current = new RhythmSampler(RHYTHM_PACK)
+      rhythmInstrument.current.set({
+        attack: instrumentParamsRef.current.samplerAttack,
+        release: instrumentParamsRef.current.samplerRelease,
+      })
+      rhythmInstrument.current.connect(getCurrentEffect())
+    }
+  }, [getCurrentEffect])
+
   // Maps an instrument type string to its sampler ref. The synth is handled
   // separately (it's a MonoSynth, not a Sampler).
   const samplerRefs = useMemo<Record<string, SamplerRef>>(
@@ -170,6 +186,11 @@ export default function useInstruments(
   // it. Unknown types fall back to the synth (matching the prior switch default).
   const activateInstrument = useCallback(
     (type: string) => {
+      if (type === 'rhythmic') {
+        initRhythmInstrument()
+        instrument.current = rhythmInstrument.current
+        return
+      }
       const config = SAMPLER_CONFIGS[type]
       if (config) {
         const ref = samplerRefs[type]
@@ -180,7 +201,7 @@ export default function useInstruments(
         instrument.current = synthInstrument.current
       }
     },
-    [initSampler, initSynthInstrument, instrument, samplerRefs]
+    [initRhythmInstrument, initSampler, initSynthInstrument, instrument, samplerRefs]
   )
 
   // initialize instruments
@@ -270,6 +291,10 @@ export default function useInstruments(
         drumMachineInstrument.current.dispose()
         drumMachineInstrument.current = null
       }
+      if (rhythmInstrument.current) {
+        rhythmInstrument.current.dispose()
+        rhythmInstrument.current = null
+      }
       if (chorusEffect.current) {
         chorusEffect.current.dispose()
       }
@@ -334,6 +359,7 @@ export default function useInstruments(
       choralInstrument,
       drumsInstrument,
       drumMachineInstrument,
+      rhythmInstrument,
     }),
     [
       bassInstrument,
@@ -345,6 +371,7 @@ export default function useInstruments(
       pianoInstrument,
       synthInstrument,
       vibesInstrument,
+      rhythmInstrument,
     ]
   )
   const effects = useMemo<EffectRefs>(
@@ -370,6 +397,7 @@ export default function useInstruments(
     vibesInstrument,
     harpInstrument,
     choralInstrument,
+    rhythmInstrument,
     chorusEffect,
     distortionEffect,
     delayEffect,
@@ -387,6 +415,7 @@ export function updateInstruments(
   pannerNode: Tone.Panner | null | undefined,
   synthInstrument: Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null | undefined,
   samplerInstruments: Array<Tone.Sampler | null | undefined>,
+  rhythmInstrument: RhythmSampler | null | undefined,
   chorusEffect: Tone.Chorus | null | undefined,
   distortionEffect: Tone.Distortion,
   delayEffect: Tone.FeedbackDelay,
@@ -502,4 +531,15 @@ export function updateInstruments(
       sampler.connect(destination)
     }
   })
+  // The rhythmic engine shares the sampler attack/release and the same effect chain.
+  if (rhythmInstrument) {
+    rhythmInstrument.set({
+      attack: instrumentParams.samplerAttack,
+      release: instrumentParams.samplerRelease,
+    })
+    if (currentEffect) {
+      rhythmInstrument.disconnect(currentEffect)
+    }
+    rhythmInstrument.connect(destination)
+  }
 }

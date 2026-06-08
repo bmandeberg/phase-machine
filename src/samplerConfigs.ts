@@ -10,6 +10,157 @@ export interface SamplerConfig {
   volume: number
 }
 
+// The single tempo-synced "rhythmic" instrument — one flat pack of slices
+// (breakbeats, top loops, grooves) laid across the keyboard. Same shape as
+// SamplerConfig but with a PER-SLICE `bpms` map instead of one bank tempo,
+// because the slices come from sources recorded at different tempos. The
+// varispeed engine plays each note at `transportBpm / bpms[note]`, so every
+// slice locks to the global grid regardless of its original tempo (pitch rides
+// along — the intended sound). `urls` keys are ascending chromatic notes
+// (C1, Db1, D1, …); values are paths under `baseUrl`. Played live by
+// RhythmSampler, NOT Tone.Sampler.
+export interface RhythmConfig {
+  urls: Record<string, string>
+  bpms: Record<string, number>
+  baseUrl: string
+  volume: number
+}
+
+// To add more loops to the pack: drop a folder of sliced mp3s in
+// public/samples/rhythmic/<name>/, then append its slices here (continuing the
+// chromatic note sequence) with paths `<name>/<file>` and that loop's source
+// tempo in `bpms`. 96 chromatic slots total (C1–B8 — see noteString / OCTAVES).
+export const RHYTHM_PACK: RhythmConfig = {
+  urls: {
+    // amen
+    C1: 'amen/amen_01.mp3',
+    Db1: 'amen/amen_02.mp3',
+    D1: 'amen/amen_03.mp3',
+    Eb1: 'amen/amen_04.mp3',
+    E1: 'amen/amen_05.mp3',
+    F1: 'amen/amen_06.mp3',
+    Gb1: 'amen/amen_07.mp3',
+    G1: 'amen/amen_08.mp3',
+    Ab1: 'amen/amen_09.mp3',
+    A1: 'amen/amen_10.mp3',
+    Bb1: 'amen/amen_11.mp3',
+    B1: 'amen/amen_12.mp3',
+    C2: 'amen/amen_13.mp3',
+    Db2: 'amen/amen_14.mp3',
+    D2: 'amen/amen_15.mp3',
+    // think
+    Eb2: 'think/think_01.mp3',
+    E2: 'think/think_02.mp3',
+    F2: 'think/think_03.mp3',
+    Gb2: 'think/think_04.mp3',
+    G2: 'think/think_05.mp3',
+    Ab2: 'think/think_06.mp3',
+    A2: 'think/think_07.mp3',
+    Bb2: 'think/think_08.mp3',
+    // funky-drummer
+    B2: 'funky-drummer/funky-drummer_01.mp3',
+    C3: 'funky-drummer/funky-drummer_02.mp3',
+    Db3: 'funky-drummer/funky-drummer_03.mp3',
+    D3: 'funky-drummer/funky-drummer_04.mp3',
+    Eb3: 'funky-drummer/funky-drummer_05.mp3',
+    E3: 'funky-drummer/funky-drummer_06.mp3',
+    F3: 'funky-drummer/funky-drummer_07.mp3',
+    Gb3: 'funky-drummer/funky-drummer_08.mp3',
+    G3: 'funky-drummer/funky-drummer_09.mp3',
+    Ab3: 'funky-drummer/funky-drummer_10.mp3',
+    A3: 'funky-drummer/funky-drummer_11.mp3',
+    Bb3: 'funky-drummer/funky-drummer_12.mp3',
+    B3: 'funky-drummer/funky-drummer_13.mp3',
+    C4: 'funky-drummer/funky-drummer_14.mp3',
+    Db4: 'funky-drummer/funky-drummer_15.mp3',
+    D4: 'funky-drummer/funky-drummer_16.mp3',
+    Eb4: 'funky-drummer/funky-drummer_17.mp3',
+    E4: 'funky-drummer/funky-drummer_18.mp3',
+    // hot-pants
+    F4: 'hot-pants/hot-pants_01.mp3',
+    Gb4: 'hot-pants/hot-pants_02.mp3',
+    G4: 'hot-pants/hot-pants_03.mp3',
+    Ab4: 'hot-pants/hot-pants_04.mp3',
+    A4: 'hot-pants/hot-pants_05.mp3',
+    Bb4: 'hot-pants/hot-pants_06.mp3',
+    B4: 'hot-pants/hot-pants_07.mp3',
+    C5: 'hot-pants/hot-pants_08.mp3',
+    // vec-loops
+    Db5: 'vec-loops/vec-loops_01.mp3',
+    D5: 'vec-loops/vec-loops_02.mp3',
+    Eb5: 'vec-loops/vec-loops_03.mp3',
+    E5: 'vec-loops/vec-loops_04.mp3',
+    F5: 'vec-loops/vec-loops_05.mp3',
+    Gb5: 'vec-loops/vec-loops_06.mp3',
+    G5: 'vec-loops/vec-loops_07.mp3',
+    Ab5: 'vec-loops/vec-loops_08.mp3',
+    A5: 'vec-loops/vec-loops_09.mp3',
+    Bb5: 'vec-loops/vec-loops_10.mp3',
+    B5: 'vec-loops/vec-loops_11.mp3',
+    C6: 'vec-loops/vec-loops_12.mp3',
+    Db6: 'vec-loops/vec-loops_13.mp3',
+    D6: 'vec-loops/vec-loops_14.mp3',
+    Eb6: 'vec-loops/vec-loops_15.mp3',
+    E6: 'vec-loops/vec-loops_16.mp3',
+    // tighten-up
+    F6: 'tighten-up/tighten-up_01.mp3',
+    Gb6: 'tighten-up/tighten-up_02.mp3',
+    G6: 'tighten-up/tighten-up_03.mp3',
+    Ab6: 'tighten-up/tighten-up_04.mp3',
+    A6: 'tighten-up/tighten-up_05.mp3',
+    Bb6: 'tighten-up/tighten-up_06.mp3',
+    B6: 'tighten-up/tighten-up_07.mp3',
+    C7: 'tighten-up/tighten-up_08.mp3',
+    Db7: 'tighten-up/tighten-up_09.mp3',
+    D7: 'tighten-up/tighten-up_10.mp3',
+    Eb7: 'tighten-up/tighten-up_11.mp3',
+    E7: 'tighten-up/tighten-up_12.mp3',
+    F7: 'tighten-up/tighten-up_13.mp3',
+    Gb7: 'tighten-up/tighten-up_14.mp3',
+    G7: 'tighten-up/tighten-up_15.mp3',
+    Ab7: 'tighten-up/tighten-up_16.mp3',
+    // skullsnaps
+    A7: 'skullsnaps/skullsnaps_01.mp3',
+    Bb7: 'skullsnaps/skullsnaps_02.mp3',
+    B7: 'skullsnaps/skullsnaps_03.mp3',
+    C8: 'skullsnaps/skullsnaps_04.mp3',
+    Db8: 'skullsnaps/skullsnaps_05.mp3',
+    D8: 'skullsnaps/skullsnaps_06.mp3',
+    Eb8: 'skullsnaps/skullsnaps_07.mp3',
+    E8: 'skullsnaps/skullsnaps_08.mp3',
+    F8: 'skullsnaps/skullsnaps_09.mp3',
+    Gb8: 'skullsnaps/skullsnaps_10.mp3',
+    G8: 'skullsnaps/skullsnaps_11.mp3',
+    Ab8: 'skullsnaps/skullsnaps_12.mp3',
+    A8: 'skullsnaps/skullsnaps_13.mp3',
+    Bb8: 'skullsnaps/skullsnaps_14.mp3',
+    B8: 'skullsnaps/skullsnaps_15.mp3',
+  },
+  bpms: {
+    // amen (138 BPM)
+    C1: 138, Db1: 138, D1: 138, Eb1: 138, E1: 138, F1: 138, Gb1: 138, G1: 138,
+    Ab1: 138, A1: 138, Bb1: 138, B1: 138, C2: 138, Db2: 138, D2: 138,
+    // think (113 BPM)
+    Eb2: 113, E2: 113, F2: 113, Gb2: 113, G2: 113, Ab2: 113, A2: 113, Bb2: 113,
+    // funky-drummer (98 BPM)
+    B2: 98, C3: 98, Db3: 98, D3: 98, Eb3: 98, E3: 98, F3: 98, Gb3: 98, G3: 98,
+    Ab3: 98, A3: 98, Bb3: 98, B3: 98, C4: 98, Db4: 98, D4: 98, Eb4: 98, E4: 98,
+    // hot-pants (113 BPM)
+    F4: 113, Gb4: 113, G4: 113, Ab4: 113, A4: 113, Bb4: 113, B4: 113, C5: 113,
+    // vec-loops (140 BPM)
+    Db5: 140, D5: 140, Eb5: 140, E5: 140, F5: 140, Gb5: 140, G5: 140, Ab5: 140,
+    A5: 140, Bb5: 140, B5: 140, C6: 140, Db6: 140, D6: 140, Eb6: 140, E6: 140,
+    // tighten-up (130 BPM)
+    F6: 130, Gb6: 130, G6: 130, Ab6: 130, A6: 130, Bb6: 130, B6: 130, C7: 130,
+    Db7: 130, D7: 130, Eb7: 130, E7: 130, F7: 130, Gb7: 130, G7: 130, Ab7: 130,
+    // skullsnaps (96 BPM)
+    A7: 96, Bb7: 96, B7: 96, C8: 96, Db8: 96, D8: 96, Eb8: 96, E8: 96,
+    F8: 96, Gb8: 96, G8: 96, Ab8: 96, A8: 96, Bb8: 96, B8: 96,
+  },
+  baseUrl: '/samples/rhythmic/',
+  volume: -6,
+}
+
 export const SAMPLER_CONFIGS: Record<string, SamplerConfig> = {
   piano: {
     urls: {

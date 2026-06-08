@@ -4,6 +4,7 @@
 
 import type { Dispatch, SetStateAction, MutableRefObject } from 'react'
 import type * as Tone from 'tone'
+import type { RhythmSampler } from './rhythmSampler'
 
 export type Theme = 'dark' | 'light' | 'contrast' | 'aero'
 export type View = 'horizontal' | 'stacked' | 'condensed' | 'clock'
@@ -17,7 +18,9 @@ export type Setter<T> = Dispatch<SetStateAction<T>>
 // voices in poly mode (see InstrumentParams.poly / useInstruments).
 export type SynthInstrument = Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth>
 export type SamplerInstrument = Tone.Sampler
-export type Instrument = SynthInstrument | SamplerInstrument
+// RhythmSampler is the custom varispeed engine for tempo-synced breakbeats; it
+// implements the Tone.Sampler trigger surface so it shares the instrument path.
+export type Instrument = SynthInstrument | SamplerInstrument | RhythmSampler
 export type ToneEffectNode = Tone.Chorus | Tone.Distortion | Tone.FeedbackDelay | Tone.Reverb | Tone.Vibrato
 // Any node an instrument can be connected to (the gain node or an effect).
 export type SignalDestination = Tone.Gain | ToneEffectNode
@@ -42,6 +45,7 @@ export interface InstrumentRefs {
   choralInstrument: SamplerRef
   drumsInstrument: SamplerRef
   drumMachineInstrument: SamplerRef
+  rhythmInstrument: MutableRefObject<RhythmSampler | null | undefined>
 }
 // Per-effect refs keep their concrete Tone type (so effect-specific properties
 // like Chorus.depth or Reverb.decay remain accessible), unlike the generic

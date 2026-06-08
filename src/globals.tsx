@@ -415,6 +415,13 @@ export const INSTRUMENT_TYPES: Record<string, (theme: string) => React.JSX.Eleme
   'drum-machine': (theme: string) => (
     <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drum-machine', theme) ?? ''} alt="" />
   ),
+  // Tempo-synced rhythmic-loop sampler (breaks, top loops, grooves). Text label
+  // (like pwm) so it needs no asset.
+  rhythmic: () => (
+    <span className="wave-title" style={{ marginRight: 0 }}>
+      rhy
+    </span>
+  ),
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
