@@ -57,6 +57,16 @@
       margin-right: 11px;
     }
   }
+  // The MetalSynth envelope knobs have short labels (Attack/Decay/Release), so
+  // their containers hug the knob and sit tighter than the wide-labelled knobs
+  // in the Metal module — give the gaps between them a bit more breathing room,
+  // and nudge the whole module right so the Attack label clears the divider.
+  .controls-module.metal-envelope {
+    padding-left: 24px;
+  }
+  .metal-envelope .instrument-item:not(:last-of-type) {
+    margin-right: 22px;
+  }
   .controls-label {
     @extend .no-select;
     position: absolute;

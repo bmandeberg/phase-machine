@@ -72,7 +72,7 @@ function MetalControls({
           {knob(metalResonance, setMetalResonance, 'Resonance', 100, 7000, savedInstrumentParams?.metalResonance, true)}
           {knob(metalOctaves, setMetalOctaves, 'Octaves', 0, 8, savedInstrumentParams?.metalOctaves)}
         </div>
-        <div className="controls-module">
+        <div className="controls-module metal-envelope">
           <p className="controls-label">Envelope</p>
           {knob(metalAttack, setMetalAttack, 'Attack', 0.001, 1, savedInstrumentParams?.metalAttack)}
           {knob(metalDecay, setMetalDecay, 'Decay', 0.01, 4, savedInstrumentParams?.metalDecay)}
