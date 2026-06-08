@@ -145,7 +145,8 @@ export default function RotaryKnob({
   }, [axisKnob, axisKnobLarge, inline])
 
   const knobColor = useMemo(() => {
-    if (headerStyle) {
+    // aero falls through to the regular aero knob palette below (the frosted look)
+    if (headerStyle && theme !== 'aero') {
       if (theme === 'light') return 'FFE4D1'
       if (theme === 'contrast') return '008DFF' // header accent blue
       return '17326D'
@@ -157,13 +158,15 @@ export default function RotaryKnob({
         return mute ? '39393f' : '45454c'
       case 'contrast':
         return mute ? 'aab1cc' : 'CCD0FF'
+      case 'aero':
+        return mute ? 'C2D9E4' : 'DBEFF8'
       default:
         return mute ? 'D8D8D8' : 'E6E6E6'
     }
   }, [mute, theme, headerStyle])
 
   const knobInnerStroke = useMemo(() => {
-    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FFFFFF' : '0F182D'
+    if (headerStyle && theme !== 'contrast' && theme !== 'aero') return theme === 'light' ? 'FFFFFF' : '0F182D'
     switch (theme) {
       case 'light':
         return 'FFFFFF'
@@ -171,13 +174,16 @@ export default function RotaryKnob({
         return '090c10'
       case 'contrast':
         return '090C10'
+      case 'aero':
+        // face color so it blends — only the outer ring shows as a thin white edge
+        return 'DBEFF8'
       default:
         return 'FFFFFF'
     }
   }, [theme, headerStyle])
 
   const knobOuterStroke = useMemo(() => {
-    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FF9700' : '0F182D'
+    if (headerStyle && theme !== 'contrast' && theme !== 'aero') return theme === 'light' ? 'FF9700' : '0F182D'
     switch (theme) {
       case 'light':
         return 'CCCCCC'
@@ -185,13 +191,15 @@ export default function RotaryKnob({
         return '23232b'
       case 'contrast':
         return mute ? '454C60' : '757CA0'
+      case 'aero':
+        return mute ? 'E8F4FA' : 'FFFFFF'
       default:
         return 'CCCCCC'
     }
   }, [mute, theme, headerStyle])
 
   const knobIndicator = useMemo(() => {
-    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FF9700' : '008DFF'
+    if (headerStyle && theme !== 'contrast' && theme !== 'aero') return theme === 'light' ? 'FF9700' : '008DFF'
     switch (theme) {
       case 'light':
         return '666666'
@@ -199,13 +207,15 @@ export default function RotaryKnob({
         return 'a0a0b4'
       case 'contrast':
         return mute ? '1C1C23' : '383842'
+      case 'aero':
+        return mute ? '83AABB' : '5C9BB5'
       default:
         return '666666'
     }
   }, [mute, theme, headerStyle])
 
   const knobTicks = useMemo(() => {
-    if (headerStyle && theme !== 'contrast') return theme === 'light' ? 'FF9700' : '008DFF'
+    if (headerStyle && theme !== 'contrast' && theme !== 'aero') return theme === 'light' ? 'FF9700' : '008DFF'
     switch (theme) {
       case 'light':
         return '999999'
@@ -213,6 +223,8 @@ export default function RotaryKnob({
         return '666666'
       case 'contrast':
         return 'CCD0FF'
+      case 'aero':
+        return '4A8AA3'
       default:
         return '999999'
     }

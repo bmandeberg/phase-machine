@@ -11,10 +11,14 @@ import RadioButtons from './RadioButtons'
 import { Preset } from '../types'
 import logo from '../assets/logo.svg'
 import logoDark from '../assets/logo-dark.svg'
+import logoAero from '../assets/logo-aero.svg'
 import play from '../assets/play.svg'
 import playDark from '../assets/play-dark.svg'
+import playAero from '../assets/play-aero.svg'
 import stop from '../assets/stop.svg'
+import stopAero from '../assets/stop-aero.svg'
 import waves from '../assets/waves.png'
+import wavesAero from '../assets/waves-aero.png'
 import logoShadow from '../assets/48F8B2439E7D5A31.png'
 import './Header.scss'
 
@@ -133,13 +137,37 @@ export default class Header extends React.Component<HeaderProps> {
   render() {
     return (
       <div id="header">
-        {this.props.theme !== 'light' && <img className="waves-background" src={waves} alt="" />}
+        {this.props.theme !== 'light' && (
+          <>
+            {/* aero: a heavily-blurred bright duplicate painted behind the crisp
+                waves gives the sinusoids a wide, airy bloom halo (see aero-theme) */}
+            {this.props.theme === 'aero' && (
+              <img className="waves-background waves-bloom" src={wavesAero} alt="" aria-hidden="true" />
+            )}
+            <img className="waves-background" src={this.props.theme === 'aero' ? wavesAero : waves} alt="" />
+          </>
+        )}
         {this.props.theme !== 'light' && <img className="logo-shadow" src={logoShadow} alt="" />}
-        <img id="logo" className="no-select" src={this.props.theme === 'dark' ? logoDark : logo} alt="Phase Machine" />
+        <img
+          id="logo"
+          className="no-select"
+          src={this.props.theme === 'dark' ? logoDark : this.props.theme === 'aero' ? logoAero : logo}
+          alt="Phase Machine"
+        />
         <img
           id="play-stop"
           className="header-item no-select"
-          src={this.props.playing ? stop : this.props.theme === 'dark' ? playDark : play}
+          src={
+            this.props.playing
+              ? this.props.theme === 'aero'
+                ? stopAero
+                : stop
+              : this.props.theme === 'dark'
+              ? playDark
+              : this.props.theme === 'aero'
+              ? playAero
+              : play
+          }
           alt="PLAY"
           onClick={this.playStop.bind(this)}
           draggable="false"

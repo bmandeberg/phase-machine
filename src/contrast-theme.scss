@@ -51,10 +51,27 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
       background-color: $lightMediumGrayActive;
     }
     &.green-button {
+      // explicit fill: base `.button.green-button` loses to `.contrast-theme
+      // .button`'s gray on source order, so without this it reads gray
+      background-color: $green;
       color: $darkBackground;
+      &:hover {
+        background-color: $greenHover;
+      }
+      &:active {
+        background-color: $greenActive;
+      }
     }
     &.red-button {
+      // same as green: needs an explicit red fill or it inherits the gray button
+      background-color: $red;
       color: $darkBackground;
+      &:hover {
+        background-color: $redHover;
+      }
+      &:active {
+        background-color: $redActive;
+      }
     }
   }
 

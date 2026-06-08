@@ -15,6 +15,7 @@ import {
   OCTAVES,
   SUSTAIN_MIN,
   KNOB_MAX,
+  aeroChannelColor,
 } from '../globals'
 import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds } from '../math'
 import classNames from 'classnames'
@@ -75,7 +76,7 @@ interface ChannelProps {
 
 export default function Channel({
   numChannels,
-  color,
+  color: rawColor,
   channelNum,
   setGrabbing,
   grabbing,
@@ -102,6 +103,10 @@ export default function Channel({
   preventUpdate,
   longestSequence,
 }: ChannelProps) {
+  // Presentation-only color: the aero theme shows brighter/airier variants of the
+  // default channel colors. rawColor (the stored hex) is untouched, so presets and
+  // persistence keep their original values; only the rendered color changes.
+  const color = useMemo(() => (theme === 'aero' ? aeroChannelColor(rawColor) : rawColor), [theme, rawColor])
   const id = useRef(initState.id)
   const [scribbler, setScribbler] = useState(initState.scribbler)
   const [velocity, setVelocity] = useState(initState.velocity)

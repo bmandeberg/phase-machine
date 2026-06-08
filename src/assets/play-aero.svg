@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 80 80">
+	<defs>
+		<linearGradient id="discPlayAero" x1="40" y1="2" x2="40" y2="78" gradientUnits="userSpaceOnUse">
+			<stop offset="0" stop-color="#ffffff" stop-opacity="0.3"/>
+			<stop offset="1" stop-color="#48c46c" stop-opacity="0.32"/>
+		</linearGradient>
+		<filter id="glowPlayAero" x="-60%" y="-60%" width="220%" height="220%">
+			<feGaussianBlur stdDeviation="1.7" result="b"/>
+			<feMerge>
+				<feMergeNode in="b"/>
+				<feMergeNode in="SourceGraphic"/>
+			</feMerge>
+		</filter>
+	</defs>
+	<!-- disc: flat glass with a white rim -->
+	<circle cx="40" cy="40" r="38.2" fill="url(#discPlayAero)" stroke="#ffffff" stroke-opacity="0.9" stroke-width="2"/>
+	<!-- symbol: white/glassy rim, a touch-lighter interior, soft glow -->
+	<g filter="url(#glowPlayAero)">
+		<path fill="#7ec93f" fill-opacity="0.9" stroke="#ffffff" stroke-opacity="0.92" stroke-width="2"
+			stroke-linejoin="round" stroke-linecap="round"
+			d="M33.7,55.4c-2.4,1.4-4.3,0.2-4.3-2.5V27.1c0-2.8,1.9-3.9,4.3-2.5L56,37.5c2.4,1.4,2.4,3.6,0,5L33.7,55.4z"/>
+	</g>
+</svg>

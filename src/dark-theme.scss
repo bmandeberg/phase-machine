@@ -59,7 +59,16 @@ $headerDarkBlue: #0f182d;
       }
     }
     &.red-button {
+      // needs an explicit red fill: the base `.button.red-button` red loses to
+      // `.dark-theme .button`'s gray on source order, so without this it reads gray
+      background-color: $red;
       color: $darkBackground;
+      &:hover {
+        background-color: $redHover;
+      }
+      &:active {
+        background-color: $redActive;
+      }
     }
   }
 

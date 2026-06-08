@@ -3,6 +3,7 @@ import Script from 'next/script'
 import '../src/index.scss'
 import '../src/dark-theme.scss'
 import '../src/contrast-theme.scss'
+import '../src/aero-theme.scss'
 
 export const metadata: Metadata = {
   title: 'The Phase Machine',

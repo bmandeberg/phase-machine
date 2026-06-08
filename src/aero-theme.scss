@@ -1,0 +1,889 @@
+@use './sass-globals' as *;
+
+// ──────────────────────────────────────────────────────────────────────────
+// Frutiger Aero theme 🫧🌱🐠
+//
+// Builds on the default (light) theme — only colors / fills / borders are
+// overridden, never layout. The look is thin, light frosted glass: translucent
+// fills over a sky→aqua→meadow gradient, real backdrop blur, hairline borders,
+// and airy teal text. Soft, club-futuristic — not glossy/skeuomorphic.
+// ──────────────────────────────────────────────────────────────────────────
+
+$aeroSky: #cdefff;
+$aeroAqua: #a6e2ee;
+$aeroWater: #8fd6e6;
+$aeroMeadow: #c7edab;
+$aeroBlue: #3fa9e0;
+$aeroBlueDeep: #1d7fb8;
+// general text matches the header label color so labels, body text and dropdown
+// text all read as one (used to be a darker teal #16596f)
+$aeroText: $aeroBlueDeep;
+$aeroTextSoft: #4a8aa3;
+
+// Frosted-glass fills. The always-visible controls use the "flat" mixin (no
+// blur) with slightly higher alpha so they still read as glass; only transient
+// overlays get real backdrop blur, so the fills are tuned to look the same.
+$glassNeutral: rgba(255, 255, 255, 0.24);
+$glassNeutralHover: rgba(255, 255, 255, 0.42);
+$glassNeutralActive: rgba(255, 255, 255, 0.14);
+$glassBlue: rgba(63, 169, 224, 0.5);
+$glassBlueHover: rgba(63, 169, 224, 0.64);
+$glassGreen: rgba(95, 208, 106, 0.54);
+$glassGreenHover: rgba(95, 208, 106, 0.68);
+$glassRed: rgba(255, 65, 62, 0.54);
+// the global "on / playing" accent is orange; aero swaps it for a soft seafoam
+// (blue-green) so the playhead/active state pops against the cool UI while
+// staying light and cute, in-palette with the aqua theme.
+$seafoam: #5fe3c4;
+$seafoamHover: #7ceacf;
+// deeper/saturated seafoam for the translucent step backgrounds so white text
+// stays legible on them (a pale seafoam would wash the label out)
+$glassSeafoam: rgba(80, 214, 184, 0.72);
+$glassDarkSeafoam: rgba(48, 190, 162, 0.7);
+$glassBorder: rgba(255, 255, 255, 0.42);
+// frosted accent in the current channel's color
+$glassChannel: color-mix(in srgb, var(--channel-color) 52%, transparent);
+
+// Opaque on purpose: inputs sit over varied surfaces and the Movement dropdown
+// overlays its num inputs on the value text — a translucent fill would let that
+// bleed through. A solid, light fill keeps them consistent and clean.
+$aeroInputBg: #e3f0f7;
+$aeroBorderSoft: #aedaeb;
+// colorizes the flat #666 gray instrument/wave SVGs to an aero aqua-blue (~#2f9fd6)
+$aeroIconFilter: invert(52%) sepia(56%) saturate(560%) hue-rotate(165deg) brightness(94%) contrast(90%);
+// tones the bright #008dff blue header/preset icons toward the aero aqua-teal
+// palette and softens them (shared by the gear/? and the preset action icons)
+$aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62);
+
+// Flat frosted surface for the MANY always-visible controls: translucent fill +
+// hairline border + a top highlight line. NO backdrop-filter — that would force
+// a re-blur of every button/step on every scroll frame (the perf killer). The
+// `$blur` arg is accepted and ignored so call sites can share one signature.
+@mixin aero-flat($bg, $blur: 0) {
+  background-color: $bg;
+  border: 1px solid $glassBorder;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+// Real frosted glass (translucent fill + backdrop blur). Reserved for transient
+// overlays — dropdown menus, the channel menu, the modal — which appear on top
+// and aren't re-blurred while the channel list scrolls, so the blur is cheap.
+@mixin aero-glass($bg, $blur: 14px) {
+  background-color: $bg;
+  backdrop-filter: blur($blur) saturate(135%);
+  -webkit-backdrop-filter: blur($blur) saturate(135%);
+  border: 1px solid $glassBorder;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.aero-theme {
+  // sky → aqua → water → meadow, with a soft sun-glow up top. Fixed so the sky
+  // stays put while channels scroll over it.
+  background-color: $aeroAqua;
+  background-image: radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+  background-attachment: fixed;
+  color: $aeroText;
+
+  textarea,
+  input {
+    background-color: $aeroInputBg;
+    color: $aeroText;
+    border: 1px solid $aeroBorderSoft;
+    box-shadow: inset 0 1px 2px rgba(27, 92, 116, 0.1);
+  }
+
+  // smooth the mute/unmute color change (the channel bg already transitions) on
+  // the frosted controls — mostly their borders/backgrounds in num inputs/dropdowns
+  .button,
+  .split-button,
+  .split-button-arrow,
+  .dropdown-control,
+  .dropdown-arrow-wrapper,
+  .multi-select,
+  .multi-select-arrow-container,
+  .react-numeric-input input,
+  .react-numeric-input b,
+  .sequence-step {
+    transition: background-color $transitionTime, border-color $transitionTime, color $transitionTime;
+  }
+
+  // ── Numeric inputs (spinner steppers) ─────────────────────────────────────
+  // Recolor the `b` buttons' background/arrows only — the base sets careful
+  // per-button border-widths so the up/down pair shares one seam.
+  .react-numeric-input,
+  .num-input.small-input {
+    input {
+      border-color: $aeroBorderSoft;
+      // base sets a #999 gray; out-specify it to the aero text color
+      color: $aeroText;
+    }
+    b {
+      // the steppers sit over the opaque (light) input, not the channel, so a
+      // translucent fill renders differently than the dropdowns. Use a SOLID fill
+      // matching the dropdown control's rendered color (sampled ~rgb(200,237,245))
+      // so they're an exact visual match. border-COLOR only, to keep the base
+      // per-button border widths intact.
+      background-color: #c8edf5;
+      border-color: $glassBorder;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      &:hover {
+        background-color: #d8f3fa;
+      }
+      &:active {
+        background-color: #b4e3ef;
+      }
+    }
+    b:first-of-type i {
+      border-color: transparent transparent $aeroText;
+    }
+    b:last-of-type i {
+      border-color: $aeroText transparent transparent;
+    }
+  }
+
+  .button {
+    @include aero-flat($glassNeutral);
+    color: $aeroText;
+    &:hover {
+      @include aero-flat($glassNeutralHover);
+    }
+    &:active {
+      @include aero-flat($glassNeutralActive);
+    }
+    &.green-button {
+      @include aero-flat($glassGreen);
+      color: #ffffff;
+      &:hover {
+        @include aero-flat($glassGreenHover);
+      }
+    }
+    &.red-button {
+      // a destructive "delete everything" action — use a near-solid red so it
+      // reads clearly as a warning instead of the soft $glassRed (54% alpha, which
+      // washed out against the bright aqua UI)
+      @include aero-flat(rgba($red, 0.86));
+      color: #ffffff;
+      &:hover {
+        @include aero-flat(rgba($red, 0.96));
+      }
+      &:active {
+        @include aero-flat(rgba($redActive, 0.92));
+      }
+    }
+  }
+
+  .mute-solo {
+    .button {
+      @include aero-flat($glassNeutral);
+      color: $aeroTextSoft;
+    }
+    .mute.muted {
+      @include aero-flat($glassRed);
+      color: #ffffff;
+    }
+    .solo.soloed {
+      @include aero-flat($glassChannel);
+      color: #ffffff;
+    }
+  }
+
+  .midi {
+    .midi-in {
+      @include aero-flat($glassNeutral);
+      color: $aeroTextSoft;
+      &.midi-active {
+        @include aero-flat($glassChannel);
+        color: #ffffff;
+      }
+    }
+  }
+
+  // ── Header: a thin frosted aqua bar ───────────────────────────────────────
+  #header {
+    // No backdrop blur: the header is fixed, so blurring would re-process the
+    // whole scrolling channel list behind it every frame. A more opaque tint
+    // reads as the same frosted bar without the cost.
+    background-color: rgba(188, 226, 242, 0.92);
+    color: $aeroBlueDeep;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+      0 1px 10px rgba(27, 92, 116, 0.12);
+    .button {
+      color: $aeroBlueDeep;
+    }
+    // the waves get an aero-tinted PNG (blue→seafoam) via Header.tsx so they read
+    // on the bright aqua bar; the dark logo-shadow drop-smudge stays hidden.
+    .logo-shadow {
+      display: none;
+    }
+    // Make the sinusoids glowy/airy with a two-layer bloom (Header.tsx renders a
+    // duplicate <img> behind the crisp one for aero):
+    //   • crisp layer — a gentle luminosity lift + a tight seafoam drop-shadow
+    //     core glow, slightly translucent so the bloom + aqua bar show through.
+    //   • bloom layer — the same PNG heavily blurred and brightened, screen-blended
+    //     so its wide colored halo lifts off the bar without washing to white (a
+    //     plain screen of the un-blurred waves did wash out; the blur + color is
+    //     what keeps it reading as a lit-from-within glow).
+    .waves-background {
+      opacity: 0.82;
+      filter: brightness(1.06) saturate(0.92) drop-shadow(0 0 3px rgba(190, 252, 232, 0.55))
+        drop-shadow(0 0 7px rgba(120, 235, 210, 0.55));
+    }
+    .waves-background.waves-bloom {
+      opacity: 0.9;
+      filter: blur(4px) brightness(1.32) saturate(1.1);
+      mix-blend-mode: screen;
+    }
+    .header-aux {
+      // the gear/? PNGs are a bright #008dff blue; tone them toward the aero
+      // aqua-teal palette
+      .header-settings,
+      .header-about {
+        filter: $aeroBlueIconTone;
+      }
+      .header-settings {
+        background: url('./assets/gear-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/gear-hover-blue.png');
+          background-size: 22px;
+        }
+      }
+      .header-about {
+        background: url('./assets/question-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/question-blue-hover.png');
+          background-size: 22px;
+        }
+      }
+    }
+  }
+  #header-border {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  // the aero logo's viewBox is padded (-6 -6 296 92) so its glow isn't clipped;
+  // scale the element up to match (40 * 92/80) so the letterforms stay the same
+  // size, and nudge up so the padding doesn't sit it low in the header row
+  #logo {
+    height: 46px;
+    margin-top: -3px;
+  }
+
+  .radio-buttons {
+    .radio-button {
+      @include aero-flat($glassNeutral);
+      color: $aeroBlueDeep;
+      &:hover {
+        background-color: $glassNeutralHover;
+      }
+      &:active {
+        background-color: $glassNeutralActive;
+      }
+      &.radio-button-selected {
+        @include aero-flat($glassBlue);
+        color: #ffffff;
+        &:hover {
+          background-color: $glassBlueHover;
+        }
+      }
+    }
+  }
+
+  // ── Channels: thin translucent panels over the sky ─────────────────────────
+  // NB: no backdrop-filter on the rows — it would make each row its own stacking
+  // context, trapping that channel's dropdown menus under the next row. The
+  // controls supply the blur; the panel just tints.
+  .channel-horizontal,
+  .channel-clock {
+    background-color: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .channel-clock {
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .channel-horizontal {
+    .channel-number-container {
+      .channel-number-background {
+        // softer + quicker horizontal fade so this reads as a faint glow behind
+        // the channel number rather than an opaque box washing over the
+        // instrument / "..." icons that sit lower in the same sticky column
+        background: linear-gradient(to right, rgba(220, 242, 251, 0.5) 0%, rgba(220, 242, 251, 0) 60%);
+      }
+      .channel-number {
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+      }
+      .channel-mute-solo .channel-mute-solo-button:not(.muted):not(.soloed) {
+        color: $aeroTextSoft;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
+      }
+    }
+    // muted: the bright aqua backing pops against the desaturated channel veil
+    // and re-reads as a box — match it to the cool mute tone so it blends
+    &.mute .channel-number-container .channel-number-background {
+      background: linear-gradient(to right, rgba(205, 218, 225, 0.5) 0%, rgba(205, 218, 225, 0) 60%);
+    }
+    &.channel-in-active,
+    &.channel-in-active .channel-horizontal {
+      background-color: rgba(149, 224, 156, 0.5);
+    }
+  }
+  // ── Muted channel: a cool, desaturated version (selected/accent stay vivid) ──
+  .mute {
+    $muteGlass: rgba(199, 213, 221, 0.46);
+    $muteGlassFaint: rgba(199, 213, 221, 0.26);
+    $muteText: #6f8c9b;
+    // a light, cool, desaturated veil so a muted channel reads as "off" without
+    // getting dark
+    background-color: rgba(181, 200, 210, 0.22);
+    color: $muteText;
+
+    // base .mute repaints the scribbler container/input solid gray (#f2f2f2 /
+    // #d8d8d8); keep them transparent here so the column stays the frosted
+    // channel with just the muted name text floating on it
+    .scribbler .scribbler-input-container {
+      background-color: transparent;
+    }
+    .scribbler .scribbler-input {
+      background-color: transparent;
+      color: $muteText;
+    }
+    .button,
+    .dropdown-control,
+    .multi-select,
+    .split-button {
+      background-color: $muteGlass;
+      border-color: rgba(255, 255, 255, 0.32);
+      color: $muteText;
+    }
+    .dropdown-arrow-wrapper,
+    .split-button-arrow,
+    .multi-select-arrow-container {
+      background-color: $muteGlassFaint;
+    }
+    .dropdown-arrow,
+    .multi-select-arrow {
+      border-top-color: $muteText;
+    }
+    .split-button-arrow-left::before {
+      border-right-color: $muteText;
+    }
+    .split-button-arrow-right::before {
+      border-left-color: $muteText;
+    }
+    .react-numeric-input {
+      input {
+        color: $muteText;
+      }
+      b {
+        // match the muted dropdown control (sampled ~rgb(185,219,228)); keep the
+        // non-mute white border so the border doesn't change color when muted
+        background-color: #b9dbe4;
+        border-color: $glassBorder;
+        i {
+          border-color: transparent transparent $muteText;
+        }
+      }
+      b:last-of-type i {
+        border-color: $muteText transparent transparent;
+      }
+    }
+    .react-switch-bg {
+      background-color: #c2d1d8 !important;
+    }
+    .notes-mode,
+    .switch-label {
+      color: $muteText;
+    }
+    .sequence-step:not(.selected):not(.playing) {
+      background-color: $muteGlass;
+      color: $muteText;
+    }
+    .piano .piano-note:not(.selected):not(.playing) {
+      background-color: #9fb4bf;
+      &.in-range {
+        background-color: #7e9aa7;
+      }
+      &.white-key {
+        background-color: rgba(188, 202, 210, 0.55);
+        // the unmuted white-key stroke is a bright aqua; mute it so it doesn't
+        // read as a crisp light line across a greyed-out channel
+        border-color: rgba(165, 185, 196, 0.7);
+        &.in-range {
+          background-color: rgba(188, 202, 210, 0.78);
+        }
+      }
+    }
+    .key.piano-keys .pitch-class:not(.selected):not(.playing) {
+      background-color: #7e9aa7;
+      &.white-key {
+        background-color: rgba(188, 202, 210, 0.6);
+      }
+      // NB: don't recolor the black-key border here — it stays the same #d2f0fc
+      // gap tone as when unmuted so the stroke between keys is consistent
+    }
+    // the velocity fader is a colored SVG; desaturate it so it reads as muted
+    .fader-slot {
+      filter: saturate(0.4) brightness(1.04);
+    }
+    // the knob should read as recessed/dimmed when muted, so darken it instead
+    // of lightening it
+    .fader-knob {
+      filter: saturate(0.4) brightness(0.9);
+    }
+  }
+  .stacked-auxiliary.first-auxiliary::before {
+    background-color: rgba(255, 255, 255, 0.45);
+  }
+  .border {
+    border-right-color: rgba(255, 255, 255, 0.45);
+  }
+  .scribbler {
+    // Both the base container (#fff) and the input fill ($lightGray) read as a
+    // lighter strip — and because the input is shorter than the row, the left
+    // edge bands light/transparent between channels. Make both transparent so
+    // the column is just the channel with the name text floating on it.
+    .scribbler-input-container {
+      background-color: transparent;
+    }
+    .scribbler-input {
+      background-color: transparent;
+      color: $aeroText;
+    }
+  }
+
+  .channel-buttons {
+    .channel-menu-button span {
+      background-color: $aeroTextSoft;
+    }
+    // muted: the base theme lightens the dots to #d8d8d8, which reads as
+    // brighter-than-normal here; darken them to the muted text tone instead.
+    // (extra .channel-buttons specificity to beat base `.channel-buttons.mute …`)
+    &.mute .channel-menu-button span {
+      background-color: #6f8c9b;
+    }
+    .channel-menu {
+      @include aero-glass(rgba(220, 240, 250, 0.55), 14px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.22);
+      .channel-menu-item {
+        color: $aeroText;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+  }
+
+  // ── Sequencer steps: little frosted tiles ──────────────────────────────────
+  .sequence-step {
+    @include aero-flat($glassNeutral, 6px);
+    color: $aeroTextSoft;
+    // base hover is a dark gray; use the frosted hover (selected/playing keep
+    // their channel/orange hovers — those base rules out-specify this one)
+    &:hover {
+      background-color: $glassNeutralHover;
+    }
+    &.selected {
+      // mostly-solid channel color (the 52% $glassChannel reads washed out);
+      // the aero-flat border + highlight keep it in the frosted-glass family
+      @include aero-flat(color-mix(in srgb, var(--channel-color) 88%, transparent), 6px);
+      color: #ffffff;
+    }
+    &.playing {
+      @include aero-flat($glassDarkSeafoam, 6px);
+      color: #ffffff;
+      &.selected {
+        @include aero-flat($glassSeafoam, 6px);
+      }
+    }
+  }
+
+  .notes-mode,
+  .switch-label {
+    color: $aeroText;
+  }
+
+  // the axis knob fades in a full-screen backdrop while held (white in the base);
+  // use the aero sky so it matches the theme instead of flashing white
+  .knob-container.axis-knob::before {
+    background-color: $aeroAqua;
+    background-image: radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+      linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+    background-attachment: fixed;
+  }
+
+  // instrument / wave icons are flat #666 gray SVGs; colorize them to aero aqua.
+  // The channel icon needs the more specific selector to beat ChannelButtons.scss's
+  // own brightness() filter (component CSS is emitted after the theme).
+  .wave-icon {
+    filter: $aeroIconFilter;
+  }
+  .channel-buttons .channel-instrument-button .wave-icon,
+  .channel-buttons .channel-instrument-button:hover .wave-icon {
+    filter: $aeroIconFilter;
+  }
+
+  // ── Piano + key: frosted aqua keys instead of gray, with a light inner glow ──
+  // "Black" keys become muted aqua so nothing reads as flat gray; the playable
+  // (in-range) keys get a soft inner glow. selected/playing keep channel/orange.
+  .piano {
+    // :not(.selected):not(.playing) so the recolor never overrides the channel
+    // color (selected) or orange (playing) — those win for any selected/held key.
+    .piano-note:not(.selected):not(.playing) {
+      background-color: #8fbed2; // out-of-range / keyboard-mode dark keys
+      border-color: rgba(255, 255, 255, 0.7);
+      &.in-range {
+        background-color: #5c9bb5;
+        // in-range black keys are only ~7px wide; an all-around glow eats their
+        // width and makes them look thin, so use a top-only highlight here
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      }
+      &.interactive:hover {
+        background-color: #7eb1c7;
+      }
+      &.white-key {
+        background-color: rgba(255, 255, 255, 0.34);
+        border-color: rgba(159, 210, 230, 0.85);
+        &.in-range {
+          background-color: rgba(255, 255, 255, 0.62);
+          box-shadow: inset 0 0 7px rgba(255, 255, 255, 0.65);
+        }
+        &.interactive:hover {
+          background-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+    // playing keys are orange in the base; recolor the playhead to aero seafoam
+    // (covers black + white, in-range + keyboard, plus the in-range border tint)
+    .piano-note.playing {
+      background-color: $seafoam;
+      &.interactive:hover {
+        background-color: $seafoamHover;
+      }
+      &.white-key.in-range {
+        background-color: $seafoam;
+        border-color: $seafoamHover;
+      }
+    }
+    // the base makes in-range black keys 7px wide (vs 10px out-of-range/keyboard),
+    // which reads as too thin; widen them to match the out-of-range geometry
+    .piano-note.in-range:not(.white-key) {
+      width: 10px;
+      margin-left: -4px;
+      transform: none;
+      &.black-key-left {
+        margin-left: -5px;
+      }
+      &.black-key-right {
+        margin-left: -3px;
+      }
+    }
+  }
+  // the piano is wrapped in a .piano-border with a 2px white frame (base, white
+  // in range/muted, gray in keyboard); it reads as stray white lines at the
+  // piano-roll edges. Need .piano scope to beat the base `.piano .piano-border`.
+  .piano .piano-border,
+  .piano .piano-border.dark-border {
+    border-color: transparent;
+  }
+  .key {
+    &.piano-keys .pitch-class {
+      background-color: #5c9bb5;
+      box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.4);
+      // base separators are 2px solid white; make them transparent AND clip the
+      // fill to the padding box so the gap shows the channel behind (real space
+      // between keys) rather than the key's own color bleeding under the border
+      border-color: transparent;
+      background-clip: padding-box;
+      // black keys are absolute and overlap the white keys, so a transparent
+      // border would reveal the (maybe selected) white key behind. Give them a
+      // solid tone matching the channel gaps so the spacing stays consistent.
+      &:not(.white-key) {
+        border-color: #d2f0fc;
+      }
+      // the leftmost key's left border is the block's outer edge — drop it so it
+      // doesn't read as a stray line against the channel
+      &:first-of-type {
+        border-left-width: 0;
+      }
+      // base .pitch-class.mute recolors the separators to #f2f2f2 (ties the rule
+      // above and wins on source order) — re-assert the unmuted stroke so a muted
+      // channel's key strokes look identical
+      &.mute {
+        border-color: transparent;
+        &:not(.white-key) {
+          border-color: #d2f0fc;
+        }
+      }
+      &:hover {
+        background-color: #6ba6bf;
+      }
+      &.white-key {
+        background-color: rgba(255, 255, 255, 0.55);
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.7);
+        }
+      }
+      // playhead on the mini keys: base paints it orange !important — swap to
+      // seafoam (same !important + .aero-theme prefix beats the base rule)
+      &.playing {
+        background-color: $seafoam !important;
+        &:hover {
+          background-color: $seafoamHover !important;
+        }
+      }
+      &.ghost-playing {
+        background-color: rgba(95, 227, 196, 0.45) !important;
+      }
+    }
+    &.clock .pitch-class {
+      background-color: #5c9bb5;
+      box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.4);
+      &:hover {
+        background-color: #6ba6bf;
+      }
+    }
+  }
+
+  // white outline around the react-switch track so it reads on the aqua channel
+  // (inset box-shadow so it doesn't shift the switch's layout)
+  .react-switch-bg {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.85) !important;
+  }
+
+  // ── Dropdowns ──────────────────────────────────────────────────────────────
+  .dropdown-control {
+    @include aero-flat($glassNeutral);
+    color: $aeroText;
+  }
+  .dropdown-arrow-wrapper {
+    // nested inside the control — translucent only (no second backdrop blur)
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid $glassBorder;
+    border-left-color: rgba(255, 255, 255, 0.25);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.26);
+    }
+  }
+  .dropdown-arrow {
+    border-color: $aeroText transparent transparent;
+  }
+  .dropdown-root.open .dropdown-arrow {
+    border-color: transparent transparent $aeroText !important;
+  }
+  .dropdown-menu {
+    @include aero-glass(rgba(219, 240, 250, 0.6), 16px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.24);
+  }
+  .dropdown-menu .dropdown-group > .dropdown-title {
+    color: $aeroBlueDeep;
+  }
+  .dropdown-option {
+    color: $aeroText;
+    &:hover,
+    &.selected {
+      background-color: rgba(255, 255, 255, 0.4);
+      color: $aeroBlueDeep;
+    }
+  }
+  .dropdown-noresults {
+    color: $aeroTextSoft;
+  }
+  .dropdown-container {
+    &.small-dropdown {
+      .dropdown-control {
+        @include aero-flat($glassNeutral);
+        color: $aeroText;
+      }
+      .dropdown-arrow-wrapper {
+        background-color: rgba(255, 255, 255, 0.12);
+        border: 1px solid $glassBorder;
+        border-left-color: rgba(255, 255, 255, 0.25);
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.26);
+        }
+      }
+      .dropdown-arrow {
+        border-color: $aeroText transparent transparent;
+      }
+      .dropdown-root.open .dropdown-arrow {
+        border-color: transparent transparent $aeroText !important;
+      }
+      .dropdown-menu {
+        @include aero-glass(rgba(219, 240, 250, 0.6), 16px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.24);
+      }
+      // base .small-dropdown keeps an orange option highlight at higher
+      // specificity than the global rule — override here
+      .dropdown-option:hover,
+      .dropdown-option.selected {
+        background-color: rgba(255, 255, 255, 0.4);
+        color: $aeroBlueDeep;
+      }
+    }
+    &.graphic-options {
+      .dropdown-option:hover,
+      .dropdown-option.selected {
+        background-color: rgba(255, 255, 255, 0.4);
+      }
+    }
+  }
+
+  // ── MultiSelect: match the dropdowns ───────────────────────────────────────
+  .multi-select {
+    @include aero-flat($glassNeutral);
+    color: $aeroText;
+    .multi-select-placeholder {
+      color: $aeroTextSoft;
+    }
+    .multi-select-arrow-container {
+      background-color: rgba(255, 255, 255, 0.12);
+      border: 1px solid $glassBorder;
+      border-left-color: rgba(255, 255, 255, 0.25);
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.26);
+      }
+    }
+    .multi-select-arrow {
+      border-color: $aeroText transparent transparent;
+    }
+    .multi-select-dropdown {
+      @include aero-glass(rgba(219, 240, 250, 0.6), 16px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.24);
+    }
+    .multi-select-option {
+      color: $aeroText;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+        color: $aeroBlueDeep;
+      }
+    }
+    .multi-select-selection {
+      background-color: rgba(255, 255, 255, 0.5);
+      color: $aeroText;
+      .multi-select-remove {
+        &:before,
+        &:after {
+          background-color: $aeroText;
+        }
+        &:hover {
+          &:before,
+          &:after {
+            background-color: $red;
+          }
+        }
+      }
+    }
+  }
+
+  // ── Presets & split-buttons ───────────────────────────────────────────────
+  .presets {
+    @include aero-flat($glassNeutral);
+    color: $aeroText;
+    input[type='text'] {
+      background-color: $aeroInputBg;
+      border: 1px solid $aeroBorderSoft;
+      color: $aeroText;
+    }
+    // a long selected-preset name overflows the dropdown's placeholder box
+    // (overflow:visible) and, because the frosted arrow/action buttons are
+    // see-through here, its tail bleeds through them. The editable input always
+    // overlays the name, so the placeholder text is never needed — clip it.
+    .dropdown-placeholder {
+      overflow: hidden;
+    }
+    .preset-action {
+      border-right-color: rgba(255, 255, 255, 0.28);
+      // the save/delete/duplicate icons are the same bright #008dff blue as the
+      // gear/? icons — give them the matching aqua-teal tone-down
+      img {
+        filter: $aeroBlueIconTone;
+      }
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.26);
+      }
+      &:active {
+        background-color: rgba(255, 255, 255, 0.14);
+      }
+      &.disabled {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+    }
+    .preset-hotkey {
+      background-color: $glassBlue;
+      color: #ffffff;
+    }
+  }
+  // instrument selector (and any split button): frosted body, lighter arrow caps
+  .split-button {
+    @include aero-flat($glassNeutral);
+    color: $aeroText;
+    .split-button-action:hover,
+    .split-button-content:hover {
+      background-color: rgba(255, 255, 255, 0.22);
+    }
+    .split-button-arrow {
+      background-color: rgba(255, 255, 255, 0.12);
+      // the arrows sit in a row BELOW the instrument (content) button — a white
+      // top border divides them from it
+      border-top: 1px solid rgba(255, 255, 255, 0.9);
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.28);
+      }
+      &:active {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+      &.split-button-arrow-left {
+        // divider between the two directional arrows
+        border-right: 1px solid rgba(255, 255, 255, 0.9);
+        &::before {
+          border-color: transparent $aeroText transparent transparent;
+        }
+      }
+      &.split-button-arrow-right::before {
+        border-color: transparent transparent transparent $aeroText;
+      }
+    }
+  }
+
+  .channel-clock {
+    .channel-drawer-control {
+      @include aero-flat($glassNeutral);
+      .arrow-down {
+        border-top-color: $aeroTextSoft;
+      }
+      &.drawer-open {
+        @include aero-flat($glassChannel);
+        .arrow-down {
+          border-top-color: #ffffff;
+        }
+      }
+    }
+    &.channel-in-active {
+      background-color: rgba(149, 224, 156, 0.5);
+    }
+  }
+
+  // ── Modals ────────────────────────────────────────────────────────────────
+  .modal-container {
+    background-color: rgba(120, 190, 215, 0.32);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    .modal-window {
+      @include aero-glass(rgba(224, 242, 250, 0.55), 22px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 8px 32px rgba(27, 92, 116, 0.28);
+    }
+  }
+
+  // The base theme uses opaque white edge-fades to dissolve scrolled content
+  // into the background; over the sky gradient they read as pale strips around
+  // the channels. Drop them — the content just meets the edge instead.
+  .border-gradient {
+    &.gradient-top,
+    &.gradient-right,
+    &.gradient-bottom {
+      background: transparent;
+    }
+  }
+}

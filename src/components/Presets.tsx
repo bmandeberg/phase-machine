@@ -69,6 +69,7 @@ export default function Presets({
       case 'light':
         return preset.placeholder ? trashIconDisabled : trashIcon
       case 'dark':
+      case 'aero':
         return preset.placeholder ? trashIconDisabledBlue : trashIconBlue
       case 'contrast':
         return preset.placeholder ? trashIconDisabledDark : trashIconDark
@@ -82,6 +83,7 @@ export default function Presets({
       case 'light':
         return presetDirty || preset.placeholder ? saveIcon : saveIconDisabled
       case 'dark':
+      case 'aero':
         return presetDirty || preset.placeholder ? saveIconBlue : saveIconDisabledBlue
       case 'contrast':
         return presetDirty || preset.placeholder ? saveIconDark : saveIconDisabledDark
@@ -95,6 +97,7 @@ export default function Presets({
       case 'light':
         return addIcon
       case 'dark':
+      case 'aero':
         return addIconBlue
       case 'contrast':
         return addIconDark

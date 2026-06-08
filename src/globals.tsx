@@ -81,7 +81,30 @@ export const SECTIONS = ['key', 'piano', 'sequence']
 // blue, purple, magenta, pink, dark-green, green, yellow, red
 export const CHANNEL_COLORS = ['#008dff', '#a825f4', '#ff00ff', '#ff85de', '#00C591', '#33ff00', '#EDDB00', '#ff413e']
 
-export const THEMES = ['dark', 'light', 'contrast']
+// Aero theme remaps each default channel color to a brighter/airier variant for
+// PRESENTATION ONLY — the stored channel.color keeps its original hex (so presets
+// and persistence are unchanged); aeroChannelColor() swaps it just for display.
+// Keyed by the lowercased default hex; custom (non-default) colors pass through.
+export const AERO_CHANNEL_COLORS: Record<string, string> = {
+  '#008dff': '#00bdff',
+  '#a825f4': '#ab80ff',
+  '#ff00ff': '#fa48ff',
+  '#ff85de': '#ff8de7',
+  '#00c591': '#00db9c',
+  '#33ff00': '#00ff5b',
+  '#eddb00': '#edff00',
+  '#ff413e': '#ff5c5c',
+}
+export const aeroChannelColor = (color: string): string => AERO_CHANNEL_COLORS[color.toLowerCase()] ?? color
+
+// Settings theme picker. Values are the internal theme keys (unchanged); labels
+// are what the user sees. 'light' is shown as "Toxic" and ordered last.
+export const THEMES = [
+  { value: 'dark', label: 'Dark' },
+  { value: 'contrast', label: 'Contrast' },
+  { value: 'aero', label: 'Aero' },
+  { value: 'light', label: 'Toxic' },
+]
 
 export const RATES = [
   '4m',
@@ -300,6 +323,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#45454c'
         case 'contrast':
           return '#45454C'
+        case 'aero':
+          return '#cbe7f3'
         default:
           return '#e6e6e6'
       }
@@ -311,6 +336,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#45454c'
         case 'contrast':
           return '#45454C'
+        case 'aero':
+          return '#cbe7f3'
         default:
           return '#e6e6e6'
       }
@@ -322,6 +349,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#a0a0b4'
         case 'contrast':
           return mute ? '#aab1cc' : '#CCD0FF'
+        case 'aero':
+          return '#ffffff'
         default:
           return '#666666'
       }
@@ -333,6 +362,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#00c591'
         case 'contrast':
           return '#33ff00'
+        case 'aero':
+          return '#5fd06a'
         default:
           return '#33ff00'
       }

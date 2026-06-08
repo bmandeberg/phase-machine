@@ -5,7 +5,7 @@
 import type { Dispatch, SetStateAction, MutableRefObject } from 'react'
 import type * as Tone from 'tone'
 
-export type Theme = 'dark' | 'light' | 'contrast'
+export type Theme = 'dark' | 'light' | 'contrast' | 'aero'
 export type View = 'horizontal' | 'stacked' | 'condensed' | 'clock'
 export type Section = 'key' | 'piano' | 'sequence'
 

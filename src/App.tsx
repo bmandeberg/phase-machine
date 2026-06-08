@@ -438,6 +438,7 @@ export default function App() {
         resizing,
         'dark-theme': theme === 'dark',
         'contrast-theme': theme === 'contrast',
+        'aero-theme': theme === 'aero',
       })}>
       <Header
         tempo={tempo}
