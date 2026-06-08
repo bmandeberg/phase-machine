@@ -43,6 +43,9 @@ import darkHarp from './assets/samples-harp-dark.svg'
 import choral from './assets/samples-choral.svg'
 import lightChoral from './assets/samples-choral-light.svg'
 import darkChoral from './assets/samples-choral-dark.svg'
+import rhythmic from './assets/samples-rhythmic.svg'
+import lightRhythmic from './assets/samples-rhythmic-light.svg'
+import darkRhythmic from './assets/samples-rhythmic-dark.svg'
 import { rangeWrapper } from './math'
 import { alertDialog } from './dialog'
 import { Channel, Preset } from './types'
@@ -292,6 +295,17 @@ function themedIcon(icon: string, theme: string) {
         default:
           return choral
       }
+    case 'rhythmic':
+      switch (theme) {
+        case 'light':
+          return rhythmic
+        case 'dark':
+          return lightRhythmic
+        case 'contrast':
+          return darkRhythmic
+        default:
+          return rhythmic
+      }
     default:
       return null
   }
@@ -399,12 +413,10 @@ export const INSTRUMENT_TYPES: Record<string, (theme: string) => React.JSX.Eleme
   'drum-machine': (theme: string) => (
     <img className="wave-icon" style={{ height: 20 }} src={themedIcon('drum-machine', theme) ?? ''} alt="" />
   ),
-  // Tempo-synced rhythmic-loop sampler (breaks, top loops, grooves). Text label
-  // (like pwm) so it needs no asset.
-  rhythmic: () => (
-    <span className="wave-title" style={{ marginRight: 0 }}>
-      rhy
-    </span>
+  // Tempo-synced rhythmic-loop sampler (breaks, top loops, grooves) — vinyl
+  // turntable glyph, themed like the other instrument icons.
+  rhythmic: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('rhythmic', theme) ?? ''} alt="" />
   ),
 }
 
