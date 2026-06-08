@@ -881,11 +881,18 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
 
   // ── Modals ────────────────────────────────────────────────────────────────
   .modal-container {
+    // the full-screen container does the frosting (it's overflow:visible, so it
+    // doesn't clip), which blurs the whole app behind the modal at once
     background-color: rgba(120, 190, 215, 0.32);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
     .modal-window {
-      @include aero-glass(rgba(224, 242, 250, 0.55), 22px);
+      // NB: NO backdrop-filter here. It would make .modal-window the containing
+      // block for — and clip — the position:fixed dropdown/multiselect menus that
+      // are meant to overflow the modal (.fixed-menu). The container already
+      // blurs the app behind the modal; a more opaque fill keeps this reading as
+      // a frosted-glass panel without trapping those menus.
+      @include aero-flat(rgba(224, 242, 250, 0.85));
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 8px 32px rgba(27, 92, 116, 0.28);
     }
   }
