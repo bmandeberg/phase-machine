@@ -217,6 +217,11 @@ export default function Channel({
 
   const playNoteBuffer = useRef<any>({ seq: null, key: null })
   const presetInitialized = useRef<any>(undefined)
+  // tracks the last channelPreset we reloaded from, so the reload below fires only
+  // on a real preset change — not when the effect re-runs with the same preset
+  // (e.g. React StrictMode's dev double-invoke), which would otherwise clobber the
+  // channel's live working state back to the saved preset
+  const prevChannelPreset = useRef(channelPreset)
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState<any>('')
@@ -767,7 +772,7 @@ export default function Channel({
     if (channelPreset) {
       if (!presetInitialized.current) {
         presetInitialized.current = true
-      } else {
+      } else if (channelPreset !== prevChannelPreset.current) {
         if (restartChannels) {
           seqRestart()
           keyRestart()
@@ -832,6 +837,7 @@ export default function Channel({
         )
         setUpdateOnce(true)
       }
+      prevChannelPreset.current = channelPreset
     }
   }, [
     channelPreset,
