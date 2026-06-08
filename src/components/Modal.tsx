@@ -37,6 +37,7 @@ interface ModalProps {
   setInstrumentType?: any
   instrumentParams?: InstrumentParams
   setInstrumentParams?: any
+  savedInstrumentParams?: InstrumentParams
   instruments?: any
   gainNode?: any
   pannerNode?: any
@@ -84,6 +85,7 @@ export default function Modal({
   setInstrumentType,
   instrumentParams,
   setInstrumentParams,
+  savedInstrumentParams,
   instruments,
   gainNode,
   pannerNode,
@@ -216,6 +218,7 @@ export default function Modal({
         setInstrumentType={setInstrumentType}
         instrumentParams={instrumentParams as InstrumentParams}
         setInstrumentParams={setInstrumentParams}
+        savedInstrumentParams={savedInstrumentParams}
         instruments={instruments}
         gainNode={gainNode}
         pannerNode={pannerNode}
@@ -235,6 +238,7 @@ export default function Modal({
       grabbing,
       instrumentOn,
       instrumentParams,
+      savedInstrumentParams,
       instrumentType,
       instruments,
       setGrabbing,

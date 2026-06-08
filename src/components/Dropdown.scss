@@ -223,6 +223,31 @@
       font-size: 15px;
     }
   }
+  // The preset list felt claustrophobic with the compact shared small-dropdown
+  // option spacing, so give just this dropdown more breathing room (mirrors the
+  // sibling l-amb preset dropdown). Combined classes out-specify the
+  // &.small-dropdown rules above.
+  &.preset-dropdown.small-dropdown {
+    .dropdown-menu {
+      // hug the longest preset name (up to a reasonable cap) instead of the
+      // narrow control width, so names aren't clipped and there's no horizontal
+      // scroll. min-width keeps it at least as wide as the control. overflow-x
+      // hidden suppresses the implicit horizontal scrollbar that overflow-y:auto
+      // would otherwise promote; names past the cap ellipsize.
+      width: max-content;
+      min-width: 100%;
+      max-width: 360px;
+      max-height: 60vh;
+      overflow-x: hidden;
+    }
+    .dropdown-option {
+      padding: 7px 12px;
+      line-height: 16px;
+      height: auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
   &.no-text-transform {
     .dropdown-control,
     .dropdown-menu,

@@ -1,12 +1,13 @@
 import React from 'react'
 import RotaryKnob from '../RotaryKnob'
 import useSamplerParams from './useSamplerParams'
-import { Setter } from '../../types'
+import { Setter, InstrumentParams } from '../../types'
 
 type SamplerControlsProps = ReturnType<typeof useSamplerParams> & {
   theme: string
   grabbing?: boolean
   setGrabbing: Setter<boolean>
+  savedInstrumentParams?: InstrumentParams
 }
 
 function SamplerControls({
@@ -17,6 +18,7 @@ function SamplerControls({
   theme,
   grabbing,
   setGrabbing,
+  savedInstrumentParams,
 }: SamplerControlsProps) {
   return (
     <div className="sampler-controls">
@@ -35,6 +37,7 @@ function SamplerControls({
             inline={false}
             mute={false}
             theme={theme}
+            resetValue={savedInstrumentParams?.samplerAttack}
           />
           <RotaryKnob
             className="instrument-item"
@@ -48,6 +51,7 @@ function SamplerControls({
             inline={false}
             mute={false}
             theme={theme}
+            resetValue={savedInstrumentParams?.samplerRelease}
           />
         </div>
       </div>

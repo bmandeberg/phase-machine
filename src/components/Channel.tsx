@@ -1027,7 +1027,8 @@ export default function Channel({
     openMidiModal,
     openInstrumentModal,
     updateOnce,
-    triggerNote
+    triggerNote,
+    channelPreset
   )
 
   const modalEl = useMemo(
@@ -1059,6 +1060,7 @@ export default function Channel({
           setInstrumentType={setInstrumentType}
           instrumentParams={instrumentParams}
           setInstrumentParams={setInstrumentParams}
+          savedInstrumentParams={channelPreset?.instrumentParams}
           instruments={instruments}
           gainNode={gainNode}
           pannerNode={pannerNode}
@@ -1080,6 +1082,7 @@ export default function Channel({
       hideModal,
       instrumentOn,
       instrumentParams,
+      channelPreset?.instrumentParams,
       instrumentType,
       instruments,
       midiHold,

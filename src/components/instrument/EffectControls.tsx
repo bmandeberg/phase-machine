@@ -5,7 +5,7 @@ import Switch from 'react-switch'
 import { EFFECTS, themedSwitch, RATES } from '../../globals'
 import { rateToSeconds } from '../../math'
 import useEffectParams from './useEffectParams'
-import { EffectRefs, Setter } from '../../types'
+import { EffectRefs, Setter, InstrumentParams } from '../../types'
 
 type EffectControlsProps = ReturnType<typeof useEffectParams> & {
   effects: EffectRefs
@@ -14,6 +14,7 @@ type EffectControlsProps = ReturnType<typeof useEffectParams> & {
   setGrabbing: Setter<boolean>
   tempo: number
   color: string
+  savedInstrumentParams?: InstrumentParams
 }
 
 function EffectControls({
@@ -51,6 +52,7 @@ function EffectControls({
   setGrabbing,
   tempo,
   color,
+  savedInstrumentParams,
 }: EffectControlsProps) {
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
@@ -109,6 +111,7 @@ function EffectControls({
             inline={false}
             mute={false}
             theme={theme}
+            resetValue={savedInstrumentParams?.effectWet}
           />
         )}
         {effectType === 'chorus' &&
@@ -127,6 +130,7 @@ function EffectControls({
                 mute={false}
                 theme={theme}
                 logarithmic
+                resetValue={savedInstrumentParams?.chorusDepth}
               />
               <RotaryKnob
                 className="instrument-item"
@@ -140,6 +144,7 @@ function EffectControls({
                 inline={false}
                 mute={false}
                 theme={theme}
+                resetValue={savedInstrumentParams?.chorusDelayTime}
               />
               <RotaryKnob
                 className="instrument-item"
@@ -154,6 +159,7 @@ function EffectControls({
                 mute={false}
                 theme={theme}
                 logarithmic
+                resetValue={savedInstrumentParams?.chorusFreq}
               />
               <RotaryKnob
                 className="instrument-item"
@@ -167,6 +173,7 @@ function EffectControls({
                 inline={false}
                 mute={false}
                 theme={theme}
+                resetValue={savedInstrumentParams?.chorusSpread}
               />
             </div>
           ) : (
@@ -188,6 +195,7 @@ function EffectControls({
               inline={false}
               mute={false}
               theme={theme}
+              resetValue={savedInstrumentParams?.distortion}
             />
           </div>
         )}
@@ -222,6 +230,7 @@ function EffectControls({
                 inline={false}
                 mute={false}
                 theme={theme}
+                resetValue={savedInstrumentParams?.delayTime}
               />
             )}
             {syncDelayTime && (
@@ -248,6 +257,7 @@ function EffectControls({
               inline={false}
               mute={false}
               theme={theme}
+              resetValue={savedInstrumentParams?.delayFeedback}
             />
           </div>
         )}
@@ -265,6 +275,7 @@ function EffectControls({
               inline={false}
               mute={false}
               theme={theme}
+              resetValue={savedInstrumentParams?.reverbDecay}
             />
             <RotaryKnob
               className="instrument-item"
@@ -278,6 +289,7 @@ function EffectControls({
               inline={false}
               mute={false}
               theme={theme}
+              resetValue={savedInstrumentParams?.reverbPreDelay}
             />
           </div>
         )}
@@ -295,6 +307,7 @@ function EffectControls({
               inline={false}
               mute={false}
               theme={theme}
+              resetValue={savedInstrumentParams?.vibratoDepth}
             />
             <RotaryKnob
               className="instrument-item"
@@ -309,6 +322,7 @@ function EffectControls({
               mute={false}
               theme={theme}
               logarithmic
+              resetValue={savedInstrumentParams?.vibratoFreq}
             />
           </div>
         )}

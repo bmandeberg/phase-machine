@@ -13,6 +13,16 @@ import {
 } from '../types'
 import { SAMPLER_CONFIGS, SamplerConfig } from '../samplerConfigs'
 
+// Tone.Chorus.start()/stop() drive its internal LFOs and are NOT idempotent —
+// starting an already-running LFO (or stopping a stopped one) throws "Start time
+// must be strictly greater than previous start time". Since the chorus is started
+// at init and updateInstruments re-runs on every preset load, guard start/stop by
+// reading the LFO's actual playback state. _lfoL is private in Tone's types, hence
+// the cast.
+function chorusRunning(chorus: Tone.Chorus) {
+  return (chorus as unknown as { _lfoL: { state: string } })._lfoL?.state === 'started'
+}
+
 export default function useInstruments(
   instrument: InstrumentRef,
   instrumentParams: InstrumentParams,
@@ -190,7 +200,7 @@ export default function useInstruments(
         wet: instrumentParamsRef.current.effectWet,
         spread: instrumentParamsRef.current.chorusSpread,
       })
-      if (instrumentParamsRef.current.effectType === 'chorus') {
+      if (instrumentParamsRef.current.effectType === 'chorus' && !chorusRunning(chorusEffect.current)) {
         chorusEffect.current.start()
       }
     }
@@ -419,7 +429,7 @@ export function updateInstruments(
   switch (instrumentParams.effectType) {
     case 'chorus':
       effect = chorusEffect
-      if (CHORUS_ENABLED) chorusEffect?.start()
+      if (CHORUS_ENABLED && chorusEffect && !chorusRunning(chorusEffect)) chorusEffect.start()
       break
     case 'distortion':
       effect = distortionEffect
@@ -437,8 +447,8 @@ export function updateInstruments(
       effect = gainNode
   }
   const destination: SignalDestination = effect || gainNode
-  if (CHORUS_ENABLED && instrumentParams.effectType !== 'chorus') {
-    chorusEffect?.stop()
+  if (CHORUS_ENABLED && instrumentParams.effectType !== 'chorus' && chorusEffect && chorusRunning(chorusEffect)) {
+    chorusEffect.stop()
   }
   if (synthInstrument) {
     // synthType/modulationType are stored as free strings; Tone types them as
