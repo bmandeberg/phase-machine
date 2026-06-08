@@ -131,7 +131,8 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
 
   .instrument-modal {
     .controls-row,
-    .controls-module {
+    .controls-module,
+    .effect-slot {
       border-color: $pitchClassGray;
     }
     .controls-label {

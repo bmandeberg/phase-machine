@@ -391,19 +391,10 @@ export default function usePresets(
         invalidProp(channel.instrumentParams, 'pluckDampening', 'number') ||
         invalidProp(channel.instrumentParams, 'pluckResonance', 'number') ||
         invalidProp(channel.instrumentParams, 'pluckRelease', 'number') ||
-        invalidProp(channel.instrumentParams, 'effectType', 'string') ||
-        invalidProp(channel.instrumentParams, 'effectWet', 'number') ||
-        invalidProp(channel.instrumentParams, 'chorusDepth', 'number') ||
-        invalidProp(channel.instrumentParams, 'chorusDelayTime', 'number') ||
-        invalidProp(channel.instrumentParams, 'chorusFreq', 'number') ||
-        invalidProp(channel.instrumentParams, 'chorusSpread', 'number') ||
-        invalidProp(channel.instrumentParams, 'distortion', 'number') ||
-        invalidProp(channel.instrumentParams, 'delayTime', 'number') ||
-        invalidProp(channel.instrumentParams, 'delayFeedback', 'number') ||
-        invalidProp(channel.instrumentParams, 'reverbDecay', 'number') ||
-        invalidProp(channel.instrumentParams, 'reverbPreDelay', 'number') ||
-        invalidProp(channel.instrumentParams, 'vibratoDepth', 'number') ||
-        invalidProp(channel.instrumentParams, 'vibratoFreq', 'number')
+        // 3-slot effects array. Legacy flat effect fields are no longer validated —
+        // patchPresetAndChannels migrates/normalizes them into 3 fully-populated
+        // slots before validation runs, so an object/array check is sufficient.
+        invalidProp(channel.instrumentParams, 'effects', 'object')
       ) {
         return false
       }

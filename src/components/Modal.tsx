@@ -41,7 +41,8 @@ interface ModalProps {
   instruments?: any
   gainNode?: any
   pannerNode?: any
-  effects?: any
+  slotNodesRef?: any
+  rebuildEffectChain?: any
   grabbing?: boolean
   setGrabbing?: any
   tempo?: number
@@ -89,7 +90,8 @@ export default function Modal({
   instruments,
   gainNode,
   pannerNode,
-  effects,
+  slotNodesRef,
+  rebuildEffectChain,
   grabbing,
   setGrabbing,
   tempo,
@@ -222,7 +224,8 @@ export default function Modal({
         instruments={instruments}
         gainNode={gainNode}
         pannerNode={pannerNode}
-        effects={effects}
+        slotNodesRef={slotNodesRef}
+        rebuildEffectChain={rebuildEffectChain}
         theme={theme}
         grabbing={grabbing}
         setGrabbing={setGrabbing}
@@ -232,7 +235,8 @@ export default function Modal({
     ),
     [
       color,
-      effects,
+      slotNodesRef,
+      rebuildEffectChain,
       gainNode,
       pannerNode,
       grabbing,

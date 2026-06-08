@@ -1,12 +1,13 @@
-import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { useRef, useEffect, useCallback, useMemo, MutableRefObject } from 'react'
 import { CHORUS_ENABLED } from '../globals'
 import * as Tone from 'tone'
 import {
   InstrumentParams,
   InstrumentRef,
   InstrumentRefs,
-  EffectRefs,
-  SignalDestination,
+  EffectSlot,
+  EffectSlots,
+  EffectType,
   GainRef,
   PannerRef,
   SamplerRef,
@@ -16,12 +17,193 @@ import { RhythmSampler } from '../rhythmSampler'
 
 // Tone.Chorus.start()/stop() drive its internal LFOs and are NOT idempotent —
 // starting an already-running LFO (or stopping a stopped one) throws "Start time
-// must be strictly greater than previous start time". Since the chorus is started
-// at init and updateInstruments re-runs on every preset load, guard start/stop by
-// reading the LFO's actual playback state. _lfoL is private in Tone's types, hence
-// the cast.
+// must be strictly greater than previous start time". Guard start/stop by reading
+// the LFO's actual playback state. _lfoL is private in Tone's types, hence the cast.
 function chorusRunning(chorus: Tone.Chorus) {
   return (chorus as unknown as { _lfoL: { state: string } })._lfoL?.state === 'started'
+}
+
+// A uniform handle over one slot's live Tone node (a single effect, or — for the
+// EQ — a small composite of filters). `input` is where upstream feeds in; connect()
+// wires this slot's OUTPUT to the next node; setParams() pushes the slot's params to
+// the node; start/stop drive any LFO (chorus only). Created lazily by type; null = none.
+export interface SlotNode {
+  type: EffectType
+  input: Tone.ToneAudioNode
+  connect: (dest: Tone.ToneAudioNode) => void
+  disconnect: () => void
+  dispose: () => void
+  setParams: (slot: EffectSlot) => void
+  start: () => void
+  stop: () => void
+}
+export type SlotNodes = [SlotNode | null, SlotNode | null, SlotNode | null]
+export type SlotNodesRef = MutableRefObject<SlotNodes>
+
+function wrapNode(
+  type: EffectType,
+  node: Tone.ToneAudioNode,
+  setParams: (slot: EffectSlot) => void,
+  lfo?: { start: () => void; stop: () => void }
+): SlotNode {
+  return {
+    type,
+    input: node,
+    connect: (dest) => {
+      node.connect(dest)
+    },
+    disconnect: () => {
+      try {
+        node.disconnect()
+      } catch {
+        /* node had no outgoing connections */
+      }
+    },
+    dispose: () => node.dispose(),
+    setParams,
+    start: lfo?.start ?? (() => {}),
+    stop: lfo?.stop ?? (() => {}),
+  }
+}
+
+// Build the live Tone node for a slot from its params. Returns null for `none`
+// (passthrough) — and for chorus when CHORUS_ENABLED is false (Safari).
+export function createSlotNode(slot: EffectSlot): SlotNode | null {
+  switch (slot.type) {
+    case 'chorus': {
+      if (!CHORUS_ENABLED) return null
+      const n = new Tone.Chorus(slot.chorusFreq, slot.chorusDelayTime, slot.chorusDepth)
+      n.set({ wet: slot.wet, spread: slot.chorusSpread })
+      return wrapNode(
+        'chorus',
+        n,
+        (s) => n.set({ wet: s.wet, depth: s.chorusDepth, delayTime: s.chorusDelayTime, frequency: s.chorusFreq, spread: s.chorusSpread }),
+        {
+          start: () => {
+            if (!chorusRunning(n)) n.start()
+          },
+          stop: () => {
+            if (chorusRunning(n)) n.stop()
+          },
+        }
+      )
+    }
+    case 'distortion': {
+      const n = new Tone.Distortion(slot.distortion)
+      n.set({ wet: slot.wet })
+      return wrapNode('distortion', n, (s) => {
+        n.set({ wet: s.wet })
+        n.distortion = s.distortion
+      })
+    }
+    case 'delay': {
+      const n = new Tone.FeedbackDelay(slot.delayTime, slot.delayFeedback)
+      n.set({ wet: slot.wet })
+      return wrapNode('delay', n, (s) => n.set({ wet: s.wet, delayTime: s.delayTime, feedback: s.delayFeedback }))
+    }
+    case 'reverb': {
+      const n = new Tone.Reverb(slot.reverbDecay)
+      n.set({ wet: slot.wet, preDelay: slot.reverbPreDelay })
+      return wrapNode('reverb', n, (s) => n.set({ wet: s.wet, decay: s.reverbDecay, preDelay: s.reverbPreDelay }))
+    }
+    case 'vibrato': {
+      const n = new Tone.Vibrato(slot.vibratoFreq, slot.vibratoDepth)
+      n.set({ wet: slot.wet })
+      return wrapNode('vibrato', n, (s) => n.set({ wet: s.wet, depth: s.vibratoDepth, frequency: s.vibratoFreq }))
+    }
+    case 'bitcrusher': {
+      const n = new Tone.BitCrusher(slot.bits)
+      n.set({ wet: slot.wet })
+      return wrapNode('bitcrusher', n, (s) => {
+        n.set({ wet: s.wet })
+        n.bits.value = s.bits
+      })
+    }
+    case 'pitch': {
+      const n = new Tone.PitchShift({ pitch: slot.pitchShift, feedback: slot.pitchFeedback })
+      n.set({ wet: slot.wet })
+      return wrapNode('pitch', n, (s) => {
+        n.set({ wet: s.wet, feedback: s.pitchFeedback })
+        n.pitch = s.pitchShift
+      })
+    }
+    case 'phaser': {
+      const n = new Tone.Phaser({
+        frequency: slot.phaserFreq,
+        octaves: slot.phaserOctaves,
+        baseFrequency: slot.phaserBaseFreq,
+        Q: slot.phaserQ,
+      })
+      n.set({ wet: slot.wet })
+      return wrapNode('phaser', n, (s) =>
+        n.set({ wet: s.wet, frequency: s.phaserFreq, octaves: s.phaserOctaves, baseFrequency: s.phaserBaseFreq, Q: s.phaserQ })
+      )
+    }
+    case 'compressor': {
+      const n = new Tone.Compressor({
+        threshold: slot.compThreshold,
+        ratio: slot.compRatio,
+        attack: slot.compAttack,
+        release: slot.compRelease,
+      })
+      return wrapNode('compressor', n, (s) =>
+        n.set({ threshold: s.compThreshold, ratio: s.compRatio, attack: s.compAttack, release: s.compRelease })
+      )
+    }
+    case 'multibandComp': {
+      const band = (threshold: number) => ({ threshold, ratio: slot.mbRatio, attack: slot.mbAttack, release: slot.mbRelease })
+      const n = new Tone.MultibandCompressor({
+        lowFrequency: slot.mbLowFreq,
+        highFrequency: slot.mbHighFreq,
+        low: band(slot.mbLowThreshold),
+        mid: band(slot.mbMidThreshold),
+        high: band(slot.mbHighThreshold),
+      })
+      return wrapNode('multibandComp', n, (s) => {
+        n.low.set({ threshold: s.mbLowThreshold, ratio: s.mbRatio, attack: s.mbAttack, release: s.mbRelease })
+        n.mid.set({ threshold: s.mbMidThreshold, ratio: s.mbRatio, attack: s.mbAttack, release: s.mbRelease })
+        n.high.set({ threshold: s.mbHighThreshold, ratio: s.mbRatio, attack: s.mbAttack, release: s.mbRelease })
+        n.lowFrequency.value = s.mbLowFreq
+        n.highFrequency.value = s.mbHighFreq
+      })
+    }
+    case 'eq': {
+      // low-shelf -> mid peak -> high-shelf, exposed as one slot node.
+      const low = new Tone.Filter({ type: 'lowshelf', frequency: slot.eqLowFreq, gain: slot.eqLowGain })
+      const mid = new Tone.Filter({ type: 'peaking', frequency: slot.eqMidFreq, gain: slot.eqMidGain, Q: slot.eqMidQ })
+      const high = new Tone.Filter({ type: 'highshelf', frequency: slot.eqHighFreq, gain: slot.eqHighGain })
+      low.connect(mid)
+      mid.connect(high)
+      return {
+        type: 'eq',
+        input: low,
+        connect: (dest) => {
+          high.connect(dest)
+        },
+        disconnect: () => {
+          try {
+            high.disconnect()
+          } catch {
+            /* no outgoing connection */
+          }
+        },
+        dispose: () => {
+          low.dispose()
+          mid.dispose()
+          high.dispose()
+        },
+        setParams: (s) => {
+          low.set({ frequency: s.eqLowFreq, gain: s.eqLowGain })
+          mid.set({ frequency: s.eqMidFreq, gain: s.eqMidGain, Q: s.eqMidQ })
+          high.set({ frequency: s.eqHighFreq, gain: s.eqHighGain })
+        },
+        start: () => {},
+        stop: () => {},
+      }
+    }
+    default:
+      return null
+  }
 }
 
 export default function useInstruments(
@@ -41,55 +223,121 @@ export default function useInstruments(
     cleanupRef.current = cleanup
   }, [cleanup])
 
-  const getCurrentEffect = useCallback((): SignalDestination => {
-    let effect: SignalDestination | null | undefined
-    switch (instrumentParamsRef.current.effectType) {
-      case 'chorus':
-        effect = chorusEffect.current
-        break
-      case 'distortion':
-        effect = distortionEffect.current
-        break
-      case 'delay':
-        effect = delayEffect.current
-        break
-      case 'reverb':
-        effect = reverbEffect.current
-        break
-      case 'vibrato':
-        effect = vibratoEffect.current
-        break
-      default:
-        effect = gainNode.current
-    }
-    // gainNode is always initialized before any instrument connects through this.
-    return (effect || gainNode.current) as SignalDestination
-  }, [])
-
   // instrument
-
   const initInstrumentType = useRef(instrumentType)
   const gainNode: GainRef = useRef<Tone.Gain | null>(null)
   const pannerNode: PannerRef = useRef<Tone.Panner | null>(null)
   const synthInstrument = useRef<Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null>(null)
   const drumsInstrument = useRef<Tone.Sampler | null>(null)
   const drumMachineInstrument = useRef<Tone.Sampler | null>(null)
-  const hxcInstrument = useRef<Tone.Sampler | null>(null)
   const pianoInstrument = useRef<Tone.Sampler | null>(null)
   const marimbaInstrument = useRef<Tone.Sampler | null>(null)
   const bassInstrument = useRef<Tone.Sampler | null>(null)
   const vibesInstrument = useRef<Tone.Sampler | null>(null)
   const harpInstrument = useRef<Tone.Sampler | null>(null)
   const choralInstrument = useRef<Tone.Sampler | null>(null)
-  // Varispeed engine for the single flat rhythmic pack (built lazily on activate).
+  const hxcInstrument = useRef<Tone.Sampler | null>(null)
   const rhythmInstrument = useRef<RhythmSampler | null>(null)
   const metalInstrument = useRef<Tone.MetalSynth | null>(null)
   const pluckInstrument = useRef<Tone.PluckSynth | null>(null)
-  const chorusEffect = useRef<Tone.Chorus | null>(null)
-  const distortionEffect = useRef<Tone.Distortion | null>(null)
-  const delayEffect = useRef<Tone.FeedbackDelay | null>(null)
-  const reverbEffect = useRef<Tone.Reverb | null>(null)
-  const vibratoEffect = useRef<Tone.Vibrato | null>(null)
+
+  // 3 serial effect slots: the live nodes, and the node instruments feed into
+  // (slot0's input, or the gain when every slot is `none`).
+  const slotNodesRef: SlotNodesRef = useRef<SlotNodes>([null, null, null])
+  const chainHeadRef = useRef<Tone.ToneAudioNode | null>(null)
+
+  const instruments = useMemo<InstrumentRefs>(
+    () => ({
+      synthInstrument,
+      pianoInstrument,
+      marimbaInstrument,
+      bassInstrument,
+      vibesInstrument,
+      harpInstrument,
+      choralInstrument,
+      drumsInstrument,
+      drumMachineInstrument,
+      hxcInstrument,
+      rhythmInstrument,
+      metalInstrument,
+      pluckInstrument,
+    }),
+    [
+      bassInstrument,
+      choralInstrument,
+      drumMachineInstrument,
+      drumsInstrument,
+      harpInstrument,
+      marimbaInstrument,
+      pianoInstrument,
+      synthInstrument,
+      vibesInstrument,
+      hxcInstrument,
+      rhythmInstrument,
+      metalInstrument,
+      pluckInstrument,
+    ]
+  )
+
+  // The node instruments should connect to: slot0's input, or the gain if all none.
+  const getChainHead = useCallback((): Tone.ToneAudioNode => {
+    return chainHeadRef.current ?? (gainNode.current as Tone.ToneAudioNode)
+  }, [])
+
+  // Rebuild the whole series chain from a fresh `effects` array. Only the type of a
+  // slot triggers create/dispose; slots whose type is unchanged keep their node and
+  // just get .setParams(). Handles reconnecting every initialized instrument to the
+  // new head and (re)starting chorus LFOs. Safe to call repeatedly.
+  const rebuildEffectChain = useCallback(
+    (slots: EffectSlots) => {
+      if (!gainNode.current) return
+      const gain = gainNode.current
+      const nodes = slotNodesRef.current
+      const oldHead = chainHeadRef.current
+
+      // 1. detach instruments from the current head (if any)
+      if (oldHead) {
+        Object.values(instruments).forEach((r) => {
+          if (r.current) {
+            try {
+              r.current.disconnect(oldHead)
+            } catch {
+              /* wasn't connected */
+            }
+          }
+        })
+      }
+      // 2. drop every live node's outgoing edges (tail->gain and inter-slot links)
+      nodes.forEach((n) => n?.disconnect())
+      // 3. reconcile each slot: rebuild on type change, else just update params
+      for (let i = 0; i < 3; i++) {
+        const want = slots[i].type
+        const have = nodes[i] ? nodes[i]!.type : 'none'
+        if (want !== have) {
+          if (nodes[i]) {
+            nodes[i]!.stop()
+            nodes[i]!.dispose()
+          }
+          nodes[i] = createSlotNode(slots[i])
+        } else {
+          nodes[i]?.setParams(slots[i])
+        }
+      }
+      // 4. active nodes in order
+      const active = nodes.filter((n): n is SlotNode => !!n)
+      // 5. chain them: each -> next slot's input, last -> gain
+      active.forEach((n, k) => n.connect(k < active.length - 1 ? active[k + 1].input : gain))
+      chainHeadRef.current = active.length ? active[0].input : gain
+      // 6. reconnect instruments to the new head
+      const head = chainHeadRef.current
+      Object.values(instruments).forEach((r) => {
+        if (r.current) r.current.connect(head)
+      })
+      // 7. (re)start any chorus LFOs that are now active
+      active.forEach((n) => n.start())
+    },
+    [instruments]
+  )
 
   const initSynthInstrument = useCallback(() => {
     if (!synthInstrument.current) {
@@ -126,18 +374,15 @@ export default function useInstruments(
       }
       // synthType/modulationType are stored as free strings; Tone types them as
       // strict oscillator-type unions, so widen through unknown at the boundary.
-      // Poly mode wraps the same MonoSynth voice options in a PolySynth so a
-      // note's release can ring while the next step plays (mono cuts it off).
       synthInstrument.current = instrumentParamsRef.current.poly
         ? new Tone.PolySynth(Tone.MonoSynth, synthOptions as unknown as Tone.MonoSynthOptions)
         : new Tone.MonoSynth(synthOptions as unknown as Tone.MonoSynthOptions)
-      synthInstrument.current.connect(getCurrentEffect())
+      synthInstrument.current.connect(getChainHead())
     }
-  }, [getCurrentEffect])
+  }, [getChainHead])
 
-  // Generic sampler initializer — the 8 sample banks differ only in their
-  // URL map, folder, and volume (all in SAMPLER_CONFIGS), so one function
-  // covers them all. Guards on `!ref.current` so it's safe to call repeatedly.
+  // Generic sampler initializer — the 8 sample banks differ only in their URL map,
+  // folder, and volume (all in SAMPLER_CONFIGS). Guards on `!ref.current`.
   const initSampler = useCallback(
     (ref: SamplerRef, config: SamplerConfig) => {
       if (!ref.current) {
@@ -150,14 +395,13 @@ export default function useInstruments(
           release: instrumentParamsRef.current.samplerRelease,
           volume: config.volume,
         })
-        ref.current.connect(getCurrentEffect())
+        ref.current.connect(getChainHead())
       }
     },
-    [getCurrentEffect]
+    [getChainHead]
   )
 
-  // Build the rhythmic engine from the single flat pack (if needed). Guards on
-  // `!rhythmInstrument.current` so it's safe to call repeatedly.
+  // Varispeed engine for the single flat rhythmic pack (built lazily on activate).
   const initRhythmInstrument = useCallback(() => {
     if (!rhythmInstrument.current) {
       rhythmInstrument.current = new RhythmSampler(RHYTHM_PACK)
@@ -165,9 +409,9 @@ export default function useInstruments(
         attack: instrumentParamsRef.current.samplerAttack,
         release: instrumentParamsRef.current.samplerRelease,
       })
-      rhythmInstrument.current.connect(getCurrentEffect())
+      rhythmInstrument.current.connect(getChainHead())
     }
-  }, [getCurrentEffect])
+  }, [getChainHead])
 
   const initMetalInstrument = useCallback(() => {
     if (!metalInstrument.current) {
@@ -180,9 +424,9 @@ export default function useInstruments(
         envelope: { attack: p.metalAttack, decay: p.metalDecay, release: p.metalRelease },
         volume: -12,
       })
-      metalInstrument.current.connect(getCurrentEffect())
+      metalInstrument.current.connect(getChainHead())
     }
-  }, [getCurrentEffect])
+  }, [getChainHead])
 
   const initPluckInstrument = useCallback(() => {
     if (!pluckInstrument.current) {
@@ -193,12 +437,10 @@ export default function useInstruments(
         resonance: p.pluckResonance,
         release: p.pluckRelease,
       })
-      pluckInstrument.current.connect(getCurrentEffect())
+      pluckInstrument.current.connect(getChainHead())
     }
-  }, [getCurrentEffect])
+  }, [getChainHead])
 
-  // Maps an instrument type string to its sampler ref. The synth is handled
-  // separately (it's a MonoSynth, not a Sampler).
   const samplerRefs = useMemo<Record<string, SamplerRef>>(
     () => ({
       piano: pianoInstrument,
@@ -214,8 +456,6 @@ export default function useInstruments(
     []
   )
 
-  // Initialize (if needed) the instrument for `type` and point `instrument` at
-  // it. Unknown types fall back to the synth (matching the prior switch default).
   const activateInstrument = useCallback(
     (type: string) => {
       if (type === 'rhythmic') {
@@ -243,142 +483,58 @@ export default function useInstruments(
         instrument.current = synthInstrument.current
       }
     },
-    [
-      initRhythmInstrument,
-      initMetalInstrument,
-      initPluckInstrument,
-      initSampler,
-      initSynthInstrument,
-      instrument,
-      samplerRefs,
-    ]
+    [initRhythmInstrument, initMetalInstrument, initPluckInstrument, initSampler, initSynthInstrument, instrument, samplerRefs]
   )
 
   // initialize instruments
-
   useEffect(() => {
-    // Channel output chain: instrument -> effect -> gain -> panner -> destination.
-    // The panner applies stereo position to the whole channel.
+    // Channel output chain: instruments -> effects[0..2] -> gain -> panner -> dest.
     pannerNode.current = new Tone.Panner(instrumentParamsRef.current.pan).toDestination()
     gainNode.current = new Tone.Gain(instrumentParamsRef.current.gain).connect(pannerNode.current)
-    if (CHORUS_ENABLED) {
-      chorusEffect.current = new Tone.Chorus(
-        instrumentParamsRef.current.chorusFreq,
-        instrumentParamsRef.current.chorusDelayTime,
-        instrumentParamsRef.current.chorusDepth
-      ).connect(gainNode.current)
-      chorusEffect.current.set({
-        wet: instrumentParamsRef.current.effectWet,
-        spread: instrumentParamsRef.current.chorusSpread,
-      })
-      if (instrumentParamsRef.current.effectType === 'chorus' && !chorusRunning(chorusEffect.current)) {
-        chorusEffect.current.start()
-      }
-    }
-    distortionEffect.current = new Tone.Distortion(instrumentParamsRef.current.distortion).connect(gainNode.current)
-    distortionEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
-    delayEffect.current = new Tone.FeedbackDelay(
-      instrumentParamsRef.current.delayTime,
-      instrumentParamsRef.current.delayFeedback
-    ).connect(gainNode.current)
-    delayEffect.current.set({ wet: instrumentParamsRef.current.effectWet })
-    reverbEffect.current = new Tone.Reverb(instrumentParamsRef.current.reverbDecay).connect(gainNode.current)
-    reverbEffect.current.set({
-      wet: instrumentParamsRef.current.effectWet,
-      preDelay: instrumentParamsRef.current.reverbPreDelay,
-    })
-    vibratoEffect.current = new Tone.Vibrato(
-      instrumentParamsRef.current.vibratoFreq,
-      instrumentParamsRef.current.vibratoDepth
-    ).connect(gainNode.current)
-    vibratoEffect.current.set({
-      wet: instrumentParamsRef.current.effectWet,
-    })
+    chainHeadRef.current = gainNode.current
+    rebuildEffectChain(instrumentParamsRef.current.effects)
     activateInstrument(initInstrumentType.current)
-    instrument.current?.connect(getCurrentEffect())
 
     // cleanup instruments
     return () => {
       cleanupRef.current()
-      // Dispose AND null each instrument ref. The init*Instrument() guards on
-      // `if (!x.current)`, so leaving a disposed instance in the ref would make
-      // a remount (e.g. React StrictMode's double-invoke in dev) skip recreation
-      // and reuse a disposed Sampler — which has zero buffers and throws
-      // "No available buffers" on triggerAttackRelease.
-      if (synthInstrument.current) {
-        synthInstrument.current.dispose()
-        synthInstrument.current = null
-      }
-      if (marimbaInstrument.current) {
-        marimbaInstrument.current.dispose()
-        marimbaInstrument.current = null
-      }
-      if (pianoInstrument.current) {
-        pianoInstrument.current.dispose()
-        pianoInstrument.current = null
-      }
-      if (bassInstrument.current) {
-        bassInstrument.current.dispose()
-        bassInstrument.current = null
-      }
-      if (vibesInstrument.current) {
-        vibesInstrument.current.dispose()
-        vibesInstrument.current = null
-      }
-      if (harpInstrument.current) {
-        harpInstrument.current.dispose()
-        harpInstrument.current = null
-      }
-      if (choralInstrument.current) {
-        choralInstrument.current.dispose()
-        choralInstrument.current = null
-      }
-      if (drumsInstrument.current) {
-        drumsInstrument.current.dispose()
-        drumsInstrument.current = null
-      }
-      if (drumMachineInstrument.current) {
-        drumMachineInstrument.current.dispose()
-        drumMachineInstrument.current = null
-      }
-      if (hxcInstrument.current) {
-        hxcInstrument.current.dispose()
-        hxcInstrument.current = null
-      }
-      if (metalInstrument.current) {
-        metalInstrument.current.dispose()
-        metalInstrument.current = null
-      }
-      if (pluckInstrument.current) {
-        pluckInstrument.current.dispose()
-        pluckInstrument.current = null
-      }
-      if (rhythmInstrument.current) {
-        rhythmInstrument.current.dispose()
-        rhythmInstrument.current = null
-      }
-      if (chorusEffect.current) {
-        chorusEffect.current.dispose()
-      }
-      distortionEffect.current?.dispose()
-      delayEffect.current?.dispose()
-      reverbEffect.current?.dispose()
-      vibratoEffect.current?.dispose()
-      if (gainNode.current) {
-        gainNode.current.dispose()
-      }
-      if (pannerNode.current) {
-        pannerNode.current.dispose()
-      }
+      // Dispose AND null each instrument ref so a StrictMode remount recreates them
+      // rather than reusing a disposed Sampler (which throws "No available buffers").
+      const refs = [
+        synthInstrument,
+        marimbaInstrument,
+        pianoInstrument,
+        bassInstrument,
+        vibesInstrument,
+        harpInstrument,
+        choralInstrument,
+        drumsInstrument,
+        drumMachineInstrument,
+        hxcInstrument,
+        rhythmInstrument,
+        metalInstrument,
+        pluckInstrument,
+      ]
+      refs.forEach((r) => {
+        if (r.current) {
+          r.current.dispose()
+          r.current = null
+        }
+      })
+      slotNodesRef.current.forEach((n) => {
+        n?.stop()
+        n?.dispose()
+      })
+      slotNodesRef.current = [null, null, null]
+      chainHeadRef.current = null
+      if (gainNode.current) gainNode.current.dispose()
+      if (pannerNode.current) pannerNode.current.dispose()
       instrument.current = null
     }
-  }, [activateInstrument, getCurrentEffect, instrument])
+  }, [activateInstrument, instrument, rebuildEffectChain])
 
   useEffect(() => {
     if (instrument.current) {
-      // Monophonic's triggerRelease is arg-less while Sampler's requires a note;
-      // releasing the active note with no arg is valid for both at runtime.
-      // PolySynth's triggerRelease needs a note, so release every voice instead.
       if (instrument.current instanceof Tone.PolySynth) {
         instrument.current.releaseAll()
       } else {
@@ -388,9 +544,7 @@ export default function useInstruments(
     activateInstrument(instrumentType)
   }, [activateInstrument, instrument, instrumentType])
 
-  // Swap the synth node when the mono/poly flag changes. The node *type* differs
-  // (MonoSynth vs PolySynth), so we dispose and rebuild rather than .set(). Guard
-  // on a ref so this skips the initial mount (the synth is built lazily above).
+  // Swap the synth node when the mono/poly flag changes (different node type).
   const polyRef = useRef(instrumentParams.poly)
   useEffect(() => {
     if (polyRef.current === instrumentParams.poly) return
@@ -410,47 +564,65 @@ export default function useInstruments(
     setModalType('instrument')
   }, [setModalType])
 
-  const instruments = useMemo<InstrumentRefs>(
-    () => ({
-      synthInstrument,
-      pianoInstrument,
-      marimbaInstrument,
-      bassInstrument,
-      vibesInstrument,
-      harpInstrument,
-      choralInstrument,
-      drumsInstrument,
-      drumMachineInstrument,
-      hxcInstrument,
-      rhythmInstrument,
-      metalInstrument,
-      pluckInstrument,
-    }),
-    [
-      bassInstrument,
-      choralInstrument,
-      drumMachineInstrument,
-      drumsInstrument,
-      harpInstrument,
-      marimbaInstrument,
-      pianoInstrument,
-      synthInstrument,
-      vibesInstrument,
-      hxcInstrument,
-      rhythmInstrument,
-      metalInstrument,
-      pluckInstrument,
-    ]
-  )
-  const effects = useMemo<EffectRefs>(
-    () => ({
-      chorusEffect,
-      distortionEffect,
-      delayEffect,
-      reverbEffect,
-      vibratoEffect,
-    }),
-    [chorusEffect, delayEffect, distortionEffect, reverbEffect, vibratoEffect]
+  // Push a full instrumentParams snapshot to the live nodes (used on preset load):
+  // gain/pan, the synth/sampler voice params, and a rebuild of the effect chain.
+  const reloadInstruments = useCallback(
+    (params: InstrumentParams) => {
+      gainNode.current?.set({ gain: params.gain })
+      pannerNode.current?.set({ pan: params.pan })
+      if (synthInstrument.current) {
+        ;(synthInstrument.current as Tone.MonoSynth).set({
+          portamento: params.portamento,
+          oscillator: {
+            type: params.synthType,
+            modulationType: params.modulationType,
+            harmonicity: params.harmonicity,
+            spread: params.fatSpread,
+            count: params.fatCount,
+            width: params.pulseWidth,
+            modulationFrequency: params.pwmFreq,
+          },
+          envelope: {
+            attack: params.envAttack,
+            decay: params.envDecay,
+            sustain: params.envSustain,
+            release: params.envRelease,
+          },
+          filter: {
+            Q: params.resonance,
+            rolloff: params.rolloff,
+          },
+          filterEnvelope: {
+            baseFrequency: params.cutoff,
+            attack: params.filterAttack,
+            decay: params.filterDecay,
+            sustain: params.filterSustain,
+            release: params.filterRelease,
+            octaves: params.filterAmount,
+          },
+        } as unknown as Tone.MonoSynthOptions)
+      }
+      Object.values(samplerRefs).forEach((r) =>
+        r.current?.set({ attack: params.samplerAttack, release: params.samplerRelease })
+      )
+      // RhythmSampler shares the sampler attack/release; metal/pluck have their own.
+      rhythmInstrument.current?.set({ attack: params.samplerAttack, release: params.samplerRelease })
+      metalInstrument.current?.set({
+        harmonicity: params.metalHarmonicity,
+        modulationIndex: params.metalModulationIndex,
+        resonance: params.metalResonance,
+        octaves: params.metalOctaves,
+        envelope: { attack: params.metalAttack, decay: params.metalDecay, release: params.metalRelease },
+      })
+      pluckInstrument.current?.set({
+        attackNoise: params.pluckAttackNoise,
+        dampening: params.pluckDampening,
+        resonance: params.pluckResonance,
+        release: params.pluckRelease,
+      })
+      rebuildEffectChain(params.effects)
+    },
+    [rebuildEffectChain, samplerRefs]
   )
 
   return {
@@ -461,187 +633,19 @@ export default function useInstruments(
     marimbaInstrument,
     drumsInstrument,
     drumMachineInstrument,
-    hxcInstrument,
     bassInstrument,
     vibesInstrument,
     harpInstrument,
     choralInstrument,
+    hxcInstrument,
     rhythmInstrument,
     metalInstrument,
     pluckInstrument,
-    chorusEffect,
-    distortionEffect,
-    delayEffect,
-    reverbEffect,
-    vibratoEffect,
-    getCurrentEffect,
+    slotNodesRef,
+    rebuildEffectChain,
+    reloadInstruments,
+    getChainHead,
     openInstrumentModal,
     instruments,
-    effects,
-  }
-}
-
-export function updateInstruments(
-  gainNode: Tone.Gain,
-  pannerNode: Tone.Panner | null | undefined,
-  synthInstrument: Tone.MonoSynth | Tone.PolySynth<Tone.MonoSynth> | null | undefined,
-  samplerInstruments: Array<Tone.Sampler | null | undefined>,
-  rhythmInstrument: RhythmSampler | null | undefined,
-  metalInstrument: Tone.MetalSynth | null | undefined,
-  pluckInstrument: Tone.PluckSynth | null | undefined,
-  chorusEffect: Tone.Chorus | null | undefined,
-  distortionEffect: Tone.Distortion,
-  delayEffect: Tone.FeedbackDelay,
-  reverbEffect: Tone.Reverb,
-  vibratoEffect: Tone.Vibrato,
-  instrumentParams: InstrumentParams,
-  currentEffect: SignalDestination | null | undefined
-) {
-  gainNode.set({ gain: instrumentParams.gain })
-  pannerNode?.set({ pan: instrumentParams.pan })
-  if (CHORUS_ENABLED) {
-    chorusEffect?.set({
-      wet: instrumentParams.effectWet,
-      depth: instrumentParams.chorusDepth,
-      delayTime: instrumentParams.chorusDelayTime,
-      frequency: instrumentParams.chorusFreq,
-      spread: instrumentParams.chorusSpread,
-    })
-  }
-  distortionEffect.set({
-    wet: instrumentParams.effectWet,
-    distortion: instrumentParams.distortion,
-  })
-  delayEffect.set({
-    wet: instrumentParams.effectWet,
-    delayTime: instrumentParams.delayTime,
-    feedback: instrumentParams.delayFeedback,
-  })
-  reverbEffect.set({
-    wet: instrumentParams.effectWet,
-    decay: instrumentParams.reverbDecay,
-    preDelay: instrumentParams.reverbPreDelay,
-  })
-  vibratoEffect.set({
-    wet: instrumentParams.effectWet,
-    depth: instrumentParams.vibratoDepth,
-    frequency: instrumentParams.vibratoFreq,
-  })
-  let effect: SignalDestination | null | undefined
-  switch (instrumentParams.effectType) {
-    case 'chorus':
-      effect = chorusEffect
-      if (CHORUS_ENABLED && chorusEffect && !chorusRunning(chorusEffect)) chorusEffect.start()
-      break
-    case 'distortion':
-      effect = distortionEffect
-      break
-    case 'delay':
-      effect = delayEffect
-      break
-    case 'reverb':
-      effect = reverbEffect
-      break
-    case 'vibrato':
-      effect = vibratoEffect
-      break
-    default:
-      effect = gainNode
-  }
-  const destination: SignalDestination = effect || gainNode
-  if (CHORUS_ENABLED && instrumentParams.effectType !== 'chorus' && chorusEffect && chorusRunning(chorusEffect)) {
-    chorusEffect.stop()
-  }
-  if (synthInstrument) {
-    // synthType/modulationType are stored as free strings; Tone types them as
-    // strict oscillator-type unions, so widen through unknown at the boundary.
-    // MonoSynth and PolySynth take the same nested voice options at runtime, so
-    // type the receiver as MonoSynth to satisfy the union method-call check.
-    ;(synthInstrument as Tone.MonoSynth).set({
-      portamento: instrumentParams.portamento,
-      oscillator: {
-        type: instrumentParams.synthType,
-        modulationType: instrumentParams.modulationType,
-        harmonicity: instrumentParams.harmonicity,
-        spread: instrumentParams.fatSpread,
-        count: instrumentParams.fatCount,
-        width: instrumentParams.pulseWidth,
-        modulationFrequency: instrumentParams.pwmFreq,
-      },
-      envelope: {
-        attack: instrumentParams.envAttack,
-        decay: instrumentParams.envDecay,
-        sustain: instrumentParams.envSustain,
-        release: instrumentParams.envRelease,
-      },
-      filter: {
-        Q: instrumentParams.resonance,
-        rolloff: instrumentParams.rolloff,
-      },
-      filterEnvelope: {
-        baseFrequency: instrumentParams.cutoff,
-        attack: instrumentParams.filterAttack,
-        decay: instrumentParams.filterDecay,
-        sustain: instrumentParams.filterSustain,
-        release: instrumentParams.filterRelease,
-        octaves: instrumentParams.filterAmount,
-      },
-    } as unknown as Tone.MonoSynthOptions)
-    if (currentEffect) {
-      synthInstrument.disconnect(currentEffect)
-    }
-    synthInstrument.connect(destination)
-  }
-  samplerInstruments.forEach((sampler) => {
-    if (sampler) {
-      sampler.set({
-        attack: instrumentParams.samplerAttack,
-        release: instrumentParams.samplerRelease,
-      })
-      if (currentEffect) {
-        sampler.disconnect(currentEffect)
-      }
-      sampler.connect(destination)
-    }
-  })
-  // The rhythmic engine shares the sampler attack/release and the same effect chain.
-  if (rhythmInstrument) {
-    rhythmInstrument.set({
-      attack: instrumentParams.samplerAttack,
-      release: instrumentParams.samplerRelease,
-    })
-    if (currentEffect) {
-      rhythmInstrument.disconnect(currentEffect)
-    }
-    rhythmInstrument.connect(destination)
-  }
-  if (metalInstrument) {
-    metalInstrument.set({
-      harmonicity: instrumentParams.metalHarmonicity,
-      modulationIndex: instrumentParams.metalModulationIndex,
-      resonance: instrumentParams.metalResonance,
-      octaves: instrumentParams.metalOctaves,
-      envelope: {
-        attack: instrumentParams.metalAttack,
-        decay: instrumentParams.metalDecay,
-        release: instrumentParams.metalRelease,
-      },
-    })
-    if (currentEffect) {
-      metalInstrument.disconnect(currentEffect)
-    }
-    metalInstrument.connect(destination)
-  }
-  if (pluckInstrument) {
-    pluckInstrument.set({
-      attackNoise: instrumentParams.pluckAttackNoise,
-      dampening: instrumentParams.pluckDampening,
-      resonance: instrumentParams.pluckResonance,
-      release: instrumentParams.pluckRelease,
-    })
-    if (currentEffect) {
-      pluckInstrument.disconnect(currentEffect)
-    }
-    pluckInstrument.connect(destination)
   }
 }
