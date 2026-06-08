@@ -52,17 +52,23 @@ export default function InstrumentModal({
   const [pan, setPan] = useState(instrumentParams.pan)
 
   // Single debounced writer shared by every parameter (synth, sampler, effect,
-  // gain). One shared timer means rapid edits across params coalesce into one
-  // setInstrumentParams — preserved exactly as the original component had it.
+  // gain). One shared timer coalesces rapid edits into one setInstrumentParams.
+  // NB: pending updates accumulate into a ref keyed by param — the timer only
+  // schedules the *flush*. Each call must NOT carry just its own {param: value},
+  // or a second param updating within the window would clobber the first (this
+  // is what dropped tempo-synced delay: selecting a rate sets syncDelayTime, then
+  // the derived delayTime update landed last and the syncDelayTime write was lost).
   const instrumentParamsDebounce = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const pendingInstrumentParams = useRef<Partial<InstrumentParams>>({})
   const updateInstrumentParams = useCallback(
     (param: string, value: InstrumentParams[keyof InstrumentParams]) => {
+      pendingInstrumentParams.current = Object.assign({}, pendingInstrumentParams.current, { [param]: value })
       clearTimeout(instrumentParamsDebounce.current)
       const debounceTime = 200
       instrumentParamsDebounce.current = setTimeout(() => {
-        setInstrumentParams((instrumentParams: InstrumentParams) =>
-          Object.assign({}, instrumentParams, { [param]: value })
-        )
+        const pending = pendingInstrumentParams.current
+        pendingInstrumentParams.current = {}
+        setInstrumentParams((instrumentParams: InstrumentParams) => Object.assign({}, instrumentParams, pending))
       }, debounceTime)
     },
     [setInstrumentParams]

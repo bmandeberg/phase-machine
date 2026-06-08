@@ -15,7 +15,6 @@ import {
   OCTAVES,
   SUSTAIN_MIN,
   KNOB_MAX,
-  aeroChannelColor,
 } from '../globals'
 import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds } from '../math'
 import classNames from 'classnames'
@@ -32,10 +31,12 @@ import arrowSmall from '../assets/arrow-small.svg'
 import arrowSmallDark from '../assets/arrow-small-dark.svg'
 import arrowSmallLight from '../assets/arrow-small-light.svg'
 import arrowSmallLightMute from '../assets/arrow-small-light-mute.svg'
+import arrowSmallAero from '../assets/arrow-small-aero.svg'
 import arrowClock from '../assets/arrow-clock.svg'
 import arrowClockDark from '../assets/arrow-clock-dark.svg'
 import arrowClockLight from '../assets/arrow-clock-light.svg'
 import arrowClockLightMute from '../assets/arrow-clock-light-mute.svg'
+import arrowClockAero from '../assets/arrow-clock-aero.svg'
 import { Channel as ChannelType, Setter, MidiNoteEvent } from '../types'
 import './Channel.scss'
 
@@ -76,7 +77,7 @@ interface ChannelProps {
 
 export default function Channel({
   numChannels,
-  color: rawColor,
+  color,
   channelNum,
   setGrabbing,
   grabbing,
@@ -103,10 +104,6 @@ export default function Channel({
   preventUpdate,
   longestSequence,
 }: ChannelProps) {
-  // Presentation-only color: the aero theme shows brighter/airier variants of the
-  // default channel colors. rawColor (the stored hex) is untouched, so presets and
-  // persistence keep their original values; only the rendered color changes.
-  const color = useMemo(() => (theme === 'aero' ? aeroChannelColor(rawColor) : rawColor), [theme, rawColor])
   const id = useRef(initState.id)
   const [scribbler, setScribbler] = useState(initState.scribbler)
   const [velocity, setVelocity] = useState(initState.velocity)
@@ -220,6 +217,11 @@ export default function Channel({
 
   const playNoteBuffer = useRef<any>({ seq: null, key: null })
   const presetInitialized = useRef<any>(undefined)
+  // tracks the last channelPreset we reloaded from, so the reload below fires only
+  // on a real preset change — not when the effect re-runs with the same preset
+  // (e.g. React StrictMode's dev double-invoke), which would otherwise clobber the
+  // channel's live working state back to the saved preset
+  const prevChannelPreset = useRef(channelPreset)
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState<any>('')
@@ -771,7 +773,7 @@ export default function Channel({
     if (channelPreset) {
       if (!presetInitialized.current) {
         presetInitialized.current = true
-      } else {
+      } else if (channelPreset !== prevChannelPreset.current) {
         if (restartChannels) {
           seqRestart()
           keyRestart()
@@ -837,6 +839,7 @@ export default function Channel({
         )
         setUpdateOnce(true)
       }
+      prevChannelPreset.current = channelPreset
     }
   }, [
     channelPreset,
@@ -1234,6 +1237,8 @@ export default function Channel({
         return arrowSmallDark
       case 'contrast':
         return mute ? arrowSmallLightMute : arrowSmallLight
+      case 'aero':
+        return arrowSmallAero
       default:
         return null
     }
@@ -1247,6 +1252,8 @@ export default function Channel({
         return arrowClockDark
       case 'contrast':
         return mute ? arrowClockLightMute : arrowClockLight
+      case 'aero':
+        return arrowClockAero
       default:
         return null
     }

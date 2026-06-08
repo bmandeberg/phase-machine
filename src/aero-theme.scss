@@ -302,6 +302,13 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
   .channel-clock {
     border: 1px solid rgba(255, 255, 255, 0.45);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    // the aero-flat borders make the flip button + the controls above it ~4px
+    // taller, so its center sits ~4px lower than in the other themes; the arrow
+    // is absolutely positioned, so nudge it down to keep pointing at the center
+    // (the extra .channel-clock keeps this above the component's base rule)
+    .arrow-clock {
+      top: 160px;
+    }
   }
   .channel-horizontal {
     .channel-number-container {
@@ -431,6 +438,13 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     // of lightening it
     .fader-knob {
       filter: saturate(0.4) brightness(0.9);
+    }
+    // the axis/clock connector arrows are a single aqua SVG; desaturate + fade
+    // them so they read as muted (rather than maintaining a separate mute asset)
+    .arrow-small,
+    .arrow-clock {
+      filter: saturate(0.3) brightness(1.06);
+      opacity: 0.55;
     }
   }
   .stacked-auxiliary.first-auxiliary::before {
@@ -673,7 +687,7 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     border-color: transparent transparent $aeroText !important;
   }
   .dropdown-menu {
-    @include aero-glass(rgba(219, 240, 250, 0.6), 16px);
+    @include aero-glass(rgba(220, 240, 250, 0.85), 24px);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.24);
   }
   .dropdown-menu .dropdown-group > .dropdown-title {
@@ -711,7 +725,7 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
         border-color: transparent transparent $aeroText !important;
       }
       .dropdown-menu {
-        @include aero-glass(rgba(219, 240, 250, 0.6), 16px);
+        @include aero-glass(rgba(220, 240, 250, 0.85), 24px);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.24);
       }
       // base .small-dropdown keeps an orange option highlight at higher
@@ -749,7 +763,7 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
       border-color: $aeroText transparent transparent;
     }
     .multi-select-dropdown {
-      @include aero-glass(rgba(219, 240, 250, 0.6), 16px);
+      @include aero-glass(rgba(220, 240, 250, 0.85), 24px);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.24);
     }
     .multi-select-option {
@@ -867,11 +881,18 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
 
   // ── Modals ────────────────────────────────────────────────────────────────
   .modal-container {
+    // the full-screen container does the frosting (it's overflow:visible, so it
+    // doesn't clip), which blurs the whole app behind the modal at once
     background-color: rgba(120, 190, 215, 0.32);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
     .modal-window {
-      @include aero-glass(rgba(224, 242, 250, 0.55), 22px);
+      // NB: NO backdrop-filter here. It would make .modal-window the containing
+      // block for — and clip — the position:fixed dropdown/multiselect menus that
+      // are meant to overflow the modal (.fixed-menu). The container already
+      // blurs the app behind the modal; a more opaque fill keeps this reading as
+      // a frosted-glass panel without trapping those menus.
+      @include aero-flat(rgba(224, 242, 250, 0.85));
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 8px 32px rgba(27, 92, 116, 0.28);
     }
   }
