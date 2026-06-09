@@ -114,6 +114,18 @@ export default function InstrumentModal({
     [scheduleFlush]
   )
 
+  // Reorder writer: a slot move hands back the whole reordered effects array. It
+  // supersedes any queued per-field edits (the array already carries the current slot
+  // states, in-flight edits included), so drop them and write the array immediately —
+  // a discrete click doesn't need the knob-drag debounce.
+  const reorderSlots = useCallback(
+    (nextEffects: EffectSlots) => {
+      pendingSlots.current = {}
+      setInstrumentParams((prev: InstrumentParams) => Object.assign({}, prev, { effects: nextEffects }))
+    },
+    [setInstrumentParams]
+  )
+
   useEffect(() => {
     if (gainNode.current) {
       gainNode.current.set({ gain })
@@ -136,7 +148,15 @@ export default function InstrumentModal({
   const pluckParams = usePluckParams(instruments, instrumentParams, updateInstrumentParams)
   const synthParams = useSynthParams(instruments, instrumentParams, updateInstrumentParams)
   const samplerParams = useSamplerParams(instruments, instrumentParams, updateInstrumentParams)
-  const effectSlots = useEffectParams(slotNodesRef, rebuildEffectChain, instrumentParams.effects, updateSlotParam, tempo)
+  const effectSlots = useEffectParams(
+    slotNodesRef,
+    rebuildEffectChain,
+    instrumentParams.effects,
+    updateSlotParam,
+    reorderSlots,
+    savedInstrumentParams?.effects,
+    tempo
+  )
 
   return (
     <div className={classNames('instrument-modal', { short: instrumentType !== 'synth' })}>
@@ -222,7 +242,6 @@ export default function InstrumentModal({
         )}
         <EffectControls
           slots={effectSlots}
-          savedInstrumentParams={savedInstrumentParams}
           theme={theme}
           grabbing={grabbing}
           setGrabbing={setGrabbing}

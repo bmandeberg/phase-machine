@@ -110,7 +110,19 @@ export default function usePresets(
                 } else if (channelParam === 'instrumentParams') {
                   // compare objects
                   for (const key in channel[channelParam]) {
-                    if (channel[channelParam][key] !== presetChannel[channelParam][key]) {
+                    const a = channel[channelParam][key]
+                    const b = presetChannel[channelParam][key]
+                    if (key === 'effects') {
+                      // effects is an array of slot objects (all-primitive fields) —
+                      // a plain !== always trips (distinct array instances each copy),
+                      // so deep-compare slot-by-slot, field-by-field.
+                      if (!Array.isArray(b) || a.length !== b.length) return true
+                      for (let s = 0; s < a.length; s++) {
+                        for (const f in a[s]) {
+                          if (a[s][f] !== b[s][f]) return true
+                        }
+                      }
+                    } else if (a !== b) {
                       return true
                     }
                   }

@@ -1,7 +1,7 @@
 import React from 'react'
 import EffectSlotControls from './EffectSlotControls'
 import { SlotController } from './useEffectParams'
-import { Setter, InstrumentParams } from '../../types'
+import { Setter } from '../../types'
 
 interface EffectControlsProps {
   slots: [SlotController, SlotController, SlotController]
@@ -10,10 +10,9 @@ interface EffectControlsProps {
   setGrabbing: Setter<boolean>
   tempo: number
   color: string
-  savedInstrumentParams?: InstrumentParams
 }
 
-function EffectControls({ slots, theme, grabbing, setGrabbing, tempo, color, savedInstrumentParams }: EffectControlsProps) {
+function EffectControls({ slots, theme, grabbing, setGrabbing, tempo, color }: EffectControlsProps) {
   return (
     <div className="controls-row">
       <div className="controls-module effects-controls">
@@ -23,7 +22,7 @@ function EffectControls({ slots, theme, grabbing, setGrabbing, tempo, color, sav
             <EffectSlotControls
               key={i}
               controller={controller}
-              savedSlot={savedInstrumentParams?.effects?.[i]}
+              savedSlot={controller.savedSlot}
               theme={theme}
               grabbing={grabbing}
               setGrabbing={setGrabbing}

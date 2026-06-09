@@ -26,8 +26,16 @@ interface EffectSlotControlsProps {
   color: string
 }
 
-function EffectSlotControls({ controller, savedSlot, theme, grabbing, setGrabbing, tempo, color }: EffectSlotControlsProps) {
-  const { index, slot, setType, setField } = controller
+function EffectSlotControls({
+  controller,
+  savedSlot,
+  theme,
+  grabbing,
+  setGrabbing,
+  tempo,
+  color,
+}: EffectSlotControlsProps) {
+  const { index, slot, setType, setField, canMoveUp, canMoveDown, move } = controller
 
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
@@ -213,6 +221,30 @@ function EffectSlotControls({ controller, savedSlot, theme, grabbing, setGrabbin
           {slot.type === 'eq' && <EqGraph slot={slot} setField={setField} color={color} setGrabbing={setGrabbing} />}
         </div>
       )}
+
+      {/* reorder the slot within the series chain (top = first effect hit) */}
+      <div className="effect-slot-move">
+        <button
+          type="button"
+          className="effect-slot-move-btn"
+          aria-label="Move effect earlier in the chain"
+          title="Move earlier in the chain"
+          disabled={!canMoveUp}
+          onClick={() => move(-1)}
+        >
+          ▲
+        </button>
+        <button
+          type="button"
+          className="effect-slot-move-btn"
+          aria-label="Move effect later in the chain"
+          title="Move later in the chain"
+          disabled={!canMoveDown}
+          onClick={() => move(1)}
+        >
+          ▼
+        </button>
+      </div>
     </div>
   )
 }
