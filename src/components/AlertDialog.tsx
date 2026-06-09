@@ -1,30 +1,22 @@
-import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { createPortal } from 'react-dom'
+import React, { useCallback, useEffect, useRef } from 'react'
 import classNames from 'classnames'
-import { CSSTransition } from 'react-transition-group'
-import { subscribeDialogs, getActiveDialog, resolveActiveDialog, DialogRequest } from '../dialog'
+import { resolveActiveDialog, getActiveDialog, DialogRequest } from '../dialog'
 import './AlertDialog.scss'
 
-const THEME_CLASS: Record<string, string> = { dark: 'dark-theme', contrast: 'contrast-theme', aero: 'aero-theme' }
+// Presentational confirm/alert host for alertDialog() / confirmDialog(). App owns the
+// active-dialog state (bridged from the dialog store with a plain subscribe) and renders
+// this through a CSSTransition exactly like <Modal> — same .modal-* classes, same `show`
+// transition, same #container parent (so theming applies natively). Mirroring the Modal
+// matters: the earlier useSyncExternalStore + <body> portal version never rendered the
+// dialog on iOS Safari, while the Modal (this pattern) shows fine there.
+interface AlertDialogProps {
+  nodeRef: React.RefObject<HTMLDivElement | null>
+  dialog: DialogRequest | null
+}
 
-// Single app-level host for alertDialog() / confirmDialog(). Reuses the Modal CSS
-// (modal-container / modal-window / modal-header / modal-content + the `show`
-// CSSTransition) so it matches the modal windows exactly.
-//
-// Portaled to <body> (not rendered in the #container tree) so its position:fixed scrim
-// is relative to the real viewport. Inside #container — which is overflow:auto with a
-// fixed height — iOS Safari clips/mis-positions fixed descendants, so confirm dialogs
-// never appeared on mobile. The portal wrapper re-applies the theme class (theme CSS is
-// scoped under .dark-theme / .contrast-theme / .aero-theme) so theming is unaffected.
-export default function AlertDialog({ theme }: { theme: string }) {
-  const active = useSyncExternalStore<DialogRequest | null>(subscribeDialogs, getActiveDialog, () => null)
-  const nodeRef = useRef<HTMLDivElement>(null)
-  // Portal target (document.body) only exists on the client — gate so SSR renders nothing.
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-
-  // Keep rendering the last dialog while the exit animation plays (active is already
-  // null by then), mirroring how Modal retains modalTypeRef during its transition.
+export default function AlertDialog({ nodeRef, dialog: active }: AlertDialogProps) {
+  // Keep rendering the last dialog while the exit animation plays (active is null by
+  // then), mirroring how Modal retains modalTypeRef during its transition.
   const lastRef = useRef<DialogRequest | null>(null)
   if (active) {
     lastRef.current = active
@@ -58,39 +50,29 @@ export default function AlertDialog({ theme }: { theme: string }) {
     return () => document.removeEventListener('keydown', keydown, true)
   }, [])
 
-  if (!mounted) return null
-
-  return createPortal(
-    <div className={THEME_CLASS[theme] ?? ''}>
-      <CSSTransition in={!!active} timeout={300} classNames="show" nodeRef={nodeRef}>
-        <div className="modal-container alert-dialog-container" ref={nodeRef} onClick={clickScrim}>
-          <div className="modal-buffer">
-            <div className="modal-window alert-dialog-window">
-              <div className="modal-header">
-                <p>{dialog?.title}</p>
-                <div className="modal-close" onClick={cancel}></div>
-              </div>
-              <div className="modal-content">
-                <p className="alert-dialog-message">{dialog?.message}</p>
-                <div className="alert-dialog-actions">
-                  {dialog?.kind === 'confirm' && (
-                    <div className="button" onClick={cancel}>
-                      {dialog?.cancelText}
-                    </div>
-                  )}
-                  <div
-                    className={classNames('button', dialog?.danger ? 'red-button' : 'green-button')}
-                    onClick={confirm}
-                  >
-                    {dialog?.confirmText}
-                  </div>
+  return (
+    <div className="modal-container alert-dialog-container" ref={nodeRef} onClick={clickScrim}>
+      <div className="modal-buffer">
+        <div className="modal-window alert-dialog-window">
+          <div className="modal-header">
+            <p>{dialog?.title}</p>
+            <div className="modal-close" onClick={cancel}></div>
+          </div>
+          <div className="modal-content">
+            <p className="alert-dialog-message">{dialog?.message}</p>
+            <div className="alert-dialog-actions">
+              {dialog?.kind === 'confirm' && (
+                <div className="button" onClick={cancel}>
+                  {dialog?.cancelText}
                 </div>
+              )}
+              <div className={classNames('button', dialog?.danger ? 'red-button' : 'green-button')} onClick={confirm}>
+                {dialog?.confirmText}
               </div>
             </div>
           </div>
         </div>
-      </CSSTransition>
-    </div>,
-    document.body
+      </div>
+    </div>
   )
 }

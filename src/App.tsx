@@ -24,6 +24,7 @@ import Modal from './components/Modal'
 import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
+import { subscribeDialogs, getActiveDialog, DialogRequest } from './dialog'
 import { Channel as ChannelType, Preset } from './types'
 
 // load/set presets
@@ -111,6 +112,17 @@ export default function App() {
 
   const container = useRef<HTMLDivElement | null>(null)
   const modalNodeRef = useRef<HTMLDivElement>(null)
+
+  // Bridge the imperative dialog store (alertDialog/confirmDialog) to React state with a
+  // plain subscribe, so the confirm/alert host renders through the same CSSTransition path
+  // as <Modal>. (A prior useSyncExternalStore + portal version never showed on iOS Safari.)
+  const alertNodeRef = useRef<HTMLDivElement>(null)
+  const [activeDialog, setActiveDialog] = useState<DialogRequest | null>(getActiveDialog())
+  useEffect(() => {
+    const unsub = subscribeDialogs(() => setActiveDialog(getActiveDialog()))
+    setActiveDialog(getActiveDialog())
+    return unsub
+  }, [])
 
   // settings
 
@@ -535,7 +547,9 @@ export default function App() {
           setPresetsStopTransport={setPresetsStopTransport}
         />
       </CSSTransition>
-      <AlertDialog theme={theme} />
+      <CSSTransition in={!!activeDialog} timeout={300} classNames="show" nodeRef={alertNodeRef}>
+        <AlertDialog nodeRef={alertNodeRef} dialog={activeDialog} />
+      </CSSTransition>
     </div>
   )
 }
