@@ -97,9 +97,9 @@ export const CHANNEL_COLORS = ['#00bdff', '#ab80ff', '#fa48ff', '#ff8de7', '#00d
 // are what the user sees. 'light' is shown as "Toxic" and ordered last.
 export const THEMES = [
   { value: 'dark', label: 'Dark' },
-  { value: 'contrast', label: 'Contrast' },
   { value: 'aero', label: 'Aero' },
   { value: 'coquette', label: 'Coquette' },
+  { value: 'contrast', label: 'Contrast' },
   { value: 'light', label: 'Toxic' },
 ]
 

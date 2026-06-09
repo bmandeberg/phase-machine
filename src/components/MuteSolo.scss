@@ -7,6 +7,9 @@ $buttonSize: 28px;
   margin-top: 16px;
   margin-bottom: 8px;
   .button {
+    // border-box so a theme border (e.g. Coquette) stays inside the 28px box and
+    // these match the border-box MIDI buttons (otherwise content-box + border = 30px)
+    box-sizing: border-box;
     width: $buttonSize;
     height: $buttonSize;
     font-size: 23px;

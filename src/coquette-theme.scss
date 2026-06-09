@@ -320,6 +320,15 @@ $blueIconTone: brightness(0) invert(1);
     .split-button-arrow-right::before {
       border-left-color: $muteText;
     }
+    // The base .mute .split-button .split-button-arrow rule (#c6c6c6 bg + #888888 left
+    // divider) ties the grouped rule above on specificity and wins on source order — match
+    // its depth here so the muted instrument-selector arrows stay light pink, not gray.
+    .split-button .split-button-arrow {
+      background-color: $muteFillSoft;
+      &.split-button-arrow-left {
+        border-right-color: $muteBorder;
+      }
+    }
     .react-numeric-input {
       input {
         color: $muteText;
@@ -353,7 +362,7 @@ $blueIconTone: brightness(0) invert(1);
         background-color: #d49bb8;
       }
       &.white-key {
-        background-color: #f3e6ee;
+        background-color: #f0dce8; // muted white = light pink (not neutral gray)
         border-color: $muteBorder;
         &.in-range {
           background-color: #f8eef4;
@@ -363,7 +372,11 @@ $blueIconTone: brightness(0) invert(1);
     .key.piano-keys .pitch-class:not(.selected):not(.playing) {
       background-color: #d49bb8;
       &.white-key {
-        background-color: #f0e0e9;
+        // pink-tinted so muted white keys don't read as neutral gray (which goes green
+        // against the pink theme), and a touch darker than the piano-roll muted white so
+        // they separate from the muted channel color here. !important overrides the base
+        // $muteGray (#d8d8d8) .mute .piano-keys .white-key rule, which is itself !important.
+        background-color: #e2cad8 !important;
       }
     }
     .fader-slot {
