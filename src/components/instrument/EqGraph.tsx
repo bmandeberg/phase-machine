@@ -26,6 +26,9 @@ const xToFreq = (x: number) => FMIN * Math.exp((x / WIDTH) * LOG_RATIO)
 const gainToY = (g: number) => ((GVIEW - g) / (2 * GVIEW)) * HEIGHT
 const yToGain = (y: number) => GVIEW - (y / HEIGHT) * 2 * GVIEW
 
+// gridline opacity per |dB| — fans out (brighter) toward the ±12 boundary
+const GRID_DB_OPACITY: Record<number, number> = { 3: 0.12, 6: 0.18, 9: 0.25, 12: 0.32 }
+
 type Band = 'low' | 'mid' | 'high'
 
 interface EqGraphProps {
@@ -125,11 +128,13 @@ function EqGraph({ slot, setField, color, setGrabbing }: EqGraphProps) {
   return (
     <svg ref={svgRef} className="eq-graph" width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
       {/* vertical gridlines + Hz labels at decade frequencies */}
-      {([
-        [100, '100'],
-        [1000, '1k'],
-        [10000, '10k'],
-      ] as const).map(([f, label]) => (
+      {(
+        [
+          [100, '100'],
+          [1000, '1k'],
+          [10000, '10k'],
+        ] as const
+      ).map(([f, label]) => (
         <g key={f}>
           <line className="eq-grid" x1={freqToX(f)} y1={0} x2={freqToX(f)} y2={HEIGHT} />
           <text className="eq-label" x={freqToX(f) + 3} y={HEIGHT - 4}>
@@ -137,8 +142,39 @@ function EqGraph({ slot, setField, color, setGrabbing }: EqGraphProps) {
           </text>
         </g>
       ))}
-      {/* 0 dB centerline */}
+      {/* horizontal dB gridlines at ±3 / ±6 / ±9 / ±12, opacity fanning out toward
+          the ±12 boundary (0 is the centerline below) */}
+      {[3, 6, 9, 12]
+        .flatMap((db) => [db, -db])
+        .map((db) => (
+          <line
+            key={db}
+            className="eq-grid"
+            style={{ stroke: `rgba(128, 128, 128, ${GRID_DB_OPACITY[Math.abs(db)]})` }}
+            x1={0}
+            y1={gainToY(db)}
+            x2={WIDTH}
+            y2={gainToY(db)}
+          />
+        ))}
+      {/* dB labels, each just above its line (nodes clamp to ±12) */}
+      {(
+        [
+          [12, '+12'],
+          [6, '+6'],
+          [-6, '-6'],
+          [-12, '-12'],
+        ] as const
+      ).map(([db, label]) => (
+        <text key={db} className="eq-label" x={3} y={gainToY(db) - 3}>
+          {label}
+        </text>
+      ))}
+      {/* 0 dB centerline + label */}
       <line className="eq-grid eq-zero" x1={0} y1={HEIGHT / 2} x2={WIDTH} y2={HEIGHT / 2} />
+      <text className="eq-label" x={3} y={HEIGHT / 2 - 4}>
+        0
+      </text>
       {/* response curve */}
       <path className="eq-curve" d={curvePoints} fill="none" stroke={color} />
       {/* draggable band nodes */}

@@ -535,7 +535,7 @@ export default function App() {
           setPresetsStopTransport={setPresetsStopTransport}
         />
       </CSSTransition>
-      <AlertDialog />
+      <AlertDialog theme={theme} />
     </div>
   )
 }

@@ -111,6 +111,32 @@
     &.active .effect-slot-num {
       color: $darkGray;
     }
+    // up/down reorder buttons, pinned to the right edge of the slot row
+    .effect-slot-move {
+      margin-left: auto;
+      align-self: center;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      padding-left: 8px;
+    }
+    .effect-slot-move-btn {
+      appearance: none;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 11px;
+      line-height: 12px;
+      color: $lightTextGray;
+      cursor: pointer;
+      &:hover:not(:disabled) {
+        color: $darkGray;
+      }
+      &:disabled {
+        opacity: 0.25;
+        cursor: default;
+      }
+    }
     .effect-slot-type {
       margin-top: 6px;
       // column so anything below the dropdown (the EQ's Mid Q knob) stacks under it
