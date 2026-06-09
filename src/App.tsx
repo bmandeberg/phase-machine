@@ -440,6 +440,7 @@ export default function App() {
         'dark-theme': theme === 'dark',
         'contrast-theme': theme === 'contrast',
         'aero-theme': theme === 'aero',
+        'coquette-theme': theme === 'coquette',
       })}>
       <Header
         tempo={tempo}

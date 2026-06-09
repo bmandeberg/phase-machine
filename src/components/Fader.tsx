@@ -14,6 +14,8 @@ import faderKnobMuteLight from '../assets/fader-knob-mute-light.svg'
 import faderSlotLight from '../assets/fader-slot-light.svg'
 import faderKnobAero from '../assets/fader-knob-aero.svg'
 import faderSlotAero from '../assets/fader-slot-aero.svg'
+import faderKnobCoquette from '../assets/fader-knob-coquette.svg'
+import faderSlotCoquette from '../assets/fader-slot-coquette.svg'
 import './Fader.scss'
 
 const FADER_HEIGHT = 41
@@ -44,6 +46,8 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
         return faderSlotLight
       case 'aero':
         return faderSlotAero
+      case 'coquette':
+        return faderSlotCoquette
       default:
         return faderSlot
     }
@@ -59,6 +63,8 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
         return mute ? faderKnobMuteLight : faderKnobLight
       case 'aero':
         return faderKnobAero
+      case 'coquette':
+        return faderKnobCoquette
       default:
         return faderKnob
     }

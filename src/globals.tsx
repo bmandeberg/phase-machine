@@ -99,6 +99,7 @@ export const THEMES = [
   { value: 'dark', label: 'Dark' },
   { value: 'contrast', label: 'Contrast' },
   { value: 'aero', label: 'Aero' },
+  { value: 'coquette', label: 'Coquette' },
   { value: 'light', label: 'Toxic' },
 ]
 
@@ -365,6 +366,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#45454C'
         case 'aero':
           return '#cbe7f3'
+        case 'coquette':
+          return '#ffc9e0'
         default:
           return '#e6e6e6'
       }
@@ -378,6 +381,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#45454C'
         case 'aero':
           return '#cbe7f3'
+        case 'coquette':
+          return '#ffc9e0'
         default:
           return '#e6e6e6'
       }
@@ -390,6 +395,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
         case 'contrast':
           return mute ? '#aab1cc' : '#CCD0FF'
         case 'aero':
+          return '#ffffff'
+        case 'coquette':
           return '#ffffff'
         default:
           return '#666666'
@@ -404,6 +411,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#33ff00'
         case 'aero':
           return '#5fd06a'
+        case 'coquette':
+          return '#ff85be'
         default:
           return '#33ff00'
       }

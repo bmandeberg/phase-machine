@@ -269,7 +269,7 @@ export default function Piano({
       {rangeMode && rangeDrag}
       {rangeMode && rangeRight}
       {rangeMode && rangeGlow}
-      {(mute || (theme === 'light' && !rangeMode)) && pianoBorder}
+      {(mute || (theme === 'light' && !rangeMode) || theme === 'coquette') && pianoBorder}
     </div>
   )
 }

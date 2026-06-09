@@ -12,13 +12,17 @@ import { Preset } from '../types'
 import logo from '../assets/logo.svg'
 import logoDark from '../assets/logo-dark.svg'
 import logoAero from '../assets/logo-aero.svg'
+import logoCoquette from '../assets/logo-coquette.svg'
 import play from '../assets/play.svg'
 import playDark from '../assets/play-dark.svg'
 import playAero from '../assets/play-aero.svg'
+import playCoquette from '../assets/play-coquette.svg'
 import stop from '../assets/stop.svg'
 import stopAero from '../assets/stop-aero.svg'
+import stopCoquette from '../assets/stop-coquette.svg'
 import waves from '../assets/waves.png'
 import wavesAero from '../assets/waves-aero.png'
+import pinkSin from '../assets/pink-sin.png'
 import logoShadow from '../assets/48F8B2439E7D5A31.png'
 import './Header.scss'
 
@@ -144,14 +148,26 @@ export default class Header extends React.Component<HeaderProps> {
             {this.props.theme === 'aero' && (
               <img className="waves-background waves-bloom" src={wavesAero} alt="" aria-hidden="true" />
             )}
-            <img className="waves-background" src={this.props.theme === 'aero' ? wavesAero : waves} alt="" />
+            <img
+              className="waves-background"
+              src={this.props.theme === 'aero' ? wavesAero : this.props.theme === 'coquette' ? pinkSin : waves}
+              alt=""
+            />
           </>
         )}
         {this.props.theme !== 'light' && <img className="logo-shadow" src={logoShadow} alt="" />}
         <img
           id="logo"
           className="no-select"
-          src={this.props.theme === 'dark' ? logoDark : this.props.theme === 'aero' ? logoAero : logo}
+          src={
+            this.props.theme === 'dark'
+              ? logoDark
+              : this.props.theme === 'aero'
+              ? logoAero
+              : this.props.theme === 'coquette'
+              ? logoCoquette
+              : logo
+          }
           alt="Phase Machine"
         />
         <img
@@ -161,11 +177,15 @@ export default class Header extends React.Component<HeaderProps> {
             this.props.playing
               ? this.props.theme === 'aero'
                 ? stopAero
+                : this.props.theme === 'coquette'
+                ? stopCoquette
                 : stop
               : this.props.theme === 'dark'
               ? playDark
               : this.props.theme === 'aero'
               ? playAero
+              : this.props.theme === 'coquette'
+              ? playCoquette
               : play
           }
           alt="PLAY"

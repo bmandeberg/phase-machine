@@ -1,0 +1,787 @@
+@use './sass-globals' as *;
+
+// ──────────────────────────────────────────────────────────────────────────
+// Coquette theme 🎀🤍🍓
+//
+// A flat-graphic pink theme: NO glass, NO blur, NO gradients, NO beige/cream —
+// just bright flat pinks and clean whites with crisp pink borders. White control
+// fills, soft-pink accents, a hot-pink/magenta playhead, white-on-pink header
+// (logo / play / labels), a lace trim and a diagonal bow grid. Only colors /
+// fills / borders are overridden, never layout.
+// ──────────────────────────────────────────────────────────────────────────
+
+$bg: #ffd6ec; // flat page background (bright pink)
+$panel: #ffffff; // white control fill
+$panelHover: #fff0f6;
+$panelActive: #ffdcec;
+$pink: #ff85be; // accent (selected radio / split arrows / hotkey) — soft pastel
+$pinkHover: #ff9bcb;
+$hotPink: #ff2d8f; // playhead / strong accent
+$hotPinkHover: #ff52a6;
+$border: #ff9ec4; // pink border
+$borderSoft: #ffc2dd;
+$text: #d65a92; // softened deep pink text (less harsh, still readable)
+$textSoft: #e58ab2;
+$headerBg: #ffc2dd; // flat header bar
+$inputBg: #ffffff;
+// muted channel: a soft desaturated pink-gray veil (NO beige — stays pink)
+$muteFill: #ecd9e4;
+$muteFillSoft: #f3e6ee;
+$muteText: #b58fa3;
+$muteBorder: #e2c6d4;
+// colorize the flat #666 gray instrument/wave SVGs to a bright hot pink (~#ff4da6)
+$iconFilter: invert(48%) sepia(78%) saturate(2400%) hue-rotate(300deg) brightness(102%) contrast(101%);
+// render the header/preset icons solid white (brightness(0) flattens the blue
+// icon to black, invert(1) flips it to white) so they read on the pink bar
+$blueIconTone: brightness(0) invert(1);
+
+// Flat control surface: solid fill + crisp pink border. No inset highlight, no
+// blur — that's the whole point of the flat look.
+@mixin flat($bg, $bd: $border) {
+  background-color: $bg;
+  border: 1px solid $bd;
+  box-shadow: none;
+}
+
+// Flat overlay panel (menus / modals): solid fill + border + a soft drop shadow
+// so it lifts off the page without any glassy blur.
+@mixin flat-panel($bg) {
+  background-color: $bg;
+  border: 1px solid $border;
+  box-shadow: 0 4px 14px rgba(209, 30, 110, 0.18);
+}
+
+.coquette-theme {
+  background-color: $bg;
+  color: $text;
+
+  textarea,
+  input {
+    background-color: $inputBg;
+    color: $text;
+    border: 1px solid $border;
+    box-shadow: none;
+  }
+
+  // smooth the mute/unmute color change on the flat controls
+  .button,
+  .split-button,
+  .split-button-arrow,
+  .dropdown-control,
+  .dropdown-arrow-wrapper,
+  .multi-select,
+  .multi-select-arrow-container,
+  .react-numeric-input input,
+  .react-numeric-input b,
+  .sequence-step {
+    transition: background-color $transitionTime, border-color $transitionTime, color $transitionTime;
+  }
+
+  // ── Numeric inputs (spinner steppers) ─────────────────────────────────────
+  .react-numeric-input,
+  .num-input.small-input {
+    input {
+      border-color: $border;
+      color: $text;
+    }
+    b {
+      // light-pink stepper buttons (like the dropdown's arrow button) rather than
+      // white
+      background-color: $panelActive;
+      border-color: $border;
+      box-shadow: none;
+      &:hover {
+        background-color: $panelHover;
+      }
+      &:active {
+        background-color: $border;
+      }
+    }
+    b:first-of-type i {
+      border-color: transparent transparent $text;
+    }
+    b:last-of-type i {
+      border-color: $text transparent transparent;
+    }
+  }
+
+  .button {
+    @include flat($panel);
+    color: $text;
+    &:hover {
+      @include flat($panelHover);
+    }
+    &:active {
+      @include flat($panelActive);
+    }
+    &.green-button {
+      // confirm/save stays green so the affordance reads everywhere
+      @include flat($green, #2fb84a);
+      color: #ffffff;
+      &:hover {
+        @include flat(#5bd66e, #2fb84a);
+      }
+    }
+    &.red-button {
+      @include flat($red, #e0282c);
+      color: #ffffff;
+      &:hover {
+        @include flat(#ff5a57, #e0282c);
+      }
+      &:active {
+        @include flat($redActive, #e0282c);
+      }
+    }
+  }
+
+  .mute-solo {
+    .button {
+      @include flat($panel);
+      color: $textSoft;
+    }
+    .mute.muted {
+      @include flat($red, #e0282c);
+      color: #ffffff;
+    }
+    .solo.soloed {
+      @include flat(var(--channel-color), var(--channel-color));
+      color: #ffffff;
+    }
+  }
+
+  .midi {
+    .midi-in {
+      @include flat($panel);
+      color: $textSoft;
+      &.midi-active {
+        @include flat(var(--channel-color), var(--channel-color));
+        color: #ffffff;
+      }
+    }
+  }
+
+  // ── Header: a flat solid pink bar ─────────────────────────────────────────
+  #header {
+    background-color: $headerBg;
+    // the floating header labels (Tempo / View / MIDI / Preset …) read white on
+    // the pink bar.
+    color: #ffffff;
+    box-shadow: 0 1px 0 rgba(209, 30, 110, 0.12);
+    // a soft-pink bow motif tiled as a diagonal grid behind the header content.
+    // Two identical layers offset by half a tile stagger the bows onto the
+    // diagonals (a square grid + its half-drop = a diamond lattice). z-index:-1
+    // sits it just above the header fill but behind all content; pointer-events
+    // none and inset:0 keep it a passive backdrop contained to the header.
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image: url('./assets/bow-coquette.svg'), url('./assets/bow-coquette.svg');
+      background-size: 58px 58px, 58px 58px;
+      background-position: 0 0, 29px 29px;
+      background-repeat: repeat, repeat;
+      opacity: 0.68;
+    }
+    .button {
+      color: $text;
+    }
+    .logo-shadow {
+      display: none;
+    }
+    // flat waves: a dedicated already-pink sinusoid PNG (pink-sin) shown at full
+    // opacity — no recolor filter, no softening, no bloom/glow.
+    .waves-background {
+      opacity: 1;
+    }
+    .header-aux {
+      .header-settings,
+      .header-about {
+        filter: $blueIconTone;
+      }
+      .header-settings {
+        background: url('./assets/gear-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/gear-hover-blue.png');
+          background-size: 22px;
+        }
+      }
+      .header-about {
+        background: url('./assets/question-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/question-blue-hover.png');
+          background-size: 22px;
+        }
+      }
+    }
+  }
+  // a white lace eyelet trim hanging from the bottom edge of the header. The
+  // #header-border strip is already fixed at the header's bottom seam (top:60px,
+  // full width) so we repurpose it: grow it to the lace height, tile the PNG
+  // horizontally, and let the scallops drape down over the top of the content.
+  // pointer-events:none so the (transparent) overhang never eats clicks; z-index
+  // sits just under the header (2001) but above the channels.
+  #header-border {
+    height: 18px;
+    background-color: transparent;
+    background-image: url('./assets/lace-border.png');
+    background-repeat: repeat-x;
+    background-position: top left;
+    background-size: auto 18px;
+    pointer-events: none;
+    z-index: 2000;
+  }
+
+  // segmented control (header only): unselected segments are soft pink with white
+  // text and blend toward the bar; the selected segment pops as solid white with
+  // pink text.
+  .radio-buttons {
+    .radio-button {
+      @include flat($pink, $pink);
+      color: #ffffff;
+      &:hover {
+        background-color: $pinkHover;
+      }
+      &:active {
+        background-color: $pinkHover;
+      }
+      &.radio-button-selected {
+        @include flat($panel);
+        color: $text;
+        &:hover {
+          background-color: $panelHover;
+        }
+      }
+    }
+  }
+
+  // ── Channels: flat translucent-free panels over the pink page ──────────────
+  .channel-horizontal,
+  .channel-clock {
+    background-color: rgba(255, 255, 255, 0.35);
+    border-color: $borderSoft;
+  }
+  .channel-clock {
+    border: 1px solid $borderSoft;
+    box-shadow: none;
+  }
+  .channel-horizontal {
+    .channel-number-container {
+      .channel-number-background {
+        background: linear-gradient(to right, rgba(255, 194, 221, 0.85) 0%, rgba(255, 194, 221, 0) 60%);
+      }
+      .channel-mute-solo .channel-mute-solo-button:not(.muted):not(.soloed) {
+        color: $textSoft;
+      }
+    }
+    &.mute .channel-number-container .channel-number-background {
+      background: linear-gradient(to right, rgba(226, 198, 212, 0.85) 0%, rgba(226, 198, 212, 0) 60%);
+    }
+    &.channel-in-active,
+    &.channel-in-active .channel-horizontal {
+      background-color: rgba(255, 138, 188, 0.6);
+    }
+  }
+  // ── Muted channel: a soft desaturated pink (selected/accent stay vivid) ─────
+  .mute {
+    background-color: rgba(236, 217, 228, 0.5);
+    color: $muteText;
+
+    .scribbler .scribbler-input-container {
+      background-color: $muteFill;
+    }
+    .scribbler .scribbler-input {
+      background-color: $muteFill;
+      color: $muteText;
+    }
+    .button,
+    .dropdown-control,
+    .multi-select,
+    .split-button {
+      background-color: $muteFill;
+      border-color: $muteBorder;
+      color: $muteText;
+    }
+    .dropdown-arrow-wrapper,
+    .split-button-arrow,
+    .multi-select-arrow-container {
+      background-color: $muteFillSoft;
+    }
+    .dropdown-arrow,
+    .multi-select-arrow {
+      border-top-color: $muteText;
+    }
+    .split-button-arrow-left::before {
+      border-right-color: $muteText;
+    }
+    .split-button-arrow-right::before {
+      border-left-color: $muteText;
+    }
+    .react-numeric-input {
+      input {
+        color: $muteText;
+      }
+      b {
+        background-color: $muteFill;
+        border-color: $muteBorder;
+        i {
+          border-color: transparent transparent $muteText;
+        }
+      }
+      b:last-of-type i {
+        border-color: $muteText transparent transparent;
+      }
+    }
+    .react-switch-bg {
+      background-color: #e2cdd8 !important;
+    }
+    .notes-mode,
+    .switch-label {
+      color: $muteText;
+    }
+    .sequence-step:not(.selected):not(.playing) {
+      background-color: $muteFillSoft;
+      border-color: $muteBorder;
+      color: $muteText;
+    }
+    .piano .piano-note:not(.selected):not(.playing) {
+      background-color: #e0b6cb;
+      &.in-range {
+        background-color: #d49bb8;
+      }
+      &.white-key {
+        background-color: #f3e6ee;
+        border-color: $muteBorder;
+        &.in-range {
+          background-color: #f8eef4;
+        }
+      }
+    }
+    .key.piano-keys .pitch-class:not(.selected):not(.playing) {
+      background-color: #d49bb8;
+      &.white-key {
+        background-color: #f0e0e9;
+      }
+    }
+    .fader-slot {
+      filter: saturate(0.4) brightness(1.04);
+    }
+    .fader-knob {
+      filter: saturate(0.4) brightness(0.94);
+    }
+    .arrow-small,
+    .arrow-clock {
+      filter: saturate(0.3) brightness(1.06);
+      opacity: 0.55;
+    }
+  }
+  .stacked-auxiliary.first-auxiliary::before {
+    background-color: $border;
+  }
+  .border {
+    border-right-color: $borderSoft;
+  }
+  // flat theme renders the scribbler (channel-name strip) as a SOLID light-pink
+  // field (no transparency). Container matches the input so no white flanks the
+  // field — the same trick light/dark mode use (their container blends with the
+  // page background).
+  .scribbler {
+    .scribbler-input-container {
+      background-color: #ffe3f0;
+    }
+    .scribbler-input {
+      background-color: #ffe3f0;
+      color: $text;
+    }
+  }
+
+  .channel-buttons {
+    .channel-menu-button span {
+      background-color: $textSoft;
+    }
+    &.mute .channel-menu-button span {
+      background-color: $muteText;
+    }
+    .channel-menu {
+      @include flat-panel($panel);
+      .channel-menu-item {
+        color: $text;
+        &:hover {
+          background-color: $panelHover;
+        }
+      }
+    }
+  }
+
+  // ── Sequencer steps: flat white tiles with a pink border ───────────────────
+  .sequence-step {
+    @include flat($panel);
+    color: $textSoft;
+    &:hover {
+      background-color: $panelHover;
+    }
+    &.selected {
+      @include flat(var(--channel-color), var(--channel-color));
+      color: #ffffff;
+    }
+    &.playing {
+      @include flat($hotPink, $hotPink);
+      color: #ffffff;
+      &.selected {
+        @include flat($hotPinkHover, $hotPinkHover);
+      }
+    }
+  }
+
+  .notes-mode,
+  .switch-label {
+    color: $text;
+  }
+
+  // the axis knob fades in a full-screen backdrop while held — use the flat pink
+  // page color instead of flashing white
+  .knob-container.axis-knob::before {
+    background-color: $bg;
+  }
+
+  // instrument / wave icons are flat #666 gray SVGs; colorize them to hot pink.
+  .wave-icon {
+    filter: $iconFilter;
+  }
+  .channel-buttons .channel-instrument-button .wave-icon,
+  .channel-buttons .channel-instrument-button:hover .wave-icon {
+    filter: $iconFilter;
+  }
+
+  // ── Piano + key: dull dusty-rose "black" keys, bright-white in-range ────────
+  // The black keys are a muted dusty rose (NOT a loud hot pink) so they don't
+  // fight the channel colors, and the in-range region reads lighter/airier
+  // because its white keys go pure white while out-of-range white keys stay a
+  // pale pink. Deeper rose marks in-range.
+  .piano {
+    .piano-note:not(.selected):not(.playing) {
+      background-color: #f0a8c8; // out-of-range / keyboard-mode dark keys — dull rose
+      border-color: #ffffff;
+      &.in-range {
+        background-color: #e06aa0; // deeper rose marks the active range
+      }
+      &.interactive:hover {
+        background-color: #ea93bd;
+      }
+      &.white-key {
+        background-color: #ffe3f0; // out-of-range white = pale pink (recedes)
+        border-color: #ffb6d2;
+        &.in-range {
+          background-color: #ffffff; // in-range white = bright white (airy / light)
+        }
+        &.interactive:hover {
+          background-color: #fff0f6;
+        }
+      }
+    }
+    .piano-note.playing {
+      background-color: $hotPink;
+      &.interactive:hover {
+        background-color: $hotPinkHover;
+      }
+      &.white-key.in-range {
+        background-color: $hotPink;
+        border-color: $hotPinkHover;
+      }
+    }
+    .piano-note.in-range:not(.white-key) {
+      width: 10px;
+      margin-left: -4px;
+      transform: none;
+      &.black-key-left {
+        margin-left: -5px;
+      }
+      &.black-key-right {
+        margin-left: -3px;
+      }
+    }
+  }
+  // the piano roll's outermost keys are the same color as the channel behind it,
+  // so the left/right edges have nothing to delineate them. Re-use the inter-key
+  // stroke color (the white-key border, #ffb6d2) for the frame's side borders.
+  .piano .piano-border,
+  .piano .piano-border.dark-border {
+    border-left-color: #ffb6d2;
+    border-right-color: #ffb6d2;
+  }
+  .key {
+    &.piano-keys .pitch-class {
+      background-color: #e06aa0; // dull rose, not the loud accent, so channel colors read
+      box-shadow: none;
+      border-color: transparent;
+      background-clip: padding-box;
+      &:not(.white-key) {
+        border-color: #ffd9ec;
+      }
+      &:first-of-type {
+        border-left-width: 0;
+      }
+      &.mute {
+        border-color: transparent;
+        &:not(.white-key) {
+          border-color: #ffd9ec;
+        }
+      }
+      &:hover {
+        background-color: #ea93bd;
+      }
+      &.white-key {
+        background-color: #ffffff;
+        &:hover {
+          background-color: #fff0f6;
+        }
+      }
+      &.playing {
+        background-color: $hotPink !important;
+        &:hover {
+          background-color: $hotPinkHover !important;
+        }
+      }
+      &.ghost-playing {
+        background-color: rgba(255, 45, 143, 0.4) !important;
+      }
+    }
+    &.clock .pitch-class {
+      background-color: #e06aa0;
+      box-shadow: none;
+      &:hover {
+        background-color: #ea93bd;
+      }
+    }
+  }
+
+  // pink outline around the react-switch track so it reads on the pink channel
+  .react-switch-bg {
+    box-shadow: inset 0 0 0 1px $border !important;
+  }
+
+  // ── Dropdowns ──────────────────────────────────────────────────────────────
+  .dropdown-control {
+    @include flat($panel);
+    color: $text;
+  }
+  .dropdown-arrow-wrapper {
+    background-color: $panelActive;
+    border: 1px solid $border;
+    border-left-color: $border;
+    &:hover {
+      background-color: $panelHover;
+    }
+  }
+  .dropdown-arrow {
+    border-color: $text transparent transparent;
+  }
+  .dropdown-root.open .dropdown-arrow {
+    border-color: transparent transparent $text !important;
+  }
+  .dropdown-menu {
+    @include flat-panel($panel);
+  }
+  .dropdown-menu .dropdown-group > .dropdown-title {
+    color: $text;
+  }
+  .dropdown-option {
+    color: $text;
+    &:hover,
+    &.selected {
+      background-color: $panelActive;
+      color: $text;
+    }
+  }
+  .dropdown-noresults {
+    color: $textSoft;
+  }
+  .dropdown-container {
+    &.small-dropdown {
+      .dropdown-control {
+        @include flat($panel);
+        color: $text;
+      }
+      .dropdown-arrow-wrapper {
+        background-color: $panelActive;
+        border: 1px solid $border;
+        border-left-color: $border;
+        &:hover {
+          background-color: $panelHover;
+        }
+      }
+      .dropdown-arrow {
+        border-color: $text transparent transparent;
+      }
+      .dropdown-root.open .dropdown-arrow {
+        border-color: transparent transparent $text !important;
+      }
+      .dropdown-menu {
+        @include flat-panel($panel);
+      }
+      .dropdown-option:hover,
+      .dropdown-option.selected {
+        background-color: $panelActive;
+        color: $text;
+      }
+    }
+    &.graphic-options {
+      .dropdown-option:hover,
+      .dropdown-option.selected {
+        background-color: $panelActive;
+      }
+    }
+  }
+
+  // ── MultiSelect: match the dropdowns ───────────────────────────────────────
+  .multi-select {
+    @include flat($panel);
+    color: $text;
+    .multi-select-placeholder {
+      color: $textSoft;
+    }
+    .multi-select-arrow-container {
+      background-color: $panelActive;
+      border: 1px solid $border;
+      border-left-color: $border;
+      &:hover {
+        background-color: $panelHover;
+      }
+    }
+    .multi-select-arrow {
+      border-color: $text transparent transparent;
+    }
+    .multi-select-dropdown {
+      @include flat-panel($panel);
+    }
+    .multi-select-option {
+      color: $text;
+      &:hover {
+        background-color: $panelActive;
+        color: $text;
+      }
+    }
+    .multi-select-selection {
+      background-color: $panelActive;
+      color: $text;
+      .multi-select-remove {
+        &:before,
+        &:after {
+          background-color: $text;
+        }
+        &:hover {
+          &:before,
+          &:after {
+            background-color: $red;
+          }
+        }
+      }
+    }
+  }
+
+  // ── Presets & split-buttons ───────────────────────────────────────────────
+  .presets {
+    @include flat($panel);
+    color: $text;
+    input[type='text'] {
+      background-color: $inputBg;
+      border: 1px solid $border;
+      color: $text;
+    }
+    .dropdown-placeholder {
+      overflow: hidden;
+    }
+    .preset-action {
+      border-right-color: $borderSoft;
+      // styled like the dropdown's arrow button: a light-pink background with a
+      // dark-pink icon (matching the dropdown ▾ which is $text-colored)
+      background-color: $panelActive;
+      img {
+        filter: hue-rotate(123deg) saturate(0.62) brightness(0.98);
+      }
+      &:hover {
+        background-color: $panelHover;
+      }
+      &:active {
+        background-color: $border;
+      }
+      &.disabled {
+        background-color: $panelHover;
+      }
+    }
+    .preset-hotkey {
+      background-color: $pink;
+      color: #ffffff;
+    }
+  }
+  .split-button {
+    @include flat($panel);
+    color: $text;
+    .split-button-action:hover,
+    .split-button-content:hover {
+      background-color: $panelHover;
+    }
+    .split-button-arrow {
+      background-color: $panelActive;
+      border-top: 1px solid $border;
+      &:hover {
+        background-color: $panelHover;
+      }
+      &:active {
+        background-color: $panelActive;
+      }
+      &.split-button-arrow-left {
+        border-right: 1px solid $border;
+        &::before {
+          border-color: transparent $text transparent transparent;
+        }
+      }
+      &.split-button-arrow-right::before {
+        border-color: transparent transparent transparent $text;
+      }
+    }
+  }
+
+  .channel-clock {
+    .channel-drawer-control {
+      @include flat($panel);
+      .arrow-down {
+        border-top-color: $textSoft;
+      }
+      &.drawer-open {
+        @include flat(var(--channel-color), var(--channel-color));
+        .arrow-down {
+          border-top-color: #ffffff;
+        }
+      }
+    }
+    &.channel-in-active {
+      background-color: rgba(255, 138, 188, 0.6);
+    }
+  }
+
+  // ── Modals ────────────────────────────────────────────────────────────────
+  .modal-container {
+    // a light pink scrim with a soft backdrop blur (like aero) frosting the app
+    // behind the modal
+    background-color: rgba(255, 140, 190, 0.22);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    .modal-window {
+      @include flat-panel(#fff5fa);
+      box-shadow: 0 8px 28px rgba(209, 30, 110, 0.26);
+    }
+  }
+
+  // base white edge-fades read as pale strips over the pink page — drop them
+  .border-gradient {
+    &.gradient-top,
+    &.gradient-right,
+    &.gradient-bottom {
+      background: transparent;
+    }
+  }
+}
