@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from 'react'
 import { EffectSlot } from '../../types'
 import { constrain } from '../../math'
+import useRafLoop from '../../hooks/useRafLoop'
 
 // EQ-8-style interactive 3-band EQ: drag each band's node to set frequency (x, log)
 // and gain (y, dB); a live response curve is drawn from the real biquad responses.
@@ -26,6 +27,14 @@ const xToFreq = (x: number) => FMIN * Math.exp((x / WIDTH) * LOG_RATIO)
 const gainToY = (g: number) => ((GVIEW - g) / (2 * GVIEW)) * HEIGHT
 const yToGain = (y: number) => GVIEW - (y / HEIGHT) * 2 * GVIEW
 
+// Spectrum overlay maps signal level (dB FS-ish) to the graph height on its own
+// scale (independent of the EQ-gain axis): loud -> tall (top), quiet -> short.
+const SPEC_MAX = 0
+const SPEC_MIN = -80
+const SPEC_STEP = 3 // px between sampled columns
+const specToY = (db: number) =>
+  !isFinite(db) ? HEIGHT : constrain(((SPEC_MAX - db) / (SPEC_MAX - SPEC_MIN)) * HEIGHT, 0, HEIGHT)
+
 // gridline opacity per |dB| — fans out (brighter) toward the ±12 boundary
 const GRID_DB_OPACITY: Record<number, number> = { 3: 0.12, 6: 0.18, 9: 0.25, 12: 0.32 }
 
@@ -36,11 +45,38 @@ interface EqGraphProps {
   setField: (field: keyof EffectSlot, value: number) => void
   color: string
   setGrabbing: (g: boolean) => void
+  // Live FFT magnitudes (dB) of the EQ output, and the audio sample rate (to map
+  // bins -> Hz). When provided, a spectrum is drawn behind the curve.
+  getSpectrum?: () => Float32Array | null
+  sampleRate?: number
 }
 
-function EqGraph({ slot, setField, color, setGrabbing }: EqGraphProps) {
+function EqGraph({ slot, setField, color, setGrabbing, getSpectrum, sampleRate = 44100 }: EqGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const dragRef = useRef<Band | null>(null)
+
+  // Live spectrum: sample the FFT each animation frame, map bins -> log-x / level-y,
+  // and rebuild the filled path via a ref (no per-frame React state). Only mounted
+  // while the modal shows this EQ slot, so the rAF stops when the modal closes.
+  const spectrumRef = useRef<SVGPathElement>(null)
+  useRafLoop(() => {
+    const data = getSpectrum?.()
+    const path = spectrumRef.current
+    if (!path) return
+    if (data && data.length) {
+      const nyquist = sampleRate / 2
+      const bins = data.length
+      let d = `M0,${HEIGHT}`
+      for (let x = 0; x <= WIDTH; x += SPEC_STEP) {
+        const bin = constrain(Math.round((xToFreq(x) / nyquist) * bins), 0, bins - 1)
+        d += ` L${x.toFixed(1)},${specToY(data[bin]).toFixed(1)}`
+      }
+      d += ` L${WIDTH},${HEIGHT} Z`
+      path.setAttribute('d', d)
+    } else {
+      path.setAttribute('d', '')
+    }
+  })
 
   // One reusable offline context + 3 biquads to read the exact filter response.
   const filtersRef = useRef<{ low: BiquadFilterNode; mid: BiquadFilterNode; high: BiquadFilterNode } | null>(null)
@@ -127,6 +163,8 @@ function EqGraph({ slot, setField, color, setGrabbing }: EqGraphProps) {
 
   return (
     <svg ref={svgRef} className="eq-graph" width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
+      {/* live signal spectrum, behind the grid + response curve */}
+      <path ref={spectrumRef} className="eq-spectrum" d="" />
       {/* vertical gridlines + Hz labels at decade frequencies */}
       {(
         [

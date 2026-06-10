@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from 'react'
 import { EffectSlot } from '../../types'
 import { constrain } from '../../math'
+import useRafLoop from '../../hooks/useRafLoop'
 
 // Typical multiband-compressor view: the spectrum split into 3 band regions by two
 // draggable crossover lines; each band has a draggable threshold, and the region
@@ -20,6 +21,12 @@ const xToFreq = (x: number) => FMIN * Math.exp((x / WIDTH) * LOG_RATIO)
 const dbToY = (db: number) => ((DBMAX - db) / (DBMAX - DBMIN)) * HEIGHT
 const yToDb = (y: number) => DBMAX - (y / HEIGHT) * (DBMAX - DBMIN)
 
+// Gain-reduction meter height scale: a band fill reaches the full graph height at
+// this much reduction. Smaller than the -60 dB threshold axis so typical reduction
+// reads as a taller, more visible bar — tune this to make the bars taller/shorter.
+const GR_FULL_DB = 36
+const grBarHeight = (db: number) => Math.min(HEIGHT, (Math.max(0, -db) / GR_FULL_DB) * HEIGHT)
+
 type Drag = { k: 'thr'; band: 'low' | 'mid' | 'high' } | { k: 'xover'; which: 'low' | 'high' }
 
 const THR_FIELD = { low: 'mbLowThreshold', mid: 'mbMidThreshold', high: 'mbHighThreshold' } as const
@@ -29,11 +36,29 @@ interface MultibandGraphProps {
   setField: (field: keyof EffectSlot, value: number) => void
   color: string
   setGrabbing: (g: boolean) => void
+  // Live per-band gain reduction [low, mid, high] in dB (<= 0). Read each frame.
+  getReductions?: () => [number, number, number]
 }
 
-function MultibandGraph({ slot, setField, color, setGrabbing }: MultibandGraphProps) {
+function MultibandGraph({ slot, setField, color, setGrabbing, getReductions }: MultibandGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const dragRef = useRef<Drag | null>(null)
+
+  // Per-band gain-reduction meters: sample the live compressors' .reduction each
+  // animation frame and grow a full-width band fill downward from 0 dB, on the
+  // graph's own dB scale (dbToY), plus a dB readout in each band's top-left corner.
+  // DOM mutated via refs — no per-frame React state.
+  const grRefs = useRef<(SVGRectElement | null)[]>([null, null, null])
+  const grTextRefs = useRef<(SVGTextElement | null)[]>([null, null, null])
+  useRafLoop(() => {
+    const r = getReductions?.() ?? [0, 0, 0]
+    for (let i = 0; i < 3; i++) {
+      const bar = grRefs.current[i]
+      if (bar) bar.setAttribute('height', String(grBarHeight(r[i])))
+      const txt = grTextRefs.current[i]
+      if (txt) txt.textContent = (r[i] <= -0.1 ? r[i] : 0).toFixed(1)
+    }
+  })
 
   const lowX = freqToX(slot.mbLowFreq)
   const highX = freqToX(slot.mbHighFreq)
@@ -101,10 +126,50 @@ function MultibandGraph({ slot, setField, color, setGrabbing }: MultibandGraphPr
         </g>
       ))}
 
-      {/* per-band shaded "over threshold" rectangles + threshold lines */}
+      {/* per-band shaded "over threshold" rectangles */}
       {bands.map((b) => (
-        <g key={b.band}>
-          <rect className="mb-band" x={b.x0} y={0} width={Math.max(0, b.x1 - b.x0)} height={dbToY(b.thr)} fill={color} />
+        <rect
+          key={`band-${b.band}`}
+          className="mb-band"
+          x={b.x0}
+          y={0}
+          width={Math.max(0, b.x1 - b.x0)}
+          height={dbToY(b.thr)}
+          fill={color}
+        />
+      ))}
+
+      {/* live per-band gain-reduction meters: a FULL-WIDTH band fill growing down from
+          0 dB on the graph's own dB scale, with a dB readout in the band's top-left
+          corner. Height + text set per frame via refs. */}
+      {bands.map((b, i) => (
+        <g key={`gr-${b.band}`}>
+          <rect
+            ref={(el) => {
+              grRefs.current[i] = el
+            }}
+            className="mb-gr"
+            x={b.x0}
+            y={0}
+            width={Math.max(0, b.x1 - b.x0)}
+            height={0}
+            fill={color}
+          />
+          <text
+            ref={(el) => {
+              grTextRefs.current[i] = el
+            }}
+            className="mb-gr-label"
+            x={b.x0 + 4}
+            y={11}>
+            0.0
+          </text>
+        </g>
+      ))}
+
+      {/* per-band threshold lines (on top of the band + GR fills so they stay crisp) */}
+      {bands.map((b) => (
+        <g key={`thr-${b.band}`}>
           <line className="mb-thr" x1={b.x0} y1={dbToY(b.thr)} x2={b.x1} y2={dbToY(b.thr)} stroke={color} />
           <rect
             className="mb-thr-hit"
@@ -117,11 +182,12 @@ function MultibandGraph({ slot, setField, color, setGrabbing }: MultibandGraphPr
         </g>
       ))}
 
-      {/* draggable crossover dividers (vertical) with a top grip + freq label */}
+      {/* draggable crossover dividers (vertical) with a top grip; freq label sits at
+          the bottom (the top-left corners are taken by the per-band GR readouts) */}
       {xovers.map((c) => (
         <g key={c.which}>
           <line className="mb-xover" x1={c.x} y1={0} x2={c.x} y2={HEIGHT} />
-          <text className="mb-label mb-xover-label" x={c.x + 3} y={11}>
+          <text className="mb-label mb-xover-label" x={c.x + 3} y={HEIGHT - 4}>
             {c.freq >= 1000 ? `${(c.freq / 1000).toFixed(1)}k` : `${c.freq}`}
           </text>
           <rect

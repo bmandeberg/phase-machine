@@ -36,6 +36,8 @@ export interface SlotNode {
   setParams: (slot: EffectSlot) => void
   start: () => void
   stop: () => void
+  // FFT tap for slots that visualize the signal (currently the EQ's spectrum).
+  analyser?: Tone.Analyser
 }
 export type SlotNodes = [SlotNode | null, SlotNode | null, SlotNode | null]
 export type SlotNodesRef = MutableRefObject<SlotNodes>
@@ -174,11 +176,17 @@ export function createSlotNode(slot: EffectSlot): SlotNode | null {
       const high = new Tone.Filter({ type: 'highshelf', frequency: slot.eqHighFreq, gain: slot.eqHighGain })
       low.connect(mid)
       mid.connect(high)
+      // FFT tap on the EQ output, for the graph's spectrum overlay. Re-attached in
+      // connect() (disconnect() blanket-clears high's outputs, including this tap) so
+      // it survives a slot reorder; passive, so it never alters the audio.
+      const analyser = new Tone.Analyser('fft', 512)
       return {
         type: 'eq',
         input: low,
+        analyser,
         connect: (dest) => {
           high.connect(dest)
+          high.connect(analyser)
         },
         disconnect: () => {
           try {
@@ -191,6 +199,7 @@ export function createSlotNode(slot: EffectSlot): SlotNode | null {
           low.dispose()
           mid.dispose()
           high.dispose()
+          analyser.dispose()
         },
         setParams: (s) => {
           low.set({ frequency: s.eqLowFreq, gain: s.eqLowGain })

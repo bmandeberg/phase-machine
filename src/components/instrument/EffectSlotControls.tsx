@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback } from 'react'
 import classNames from 'classnames'
+import * as Tone from 'tone'
 import RotaryKnob from '../RotaryKnob'
 import Dropdown from '../Dropdown'
 import Switch from 'react-switch'
@@ -9,6 +10,7 @@ import { EffectSlot, EffectType, Setter } from '../../types'
 import { SlotController } from './useEffectParams'
 import EqGraph from './EqGraph'
 import MultibandGraph from './MultibandGraph'
+import VUMeter from './VUMeter'
 
 // Dropdown options: the effect type strings, with friendlier display labels where the
 // raw value reads badly. The value (e.g. 'multibandComp', 'pitch') is unchanged
@@ -35,7 +37,27 @@ function EffectSlotControls({
   tempo,
   color,
 }: EffectSlotControlsProps) {
-  const { index, slot, setType, setField, canMoveUp, canMoveDown, move } = controller
+  const { index, slot, setType, setField, canMoveUp, canMoveDown, move, getNode } = controller
+
+  // Live gain-reduction accessors for the meters (stable: getNode reads a ref). Each
+  // returns 0 when the live node isn't (yet) the expected compressor type.
+  const getCompReduction = useCallback(() => {
+    const n = getNode()
+    return n && n.type === 'compressor' ? (n.input as unknown as Tone.Compressor).reduction : 0
+  }, [getNode])
+  const getMbReductions = useCallback((): [number, number, number] => {
+    const n = getNode()
+    if (n && n.type === 'multibandComp') {
+      const mb = n.input as unknown as Tone.MultibandCompressor
+      return [mb.low.reduction, mb.mid.reduction, mb.high.reduction]
+    }
+    return [0, 0, 0]
+  }, [getNode])
+  // Live FFT magnitudes (dB) from the EQ's output tap, for the graph's spectrum.
+  const getEqSpectrum = useCallback((): Float32Array | null => {
+    const n = getNode()
+    return n && n.type === 'eq' && n.analyser ? (n.analyser.getValue() as Float32Array) : null
+  }, [getNode])
 
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
@@ -204,12 +226,19 @@ function EffectSlotControls({
               {knob('compRatio', 'Ratio', 1, 20)}
               {knob('compAttack', 'Attack', 0, 1)}
               {knob('compRelease', 'Release', 0, 1)}
+              <VUMeter getReduction={getCompReduction} color={color} />
             </>
           )}
 
           {slot.type === 'multibandComp' && (
             <div className="mb-controls">
-              <MultibandGraph slot={slot} setField={setField} color={color} setGrabbing={setGrabbing} />
+              <MultibandGraph
+                slot={slot}
+                setField={setField}
+                color={color}
+                setGrabbing={setGrabbing}
+                getReductions={getMbReductions}
+              />
               <div className="mb-knobs">
                 {knob('mbRatio', 'Ratio', 1, 20)}
                 {knob('mbAttack', 'Attack', 0, 1)}
@@ -218,7 +247,16 @@ function EffectSlotControls({
             </div>
           )}
 
-          {slot.type === 'eq' && <EqGraph slot={slot} setField={setField} color={color} setGrabbing={setGrabbing} />}
+          {slot.type === 'eq' && (
+            <EqGraph
+              slot={slot}
+              setField={setField}
+              color={color}
+              setGrabbing={setGrabbing}
+              getSpectrum={getEqSpectrum}
+              sampleRate={Tone.getContext().sampleRate}
+            />
+          )}
         </div>
       )}
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { EffectSlot, EffectSlots, EffectType } from '../../types'
 import { rateToSeconds } from '../../math'
-import { SlotNodesRef } from '../../hooks/useInstruments'
+import { SlotNode, SlotNodesRef } from '../../hooks/useInstruments'
 
 export type SlotFieldValue = number | boolean | string
 
@@ -19,6 +19,9 @@ export interface SlotController {
   // the saved-preset slot this row's effect came from — follows the effect across
   // reorders so a knob's double-click reset restores the right effect's values.
   savedSlot?: EffectSlot
+  // the live Tone node currently in this slot (or null). Stable identity — lets a
+  // meter read the node's live state (e.g. a compressor's .reduction) each frame.
+  getNode: () => SlotNode | null
 }
 
 // Internal per-slot state bundle. Same as SlotController minus the reorder controls
@@ -30,6 +33,7 @@ interface SlotState {
   setSlot: (slot: EffectSlot) => void
   setType: (type: EffectType) => void
   setField: (field: keyof EffectSlot, value: SlotFieldValue) => void
+  getNode: () => SlotNode | null
 }
 
 function useSlotParams(
@@ -51,6 +55,10 @@ function useSlotParams(
 
   const setType = useCallback((type: EffectType) => setField('type', type), [setField])
 
+  // Stable accessor for this slot's live Tone node (read from the ref, so identity
+  // never changes — a meter can depend on it without restarting its animation loop).
+  const getNode = useCallback(() => slotNodesRef.current[index], [slotNodesRef, index])
+
   // Push this slot's params to its live node — but only when the node currently
   // matches the slot's type. On a type change the chain rebuild creates the node
   // with params already applied, so skipping here avoids poking a stale node.
@@ -70,7 +78,7 @@ function useSlotParams(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tempo, slot.type, slot.syncDelayTime])
 
-  return { index, slot, setSlot, setType, setField }
+  return { index, slot, setSlot, setType, setField, getNode }
 }
 
 // Owns the 3 effect slots' state. Calls useSlotParams exactly 3 times (fixed count,

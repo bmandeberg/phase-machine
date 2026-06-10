@@ -217,6 +217,12 @@
         fill: rgba(128, 128, 128, 0.75);
         font-size: 8px;
       }
+      // live signal spectrum behind the curve — neutral fill so the colored response
+      // curve and band nodes stay prominent on top
+      .eq-spectrum {
+        fill: rgba(150, 150, 150, 0.22);
+        pointer-events: none;
+      }
       .eq-curve {
         stroke-width: 2;
       }
@@ -259,6 +265,23 @@
         fill-opacity: 0.16;
         pointer-events: none;
       }
+      // live per-band gain-reduction fill (full band width, more opaque than the
+      // faint threshold shading so the active reduction reads as a distinct meter)
+      .mb-gr {
+        fill-opacity: 0.4;
+        pointer-events: none;
+      }
+      // per-band gain-reduction readout in the band's top-left corner. Halo (stroke
+      // under fill) keeps it legible over both the colored fill and the graph bg.
+      .mb-gr-label {
+        font-size: 9px;
+        fill: rgba(255, 255, 255, 0.95);
+        paint-order: stroke;
+        stroke: rgba(0, 0, 0, 0.45);
+        stroke-width: 2px;
+        font-variant-numeric: tabular-nums;
+        pointer-events: none;
+      }
       .mb-thr {
         stroke-width: 2;
       }
@@ -278,6 +301,54 @@
       }
       .mb-xover-grip {
         cursor: ew-resize;
+      }
+    }
+    // single-compressor gain-reduction meter: an analog VU-style face (1176-ish) — a
+    // needle that swings left as gain reduction increases, with the dB scale along
+    // the arc. Themeable via the --vu-* custom properties (defaults are neutral grey
+    // that reads on any theme; per-theme files tune them). The needle/hub use the
+    // channel color (set inline).
+    .vu-meter {
+      --vu-face: rgba(128, 128, 128, 0.08);
+      --vu-frame: rgba(128, 128, 128, 0.35);
+      --vu-arc: rgba(128, 128, 128, 0.45);
+      --vu-tick: rgba(128, 128, 128, 0.6);
+      --vu-text: rgba(128, 128, 128, 0.85);
+      margin-right: 4px;
+      align-self: flex-start;
+      .vu-svg {
+        display: block;
+      }
+      .vu-face {
+        fill: var(--vu-face);
+        stroke: var(--vu-frame);
+        stroke-width: 1;
+      }
+      .vu-arc {
+        stroke: var(--vu-arc);
+        stroke-width: 1;
+      }
+      .vu-tick {
+        stroke: var(--vu-tick);
+        stroke-width: 1;
+      }
+      .vu-label {
+        fill: var(--vu-text);
+        font-size: 7px;
+        font-variant-numeric: tabular-nums;
+      }
+      .vu-readout {
+        fill: var(--vu-text);
+        font-size: 8px;
+        font-variant-numeric: tabular-nums;
+      }
+      .vu-caption {
+        fill: var(--vu-text);
+        font-size: 7px;
+      }
+      .vu-needle {
+        stroke-width: 1.5;
+        stroke-linecap: round;
       }
     }
   }
