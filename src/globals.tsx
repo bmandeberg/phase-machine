@@ -56,15 +56,10 @@ import pluck from './assets/samples-pluck.svg'
 import lightPluck from './assets/samples-pluck-light.svg'
 import darkPluck from './assets/samples-pluck-dark.svg'
 import { rangeWrapper } from './math'
-import { alertDialog } from './dialog'
 import { Channel, Preset, EffectSlot, EffectSlots } from './types'
 
 const uaParser = new UAParser()
 export const BROWSER = uaParser.getBrowser()
-const device = uaParser.getDevice()
-if (device.type === 'mobile' || BROWSER.name?.includes('Mobile')) {
-  alertDialog('🗣 sounds can only play if your device is not on silent')
-}
 
 export let ALT = false
 const altOnEvent = new Event('altOn')
