@@ -194,8 +194,11 @@ $margin: 12px;
   .view-dropdown {
     display: none;
   }
-  // no room for the master volume knob on phones — hide it (still adjustable on
-  // desktop; the per-channel volume in the instrument editor remains available)
+}
+
+// no room for the master volume knob on tablets/phones — hide it at/below tablet
+// width (still adjustable on desktop; per-channel volume lives in the instrument editor)
+@media screen and (max-width: 1024px) {
   .global-volume {
     display: none;
   }
