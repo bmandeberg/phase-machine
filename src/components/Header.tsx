@@ -22,7 +22,7 @@ import stopAero from '../assets/stop-aero.svg'
 import stopCoquette from '../assets/stop-coquette.svg'
 import waves from '../assets/waves.png'
 import wavesAero from '../assets/waves-aero.png'
-import pinkSin from '../assets/pink-sin.png'
+import pinkBow from '../assets/pink-bow.png'
 import logoShadow from '../assets/48F8B2439E7D5A31.png'
 import './Header.scss'
 
@@ -150,7 +150,7 @@ export default class Header extends React.Component<HeaderProps> {
             )}
             <img
               className="waves-background"
-              src={this.props.theme === 'aero' ? wavesAero : this.props.theme === 'coquette' ? pinkSin : waves}
+              src={this.props.theme === 'aero' ? wavesAero : this.props.theme === 'coquette' ? pinkBow : waves}
               alt=""
             />
           </>
