@@ -82,6 +82,7 @@ export default function App() {
     setMidiOut,
     setMidiIn,
     midiEnabled,
+    midiUnavailableReason,
     midiClockIn,
     setMidiClockIn,
     midiClockOut,
@@ -466,6 +467,7 @@ export default function App() {
         setMidiOut={setMidiOut}
         setMidiIn={setMidiIn}
         midiEnabled={midiEnabled}
+        midiUnavailableReason={midiUnavailableReason}
         numChannels={numChannels}
         setNumChannels={setNumChannels}
         view={view}

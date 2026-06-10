@@ -14,8 +14,39 @@ const MIDI_IO_CHANGED = {
   OUT: 0,
 }
 
+// Why the MIDI dropdowns are empty, phrased for the user. `null` once MIDI is
+// enabled. The default empty-list copy used to say "MIDI only works in Google
+// Chrome", which is misleading when enable() fails IN Chrome (a blocked MIDI
+// permission, or a Chromium browser like Brave that disables Web MIDI). We now
+// classify the actual failure so the dropdown explains what's really wrong.
+const MIDI_UNSUPPORTED =
+  'This browser doesn’t support Web MIDI. Try Google Chrome (desktop) for MIDI.'
+const MIDI_BLOCKED =
+  'MIDI access is blocked. Allow MIDI for this site in your browser settings, then reload.'
+const MIDI_FAILED = 'MIDI couldn’t start in this browser.'
+
+// requestMIDIAccess rejects with a DOMException; a denied/blocked permission
+// surfaces as SecurityError or NotAllowedError (Chrome wording has varied).
+function midiFailureReason(err: any): string {
+  const name = err?.name ?? ''
+  const msg = String(err?.message ?? err ?? '').toLowerCase()
+  if (
+    name === 'SecurityError' ||
+    name === 'NotAllowedError' ||
+    msg.includes('denied') ||
+    msg.includes('permission') ||
+    msg.includes('blocked')
+  ) {
+    return MIDI_BLOCKED
+  }
+  return MIDI_FAILED
+}
+
 export default function useMIDI(setPlaying: any, setResetTransport: any) {
   const [midiEnabled, setMidiEnabled] = useState(false)
+  // Start by assuming MIDI will work; the enable effect sets a real reason if it
+  // doesn't. This keeps the dropdowns quiet during the brief enable() pending gap.
+  const [midiUnavailableReason, setMidiUnavailableReason] = useState<string | null>(null)
   const [midiOut, setMidiOut] = useState<string | null>(null)
   const midiOutRef = useRef<any>(undefined)
   const [midiOuts, setMidiOuts] = useState<string[]>([])
@@ -66,8 +97,15 @@ export default function useMIDI(setPlaying: any, setResetTransport: any) {
       setMidiIns(WebMidi.inputs.map((i) => i.name).concat(['(None)']))
       setMidiIn((midiIn) => (e.port.name === midiIn ? null : midiIn))
     }
+    // No Web MIDI API at all (Safari, Firefox, non-secure context, …) — enable()
+    // would reject; report it directly without the noisy console error.
+    if (typeof navigator === 'undefined' || typeof navigator.requestMIDIAccess !== 'function') {
+      setMidiUnavailableReason(MIDI_UNSUPPORTED)
+      return
+    }
     WebMidi.enable()
       .then(() => {
+        setMidiUnavailableReason(null)
         // Populate the device lists from the ports that are already present at enable time.
         // The 'connected'/'disconnected' listeners below only cover changes afterward, and
         // can't be relied on to fire (or to fire after they're attached) for pre-existing
@@ -99,7 +137,10 @@ export default function useMIDI(setPlaying: any, setResetTransport: any) {
         WebMidi.addListener('disconnected', disconnectMidi)
       })
       .catch((err) => {
-        console.log(err)
+        // Most often a blocked MIDI permission, or a Chromium browser (e.g. Brave)
+        // that disables Web MIDI — both reject here even though it IS "Chrome".
+        setMidiUnavailableReason(midiFailureReason(err))
+        console.warn('Web MIDI enable() failed:', err)
       })
     return () => {
       // WebMidi.enable() is async, so under React 18 StrictMode the cleanup can
@@ -194,6 +235,7 @@ export default function useMIDI(setPlaying: any, setResetTransport: any) {
     setMidiOut,
     setMidiIn,
     midiEnabled,
+    midiUnavailableReason,
     midiClockIn,
     setMidiClockIn,
     midiClockOut,

@@ -41,6 +41,7 @@ interface HeaderProps {
   setMidiOut: any
   setMidiIn: any
   midiEnabled?: boolean
+  midiUnavailableReason?: string | null
   numChannels: number
   setNumChannels: any
   view?: string
@@ -245,7 +246,7 @@ export default class Header extends React.Component<HeaderProps> {
           setValue={this.props.setMidiOut}
           value={this.props.midiOut}
           placeholder="No MIDI Out"
-          noOptions="MIDI only works in Google Chrome"
+          noOptions={this.props.midiUnavailableReason ?? 'MIDI only works in Google Chrome'}
           small
         />
         <Dropdown
@@ -255,7 +256,7 @@ export default class Header extends React.Component<HeaderProps> {
           setValue={this.props.setMidiIn}
           value={this.props.midiIn}
           placeholder="No MIDI In"
-          noOptions="MIDI only works in Google Chrome"
+          noOptions={this.props.midiUnavailableReason ?? 'MIDI only works in Google Chrome'}
           small
         />
         {this.props.view === 'horizontal' && (
