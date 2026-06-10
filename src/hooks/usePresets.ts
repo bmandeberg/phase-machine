@@ -51,6 +51,23 @@ export default function usePresets(
     [deepStateCopy, setUIState]
   )
 
+  // Update just one channel's color (user picks it from the channel number). Lives here
+  // so it writes uiState.channels directly; the change flows back to the channel as its
+  // `color` prop and persists/marks-dirty like any other channel field.
+  const setChannelColor = useCallback(
+    (id: string, color: string) => {
+      setUIState((uiState: Preset) => {
+        const uiStateCopy = deepStateCopy(uiState)
+        const channelIndex = uiStateCopy.channels.findIndex((c: Channel) => c.id === id)
+        if (channelIndex !== -1) {
+          uiStateCopy.channels[channelIndex].color = color
+        }
+        return uiStateCopy
+      })
+    },
+    [deepStateCopy, setUIState]
+  )
+
   useEffect(() => {
     setUIState((uiState: Preset) => {
       const uiStateCopy = Object.assign({}, uiState, {
@@ -502,6 +519,7 @@ export default function usePresets(
 
   return {
     setChannelState,
+    setChannelColor,
     setPresetName,
     presetDirty,
     setPreset,

@@ -61,6 +61,7 @@ interface ChannelProps {
   showStepNumbers: boolean
   midiOut: string | null
   setChannelState: (id: string, state: ChannelType) => void
+  setChannelColor: (id: string, color: string) => void
   channelPreset?: ChannelType
   duplicateChannel: (id: string) => void
   deleteChannel: (id: string) => void
@@ -92,6 +93,7 @@ export default function Channel({
   showStepNumbers,
   midiOut,
   setChannelState,
+  setChannelColor,
   channelPreset,
   duplicateChannel,
   deleteChannel,
@@ -378,7 +380,10 @@ export default function Channel({
       }
       setDraggingChannel(false)
     },
-  })
+    // filterTaps: a click without movement is suppressed from the drag (and its native
+    // click is NOT preventDefault-ed), so the channel number's onClick fires to open the
+    // color picker; an actual drag suppresses that click so reordering won't open it.
+  }, { drag: { filterTaps: true } })
 
   // instrument
 
@@ -1011,7 +1016,8 @@ export default function Channel({
     openInstrumentModal,
     updateOnce,
     triggerNote,
-    channelPreset
+    channelPreset,
+    setChannelColor
   )
 
   const modalEl = useMemo(

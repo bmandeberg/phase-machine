@@ -27,6 +27,22 @@
     pointer-events: auto;
     touch-action: none;
   }
+  // hidden native color picker — sized/placed over the number (but behind it in the
+  // DOM, so the number owns clicks/drag) so Chrome anchors its color popup right at the
+  // number. pointer-events:auto matters: Chrome won't anchor the popup to a
+  // pointer-events:none input (it drops it to a fallback low position).
+  .channel-color-input {
+    position: absolute;
+    top: 16px;
+    left: 0;
+    width: 100%;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    opacity: 0;
+    pointer-events: auto;
+  }
   // Small M/S buttons styled like the duplicate/delete buttons and pinned inside
   // the sticky channel-number-container so they stay beneath the number on
   // horizontal scroll. Used always-on in the stacked auxiliary (sequencer) channel
