@@ -49,7 +49,7 @@ export default function Key({
 
   const pitchClasses = useMemo(
     () =>
-      [...Array(12)].map((d, i) => (
+      [...Array(12)].map((_d, i) => (
         <div
           key={i}
           className={classNames('pitch-class', {
@@ -72,7 +72,7 @@ export default function Key({
   )
 
   const selectedKeys = useMemo(
-    () => [...Array(12)].map((d, i) => <SelectedKey key={i} visible={selectedKeyVisible(i)} {...SELECTED_KEYS[i]} />),
+    () => [...Array(12)].map((_d, i) => <SelectedKey key={i} visible={selectedKeyVisible(i)} {...SELECTED_KEYS[i]} />),
     [selectedKeyVisible]
   )
 

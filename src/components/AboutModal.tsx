@@ -281,6 +281,6 @@ export default function AboutModal({ theme }: AboutModalProps) {
 }
 function parseLinks(text: string, type: string) {
   const className = `about-section-${type}-content`
-  const linkedContent = text.replaceAll(/(https?:.+)$/g, (match, p1) => `<a href="${p1}" target="_blank">${p1}</a>`)
+  const linkedContent = text.replaceAll(/(https?:.+)$/g, '<a href="$1" target="_blank">$1</a>')
   return <div className={className}>{parse(linkedContent)}</div>
 }

@@ -213,7 +213,7 @@ export default function usePresets(
   }, [])
 
   const savePreset = useCallback(
-    (e: unknown, hotkey: number | null = null) => {
+    (_e: unknown, hotkey: number | null = null) => {
       const uiStateCopy = Object.assign({}, uiState, {
         placeholder: false,
         hotkey: hotkey ?? uiState.hotkey,
@@ -256,7 +256,7 @@ export default function usePresets(
   )
 
   const newPreset = useCallback(
-    (e: unknown, hotkey: number | null = null) => {
+    (_e: unknown, hotkey: number | null = null) => {
       const id = uuid()
       const uiStateCopy = Object.assign({}, uiState, {
         name: dedupName(uiState.name !== currentPreset.name ? uiState.name : 'New Preset', id, presets),

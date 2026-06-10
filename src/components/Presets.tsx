@@ -30,7 +30,6 @@ interface PresetsProps {
   setPresetName: any
   setPreset: any
   presetDirty?: boolean
-  hotkey?: number
   presetHotkey?: number | string | null
   savePreset: () => void
   newPreset: () => void
@@ -46,7 +45,6 @@ export default function Presets({
   setPresetName,
   setPreset,
   presetDirty,
-  hotkey,
   presetHotkey,
   savePreset,
   newPreset,

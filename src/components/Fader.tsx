@@ -72,7 +72,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
 
   const faderTop = useRef(0)
   const drag = useGesture({
-    onDrag: ({ xy: [x, y] }) => {
+    onDrag: ({ xy: [, y] }) => {
       const newValue = constrain(
         scaleToRange(constrain(y - faderTop.current, FADER_MIN_PX, FADER_MAX_PX), FADER_MIN_PX, FADER_MAX_PX, 1, 0),
         0,

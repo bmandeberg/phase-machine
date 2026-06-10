@@ -297,7 +297,7 @@ export default function Channel({
             setKeybdPitches((keybdPitches: any) => {
               const keybdPitchesCopy = keybdPitches.slice()
               keybdPitchesCopy.push(noteNumber)
-              return keybdPitchesCopy.sort()
+              return keybdPitchesCopy.sort((a: number, b: number) => a - b)
             })
           } else {
             setKeybdPitches((keybdPitches: any) => keybdPitches.filter((p: any) => p !== noteNumber))
@@ -407,15 +407,6 @@ export default function Channel({
   const {
     gainNode,
     pannerNode,
-    synthInstrument,
-    pianoInstrument,
-    marimbaInstrument,
-    drumsInstrument,
-    drumMachineInstrument,
-    bassInstrument,
-    vibesInstrument,
-    harpInstrument,
-    choralInstrument,
     slotNodesRef,
     rebuildEffectChain,
     reloadInstruments,

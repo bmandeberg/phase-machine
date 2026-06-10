@@ -64,7 +64,7 @@ export default function Piano({
   }, [rangeStart, rangeEnd, changingRange])
 
   const dragRangeLeft = useGesture({
-    onDrag: ({ movement: [mx, my] }) => {
+    onDrag: ({ movement: [mx] }) => {
       setRangeStart(constrain(rangeStartReference + keyOffset(mx), 0, rangeEnd - 1))
     },
     onDragStart: () => {
@@ -79,7 +79,7 @@ export default function Piano({
   })
 
   const dragRangeRight = useGesture({
-    onDrag: ({ movement: [mx, my] }) => {
+    onDrag: ({ movement: [mx] }) => {
       setRangeEnd(constrain(rangeEndReference + keyOffset(mx), rangeStart + 1, OCTAVES * 12))
     },
     onDragStart: () => {
@@ -94,7 +94,7 @@ export default function Piano({
   })
 
   const dragRange = useGesture({
-    onDrag: ({ movement: [mx, my] }) => {
+    onDrag: ({ movement: [mx] }) => {
       const offset = constrain(keyOffset(mx), -rangeStartReference, OCTAVES * 12 - rangeEndReference)
       const newRangeStart = rangeStartReference + offset
       const newRangeEnd = rangeEndReference + offset
@@ -141,7 +141,7 @@ export default function Piano({
       setKeybdPitches((pitches) => {
         const has = pitches.includes(noteIndex)
         if (selected === has) return pitches
-        return selected ? pitches.concat(noteIndex).sort() : pitches.filter((p) => p !== noteIndex)
+        return selected ? pitches.concat(noteIndex).sort((a, b) => a - b) : pitches.filter((p) => p !== noteIndex)
       })
     },
     [setKeybdPitches]
@@ -179,7 +179,7 @@ export default function Piano({
 
   const pianoKeys = useMemo(
     () =>
-      [...Array(12 * OCTAVES)].map((d, i) => (
+      [...Array(12 * OCTAVES)].map((_d, i) => (
         <div
           key={i}
           onMouseDown={(e) => handleKeyMouseDown(e, i)}
