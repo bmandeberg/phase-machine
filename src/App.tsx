@@ -268,8 +268,17 @@ export default function App() {
     [uiState]
   )
 
-  const { setChannelState, setPresetName, presetDirty, setPreset, savePreset, newPreset, deletePreset, importPresets } =
-    usePresets(
+  const {
+    setChannelState,
+    setChannelColor,
+    setPresetName,
+    presetDirty,
+    setPreset,
+    savePreset,
+    newPreset,
+    deletePreset,
+    importPresets,
+  } = usePresets(
       setUIState,
       channelSync,
       tempo,
@@ -395,6 +404,7 @@ export default function App() {
           showStepNumbers={showStepNumbers}
           midiOut={midiOut}
           setChannelState={setChannelState}
+          setChannelColor={setChannelColor}
           // match by id (not index) so a freshly added channel — whose id isn't in the
           // current preset — gets no preset applied and stays blank, instead of inheriting
           // the preset's channel at that position.

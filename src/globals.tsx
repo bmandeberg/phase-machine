@@ -86,7 +86,7 @@ export const VIEWS = ['horizontal', 'stacked', 'condensed', 'clock']
 export const SECTIONS = ['key', 'piano', 'sequence']
 
 // blue, purple, magenta, pink, dark-green, green, yellow, red
-export const CHANNEL_COLORS = ['#00bdff', '#ab80ff', '#fa48ff', '#ff8de7', '#00db9c', '#00ff5b', '#edff00', '#ff5c5c']
+export const CHANNEL_COLORS = ['#00bdff', '#ab80ff', '#ff8de7', '#00db9c', '#fa48ff', '#00ff5b', '#edff00', '#ff5c5c']
 
 // Settings theme picker. Values are the internal theme keys (unchanged); labels
 // are what the user sees. 'light' is shown as "Toxic" and ordered last.

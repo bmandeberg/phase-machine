@@ -129,7 +129,10 @@ export default function useUI(
   triggerNote: (i: number, callback: () => void) => void,
   // the saved version of this channel in the current preset — supplies each knob's
   // double-click reset target.
-  channelPreset?: ChannelType
+  channelPreset?: ChannelType,
+  // setter for editing this channel's color by clicking its number (opens the hidden
+  // native <input type="color"> rendered in the channel-number container).
+  setChannelColor?: (id: string, color: string) => void
 ) {
   const updateScribbler = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -162,12 +165,31 @@ export default function useUI(
       return (
         <div className="channel-number-container">
           <div className="channel-number-background"></div>
+          {/* Native color picker for this channel, sized/placed over the number but BEHIND
+              it (the number div, later in DOM, sits on top and owns the click+drag). Kept
+              pointer-events:auto so Chrome anchors its popup to the input (a
+              pointer-events:none input makes Chrome drop the popup to a fallback position).
+              Opened by the number's onClick, which finds THIS container's input — the
+              number renders for both the main and aux rows, so a shared ref would point at
+              only one of them and pop the picker at the wrong number. */}
+          <input
+            type="color"
+            className="channel-color-input"
+            value={color}
+            onChange={(e) => setChannelColor?.(id, e.target.value)}
+            tabIndex={-1}
+            aria-hidden="true"
+          />
           <div
             className={classNames('channel-number', { auxiliary })}
             style={{
               color,
               cursor: draggingChannel ? 'grabbing' : 'grab',
             }}
+            // a plain click (not a drag) opens this number's own color picker
+            onClick={(e) =>
+              (e.currentTarget.parentElement?.querySelector('.channel-color-input') as HTMLInputElement | null)?.click()
+            }
             {...drag()}
             draggable="false">
             {channelNum + 1}
@@ -194,7 +216,7 @@ export default function useUI(
         </div>
       )
     },
-    [channelNum, color, drag, draggingChannel, mute, solo, setMute, setSolo]
+    [channelNum, color, drag, draggingChannel, mute, solo, setMute, setSolo, setChannelColor, id]
   )
 
   const channelNumNormal = useMemo(() => channelNumEl(false), [channelNumEl])
