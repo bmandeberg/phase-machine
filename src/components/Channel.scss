@@ -505,8 +505,9 @@
   }
 }
 
-// Condensed view: stack the mute/solo blocky buttons vertically, and keep the
-// swing knobs while hiding their Length NumInputs.
+// Condensed view: stack the mute/solo blocky buttons vertically. (The MODE
+// toggle, Swing modules, and most other controls are omitted in the JSX —
+// see CondensedView.tsx.)
 .channel-condensed {
   .channel-primary {
     margin-right: 14px;
@@ -519,9 +520,6 @@
       margin-right: 0;
       margin-bottom: 8px;
     }
-  }
-  .swing-module .num-input {
-    display: none;
   }
 }
 

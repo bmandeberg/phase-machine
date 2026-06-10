@@ -1271,7 +1271,6 @@ export default function Channel({
           muted={muted}
           color={color}
           channelNum={channelNum}
-          numChannels={numChannels}
           seqSteps={seqSteps}
           setSeqSteps={setSeqSteps}
           seqLength={seqLength}

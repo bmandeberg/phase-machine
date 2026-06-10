@@ -509,7 +509,7 @@ export default function App() {
           <div className="channels-flex">
             <div className="channels-container">
               {channels}
-              {(view === 'stacked' || view === 'condensed') && (
+              {view === 'stacked' && (
                 <div
                   className="stacked-spacer"
                   style={{ height: numChannels * 97, minWidth: longestAuxChannel + 'px' }}></div>
