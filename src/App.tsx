@@ -199,7 +199,7 @@ export default function App() {
     const containerEl = container.current
     if (!containerEl) return
     function handleScroll() {
-      if (viewRef.current === 'horizontal') {
+      if (viewRef.current === 'horizontal' || viewRef.current === 'condensed') {
         const scrollPositions = [
           0,
           (document.querySelector('.piano') as HTMLElement).offsetLeft - PIANO_SCROLL,
@@ -230,7 +230,7 @@ export default function App() {
 
   const updateView = useCallback((view: string) => {
     viewRef.current = view
-    if (view === 'horizontal') {
+    if (view === 'horizontal' || view === 'condensed') {
       setScrollTo(SECTIONS[0])
     }
     setView(view)

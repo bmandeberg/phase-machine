@@ -114,7 +114,7 @@ export default class Header extends React.Component<HeaderProps> {
         e.preventDefault()
         this.playStop()
       }
-      if (this.props.view === 'horizontal') {
+      if (this.props.view === 'horizontal' || this.props.view === 'condensed') {
         switch (e.key) {
           case 'a':
             this.props.setScrollTo(SECTIONS[0])
@@ -259,7 +259,7 @@ export default class Header extends React.Component<HeaderProps> {
           noOptions={this.props.midiUnavailableReason ?? 'MIDI only works in Google Chrome'}
           small
         />
-        {this.props.view === 'horizontal' && (
+        {(this.props.view === 'horizontal' || this.props.view === 'condensed') && (
           <RadioButtons
             className="header-item scroll-to"
             label="Scroll To"
