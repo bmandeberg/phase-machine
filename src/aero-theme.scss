@@ -629,6 +629,9 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
       }
       &.white-key {
         background-color: rgba(255, 255, 255, 0.55);
+        // no inner glow on the big light keys — the inset white glow just hazes them.
+        // (it stays on the smaller colored keys above, where it reads as glassy depth)
+        box-shadow: none;
         &:hover {
           background-color: rgba(255, 255, 255, 0.7);
         }
