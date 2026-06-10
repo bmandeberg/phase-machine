@@ -71,9 +71,19 @@
     }
   }
 
-  &.mute .channel-menu-button span {
-    background-color: #d8d8d8;
+  // This cluster is a transparent, absolutely-positioned z-2000 overlay (50px wide)
+  // that sits ABOVE the scribbler and laps onto the MIDI button's left edge. It
+  // carries the `mute` class only to theme its dots/icon — but the broad per-theme
+  // `.mute { background-color }` (meant for the channel BODY) then also paints THIS
+  // box opaque, so when muted it clips the scribbler and notches the MIDI button.
+  // Force it transparent. Same specificity as `.<theme> .mute`, and component CSS
+  // is emitted after theme CSS, so this wins the tie in every theme.
+  &.mute {
+    background-color: transparent;
   }
+
+  // NB: the "..." dots keep their normal resting color when the channel is muted
+  // (no `&.mute` dot override) — muting shouldn't hide the channel-options button.
 
   // the popover menu — styled like the modal windows (sharp corners, no border,
   // soft dark glow); see .modal-window in Modal.scss.

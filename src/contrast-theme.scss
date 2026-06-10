@@ -248,9 +248,6 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     .channel-menu-button span {
       background-color: $lightMediumGray;
     }
-    &.mute .channel-menu-button span {
-      background-color: $darkDarkGray;
-    }
     .channel-menu {
       background-color: $darkBackground;
       box-shadow: 0px 0px 6px $green;

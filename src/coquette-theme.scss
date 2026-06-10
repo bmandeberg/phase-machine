@@ -427,9 +427,6 @@ $blueIconTone: brightness(0) invert(1);
     .channel-menu-button span {
       background-color: $textSoft;
     }
-    &.mute .channel-menu-button span {
-      background-color: $muteText;
-    }
     .channel-menu {
       @include flat-panel($panel);
       .channel-menu-item {

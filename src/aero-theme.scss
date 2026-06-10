@@ -471,12 +471,6 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     .channel-menu-button span {
       background-color: $aeroTextSoft;
     }
-    // muted: the base theme lightens the dots to #d8d8d8, which reads as
-    // brighter-than-normal here; darken them to the muted text tone instead.
-    // (extra .channel-buttons specificity to beat base `.channel-buttons.mute …`)
-    &.mute .channel-menu-button span {
-      background-color: #6f8c9b;
-    }
     .channel-menu {
       @include aero-glass(rgba(220, 240, 250, 0.55), 14px);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.22);
