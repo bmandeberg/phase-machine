@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import classNames from 'classnames'
 import { whiteKey, blackKeyLeft, blackKeyRight, nextBlackKey, prevBlackKey, OCTAVES, constrain, ALT } from '../globals'
 import { useGesture } from '@use-gesture/react'
@@ -115,25 +115,6 @@ export default function Piano({
     },
   })
 
-  const selectNote = useCallback(
-    (noteIndex: number) => {
-      if (!rangeMode && !ALT) {
-        setKeybdPitches((keybdPitches) => {
-          const keybdPitchesCopy = keybdPitches.slice()
-          for (let i = 0; i < keybdPitches.length; i++) {
-            if (keybdPitches[i] === noteIndex) {
-              keybdPitchesCopy.splice(i, 1)
-              return keybdPitchesCopy
-            }
-          }
-          keybdPitchesCopy.push(noteIndex)
-          return keybdPitchesCopy.sort()
-        })
-      }
-    },
-    [rangeMode, setKeybdPitches]
-  )
-
   const alt = useAlt()
 
   const noteDown = useCallback(
@@ -148,13 +129,61 @@ export default function Piano({
     [triggerNote]
   )
 
+  // Click-drag painting (keyboard mode), mirroring the Sequencer: mousedown
+  // toggles the first key and records whether we're selecting or unselecting,
+  // then dragging over more keys paints that same state across them.
+  const dragging = useRef(false)
+  const paintSelect = useRef(false)
+
+  // Add/remove a pitch so its selected-state matches `selected` (no-op if already there).
+  const paintPitch = useCallback(
+    (noteIndex: number, selected: boolean) => {
+      setKeybdPitches((pitches) => {
+        const has = pitches.includes(noteIndex)
+        if (selected === has) return pitches
+        return selected ? pitches.concat(noteIndex).sort() : pitches.filter((p) => p !== noteIndex)
+      })
+    },
+    [setKeybdPitches]
+  )
+
+  const handleKeyMouseDown = useCallback(
+    (e: React.MouseEvent, noteIndex: number) => {
+      noteDown(noteIndex) // ALT auditions the note (self-guards on ALT)
+      if (rangeMode || ALT || e.button !== 0) return // no selection painting in these cases
+      e.preventDefault() // avoid text/drag selection while painting
+      const selected = !keybdPitches.includes(noteIndex)
+      paintSelect.current = selected
+      dragging.current = true
+      paintPitch(noteIndex, selected)
+    },
+    [keybdPitches, noteDown, paintPitch, rangeMode]
+  )
+
+  const handleKeyMouseEnter = useCallback(
+    (noteIndex: number) => {
+      if (!dragging.current) return
+      paintPitch(noteIndex, paintSelect.current)
+    },
+    [paintPitch]
+  )
+
+  // End the drag wherever the mouse is released (even outside the keys).
+  useEffect(() => {
+    const stopDragging = () => {
+      dragging.current = false
+    }
+    window.addEventListener('mouseup', stopDragging)
+    return () => window.removeEventListener('mouseup', stopDragging)
+  }, [])
+
   const pianoKeys = useMemo(
     () =>
       [...Array(12 * OCTAVES)].map((d, i) => (
         <div
           key={i}
-          onClick={() => selectNote(i)}
-          onMouseDown={() => noteDown(i)}
+          onMouseDown={(e) => handleKeyMouseDown(e, i)}
+          onMouseEnter={() => handleKeyMouseEnter(i)}
           className={classNames('piano-note', {
             'white-key': whiteKey(i),
             'next-black-key-near': nextBlackKey.near(i),
@@ -175,7 +204,18 @@ export default function Piano({
             playing: (noteOn && playingNote === i) || noteTriggered === i,
           })}></div>
       )),
-    [keybdPitches, mute, noteDown, noteOn, noteTriggered, playingNote, rangeEnd, rangeMode, rangeStart, selectNote]
+    [
+      keybdPitches,
+      mute,
+      handleKeyMouseDown,
+      handleKeyMouseEnter,
+      noteOn,
+      noteTriggered,
+      playingNote,
+      rangeEnd,
+      rangeMode,
+      rangeStart,
+    ]
   )
 
   const pianoRange = useMemo(
