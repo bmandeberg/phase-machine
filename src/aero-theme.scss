@@ -894,6 +894,13 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     }
   }
 
+  // The aero knob face (#DBEFF8) is the same pale blue as the instrument modal's frosted
+  // glass (rgba(224,242,250,…)), so the knobs vanish in there. Darken + saturate them
+  // within the modal only so they read against the panel.
+  .instrument-modal .knob {
+    filter: brightness(0.93) saturate(1.4);
+  }
+
   // The base theme uses opaque white edge-fades to dissolve scrolled content
   // into the background; over the sky gradient they read as pale strips around
   // the channels. Drop them — the content just meets the edge instead.
