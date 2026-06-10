@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Disable the dev-tools "Segment Explorer" — in Next 15.5.x it tries to pull a
+  // Node-only module (next-devtools/.../segment-explorer-node.js) into the React
+  // *client* manifest during HMR, which throws "Could not find the module ... in the
+  // React Client Manifest" + a 500 and forces a full page reload. Dev-only bug;
+  // turning the tool off stops the recurring reload/stale-chunk churn.
+  experimental: {
+    devtoolSegmentExplorer: false,
+  },
   // Disable next-image-loader so raster imports (png/jpg/gif) are NOT turned into
   // StaticImageData objects. Without this, `import x from './y.png'` resolves to
   // `{src, height, width}` and `<img src={x}/>` renders a broken image. SVGs are
