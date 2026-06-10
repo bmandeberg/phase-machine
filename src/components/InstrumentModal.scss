@@ -202,6 +202,9 @@
     .eq-graph {
       margin-top: 6px;
       margin-right: 10px;
+      // match the multiband graph's left gap — its dropdown keeps a 10px right margin
+      // that the EQ dropdown drops (for the Mid Q knob), so add it back on the graph here
+      margin-left: 10px;
       display: block;
       background-color: rgba(128, 128, 128, 0.08);
       border: 1px solid rgba(128, 128, 128, 0.35);
