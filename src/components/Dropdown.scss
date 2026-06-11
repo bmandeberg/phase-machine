@@ -97,21 +97,33 @@
     .dropdown-option-empty {
       pointer-events: none;
     }
-    // Section separator spanning every column.
+    // Section separator spanning every column. Matches the instrument-modal divider
+    // tone ($lightMediumGray); themes override both this and the heading border below.
     .dropdown-divider {
       grid-column: 1 / -1;
       height: 0;
       margin: 4px 6px;
-      border-top: 1px solid $mediumGray;
+      border-top: 1px solid $lightMediumGray;
+    }
+    // Full-width group heading; the icons of that group flow in the row(s) below it.
+    // A top border on every heading but the first doubles as the inter-group divider.
+    .dropdown-heading {
+      @extend .no-select;
+      grid-column: 1 / -1;
+      padding: 5px 6px 3px;
+      font-size: 13px;
+      font-weight: bold;
+      color: $lightTextGray;
+      text-align: left;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .dropdown-heading:not(:first-child) {
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid $lightMediumGray;
     }
   }
-}
-
-.dropdown-menu .dropdown-group > .dropdown-title {
-  padding: 8px 10px;
-  color: $lightTextGray;
-  font-weight: bold;
-  text-transform: uppercase;
 }
 
 .dropdown-option {

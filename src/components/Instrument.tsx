@@ -8,6 +8,42 @@ import './Instrument.scss'
 
 const instrumentTypes = Object.keys(INSTRUMENT_TYPES)
 
+// The modal instrument picker groups the icons under category headings (laid out in a
+// horizontal grid under each). Order/membership are intentional; every `value` must
+// exist in INSTRUMENT_TYPES, and `label` is the icon's hover tooltip (the glyphs aren't
+// self-explanatory). Widest group (Instruments = 6) sets the grid column count.
+const INSTRUMENT_GROUPS: { heading: string; instruments: { value: string; label: string }[] }[] = [
+  {
+    heading: 'Synthesizers',
+    instruments: [
+      { value: 'synth', label: 'Synthesizer' },
+      { value: 'metal', label: 'Metal Synth' },
+      { value: 'pluck', label: 'Pluck Synth' },
+    ],
+  },
+  {
+    heading: 'Instruments',
+    instruments: [
+      { value: 'bass', label: 'Bass' },
+      { value: 'piano', label: 'Piano' },
+      { value: 'marimba', label: 'Marimba' },
+      { value: 'vibes', label: 'Vibraphone' },
+      { value: 'harp', label: 'Harp' },
+      { value: 'choral', label: 'Vocal' },
+    ],
+  },
+  {
+    heading: 'Drum Samplers',
+    instruments: [
+      { value: 'drums', label: 'Drums' },
+      { value: 'drum-machine', label: 'Drum Machine' },
+      { value: 'rhythmic', label: 'Breaks' },
+      { value: 'hxc', label: 'Hardcore' },
+    ],
+  },
+]
+const INSTRUMENT_GRID_COLUMNS = Math.max(...INSTRUMENT_GROUPS.map((g) => g.instruments.length))
+
 interface InstrumentProps {
   className?: string
   instrumentOn?: boolean
@@ -51,12 +87,17 @@ export default function Instrument({
     [instrumentType, setInstrumentType]
   )
 
-  const instrumentOptions = useMemo(
+  // Grouped list for the modal grid: a heading per category followed by its icons.
+  const groupedInstrumentOptions = useMemo(
     () =>
-      instrumentTypes.map((instr) => ({
-        value: instr,
-        label: INSTRUMENT_TYPES[instr](theme),
-      })),
+      INSTRUMENT_GROUPS.flatMap((group) => [
+        { heading: group.heading },
+        ...group.instruments.map(({ value, label }) => ({
+          value,
+          // clone the icon to add a hover tooltip (title) without a wrapper element
+          label: React.cloneElement(INSTRUMENT_TYPES[value](theme), { title: label }),
+        })),
+      ]),
     [theme]
   )
 
@@ -78,7 +119,8 @@ export default function Instrument({
       return (
         <Dropdown
           className="instrument-item instrument-dropdown"
-          options={instrumentOptions}
+          options={groupedInstrumentOptions}
+          gridColumns={INSTRUMENT_GRID_COLUMNS}
           setValue={setInstrumentType}
           value={instrumentType}
         />
@@ -100,7 +142,7 @@ export default function Instrument({
       )
   }, [
     inModal,
-    instrumentOptions,
+    groupedInstrumentOptions,
     instrumentType,
     openInstrumentModal,
     setInstrumentType,

@@ -81,8 +81,10 @@ export default function Dropdown({
   const menuRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef(container)
 
+  // graphic when any option carries a React element label (icons) — checked across
+  // all options, not just the first, so a leading heading/divider doesn't mask it
   const graphicOptions = useMemo(
-    () => !!(options.length && typeof options[0] === 'object' && React.isValidElement(options[0].label)),
+    () => options.some((o) => typeof o === 'object' && React.isValidElement(o.label)),
     [options]
   )
 
@@ -113,11 +115,26 @@ export default function Dropdown({
   const optionHeight = useMemo(() => (small ? 20 : 27), [small])
 
   // In grid mode the menu is `gridColumns` wide, so its height is driven by the row
-  // count, not the total option count.
-  const menuRows = useMemo(
-    () => (gridColumns ? Math.ceil(options.length / gridColumns) : options.length),
-    [gridColumns, options.length]
-  )
+  // count, not the total option count. Headings/dividers span a full row (and force
+  // the next item onto a fresh row), so walk the options to count rows accurately.
+  const menuRows = useMemo(() => {
+    if (!gridColumns) return options.length
+    let rows = 0
+    let col = 0
+    for (const o of options) {
+      const fullWidth = typeof o === 'object' && (o.heading || o.divider)
+      if (fullWidth) {
+        if (col > 0) rows++ // finish the partial icon row before the full-width row
+        rows++
+        col = 0
+      } else if (++col === gridColumns) {
+        rows++
+        col = 0
+      }
+    }
+    if (col > 0) rows++
+    return rows
+  }, [gridColumns, options])
   const menuHeight = useMemo(
     () => Math.min(menuRows * optionHeight, gridColumns ? 400 : 200),
     [menuRows, optionHeight, gridColumns]
@@ -160,6 +177,14 @@ export default function Dropdown({
     () =>
       options.length ? (
         options.map((option) => {
+          // A full-width section heading between grid groups (non-interactive).
+          if (typeof option === 'object' && option.heading) {
+            return (
+              <div key={uuid()} className="dropdown-heading">
+                {option.heading}
+              </div>
+            )
+          }
           // A full-width divider between grid sections (non-interactive).
           if (typeof option === 'object' && option.divider) {
             return <div key={uuid()} className="dropdown-divider" />

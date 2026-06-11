@@ -674,10 +674,6 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     border: 1px solid $lightMediumGray;
   }
 
-  .dropdown-menu .dropdown-group > .dropdown-title {
-    color: $lightMediumGray;
-  }
-
   .dropdown-option {
     color: $lightMediumGray;
   }
@@ -686,6 +682,18 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
   .dropdown-option.selected {
     background-color: $green;
     color: $darkBackground;
+  }
+
+  // grid-menu group dividers/headings: match the instrument-modal divider tone
+  // ($pitchClassGray). Doubling .grid-menu keeps this above the component rule.
+  .dropdown-menu.grid-menu {
+    .dropdown-divider,
+    .dropdown-heading:not(:first-child) {
+      border-color: $pitchClassGray;
+    }
+    .dropdown-heading {
+      color: $darkerMediumGray;
+    }
   }
 
   .dropdown-noresults {

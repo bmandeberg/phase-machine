@@ -668,10 +668,6 @@ $headerDarkBlue: #0f182d;
     border: 1px solid $darkMediumGray;
   }
 
-  .dropdown-menu .dropdown-group > .dropdown-title {
-    color: $darkLightGray;
-  }
-
   .dropdown-option {
     color: $darkLightGray;
   }
@@ -680,6 +676,19 @@ $headerDarkBlue: #0f182d;
   .dropdown-option.selected {
     background-color: $darkGreen;
     color: $darkBackground;
+  }
+
+  // grid-menu group dividers/headings: match the instrument-modal divider tone so the
+  // instrument picker reads consistently (the base $lightMediumGray is too bright here).
+  // Doubling up .grid-menu keeps this above the equal-specificity component rule.
+  .dropdown-menu.grid-menu {
+    .dropdown-divider,
+    .dropdown-heading:not(:first-child) {
+      border-color: $darkMediumGray;
+    }
+    .dropdown-heading {
+      color: color.adjust($darkMediumGray, $lightness: 10%);
+    }
   }
 
   .dropdown-noresults {

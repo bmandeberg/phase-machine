@@ -607,9 +607,6 @@ $blueIconTone: brightness(0) invert(1);
   .dropdown-menu {
     @include flat-panel($panel);
   }
-  .dropdown-menu .dropdown-group > .dropdown-title {
-    color: $text;
-  }
   .dropdown-option {
     color: $text;
     &:hover,
