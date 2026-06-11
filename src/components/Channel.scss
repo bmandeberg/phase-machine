@@ -182,6 +182,15 @@
     height: 2px;
     z-index: 2000;
   }
+  // On touch, the piano is scaled wider (Piano.scss) but a transform reserves no layout
+  // space, so the inline modules after it would be overlapped — push them over by the
+  // keyboard's growth (plus the usual 16px module gap). Clock view contains its piano in a
+  // scroll wrapper, so this only applies to the .channel-horizontal inline strip.
+  @media (hover: none) and (pointer: coarse) {
+    .piano {
+      margin-right: $piano-width * ($piano-touch-scale - 1) + 16px;
+    }
+  }
   &.channel-in-active {
     background-color: $yellow;
     .channel-horizontal {

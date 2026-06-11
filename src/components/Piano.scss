@@ -9,6 +9,17 @@
   position: relative;
   white-space: nowrap;
   overflow: visible;
+  // On touch devices, widen the keys a bit for friendlier tap targets. Scaling the whole
+  // .piano (rather than individual keys) keeps the JS-computed range overlay, borders, and
+  // drag hit-areas — all children — aligned with the keys; the extra width just extends
+  // into the horizontal overflow the keyboard already produces. transform-origin: left
+  // pins the first key so the keyboard grows rightward, and scaleX leaves the height (and
+  // thus the surrounding layout) untouched. The inline siblings in .channel-horizontal get
+  // matching right-margin (Channel.scss) so they clear the grown keyboard.
+  @media (hover: none) and (pointer: coarse) {
+    transform: scaleX($piano-touch-scale);
+    transform-origin: left center;
+  }
   .piano-note {
     @extend .no-select;
     width: 10px;
