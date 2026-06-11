@@ -4,8 +4,6 @@ import NumInput from './NumInput'
 import { v4 as uuid } from 'uuid'
 import './Dropdown.scss'
 
-const DROPDOWN_HEIGHT = 28
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DropdownOption = any
 
@@ -75,11 +73,11 @@ export default function Dropdown({
 }: DropdownProps) {
   const [open, setOpen] = useState(false)
   const [menuAbove, setMenuAbove] = useState(false)
-  const [dropdownWidth, setDropdownWidth] = useState(0)
-  const [scrollTop, setScrollTop] = useState(0)
+  // viewport coords + width for the fixed (container-mode) menu, from the control's rect
+  const [fixedPos, setFixedPos] = useState<{ top: number; left: number; width: number } | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const controlRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef(container)
 
   // graphic when any option carries a React element label (icons) — checked across
   // all options, not just the first, so a leading heading/divider doesn't mask it
@@ -94,22 +92,8 @@ export default function Dropdown({
         setOpen(false)
       }
     }
-    function handleScroll() {
-      const el = document.querySelector(containerRef.current as string)
-      if (el) setScrollTop(el.scrollTop)
-    }
     document.addEventListener('mousedown', handleClickOutside)
-    const containerVar = containerRef.current
-    const scrollContainer = containerVar ? document.querySelector(containerVar) : null
-    if (containerVar && scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll)
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      if (containerVar && scrollContainer) {
-        scrollContainer.removeEventListener('scroll', handleScroll)
-      }
-    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   const optionHeight = useMemo(() => (small ? 20 : 27), [small])
@@ -140,17 +124,42 @@ export default function Dropdown({
     [menuRows, optionHeight, gridColumns]
   )
 
-  const toggleOpen = useCallback(() => {
-    if (!open && dropdownRef.current) {
-      setDropdownWidth(dropdownRef.current.clientWidth)
+  // Decide above/below and, for container (fixed) menus, the viewport position — measured
+  // from the control's rect so the menu tracks the control through the modal's inner scroll
+  // and window resize. position: fixed is viewport-relative here (no transformed modal
+  // ancestor), so the rect's viewport coords are exactly where the menu should sit.
+  const computePlacement = useCallback(() => {
+    // measure the visible control box (not the outer container, which also holds the hidden
+    // min-width spacer below it — that would push the menu down by the spacer's height)
+    const el = controlRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const above = rect.bottom + menuHeight > window.innerHeight && rect.top > window.innerHeight - rect.bottom
+    setMenuAbove(above)
+    if (container) {
+      setFixedPos({ top: above ? rect.top - menuHeight : rect.bottom, left: rect.left, width: rect.width })
     }
-    const dropdownDimensions = dropdownRef.current!.getBoundingClientRect()
-    setMenuAbove(
-      dropdownDimensions.top + DROPDOWN_HEIGHT + menuHeight > window.innerHeight &&
-        dropdownDimensions.top - DROPDOWN_HEIGHT > window.innerHeight - dropdownDimensions.top + DROPDOWN_HEIGHT
-    )
+  }, [container, menuHeight])
+
+  const toggleOpen = useCallback(() => {
+    if (!open) computePlacement()
     setOpen((open) => !open)
-  }, [menuHeight, open])
+  }, [computePlacement, open])
+
+  // While a container menu is open, keep it pinned to the control as the modal's inner
+  // content scrolls or the window resizes (the menu is fixed-positioned, so it won't track
+  // on its own). Non-container menus scroll with their absolute wrapper and need none.
+  useEffect(() => {
+    if (!open || !container) return
+    const scrollEl = document.querySelector(container)
+    const reposition = () => computePlacement()
+    scrollEl?.addEventListener('scroll', reposition)
+    window.addEventListener('resize', reposition)
+    return () => {
+      scrollEl?.removeEventListener('scroll', reposition)
+      window.removeEventListener('resize', reposition)
+    }
+  }, [open, container, computePlacement])
 
   const selectedIndex = useMemo(
     () => options.findIndex((option) => (typeof option === 'object' ? option.value === value : option === value)),
@@ -214,16 +223,21 @@ export default function Dropdown({
     [noOptions, options, setValue, value]
   )
 
-  const menuWrapperStyle = useMemo<React.CSSProperties>(() => {
-    const top = menuAbove ? menuHeight * -1 + 2 + 'px' : '100%'
-    return container ? { top: `calc(${top} - ${scrollTop}px)` } : { top }
-  }, [container, menuAbove, menuHeight, scrollTop])
+  const menuWrapperStyle = useMemo<React.CSSProperties>(
+    () => ({ top: menuAbove ? menuHeight * -1 + 2 + 'px' : '100%' }),
+    [menuAbove, menuHeight]
+  )
   const menuStyle = useMemo<React.CSSProperties | undefined>(() => {
     const style: React.CSSProperties = {}
-    if (container) style.width = dropdownWidth
+    // container menus are position: fixed — pin them to the control's viewport coords
+    if (container && fixedPos) {
+      style.top = fixedPos.top
+      style.left = fixedPos.left
+      style.width = fixedPos.width
+    }
     if (gridColumns) style.gridTemplateColumns = `repeat(${gridColumns}, minmax(0, 1fr))`
     return Object.keys(style).length ? style : undefined
-  }, [container, dropdownWidth, gridColumns])
+  }, [container, fixedPos, gridColumns])
 
   const dropdownLabel = useMemo(() => <p className="dropdown-label no-select">{label}</p>, [label])
   const numInputs = useMemo(
@@ -253,7 +267,7 @@ export default function Dropdown({
       style={minWidth ? { minWidth } : undefined}>
       <div className="dropdown">
         <div className={classNames('dropdown-root', { open })}>
-          <div onClick={toggleOpen} className="dropdown-control">
+          <div ref={controlRef} onClick={toggleOpen} className="dropdown-control">
             <div className={classNames('dropdown-placeholder', { selected: value })}>{displayValue || placeholder}</div>
             <div className="dropdown-arrow-wrapper">
               <span className="dropdown-arrow"></span>
