@@ -126,6 +126,15 @@
   }
 }
 
+// Icon (graphic) grid menus — e.g. the instrument selector — are short and always fit, so
+// show every option without a scrollbar. (An auto-height grid container can round ~2px
+// short of its laid-out rows and trip a spurious vertical scrollbar; visible overflow
+// sidesteps that.) Text grid menus keep their max-height + scroll safety net.
+.dropdown-container.graphic-options .dropdown-menu.grid-menu {
+  overflow: visible;
+  max-height: none;
+}
+
 .dropdown-option {
   @extend .no-select;
   font-size: 19px;
