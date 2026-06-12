@@ -398,7 +398,9 @@ export default function App() {
           resizing={resizing}
           setResizing={setResizing}
           view={view}
-          numChannelsSoloed={numChannelsSoloed}
+          // count of OTHER soloed channels (exclude this one's own contribution) so a
+          // channel's own solo toggle can't transiently mis-mute it — see Channel's `muted`
+          numOtherChannelsSoloed={numChannelsSoloed - (d.solo ? 1 : 0)}
           tempo={tempo}
           playing={playing}
           showStepNumbers={showStepNumbers}

@@ -55,7 +55,7 @@ interface ChannelProps {
   resizing: boolean
   setResizing: Setter<boolean>
   view: string
-  numChannelsSoloed: number
+  numOtherChannelsSoloed: number
   tempo: number
   playing: boolean
   showStepNumbers: boolean
@@ -87,7 +87,7 @@ export default function Channel({
   resizing,
   setResizing,
   view,
-  numChannelsSoloed,
+  numOtherChannelsSoloed,
   tempo,
   playing,
   showStepNumbers,
@@ -337,7 +337,15 @@ export default function Channel({
     }
   }, [updateOnce])
 
-  const muted = useMemo(() => mute || (numChannelsSoloed > 0 && !solo), [mute, numChannelsSoloed, solo])
+  // `numOtherChannelsSoloed` excludes this channel (App subtracts our own solo from the
+  // global count). Using the global count here would let our own solo toggle race: `solo`
+  // flips locally at once, but the global count only catches up after the 200ms state
+  // debounce, so un-soloing the lone soloed channel would briefly satisfy `count > 0 &&
+  // !solo` and flash-mute us. Excluding self makes our solo toggle self-consistent.
+  const muted = useMemo(
+    () => mute || (numOtherChannelsSoloed > 0 && !solo),
+    [mute, numOtherChannelsSoloed, solo]
+  )
 
   // channel dragging
 
