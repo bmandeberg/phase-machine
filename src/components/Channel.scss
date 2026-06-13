@@ -97,6 +97,9 @@
   // hover/active shade of the per-channel color (--channel-color is set inline on the
   // view root). Defined once here so every selected/on hover can reuse it.
   --channel-color-hover: color-mix(in srgb, var(--channel-color), white 25%);
+  // darker shade of the channel color — used for shift/flip transform previews (key,
+  // sequencer, axis) so the preview reads as a deeper version of the channel colour.
+  --channel-color-dark: color-mix(in srgb, var(--channel-color), black 32%);
 }
 
 .channel-primary {

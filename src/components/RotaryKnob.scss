@@ -1,5 +1,4 @@
 @use '../sass-globals' as *;
-@use 'sass:color';
 
 .knob-container {
   position: relative;
@@ -65,7 +64,7 @@
       pointer-events: none;
       z-index: -1;
       rect {
-        stroke: color.adjust($pink, $lightness: 22%);
+        stroke: var(--channel-color-dark);
         stroke-width: 2;
         stroke-dasharray: 6, 3;
       }

@@ -290,6 +290,25 @@
       opacity: 1;
     }
   }
+  // Octave numbers at the bottom of each octave's C key. No explicit colour, so they
+  // inherit the theme's text colour — which already contrasts with the keys in every
+  // theme. pointer-events:none so they never steal a key click.
+  .piano-octave-label {
+    position: absolute;
+    bottom: 1px;
+    padding-left: 2px;
+    font-size: 8px;
+    line-height: 1;
+    pointer-events: none;
+    opacity: 0.55;
+    z-index: 3;
+    // over a highlighted C key (in-range / playing / selected) the key is light or
+    // a vivid colour, so a fixed dark number reads on every theme.
+    &.dark {
+      color: #262626;
+      opacity: 0.85;
+    }
+  }
   .piano-border {
     position: absolute;
     left: -2px;

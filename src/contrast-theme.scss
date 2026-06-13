@@ -283,7 +283,7 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     .pitch-class {
       cursor: pointer;
       border-style: solid;
-      border-color: $pink;
+      border-color: var(--channel-color-dark);
       border-width: 0;
       transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2),
         background-color math.div($transitionTime, 4);

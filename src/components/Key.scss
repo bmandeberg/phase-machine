@@ -56,7 +56,7 @@
       path,
       rect {
         fill: none;
-        stroke: $pink;
+        stroke: var(--channel-color-dark);
         stroke-width: 6px;
       }
       &.visible {
@@ -89,7 +89,7 @@
   .pitch-class {
     cursor: pointer;
     border-style: solid;
-    border-color: $pink;
+    border-color: var(--channel-color-dark);
     border-width: 0;
     transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2), background-color math.div($transitionTime, 4);
     &.selected {

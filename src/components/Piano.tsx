@@ -218,6 +218,33 @@ export default function Piano({
     ]
   )
 
+  // Octave numbers (1-8, matching noteString's C1..C8) tucked at the bottom of each
+  // octave's C key, so you can tell which octave of the roll you're looking at. The
+  // C of octave o sits 7 white keys (o * WHITE_KEY_WIDTH * 7) from the left.
+  const octaveLabels = useMemo(
+    () =>
+      [...Array(OCTAVES)].map((_d, o) => {
+        const cNote = o * 12
+        // Match the C key's own highlight states (see pianoKeys): on the lighter
+        // in-range keys, or the playing (orange) / selected (channel-colour) keys, a
+        // dark number reads where the default theme-text colour would wash out.
+        const dark =
+          (!mute && rangeMode && cNote >= rangeStart && cNote < rangeEnd) ||
+          (!rangeMode && keybdPitches.includes(cNote)) ||
+          (noteOn && playingNote === cNote) ||
+          noteTriggered === cNote
+        return (
+          <div
+            key={o}
+            className={classNames('piano-octave-label no-select', { dark })}
+            style={{ left: o * WHITE_KEY_WIDTH * 7 }}>
+            {o + 1}
+          </div>
+        )
+      }),
+    [mute, rangeMode, rangeStart, rangeEnd, keybdPitches, noteOn, playingNote, noteTriggered]
+  )
+
   const pianoRange = useMemo(
     () => (
       <svg
@@ -304,6 +331,7 @@ export default function Piano({
   return (
     <div className="piano channel-module">
       {pianoKeys}
+      {octaveLabels}
       {rangeMode && pianoRange}
       {rangeMode && rangeLeft}
       {rangeMode && rangeDrag}
