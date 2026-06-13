@@ -46,6 +46,9 @@ import darkChoral from './assets/samples-choral-dark.svg'
 import rhythmic from './assets/samples-rhythmic.svg'
 import lightRhythmic from './assets/samples-rhythmic-light.svg'
 import darkRhythmic from './assets/samples-rhythmic-dark.svg'
+import percussion from './assets/samples-percussion.svg'
+import lightPercussion from './assets/samples-percussion-light.svg'
+import darkPercussion from './assets/samples-percussion-dark.svg'
 import hxc from './assets/samples-hxc.svg'
 import lightHxc from './assets/samples-hxc-light.svg'
 import darkHxc from './assets/samples-hxc-dark.svg'
@@ -311,6 +314,17 @@ function themedIcon(icon: string, theme: string) {
         default:
           return rhythmic
       }
+    case 'percussion':
+      switch (theme) {
+        case 'light':
+          return percussion
+        case 'dark':
+          return lightPercussion
+        case 'contrast':
+          return darkPercussion
+        default:
+          return percussion
+      }
     case 'hxc':
       switch (theme) {
         case 'light':
@@ -463,6 +477,10 @@ export const INSTRUMENT_TYPES: Record<string, (theme: string) => React.JSX.Eleme
   // turntable glyph, themed like the other instrument icons.
   rhythmic: (theme: string) => (
     <img className="wave-icon" style={{ height: 20 }} src={themedIcon('rhythmic', theme) ?? ''} alt="" />
+  ),
+  // Second varispeed pack (Percussion Chops) — congas glyph.
+  percussion: (theme: string) => (
+    <img className="wave-icon" style={{ height: 20 }} src={themedIcon('percussion', theme) ?? ''} alt="" />
   ),
   // Hard-dance one-shot sampler (kicks/snares) — smiley glyph.
   hxc: (theme: string) => <img className="wave-icon" style={{ height: 20 }} src={themedIcon('hxc', theme) ?? ''} alt="" />,

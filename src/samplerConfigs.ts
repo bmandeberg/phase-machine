@@ -161,6 +161,107 @@ export const RHYTHM_PACK: RhythmConfig = {
   volume: -6,
 }
 
+// Second varispeed pack ("Percussion Chops") — same engine as RHYTHM_PACK, a flat
+// set of loop slices each tagged with its source BPM so the varispeed engine locks
+// them to the global grid. 66 slices across C1–F6 (see noteString / OCTAVES). Sources
+// were chopped at the BPMs noted per group; to extend, drop a folder under
+// public/samples/percussion/<name>/ and continue the chromatic note sequence.
+export const PERCUSSION_PACK: RhythmConfig = {
+  urls: {
+    // beatles (129 BPM)
+    C1: 'beatles/beatles_01.mp3',
+    Db1: 'beatles/beatles_02.mp3',
+    D1: 'beatles/beatles_03.mp3',
+    Eb1: 'beatles/beatles_04.mp3',
+    E1: 'beatles/beatles_05.mp3',
+    F1: 'beatles/beatles_06.mp3',
+    Gb1: 'beatles/beatles_07.mp3',
+    G1: 'beatles/beatles_08.mp3',
+    // misturada (124 BPM)
+    Ab1: 'misturada/misturada_01.mp3',
+    A1: 'misturada/misturada_02.mp3',
+    Bb1: 'misturada/misturada_03.mp3',
+    B1: 'misturada/misturada_04.mp3',
+    C2: 'misturada/misturada_05.mp3',
+    Db2: 'misturada/misturada_06.mp3',
+    D2: 'misturada/misturada_07.mp3',
+    Eb2: 'misturada/misturada_08.mp3',
+    E2: 'misturada/misturada_09.mp3',
+    F2: 'misturada/misturada_10.mp3',
+    Gb2: 'misturada/misturada_11.mp3',
+    G2: 'misturada/misturada_12.mp3',
+    Ab2: 'misturada/misturada_13.mp3',
+    A2: 'misturada/misturada_14.mp3',
+    // percush (140 BPM)
+    Bb2: 'percush/percush_01.mp3',
+    B2: 'percush/percush_02.mp3',
+    C3: 'percush/percush_03.mp3',
+    Db3: 'percush/percush_04.mp3',
+    D3: 'percush/percush_05.mp3',
+    Eb3: 'percush/percush_06.mp3',
+    E3: 'percush/percush_07.mp3',
+    F3: 'percush/percush_08.mp3',
+    // talktalk (88 BPM)
+    Gb3: 'talktalk/talktalk_01.mp3',
+    G3: 'talktalk/talktalk_02.mp3',
+    Ab3: 'talktalk/talktalk_03.mp3',
+    A3: 'talktalk/talktalk_04.mp3',
+    Bb3: 'talktalk/talktalk_05.mp3',
+    B3: 'talktalk/talktalk_06.mp3',
+    C4: 'talktalk/talktalk_07.mp3',
+    Db4: 'talktalk/talktalk_08.mp3',
+    D4: 'talktalk/talktalk_09.mp3',
+    Eb4: 'talktalk/talktalk_10.mp3',
+    E4: 'talktalk/talktalk_11.mp3',
+    F4: 'talktalk/talktalk_12.mp3',
+    Gb4: 'talktalk/talktalk_13.mp3',
+    G4: 'talktalk/talktalk_14.mp3',
+    Ab4: 'talktalk/talktalk_15.mp3',
+    A4: 'talktalk/talktalk_16.mp3',
+    // think-shaker (170 BPM)
+    Bb4: 'think-shaker/think-shaker_01.mp3',
+    B4: 'think-shaker/think-shaker_02.mp3',
+    C5: 'think-shaker/think-shaker_03.mp3',
+    Db5: 'think-shaker/think-shaker_04.mp3',
+    // voz-e-vento (127 BPM)
+    D5: 'voz-e-vento/voz-e-vento_01.mp3',
+    Eb5: 'voz-e-vento/voz-e-vento_02.mp3',
+    E5: 'voz-e-vento/voz-e-vento_03.mp3',
+    F5: 'voz-e-vento/voz-e-vento_04.mp3',
+    Gb5: 'voz-e-vento/voz-e-vento_05.mp3',
+    G5: 'voz-e-vento/voz-e-vento_06.mp3',
+    Ab5: 'voz-e-vento/voz-e-vento_07.mp3',
+    A5: 'voz-e-vento/voz-e-vento_08.mp3',
+    Bb5: 'voz-e-vento/voz-e-vento_09.mp3',
+    B5: 'voz-e-vento/voz-e-vento_10.mp3',
+    C6: 'voz-e-vento/voz-e-vento_11.mp3',
+    Db6: 'voz-e-vento/voz-e-vento_12.mp3',
+    D6: 'voz-e-vento/voz-e-vento_13.mp3',
+    Eb6: 'voz-e-vento/voz-e-vento_14.mp3',
+    E6: 'voz-e-vento/voz-e-vento_15.mp3',
+    F6: 'voz-e-vento/voz-e-vento_16.mp3',
+  },
+  bpms: {
+    // beatles (129 BPM)
+    C1: 129, Db1: 129, D1: 129, Eb1: 129, E1: 129, F1: 129, Gb1: 129, G1: 129,
+    // misturada (124 BPM)
+    Ab1: 124, A1: 124, Bb1: 124, B1: 124, C2: 124, Db2: 124, D2: 124, Eb2: 124,
+    E2: 124, F2: 124, Gb2: 124, G2: 124, Ab2: 124, A2: 124,
+    // percush (140 BPM)
+    Bb2: 140, B2: 140, C3: 140, Db3: 140, D3: 140, Eb3: 140, E3: 140, F3: 140,
+    // talktalk (88 BPM)
+    Gb3: 88, G3: 88, Ab3: 88, A3: 88, Bb3: 88, B3: 88, C4: 88, Db4: 88,
+    D4: 88, Eb4: 88, E4: 88, F4: 88, Gb4: 88, G4: 88, Ab4: 88, A4: 88,
+    // think-shaker (170 BPM)
+    Bb4: 170, B4: 170, C5: 170, Db5: 170,
+    // voz-e-vento (127 BPM)
+    D5: 127, Eb5: 127, E5: 127, F5: 127, Gb5: 127, G5: 127, Ab5: 127, A5: 127,
+    Bb5: 127, B5: 127, C6: 127, Db6: 127, D6: 127, Eb6: 127, E6: 127, F6: 127,
+  },
+  baseUrl: '/samples/percussion/',
+  volume: -6,
+}
+
 export const SAMPLER_CONFIGS: Record<string, SamplerConfig> = {
   piano: {
     urls: {
