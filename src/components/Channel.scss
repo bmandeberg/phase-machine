@@ -43,10 +43,10 @@
     opacity: 0;
     pointer-events: auto;
   }
-  // Small M/S buttons styled like the duplicate/delete buttons and pinned inside
-  // the sticky channel-number-container so they stay beneath the number on
-  // horizontal scroll. Used always-on in the stacked auxiliary (sequencer) channel
-  // and, via .mute-solo-scroll below, scroll-revealed in the main channel.
+  // Small M/S buttons styled like the duplicate/delete buttons and pinned beneath
+  // the channel number. Only rendered on the stacked auxiliary (sequencer) row,
+  // which has no full Mute/Solo of its own — the main rows keep their full
+  // Mute/Solo in the sticky header instead.
   .channel-mute-solo {
     @extend .no-select;
     position: absolute;
@@ -89,26 +89,6 @@
       margin-top: 6px;
     }
   }
-  // Main-channel mute/solo: hidden and shifted left until the channel is scrolled
-  // past the duplicate/delete buttons (see #container.scrolled-x below), then it
-  // animates in from the left. Must come after .channel-mute-solo so the hidden
-  // pointer-events wins the equal-specificity tie by source order.
-  .mute-solo-scroll {
-    opacity: 0;
-    transform: translateX(-14px);
-    transition: opacity $transitionTime, transform $transitionTime;
-    .channel-mute-solo-button {
-      pointer-events: none;
-    }
-  }
-}
-
-#container.scrolled-x .channel-horizontal .mute-solo-scroll {
-  opacity: 1;
-  transform: translateX(0);
-  .channel-mute-solo-button {
-    pointer-events: auto;
-  }
 }
 
 .channel {
@@ -131,16 +111,49 @@
   white-space: nowrap;
   display: block;
   border-right: 1px solid $lightMediumGray;
-  .channel-number-container {
+  // Opaque backing for the sticky header (.channel-sticky). RGB channels so the
+  // trailing fade can reuse them at zero alpha. Light theme = the white page bg;
+  // muted channels match the muted body shade; other themes override both below.
+  --channel-bg: 255, 255, 255;
+  &.mute {
+    --channel-bg: 242, 242, 242;
+  }
+  // The sticky header's scroll elevation shadow. A dark drop shadow reads on the
+  // light/aero/coquette themes; dark/contrast override it (a dark shadow is
+  // invisible over their dark content) — see those theme files.
+  --sticky-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.16);
+  // The sticky channel header: scribbler + number + instrument/"…" buttons +
+  // Mute/Solo. Pinned to the left edge with an opaque backing so the rest
+  // of the channel scrolls behind it. At rest it has NO elevation — it reads as a
+  // seamless part of the channel; the faint right-edge shadow fades in only once
+  // the channels are scrolled horizontally (see #container.scrolled-x below).
+  .channel-sticky {
     position: sticky;
-    left: 18px;
-    z-index: 1998;
+    left: 0;
+    z-index: 1999;
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+    background: rgb(var(--channel-bg));
+    // background-color also transitions so the create-flash fades through the
+    // header in sync with the channel body (see .channel-in-active below).
+    transition: box-shadow $transitionTime, background-color $transitionTime;
+    // elevation fades in once horizontally scrolled — class toggled on #container
+    // by the scroll handler in App.tsx.
+    #container.scrolled-x & {
+      box-shadow: var(--sticky-shadow);
+    }
+    // The z-index above makes this panel its own stacking context, which would trap
+    // the channel-options ("…") popover beneath later channels' sticky panels (same
+    // z, later in the DOM) where it overflows downward. While the menu is open, lift
+    // the whole panel above every other channel so the popover shows on top.
+    &:has(.channel-menu) {
+      z-index: 3000;
+    }
+  }
+  .channel-number-container {
     height: 100%;
     box-sizing: border-box;
-    .channel-number-background {
-      background: linear-gradient(to right, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0));
-      height: 100%;
-    }
     .channel-number {
       text-shadow: 0 0 5px #ffffff;
     }
@@ -187,6 +200,14 @@
     .channel-horizontal {
       background-color: $yellow;
     }
+    // Fade out the sticky header's opaque backing during the create flash so the
+    // flash colour shows through the channel's beginning, in sync with the body's
+    // fade (background-color transitions, see .channel-sticky above). This selector
+    // (0,3,0) beats the base .channel-sticky background and ties the per-theme
+    // (aero/coquette) ones — component CSS is emitted after theme CSS, so it wins.
+    .channel-sticky {
+      background-color: transparent;
+    }
   }
   .seq-button {
     margin-top: 14px;
@@ -201,7 +222,9 @@
   border: 1px solid $lightMediumGray;
   margin-top: -1px;
   margin-left: -1px;
-  width: 656px;
+  // Sized to the drawer's sequencer/piano (~608px + small margins). The top row's
+  // controls fit comfortably inside; keep CLOCK_CHANNEL_WIDTH (Channel.tsx) in sync.
+  width: 620px;
   .scribbler {
     position: absolute;
     top: 87px;
@@ -242,9 +265,9 @@
     }
   }
   .piano-container {
-    width: 624px;
+    width: 608px;
     overflow-x: auto;
-    margin-left: 16px;
+    margin-left: 8px;
   }
   .piano {
     margin-top: 16px;
@@ -361,7 +384,7 @@
   .sequencer {
     margin-top: 17px;
     margin-bottom: 3px;
-    margin-left: 32px;
+    margin-left: 8px;
     width: 608px;
     .sequencer-container {
       display: block;
@@ -375,7 +398,7 @@
   }
   .sequencer-controls {
     position: relative;
-    margin: 0 16px;
+    margin: 0 8px;
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
@@ -505,21 +528,12 @@
   }
 }
 
-// Condensed view: stack the mute/solo blocky buttons vertically. (The MODE
-// toggle, Swing modules, and most other controls are omitted in the JSX —
-// see CondensedView.tsx.)
+// Condensed view: most controls (the MODE toggle, Swing modules, etc.) are
+// omitted in the JSX — see CondensedView.tsx. Mute/Solo stack vertically in every
+// view now (see MuteSolo.scss).
 .channel-condensed {
   .channel-primary {
     margin-right: 14px;
-  }
-  .mute-solo {
-    .button {
-      display: block;
-    }
-    .mute {
-      margin-right: 0;
-      margin-bottom: 8px;
-    }
   }
 }
 
@@ -657,8 +671,8 @@
       content: '';
       position: absolute;
       top: 259px;
-      left: 14px;
-      width: 624px;
+      left: 6px;
+      width: 608px;
       height: 95px;
       border: 2px solid #ffffff;
       z-index: 2;
@@ -666,10 +680,6 @@
     }
   }
   &.channel-horizontal {
-    .channel-number-background {
-      background: linear-gradient(to right, rgba(242, 242, 242, 1) 5%, rgba(242, 242, 242, 0));
-      height: 100%;
-    }
     .channel-number {
       text-shadow: 0 0 5px $muteBackground;
     }
@@ -677,9 +687,8 @@
 }
 
 .scribbler {
-  position: sticky;
-  left: 0;
-  z-index: 1999;
+  // Pinning is handled by the sticky .channel-sticky header wrapper that contains
+  // it (horizontal/stacked/condensed). Clock view re-positions it to absolute.
   box-sizing: border-box;
   display: inline-block;
   vertical-align: middle;

@@ -36,9 +36,6 @@ if (!window.localStorage.getItem('presets')) {
 
 const PIANO_SCROLL = 60
 const SEQ_SCROLL = 76
-// How far the channel must scroll horizontally before the (absolute, scroll-away)
-// duplicate/delete buttons are gone and the sticky mute/solo buttons animate in.
-const MUTE_SOLO_SCROLL = 40
 
 export default function App() {
   const [presets, setPresets] = useState(initializePresets)
@@ -218,9 +215,10 @@ export default function App() {
       if (topGradient.current) {
         topGradient.current.style.top = 44 + Math.min(containerEl!.scrollTop, 16) + 'px'
       }
-      // Reveal the sticky mute/solo buttons once scrolled past the duplicate/delete
-      // buttons. Plain class toggle (no React state) so it doesn't re-render channels.
-      containerEl!.classList.toggle('scrolled-x', containerEl!.scrollLeft > MUTE_SOLO_SCROLL)
+      // Reveal the sticky channel header's elevation shadow only once the channels
+      // are scrolled horizontally — at rest it reads as a seamless part of the
+      // channel. Plain class toggle (no React state) so it doesn't re-render.
+      containerEl!.classList.toggle('scrolled-x', containerEl!.scrollLeft > 0)
     }
     containerEl.addEventListener('scroll', handleScroll)
     return () => {
@@ -385,12 +383,28 @@ export default function App() {
 
   // render UI
 
+  // Track which channel ids have already rendered so the one-shot create flash
+  // plays only for channels the user just added — not on startup or view switches
+  // (each view is a separate component that remounts). Lazy-init to the channels
+  // present at first render so they don't flash on load; the effect below keeps it
+  // current. (Updated in an effect, not during render, to stay StrictMode-safe.)
+  const renderedChannelIds = useRef<Set<string> | undefined>(undefined)
+  if (renderedChannelIds.current === undefined) {
+    renderedChannelIds.current = new Set(uiState.channels.map((c: ChannelType) => c.id))
+  }
+  useEffect(() => {
+    renderedChannelIds.current = new Set(uiState.channels.map((c: ChannelType) => c.id))
+  }, [uiState.channels])
+
   const channels = useMemo(
     () =>
-      uiState.channels.map((d: ChannelType) => (
-        <Channel
-          numChannels={numChannels}
-          key={d.id}
+      uiState.channels.map((d: ChannelType) => {
+        const flash = !renderedChannelIds.current!.has(d.id)
+        return (
+          <Channel
+            numChannels={numChannels}
+            key={d.id}
+            flash={flash}
           color={d.color}
           channelNum={d.channelNum}
           setGrabbing={setGrabbing}
@@ -423,7 +437,8 @@ export default function App() {
           preventUpdate={preventUpdate}
           longestSequence={longestSequence}
         />
-      )),
+        )
+      }),
     [
       changeChannelOrder,
       currentPreset.channels,

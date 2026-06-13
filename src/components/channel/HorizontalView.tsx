@@ -23,9 +23,11 @@ type HorizontalViewProps = UIElements & {
   dragTarget: number
   dragTargetHorizontal: React.ReactNode
   modalEl: React.ReactNode
+  flash: boolean
 }
 
 function HorizontalView({
+  flash,
   muted,
   color,
   channelNum,
@@ -47,7 +49,6 @@ function HorizontalView({
   channelNumNormal,
   channelButtonsEl,
   muteSoloEl,
-  midiEl,
   velocityEl,
   notesModeEl,
   keyEl,
@@ -76,19 +77,18 @@ function HorizontalView({
     <CSSTransition
       timeout={400}
       in={true}
-      appear={true}
+      appear={flash}
       classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
       nodeRef={horizontalViewRef}>
       <div
         ref={horizontalViewRef}
         className={classNames('channel channel-horizontal', { mute: muted })}
         style={{ '--channel-color': color } as React.CSSProperties}>
-        {scribblerEl}
-        {channelNumNormal}
-        {channelButtonsEl}
-        <div className="channel-primary">
-          {muteSoloEl}
-          {midiEl}
+        <div className="channel-sticky">
+          {scribblerEl}
+          {channelNumNormal}
+          {channelButtonsEl}
+          <div className="channel-primary">{muteSoloEl}</div>
         </div>
         {velocityEl}
         {notesModeEl}

@@ -150,17 +150,6 @@ $blueIconTone: brightness(0) invert(1);
     }
   }
 
-  .midi {
-    .midi-in {
-      @include flat($panel);
-      color: $textSoft;
-      &.midi-active {
-        @include flat(var(--channel-color), var(--channel-color));
-        color: #ffffff;
-      }
-    }
-  }
-
   // ── Header: a flat solid pink bar ─────────────────────────────────────────
   #header {
     background-color: $headerBg;
@@ -281,15 +270,25 @@ $blueIconTone: brightness(0) invert(1);
     box-shadow: none;
   }
   .channel-horizontal {
+    // Opaque backing for the sticky header (RGB channels — see Channel.scss). These
+    // are the channel's EFFECTIVE rendered colour, not the raw page bg: normal
+    // channels carry a 35% white veil (rgba(255,255,255,0.35) over #ffd6ec), muted
+    // channels a rgba(236,217,228,0.5) veil — so the panel must bake those in to
+    // read as a seamless part of the channel.
+    --channel-bg: 255, 228, 243;
+    &.mute {
+      --channel-bg: 246, 216, 232;
+    }
     .channel-number-container {
-      .channel-number-background {
-        background: linear-gradient(to right, rgba(255, 194, 221, 0.85) 0%, rgba(255, 194, 221, 0) 60%);
-      }
+      // a soft pink glow behind the number — a gentle accent next to the scribbler so
+      // the name/number cluster reads apart from the channel, the same border-ish
+      // gradient the column had before the sticky-header rework.
+      background: linear-gradient(to right, rgba(255, 194, 221, 0.85) 0%, rgba(255, 194, 221, 0) 60%);
       .channel-mute-solo .channel-mute-solo-button:not(.muted):not(.soloed) {
         color: $textSoft;
       }
     }
-    &.mute .channel-number-container .channel-number-background {
+    &.mute .channel-number-container {
       background: linear-gradient(to right, rgba(226, 198, 212, 0.85) 0%, rgba(226, 198, 212, 0) 60%);
     }
     &.channel-in-active,

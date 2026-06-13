@@ -24,9 +24,11 @@ type ClockViewProps = UIElements & {
   modalEl: React.ReactNode
   drawerOpen: boolean
   toggleDrawerOpen: () => void
+  flash: boolean
 }
 
 function ClockView({
+  flash,
   muted,
   color,
   channelNum,
@@ -49,7 +51,6 @@ function ClockView({
   channelNumNormal,
   channelButtonsEl,
   muteSoloEl,
-  midiEl,
   velocityEl,
   notesModeEl,
   shiftEl,
@@ -77,7 +78,7 @@ function ClockView({
     <CSSTransition
       timeout={400}
       in={true}
-      appear={true}
+      appear={flash}
       classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
       nodeRef={clockViewRef}>
       <div
@@ -90,7 +91,6 @@ function ClockView({
           {channelButtonsEl}
           <div className="channel-primary">
             {muteSoloEl}
-            {midiEl}
             {velocityEl}
           </div>
           <div className="channel-vertical left-vertical">

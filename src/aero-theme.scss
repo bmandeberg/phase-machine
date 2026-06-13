@@ -188,17 +188,6 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     }
   }
 
-  .midi {
-    .midi-in {
-      @include aero-flat($glassNeutral);
-      color: $aeroTextSoft;
-      &.midi-active {
-        @include aero-flat($glassChannel);
-        color: #ffffff;
-      }
-    }
-  }
-
   // ── Header: a thin frosted aqua bar ───────────────────────────────────────
   #header {
     // No backdrop blur: the header is fixed, so blurring would re-process the
@@ -311,13 +300,37 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     }
   }
   .channel-horizontal {
+    // Opaque sticky-header backing. Aero's page background is a FIXED vertical
+    // gradient and its channels are translucent glass over it, so a flat colour
+    // can't match every channel's vertical position. Paint the panel with the same
+    // fixed gradient — PLUS the channel's own rgba(255,255,255,0.14) white veil (see
+    // `.channel-horizontal` above) — so it reads as a seamless, opaque continuation
+    // of the channel while hiding whatever scrolls behind it.
+    .channel-sticky {
+      background-color: $aeroAqua;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.14)),
+        radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+        linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+      background-attachment: fixed;
+    }
+    // muted: layer the cool desaturated veil over the same fixed gradient so the
+    // panel matches the muted glass channel body to its right.
+    &.mute .channel-sticky {
+      background-image: linear-gradient(rgba(199, 213, 221, 0.46), rgba(199, 213, 221, 0.46)),
+        radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+        linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+    }
+    // create-flash: also drop the fixed gradient (the base rule only clears the
+    // background-color) so the flash shows through the header in aero too.
+    &.channel-in-active .channel-sticky {
+      background-image: none;
+    }
     .channel-number-container {
-      .channel-number-background {
-        // softer + quicker horizontal fade so this reads as a faint glow behind
-        // the channel number rather than an opaque box washing over the
-        // instrument / "..." icons that sit lower in the same sticky column
-        background: linear-gradient(to right, rgba(220, 242, 251, 0.5) 0%, rgba(220, 242, 251, 0) 60%);
-      }
+      // a faint aqua glow behind the number — a soft accent next to the (transparent)
+      // scribbler so the name/number cluster reads apart from the channel, the same
+      // border-ish gradient the column had before the sticky-header rework. Quick
+      // horizontal fade so it stays a glow, not a box over the instrument/"…" icons.
+      background: linear-gradient(to right, rgba(220, 242, 251, 0.5) 0%, rgba(220, 242, 251, 0) 60%);
       .channel-number {
         text-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
       }
@@ -326,9 +339,7 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
         text-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
       }
     }
-    // muted: the bright aqua backing pops against the desaturated channel veil
-    // and re-reads as a box — match it to the cool mute tone so it blends
-    &.mute .channel-number-container .channel-number-background {
+    &.mute .channel-number-container {
       background: linear-gradient(to right, rgba(205, 218, 225, 0.5) 0%, rgba(205, 218, 225, 0) 60%);
     }
     &.channel-in-active,

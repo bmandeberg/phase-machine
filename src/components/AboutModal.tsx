@@ -105,7 +105,7 @@ The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-ton
       src: 'general',
       width: 581,
     },
-    text: 'Duplicate, delete, mute, or solo a channel. Also set MIDI routing and channel velocity/volume. Click and drag the Channel Number to rearrange Channels.',
+    text: 'Mute or solo a channel and set its velocity/volume. The … menu duplicates or deletes the channel and opens its MIDI options. Click and drag the Channel Number to rearrange Channels.',
     tags: [
       'channel',
       'general',
@@ -115,8 +115,7 @@ The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-ton
       'delete channel',
       'mute',
       'solo',
-      'midi modal window',
-      'midi in',
+      'midi options',
       'velocity',
     ],
   },
@@ -126,7 +125,7 @@ The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-ton
       src: 'midi',
       width: 801,
     },
-    tags: ['channel', 'midi', 'modal', 'MIDI Output Channel', 'Custom Output Channel', 'MIDI In Toggle/Hold'],
+    tags: ['channel', 'midi', 'modal', 'MIDI Output Channel', 'Custom Output Channel', 'MIDI Input', 'MIDI In Toggle/Hold'],
     warnings: ['MIDI only works in Google Chrome.'],
   },
   {

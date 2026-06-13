@@ -23,6 +23,8 @@ interface ModalProps {
   setTheme?: any
   midiHold?: boolean
   setMidiHold?: any
+  midiIn?: boolean | string
+  setMidiIn?: any
   color?: string
   customMidiOutChannel?: boolean
   setCustomMidiOutChannel?: any
@@ -71,6 +73,8 @@ export default function Modal({
   setTheme,
   midiHold,
   setMidiHold,
+  midiIn,
+  setMidiIn,
   color,
   customMidiOutChannel,
   setCustomMidiOutChannel,
@@ -188,6 +192,8 @@ export default function Modal({
   const midiEl = useMemo(
     () => (
       <MIDIModal
+        midiIn={midiIn}
+        setMidiIn={setMidiIn}
         midiHold={midiHold}
         setMidiHold={setMidiHold}
         customMidiOutChannel={customMidiOutChannel}
@@ -203,6 +209,8 @@ export default function Modal({
       channelNum,
       color,
       customMidiOutChannel,
+      midiIn,
+      setMidiIn,
       midiHold,
       midiOutChannel,
       setCustomMidiOutChannel,

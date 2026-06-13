@@ -7,8 +7,8 @@ $buttonSize: 28px;
   margin-top: 16px;
   margin-bottom: 8px;
   .button {
-    // border-box so a theme border (e.g. Coquette) stays inside the 28px box and
-    // these match the border-box MIDI buttons (otherwise content-box + border = 30px)
+    // border-box so a theme border (e.g. Coquette) stays inside the 28px box
+    // (otherwise content-box + border = 30px)
     box-sizing: border-box;
     width: $buttonSize;
     height: $buttonSize;
@@ -18,13 +18,14 @@ $buttonSize: 28px;
     text-align: center;
     line-height: 36px;
     cursor: pointer;
-    display: inline-block;
+    // M stacked above S in every view (MIDI routing now lives in the "…" menu).
+    display: block;
     &:hover {
       background: $lightGrayHover;
     }
   }
   .mute {
-    margin-right: 8px;
+    margin-bottom: 8px;
     &.muted {
       color: #ffffff;
       background: $red;

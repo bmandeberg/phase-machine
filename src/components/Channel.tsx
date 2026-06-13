@@ -42,7 +42,7 @@ import arrowClockCoquette from '../assets/arrow-clock-coquette.svg'
 import { Channel as ChannelType, Setter, MidiNoteEvent } from '../types'
 import './Channel.scss'
 
-const CLOCK_CHANNEL_WIDTH = 657
+const CLOCK_CHANNEL_WIDTH = 621
 const CLOCK_CHANNEL_HEIGHT = 262
 const SAMPLE_MAX_TIME = 5
 
@@ -76,9 +76,13 @@ interface ChannelProps {
   preventUpdate: boolean | undefined
   longestSequence: number
   defaultChannelModeKeybd?: boolean
+  // true only for a channel freshly added by the user — gates the one-shot create
+  // flash so it doesn't replay on app startup or when switching views.
+  flash: boolean
 }
 
 export default function Channel({
+  flash,
   numChannels,
   color,
   channelNum,
@@ -997,8 +1001,6 @@ export default function Channel({
     setRangeMode,
     keybdPitches,
     setKeybdPitches,
-    midiIn,
-    setMidiIn,
     midiHold,
     setMidiHold,
     keyClear,
@@ -1027,6 +1029,8 @@ export default function Channel({
           setModalType={setModalType}
           midiHold={midiHold}
           setMidiHold={setMidiHold}
+          midiIn={midiIn}
+          setMidiIn={setMidiIn}
           color={color}
           theme={theme}
           customMidiOutChannel={customMidiOutChannel}
@@ -1068,6 +1072,8 @@ export default function Channel({
       instrumentType,
       instruments,
       midiHold,
+      midiIn,
+      setMidiIn,
       midiOutChannel,
       modalContent,
       modalType,
@@ -1244,6 +1250,7 @@ export default function Channel({
       return (
         <StackedView
           {...ui}
+          flash={flash}
           muted={muted}
           color={color}
           channelNum={channelNum}
@@ -1268,6 +1275,7 @@ export default function Channel({
       return (
         <CondensedView
           {...ui}
+          flash={flash}
           muted={muted}
           color={color}
           channelNum={channelNum}
@@ -1289,6 +1297,7 @@ export default function Channel({
       return (
         <HorizontalView
           {...ui}
+          flash={flash}
           muted={muted}
           color={color}
           channelNum={channelNum}
@@ -1312,6 +1321,7 @@ export default function Channel({
       return (
         <ClockView
           {...ui}
+          flash={flash}
           muted={muted}
           color={color}
           channelNum={channelNum}

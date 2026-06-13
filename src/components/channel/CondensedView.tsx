@@ -8,11 +8,11 @@ import { UIElements } from '../../hooks/useUI'
 // A pared-down variant of HorizontalView: the same single inline row (key/piano →
 // sequencer → instrument, all in one horizontally-scrolling channel), but with
 // most per-channel controls hidden for a denser overview. Mute/solo stack
-// vertically (see `.channel-condensed` in Channel.scss). Hidden vs. HorizontalView:
-// channel MIDI routing, velocity, the range/keyboard MODE toggle, the key
-// transformations slot (shift/axis/flip/opposite in range mode, the MIDI-input/
-// clear-reset controls in keyboard mode), sustain, both Swing modules (knob +
-// Length), and the sequencer's hold/opposite/shift/restart.
+// vertically (see `.mute-solo` in MuteSolo.scss). Hidden vs. HorizontalView:
+// velocity, the range/keyboard MODE toggle, the key transformations slot
+// (shift/axis/flip/opposite in range mode, the MIDI-input/clear-reset controls in
+// keyboard mode), sustain, both Swing modules (knob + Length), and the sequencer's
+// hold/opposite/shift/restart.
 type CondensedViewProps = UIElements & {
   muted: boolean
   color: string
@@ -29,9 +29,11 @@ type CondensedViewProps = UIElements & {
   dragTarget: number
   dragTargetHorizontal: React.ReactNode
   modalEl: React.ReactNode
+  flash: boolean
 }
 
 function CondensedView({
+  flash,
   muted,
   color,
   channelNum,
@@ -65,17 +67,19 @@ function CondensedView({
     <CSSTransition
       timeout={400}
       in={true}
-      appear={true}
+      appear={flash}
       classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
       nodeRef={condensedViewRef}>
       <div
         ref={condensedViewRef}
         className={classNames('channel channel-horizontal channel-condensed', { mute: muted })}
         style={{ '--channel-color': color } as React.CSSProperties}>
-        {scribblerEl}
-        {channelNumNormal}
-        {channelButtonsEl}
-        <div className="channel-primary">{muteSoloEl}</div>
+        <div className="channel-sticky">
+          {scribblerEl}
+          {channelNumNormal}
+          {channelButtonsEl}
+          <div className="channel-primary">{muteSoloEl}</div>
+        </div>
         {keyEl}
         {pianoEl}
         {keyRateEl}

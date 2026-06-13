@@ -25,9 +25,11 @@ type StackedViewProps = UIElements & {
   dragTarget: number
   dragTargetHorizontal: React.ReactNode
   modalEl: React.ReactNode
+  flash: boolean
 }
 
 function StackedView({
+  flash,
   muted,
   color,
   channelNum,
@@ -51,7 +53,6 @@ function StackedView({
   channelNumAux,
   channelButtonsEl,
   muteSoloEl,
-  midiEl,
   velocityEl,
   notesModeEl,
   keyEl,
@@ -80,19 +81,18 @@ function StackedView({
     <CSSTransition
       timeout={400}
       in={true}
-      appear={true}
+      appear={flash}
       classNames={{ appear: 'channel-in', appearActive: 'channel-in-active', appearDone: 'channel-in-done' }}
       nodeRef={stackedViewRef}>
       <div
         ref={stackedViewRef}
         className={classNames('channel channel-horizontal', { mute: muted })}
         style={{ '--channel-color': color } as React.CSSProperties}>
-        {scribblerEl}
-        {channelNumNormal}
-        {channelButtonsEl}
-        <div className="channel-primary">
-          {muteSoloEl}
-          {midiEl}
+        <div className="channel-sticky">
+          {scribblerEl}
+          {channelNumNormal}
+          {channelButtonsEl}
+          <div className="channel-primary">{muteSoloEl}</div>
         </div>
         {velocityEl}
         {notesModeEl}
@@ -116,8 +116,10 @@ function StackedView({
             mute: muted,
             'first-auxiliary': channelNum === 0,
           })}>
-          {scribblerEl}
-          {channelNumAux}
+          <div className="channel-sticky channel-sticky-aux">
+            {scribblerEl}
+            {channelNumAux}
+          </div>
           <Sequencer
             className="channel-module"
             seqSteps={seqSteps}

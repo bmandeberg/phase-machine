@@ -114,6 +114,14 @@
         height: 14px;
         margin-right: 10px;
       }
+      // The DIN connector reads a little small next to the +/trash bitmaps — size it
+      // up a touch, trimming its right margin so the label text stays left-aligned
+      // with the other rows (16 + 7 ≈ 13 + 10).
+      .midi-menu-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 7px;
+      }
       span {
         // nudge the label down a hair so it optically centers with the icon
         position: relative;

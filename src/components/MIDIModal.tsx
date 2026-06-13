@@ -6,6 +6,8 @@ import { themedSwitch } from '../globals'
 import './MIDIModal.scss'
 
 interface MIDIModalProps {
+  midiIn?: boolean | string
+  setMidiIn: React.Dispatch<React.SetStateAction<boolean | string>>
   midiHold?: boolean
   setMidiHold: (midiHold: boolean) => void
   customMidiOutChannel?: boolean
@@ -18,6 +20,8 @@ interface MIDIModalProps {
 }
 
 export default function MIDIModal({
+  midiIn,
+  setMidiIn,
   midiHold,
   setMidiHold,
   customMidiOutChannel,
@@ -57,6 +61,22 @@ export default function MIDIModal({
           className="modal-param"
           onChange={setCustomMidiOutChannel}
           checked={customMidiOutChannel ?? false}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          offColor={offColor}
+          onColor={onColor}
+          offHandleColor={offHandleColor}
+          onHandleColor={onHandleColor}
+          width={48}
+          height={24}
+        />
+      </div>
+      <div className="modal-item">
+        <p className="modal-label">MIDI Input</p>
+        <Switch
+          className="modal-param"
+          onChange={(checked) => setMidiIn(checked)}
+          checked={!!midiIn}
           uncheckedIcon={false}
           checkedIcon={false}
           offColor={offColor}

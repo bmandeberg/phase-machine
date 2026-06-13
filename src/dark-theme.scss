@@ -99,25 +99,6 @@ $headerDarkBlue: #0f182d;
     }
   }
 
-  .midi {
-    .midi-in {
-      background-color: $splitButtonAction;
-      &:hover {
-        background-color: color.adjust($splitButtonAction, $lightness: 3%);
-      }
-      &:active {
-        background-color: color.adjust($splitButtonAction, $lightness: -3%);
-      }
-      &.midi-active {
-        background-color: var(--channel-color);
-        color: $darkBackground;
-        &:hover {
-          background-color: var(--channel-color-hover);
-        }
-      }
-    }
-  }
-
   .midi-modal {
     .channel-num {
       color: var(--channel-color);
@@ -205,13 +186,18 @@ $headerDarkBlue: #0f182d;
 
   .channel-horizontal {
     border-color: $darkMediumGray;
+    // Opaque backing for the sticky header (RGB channels — see Channel.scss).
+    --channel-bg: 9, 12, 16;
+    &.mute {
+      --channel-bg: 28, 28, 35;
+    }
+    // Dark drop shadow only (no light rim). It needs to be strong/wide to register
+    // against the dark content as the pinned header lifts above the controls/keys
+    // that scroll under it.
+    --sticky-shadow: 5px 0 9px -2px rgba(0, 0, 0, 0.85);
     // Nest under .channel-number-container to match the base rule's selector depth
     // (Channel.scss), so these dark overrides win the otherwise-equal cascade tie.
     .channel-number-container {
-      .channel-number-background {
-        background: linear-gradient(to right, rgba(9, 12, 16, 1) 5%, rgba(9, 12, 16, 0));
-        height: 100%;
-      }
       .channel-number {
         text-shadow: 0 0 5px $darkBackground;
       }
@@ -1052,10 +1038,6 @@ $headerDarkBlue: #0f182d;
     }
 
     &.channel-horizontal {
-      .channel-number-background {
-        background: linear-gradient(to right, rgba(28, 28, 35, 1) 5%, rgba(28, 28, 35, 0));
-        height: 100%;
-      }
       .channel-number {
         text-shadow: 0 0 5px $darkMuteBackground;
       }

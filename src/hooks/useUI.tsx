@@ -9,7 +9,6 @@ import Dropdown from '../components/Dropdown'
 import Key from '../components/Key'
 import MuteSolo from '../components/MuteSolo'
 import ChannelButtons from '../components/ChannelButtons'
-import MIDI from '../components/MIDI'
 import FlipOpposite from '../components/FlipOpposite'
 import Piano from '../components/Piano'
 import Instrument from '../components/Instrument'
@@ -117,8 +116,6 @@ export default function useUI(
   setRangeMode: Setter<boolean>,
   keybdPitches: number[],
   setKeybdPitches: Setter<number[]>,
-  midiIn: boolean | string,
-  setMidiIn: Setter<boolean | string>,
   midiHold: boolean,
   setMidiHold: Setter<boolean>,
   keyClear: () => void,
@@ -164,7 +161,6 @@ export default function useUI(
     (auxiliary: boolean) => {
       return (
         <div className="channel-number-container">
-          <div className="channel-number-background"></div>
           {/* Native color picker for this channel, sized/placed over the number but BEHIND
               it (the number div, later in DOM, sits on top and owns the click+drag). Kept
               pointer-events:auto so Chrome anchors its popup to the input (a
@@ -194,25 +190,26 @@ export default function useUI(
             draggable="false">
             {channelNum + 1}
           </div>
-          {/* Mute/solo pinned inside the sticky channel-number-container so it
-              stays beneath the channel number on horizontal scroll. In the aux
-              (sequencer) channel it's always shown; in the main channel it carries
-              the `mute-solo-scroll` class and only animates in once the channel has
-              scrolled past the (absolute, scroll-away) channel buttons. */}
-          <div className={classNames('channel-mute-solo', { 'mute-solo-scroll': !auxiliary })}>
-            <div
-              className={classNames('channel-mute-solo-button', { muted: mute })}
-              onClick={() => setMute((m) => !m)}
-              title="Mute channel">
-              M
+          {/* Compact mute/solo beneath the channel number — only on the stacked
+              auxiliary (sequencer) row, which has no full Mute/Solo of its own. The
+              main row's full Mute/Solo lives in the sticky header (see the views),
+              so it no longer needs this scroll-in variant. */}
+          {auxiliary && (
+            <div className="channel-mute-solo">
+              <div
+                className={classNames('channel-mute-solo-button', { muted: mute })}
+                onClick={() => setMute((m) => !m)}
+                title="Mute channel">
+                M
+              </div>
+              <div
+                className={classNames('channel-mute-solo-button solo', { soloed: solo })}
+                onClick={() => setSolo((s) => !s)}
+                title="Solo channel">
+                S
+              </div>
             </div>
-            <div
-              className={classNames('channel-mute-solo-button solo', { soloed: solo })}
-              onClick={() => setSolo((s) => !s)}
-              title="Solo channel">
-              S
-            </div>
-          </div>
+          )}
         </div>
       )
     },
@@ -230,11 +227,12 @@ export default function useUI(
         theme={theme}
         mute={mute}
         openInstrumentModal={openInstrumentModal}
+        openMidiModal={openMidiModal}
         duplicateChannel={duplicateChannel}
         deleteChannel={deleteChannel}
       />
     ),
-    [deleteChannel, duplicateChannel, id, instrumentType, mute, openInstrumentModal, theme]
+    [deleteChannel, duplicateChannel, id, instrumentType, mute, openInstrumentModal, openMidiModal, theme]
   )
 
   const keyEl = useMemo(() => {
@@ -268,11 +266,6 @@ export default function useUI(
   const muteSoloEl = useMemo(
     () => <MuteSolo mute={mute} setMute={setMute} solo={solo} setSolo={setSolo} />,
     [mute, setMute, setSolo, solo]
-  )
-
-  const midiEl = useMemo(
-    () => <MIDI midiIn={midiIn} setMidiIn={setMidiIn} openMidiModal={openMidiModal} />,
-    [midiIn, openMidiModal, setMidiIn]
   )
 
   const velocityEl = useMemo(() => {
@@ -815,7 +808,6 @@ export default function useUI(
     seqOppositeEl,
     seqOppositeRestartEl,
     notesModeEl,
-    midiEl,
     clearResetEl,
     midiInputModeEl,
     scribblerEl,

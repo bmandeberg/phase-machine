@@ -11,8 +11,31 @@ interface ChannelButtonsProps {
   theme: string
   mute?: boolean
   openInstrumentModal: () => void
+  openMidiModal: () => void
   duplicateChannel: (id: string) => void
   deleteChannel: (id: string) => void
+}
+
+// 5-pin DIN connector — the channel's MIDI options icon. Inherits the menu item's
+// (themed) text color via currentColor.
+function MidiIcon() {
+  return (
+    <svg
+      className="channel-menu-icon midi-menu-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false">
+      <circle cx="12" cy="12" r="9.2" stroke="currentColor" strokeWidth="1.9" />
+      <rect x="10.4" y="2.5" width="3.2" height="2.5" rx="0.5" fill="currentColor" />
+      <circle cx="12" cy="16.7" r="1.3" fill="currentColor" />
+      <circle cx="7.5" cy="14" r="1.3" fill="currentColor" />
+      <circle cx="16.5" cy="14" r="1.3" fill="currentColor" />
+      <circle cx="9" cy="9.7" r="1.3" fill="currentColor" />
+      <circle cx="15" cy="9.7" r="1.3" fill="currentColor" />
+    </svg>
+  )
 }
 
 // The buttons at the start of a channel: the channel's instrument icon (opens the
@@ -24,6 +47,7 @@ export default function ChannelButtons({
   theme,
   mute,
   openInstrumentModal,
+  openMidiModal,
   duplicateChannel,
   deleteChannel,
 }: ChannelButtonsProps) {
@@ -50,6 +74,10 @@ export default function ChannelButtons({
   }, [menuOpen])
 
   const toggleMenu = useCallback(() => setMenuOpen((open) => !open), [])
+  const midiOptions = useCallback(() => {
+    openMidiModal()
+    setMenuOpen(false)
+  }, [openMidiModal])
   const duplicate = useCallback(() => {
     duplicateChannel(id)
     setMenuOpen(false)
@@ -83,6 +111,10 @@ export default function ChannelButtons({
           <div className="channel-menu-item" onClick={trash}>
             <img className="channel-menu-icon" src={trashIcon} alt="" draggable="false" />
             <span>Delete Channel</span>
+          </div>
+          <div className="channel-menu-item" onClick={midiOptions}>
+            <MidiIcon />
+            <span>MIDI Options</span>
           </div>
         </div>
       )}
