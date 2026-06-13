@@ -96,8 +96,6 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
   // smooth the mute/unmute color change (the channel bg already transitions) on
   // the frosted controls — mostly their borders/backgrounds in num inputs/dropdowns
   .button,
-  .split-button,
-  .split-button-arrow,
   .dropdown-control,
   .dropdown-arrow-wrapper,
   .multi-select,
@@ -369,26 +367,18 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     }
     .button,
     .dropdown-control,
-    .multi-select,
-    .split-button {
+    .multi-select {
       background-color: $muteGlass;
       border-color: rgba(255, 255, 255, 0.32);
       color: $muteText;
     }
     .dropdown-arrow-wrapper,
-    .split-button-arrow,
     .multi-select-arrow-container {
       background-color: $muteGlassFaint;
     }
     .dropdown-arrow,
     .multi-select-arrow {
       border-top-color: $muteText;
-    }
-    .split-button-arrow-left::before {
-      border-right-color: $muteText;
-    }
-    .split-button-arrow-right::before {
-      border-left-color: $muteText;
     }
     .react-numeric-input {
       input {
@@ -796,7 +786,7 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
     }
   }
 
-  // ── Presets & split-buttons ───────────────────────────────────────────────
+  // ── Presets ───────────────────────────────────────────────────────────────
   .presets {
     @include aero-flat($glassNeutral);
     color: $aeroText;
@@ -834,38 +824,6 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
       color: #ffffff;
     }
   }
-  // instrument selector (and any split button): frosted body, lighter arrow caps
-  .split-button {
-    @include aero-flat($glassNeutral);
-    color: $aeroText;
-    .split-button-action:hover,
-    .split-button-content:hover {
-      background-color: rgba(255, 255, 255, 0.22);
-    }
-    .split-button-arrow {
-      background-color: rgba(255, 255, 255, 0.12);
-      // the arrows sit in a row BELOW the instrument (content) button — a white
-      // top border divides them from it
-      border-top: 1px solid rgba(255, 255, 255, 0.9);
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.28);
-      }
-      &:active {
-        background-color: rgba(255, 255, 255, 0.08);
-      }
-      &.split-button-arrow-left {
-        // divider between the two directional arrows
-        border-right: 1px solid rgba(255, 255, 255, 0.9);
-        &::before {
-          border-color: transparent $aeroText transparent transparent;
-        }
-      }
-      &.split-button-arrow-right::before {
-        border-color: transparent transparent transparent $aeroText;
-      }
-    }
-  }
-
   .channel-clock {
     .channel-drawer-control {
       @include aero-flat($glassNeutral);

@@ -60,7 +60,6 @@ function CondensedView({
   seqLengthInline,
   seqRateInline,
   seqMovementInline,
-  instrumentNormal,
 }: CondensedViewProps) {
   const condensedViewRef = useRef<HTMLDivElement>(null)
   return (
@@ -101,8 +100,6 @@ function CondensedView({
             {seqMovementInline}
           </div>
         </Sequencer>
-        <div className="channel-module border"></div>
-        {instrumentNormal}
         {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}
         {modalEl}
       </div>

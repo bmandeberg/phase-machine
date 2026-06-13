@@ -70,7 +70,6 @@ function ClockView({
   seqSwingNormal,
   holdNormal,
   seqOppositeRestartEl,
-  instrumentSmall,
 }: ClockViewProps) {
   const clockViewRef = useRef<HTMLDivElement>(null)
   const drawerNodeRef = useRef<HTMLDivElement>(null)
@@ -142,7 +141,6 @@ function ClockView({
               {holdNormal}
               {seqOppositeRestartEl}
               {seqShiftNormal}
-              {instrumentSmall}
             </div>
           </div>
         </CSSTransition>

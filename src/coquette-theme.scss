@@ -66,8 +66,6 @@ $blueIconTone: brightness(0) invert(1);
 
   // smooth the mute/unmute color change on the flat controls
   .button,
-  .split-button,
-  .split-button-arrow,
   .dropdown-control,
   .dropdown-arrow-wrapper,
   .multi-select,
@@ -310,35 +308,18 @@ $blueIconTone: brightness(0) invert(1);
     }
     .button,
     .dropdown-control,
-    .multi-select,
-    .split-button {
+    .multi-select {
       background-color: $muteFill;
       border-color: $muteBorder;
       color: $muteText;
     }
     .dropdown-arrow-wrapper,
-    .split-button-arrow,
     .multi-select-arrow-container {
       background-color: $muteFillSoft;
     }
     .dropdown-arrow,
     .multi-select-arrow {
       border-top-color: $muteText;
-    }
-    .split-button-arrow-left::before {
-      border-right-color: $muteText;
-    }
-    .split-button-arrow-right::before {
-      border-left-color: $muteText;
-    }
-    // The base .mute .split-button .split-button-arrow rule (#c6c6c6 bg + #888888 left
-    // divider) ties the grouped rule above on specificity and wins on source order — match
-    // its depth here so the muted instrument-selector arrows stay light pink, not gray.
-    .split-button .split-button-arrow {
-      background-color: $muteFillSoft;
-      &.split-button-arrow-left {
-        border-right-color: $muteBorder;
-      }
     }
     .react-numeric-input {
       input {
@@ -700,7 +681,7 @@ $blueIconTone: brightness(0) invert(1);
     }
   }
 
-  // ── Presets & split-buttons ───────────────────────────────────────────────
+  // ── Presets ───────────────────────────────────────────────────────────────
   .presets {
     @include flat($panel);
     color: $text;
@@ -733,33 +714,6 @@ $blueIconTone: brightness(0) invert(1);
     .preset-hotkey {
       background-color: $pink;
       color: #ffffff;
-    }
-  }
-  .split-button {
-    @include flat($panel);
-    color: $text;
-    .split-button-action:hover,
-    .split-button-content:hover {
-      background-color: $panelHover;
-    }
-    .split-button-arrow {
-      background-color: $panelActive;
-      border-top: 1px solid $border;
-      &:hover {
-        background-color: $panelHover;
-      }
-      &:active {
-        background-color: $panelActive;
-      }
-      &.split-button-arrow-left {
-        border-right: 1px solid $border;
-        &::before {
-          border-color: transparent $text transparent transparent;
-        }
-      }
-      &.split-button-arrow-right::before {
-        border-color: transparent transparent transparent $text;
-      }
     }
   }
 

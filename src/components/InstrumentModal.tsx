@@ -167,10 +167,7 @@ export default function InstrumentModal({
           setInstrumentOn={setInstrumentOn}
           instrumentType={instrumentType}
           setInstrumentType={setInstrumentType}
-          small={false}
           theme={theme}
-          mute={false}
-          inModal={true}
           color={color}
         />
         <RotaryKnob

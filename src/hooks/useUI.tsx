@@ -11,7 +11,6 @@ import MuteSolo from '../components/MuteSolo'
 import ChannelButtons from '../components/ChannelButtons'
 import FlipOpposite from '../components/FlipOpposite'
 import Piano from '../components/Piano'
-import Instrument from '../components/Instrument'
 import Fader from '../components/Fader'
 import MidiInputMode from '../components/MidiInputMode'
 import NotesMode from '../components/NotesMode'
@@ -747,30 +746,6 @@ export default function useUI(
     )
   }, [seqOpposite, seqRestart])
 
-  const instrumentEl = useCallback(
-    (small: boolean) => {
-      return (
-        <Instrument
-          className="channel-module"
-          instrumentOn={instrumentOn}
-          setInstrumentOn={setInstrumentOn}
-          instrumentType={instrumentType}
-          setInstrumentType={setInstrumentType}
-          small={small}
-          theme={theme}
-          mute={mute}
-          openInstrumentModal={openInstrumentModal}
-          inModal={false}
-          color={color}
-        />
-      )
-    },
-    [color, instrumentOn, instrumentType, mute, openInstrumentModal, setInstrumentOn, setInstrumentType, theme]
-  )
-
-  const instrumentNormal = useMemo(() => instrumentEl(false), [instrumentEl])
-  const instrumentSmall = useMemo(() => instrumentEl(true), [instrumentEl])
-
   return {
     channelNumNormal,
     channelNumAux,
@@ -801,8 +776,6 @@ export default function useUI(
     seqSwingInline,
     holdNormal,
     holdInline,
-    instrumentNormal,
-    instrumentSmall,
     keyViewTypeEl,
     seqRestartEl,
     seqOppositeEl,

@@ -772,71 +772,6 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
     }
   }
 
-  .split-button {
-    background-color: $lightMediumGray;
-    .split-button-action,
-    .split-button-content {
-      &:hover {
-        background-color: $lightMediumGrayHover;
-      }
-      &:active {
-        background-color: $lightMediumGrayActive;
-      }
-    }
-    .split-button-arrow {
-      background-color: $darkerMediumGray;
-      &:hover {
-        background-color: color.adjust($darkerMediumGray, $lightness: 3%);
-      }
-      &:active {
-        background-color: color.adjust($darkerMediumGray, $lightness: -3%);
-      }
-      &.split-button-arrow-left {
-        border-right: 1px solid $darkBackground;
-        &::before {
-          border-color: transparent $darkTextGray transparent transparent;
-        }
-      }
-      &.split-button-arrow-right {
-        &::before {
-          border-color: transparent transparent transparent $darkTextGray;
-        }
-      }
-    }
-  }
-
-  .split-button-container {
-    &.small-split-button {
-      .split-button {
-        border: 1px solid $blue;
-        background-color: $blue;
-        color: $headerDarkBlue;
-        .split-button-action {
-          border-right: 1px solid $headerDarkBlue;
-          &:hover {
-            background-color: $blueHover;
-          }
-          &:active {
-            background-color: $blueActive;
-          }
-        }
-        .split-button-arrow {
-          background-color: $blue;
-          &.split-button-arrow-left {
-            &::before {
-              border-color: transparent $headerDarkBlue transparent transparent;
-            }
-          }
-          &.split-button-arrow-right {
-            &::before {
-              border-color: transparent transparent transparent $headerDarkBlue;
-            }
-          }
-        }
-      }
-    }
-  }
-
   .wave-title {
     background-color: $lightMediumGray;
     color: $darkTextGray;
@@ -995,42 +930,6 @@ $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
 
     .react-switch-bg {
       background-color: $darkMediumGray !important;
-    }
-
-    .split-button {
-      background-color: $muteGray;
-      &:hover {
-        background-color: $muteGrayHover;
-      }
-      .split-button-action {
-        &:hover {
-          background-color: $lightGrayHover;
-        }
-        &:active {
-          background-color: $mediumGray;
-        }
-      }
-      .split-button-arrow {
-        $muteSplitButtonAction: color.adjust($darkerMediumGray, $lightness: -6%);
-        background-color: $muteSplitButtonAction;
-        &:hover {
-          background-color: color.adjust($muteSplitButtonAction, $lightness: 3%);
-        }
-        &:active {
-          background-color: color.adjust($muteSplitButtonAction, $lightness: -3%);
-        }
-        &.split-button-arrow-left {
-          border-right: 1px solid $darkBackground;
-          &::before {
-            border-color: transparent $darkMuteBackground transparent transparent;
-          }
-        }
-        &.split-button-arrow-right {
-          &::before {
-            border-color: transparent transparent transparent $darkMuteBackground;
-          }
-        }
-      }
     }
 
     .wave-title {

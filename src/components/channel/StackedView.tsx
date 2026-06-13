@@ -74,7 +74,6 @@ function StackedView({
   holdInline,
   seqRestartEl,
   seqOppositeEl,
-  instrumentNormal,
 }: StackedViewProps) {
   const stackedViewRef = useRef<HTMLDivElement>(null)
   return (
@@ -141,8 +140,6 @@ function StackedView({
               {seqShiftInline}
             </div>
           </Sequencer>
-          <div className="channel-module border"></div>
-          {instrumentNormal}
         </div>
         {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}
         {modalEl}

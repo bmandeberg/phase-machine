@@ -763,71 +763,6 @@ $headerDarkBlue: #0f182d;
     }
   }
 
-  .split-button {
-    background-color: $darkMediumGray;
-    .split-button-action,
-    .split-button-content {
-      &:hover {
-        background-color: $darkMediumGrayHover;
-      }
-      &:active {
-        background-color: $darkMediumGrayActive;
-      }
-    }
-    .split-button-arrow {
-      background-color: $splitButtonAction;
-      &:hover {
-        background-color: color.adjust($splitButtonAction, $lightness: 3%);
-      }
-      &:active {
-        background-color: color.adjust($splitButtonAction, $lightness: -3%);
-      }
-      &.split-button-arrow-left {
-        border-right: 1px solid $darkBackground;
-        &::before {
-          border-color: transparent $darkLightGray transparent transparent;
-        }
-      }
-      &.split-button-arrow-right {
-        &::before {
-          border-color: transparent transparent transparent $darkLightGray;
-        }
-      }
-    }
-  }
-
-  .split-button-container {
-    &.small-split-button {
-      .split-button {
-        border: 1px solid $headerBlue;
-        background-color: $headerBlue;
-        color: $blue;
-        .split-button-action {
-          border-right: 1px solid $headerDarkBlue;
-          &:hover {
-            background-color: $headerBlueHover;
-          }
-          &:active {
-            background-color: $headerBlueActive;
-          }
-        }
-        .split-button-arrow {
-          background-color: $headerBlue;
-          &.split-button-arrow-left {
-            &::before {
-              border-color: transparent $blue transparent transparent;
-            }
-          }
-          &.split-button-arrow-right {
-            &::before {
-              border-color: transparent transparent transparent $blue;
-            }
-          }
-        }
-      }
-    }
-  }
-
   .sequence-step {
     background-color: $darkMediumGray;
     color: $darkBackground;
@@ -969,42 +904,6 @@ $headerDarkBlue: #0f182d;
 
     .react-switch-bg {
       background-color: $muteGray !important;
-    }
-
-    .split-button {
-      background-color: $muteGray;
-      &:hover {
-        background-color: $muteGrayHover;
-      }
-      .split-button-action {
-        &:hover {
-          background-color: $lightGrayHover;
-        }
-        &:active {
-          background-color: $mediumGray;
-        }
-      }
-      .split-button-arrow {
-        $muteSplitButtonAction: color.adjust($splitButtonAction, $lightness: -4%);
-        background-color: $muteSplitButtonAction;
-        &:hover {
-          background-color: color.adjust($muteSplitButtonAction, $lightness: 3%);
-        }
-        &:active {
-          background-color: color.adjust($muteSplitButtonAction, $lightness: -3%);
-        }
-        &.split-button-arrow-left {
-          border-right: 1px solid $darkBackground;
-          &::before {
-            border-color: transparent $darkLightGray transparent transparent;
-          }
-        }
-        &.split-button-arrow-right {
-          &::before {
-            border-color: transparent transparent transparent $darkLightGray;
-          }
-        }
-      }
     }
 
     .piano-keys {

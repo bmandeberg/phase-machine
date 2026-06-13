@@ -1,12 +1,9 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import classNames from 'classnames'
 import Switch from 'react-switch'
-import SplitButton from './SplitButton'
 import Dropdown from './Dropdown'
 import { INSTRUMENT_TYPES, themedSwitch } from '../globals'
 import './Instrument.scss'
-
-const instrumentTypes = Object.keys(INSTRUMENT_TYPES)
 
 // The modal instrument picker groups the icons under category headings (laid out in a
 // horizontal grid under each). Order/membership are intentional; every `value` must
@@ -50,43 +47,21 @@ interface InstrumentProps {
   setInstrumentOn: (on: boolean) => void
   instrumentType: string
   setInstrumentType: (type: string) => void
-  small?: boolean
   theme: string
-  mute?: boolean
-  openInstrumentModal?: () => void
-  inModal?: boolean
   color: string
 }
 
+// The instrument On/Off switch + grouped type picker, shown inside the instrument
+// modal (opened by the icon at the start of a channel).
 export default function Instrument({
   className,
   instrumentOn,
   setInstrumentOn,
   instrumentType,
   setInstrumentType,
-  small,
   theme,
-  mute,
-  openInstrumentModal,
-  inModal,
   color,
 }: InstrumentProps) {
-  const incrementInstrument = useCallback(
-    (next: boolean) => {
-      const instrumentIndex = instrumentTypes.indexOf(instrumentType)
-      if (instrumentIndex !== -1) {
-        let nextIndex = instrumentIndex + (next ? 1 : -1)
-        if (nextIndex < 0) {
-          nextIndex = instrumentTypes.length - 1
-        } else if (nextIndex > instrumentTypes.length - 1) {
-          nextIndex = 0
-        }
-        setInstrumentType(instrumentTypes[nextIndex])
-      }
-    },
-    [instrumentType, setInstrumentType]
-  )
-
   // Grouped list for the modal grid: a heading per category followed by its icons.
   const groupedInstrumentOptions = useMemo(
     () =>
@@ -103,60 +78,15 @@ export default function Instrument({
 
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
-  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, mute), [mute, theme])
+  const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
   // the instrument on/off handle uses the channel color when on (on = channel color)
   const onHandleColor = color
-
-  const splitButtonContent = useMemo(() => INSTRUMENT_TYPES[instrumentType](theme), [instrumentType, theme])
-  const splitButtonRight = useCallback(() => incrementInstrument(true), [incrementInstrument])
-  const splitButtonLeft = useCallback(() => incrementInstrument(false), [incrementInstrument])
-
-  const switchLabelOff = useMemo(() => <p className="switch-label">Off</p>, [])
-  const switchLabelOn = useMemo(() => <p className="switch-label">On</p>, [])
-  const switchLabel = useMemo(() => <div className="instrument-label">Instrument</div>, [])
-  const instrumentSelector = useMemo(() => {
-    if (inModal) {
-      return (
-        <Dropdown
-          className="instrument-item instrument-dropdown"
-          options={groupedInstrumentOptions}
-          gridColumns={INSTRUMENT_GRID_COLUMNS}
-          setValue={setInstrumentType}
-          value={instrumentType}
-        />
-      )
-    } else if (small) {
-      return (
-        <div onClick={openInstrumentModal} className="button">
-          Instr
-        </div>
-      )
-    } else
-      return (
-        <SplitButton
-          content={splitButtonContent}
-          rightAction={splitButtonRight}
-          leftAction={splitButtonLeft}
-          contentAction={openInstrumentModal}
-        />
-      )
-  }, [
-    inModal,
-    groupedInstrumentOptions,
-    instrumentType,
-    openInstrumentModal,
-    setInstrumentType,
-    small,
-    splitButtonContent,
-    splitButtonLeft,
-    splitButtonRight,
-  ])
 
   return (
     <div className={classNames('instrument', className)}>
       <div className="instrument-switch-container">
         <div>
-          {!small && switchLabelOff}
+          <p className="switch-label">Off</p>
           <Switch
             className="instrument-switch"
             onChange={setInstrumentOn}
@@ -170,11 +100,17 @@ export default function Instrument({
             width={48}
             height={24}
           />
-          {!small && switchLabelOn}
+          <p className="switch-label">On</p>
         </div>
-        {!small && switchLabel}
+        <div className="instrument-label">Instrument</div>
       </div>
-      {instrumentSelector}
+      <Dropdown
+        className="instrument-item instrument-dropdown"
+        options={groupedInstrumentOptions}
+        gridColumns={INSTRUMENT_GRID_COLUMNS}
+        setValue={setInstrumentType}
+        value={instrumentType}
+      />
     </div>
   )
 }

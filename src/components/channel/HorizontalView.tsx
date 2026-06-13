@@ -70,7 +70,6 @@ function HorizontalView({
   holdInline,
   seqRestartEl,
   seqOppositeEl,
-  instrumentNormal,
 }: HorizontalViewProps) {
   const horizontalViewRef = useRef<HTMLDivElement>(null)
   return (
@@ -128,8 +127,6 @@ function HorizontalView({
             {seqShiftInline}
           </div>
         </Sequencer>
-        <div className="channel-module border"></div>
-        {instrumentNormal}
         {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}
         {modalEl}
       </div>

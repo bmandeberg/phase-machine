@@ -365,18 +365,6 @@
         margin-left: 10px;
       }
     }
-    .instrument {
-      margin-top: 0;
-      .instrument-label {
-        bottom: 4px;
-      }
-      .instrument-switch-container {
-        margin-right: 0;
-      }
-      .button {
-        margin-top: 12px;
-      }
-    }
     .piano-drawer-border {
       display: none;
     }
@@ -528,6 +516,15 @@
   }
 }
 
+// Stacked view: the main channel row holds only the key controls — the sequencer
+// lives in the absolutely-positioned .stacked-auxiliary row below it. Size the main
+// row to its content instead of letting display:block stretch it to the full,
+// sequencer-driven container width, which would trail a long band of empty space
+// after the last control. The aux row (absolute) still overflows as wide as needed.
+.channel-horizontal:has(.stacked-auxiliary) {
+  width: max-content;
+}
+
 // Condensed view: most controls (the MODE toggle, Swing modules, etc.) are
 // omitted in the JSX — see CondensedView.tsx. Mute/Solo stack vertically in every
 // view now (see MuteSolo.scss).
@@ -621,28 +618,6 @@
   }
   .react-switch-bg {
     background-color: $muteGray !important;
-  }
-  .split-button {
-    background-color: $muteGray;
-    transition: background-color $muteTransitionTime;
-    &:hover {
-      background-color: $muteGrayHover;
-    }
-    .split-button-action {
-      &:hover {
-        background-color: $lightGrayHover;
-      }
-      &:active {
-        background-color: $mediumGray;
-      }
-    }
-    .split-button-arrow {
-      background-color: #c6c6c6;
-      transition: background-color $muteTransitionTime;
-      &.split-button-arrow-left {
-        border-right: 1px solid #888888;
-      }
-    }
   }
   .piano-keys .white-key {
     background-color: $muteGray !important;
