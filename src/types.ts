@@ -53,6 +53,7 @@ export interface InstrumentRefs {
   drumMachineInstrument: SamplerRef
   hxcInstrument: SamplerRef
   rhythmInstrument: MutableRefObject<RhythmSampler | null | undefined>
+  percussionInstrument: MutableRefObject<RhythmSampler | null | undefined>
   metalInstrument: MutableRefObject<MetalInstrument | null | undefined>
   pluckInstrument: MutableRefObject<PluckInstrument | null | undefined>
 }

@@ -116,6 +116,15 @@
       flex-direction: column;
       padding-left: 8px;
     }
+    // The end slots only have one usable direction (the first can only move down, the last
+    // only up), so drop their button pair toward the neighbour it swaps with — bottom for
+    // the first slot, top for the last — instead of floating centered in a tall row.
+    &:first-child .effect-slot-move {
+      align-self: flex-end;
+    }
+    &:last-child .effect-slot-move {
+      align-self: flex-start;
+    }
     .effect-slot-move-btn {
       appearance: none;
       background: none;

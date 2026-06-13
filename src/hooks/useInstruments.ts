@@ -12,7 +12,7 @@ import {
   PannerRef,
   SamplerRef,
 } from '../types'
-import { SAMPLER_CONFIGS, SamplerConfig, RHYTHM_PACK } from '../samplerConfigs'
+import { SAMPLER_CONFIGS, SamplerConfig, RHYTHM_PACK, PERCUSSION_PACK } from '../samplerConfigs'
 import { RhythmSampler } from '../rhythmSampler'
 
 // Tone.Chorus.start()/stop() drive its internal LFOs and are NOT idempotent —
@@ -247,6 +247,7 @@ export default function useInstruments(
   const choralInstrument = useRef<Tone.Sampler | null>(null)
   const hxcInstrument = useRef<Tone.Sampler | null>(null)
   const rhythmInstrument = useRef<RhythmSampler | null>(null)
+  const percussionInstrument = useRef<RhythmSampler | null>(null)
   const metalInstrument = useRef<Tone.MetalSynth | null>(null)
   const pluckInstrument = useRef<Tone.PluckSynth | null>(null)
 
@@ -268,6 +269,7 @@ export default function useInstruments(
       drumMachineInstrument,
       hxcInstrument,
       rhythmInstrument,
+      percussionInstrument,
       metalInstrument,
       pluckInstrument,
     }),
@@ -283,6 +285,7 @@ export default function useInstruments(
       vibesInstrument,
       hxcInstrument,
       rhythmInstrument,
+      percussionInstrument,
       metalInstrument,
       pluckInstrument,
     ]
@@ -422,6 +425,18 @@ export default function useInstruments(
     }
   }, [getChainHead])
 
+  // Second varispeed engine for the percussion-chops pack (same shape as rhythmic).
+  const initPercussionInstrument = useCallback(() => {
+    if (!percussionInstrument.current) {
+      percussionInstrument.current = new RhythmSampler(PERCUSSION_PACK)
+      percussionInstrument.current.set({
+        attack: instrumentParamsRef.current.samplerAttack,
+        release: instrumentParamsRef.current.samplerRelease,
+      })
+      percussionInstrument.current.connect(getChainHead())
+    }
+  }, [getChainHead])
+
   const initMetalInstrument = useCallback(() => {
     if (!metalInstrument.current) {
       const p = instrumentParamsRef.current
@@ -472,6 +487,11 @@ export default function useInstruments(
         instrument.current = rhythmInstrument.current
         return
       }
+      if (type === 'percussion') {
+        initPercussionInstrument()
+        instrument.current = percussionInstrument.current
+        return
+      }
       if (type === 'metal') {
         initMetalInstrument()
         instrument.current = metalInstrument.current
@@ -492,7 +512,16 @@ export default function useInstruments(
         instrument.current = synthInstrument.current
       }
     },
-    [initRhythmInstrument, initMetalInstrument, initPluckInstrument, initSampler, initSynthInstrument, instrument, samplerRefs]
+    [
+      initRhythmInstrument,
+      initPercussionInstrument,
+      initMetalInstrument,
+      initPluckInstrument,
+      initSampler,
+      initSynthInstrument,
+      instrument,
+      samplerRefs,
+    ]
   )
 
   // initialize instruments
@@ -521,6 +550,7 @@ export default function useInstruments(
         drumMachineInstrument,
         hxcInstrument,
         rhythmInstrument,
+        percussionInstrument,
         metalInstrument,
         pluckInstrument,
       ]
@@ -614,8 +644,9 @@ export default function useInstruments(
       Object.values(samplerRefs).forEach((r) =>
         r.current?.set({ attack: params.samplerAttack, release: params.samplerRelease })
       )
-      // RhythmSampler shares the sampler attack/release; metal/pluck have their own.
+      // Both varispeed packs share the sampler attack/release; metal/pluck have their own.
       rhythmInstrument.current?.set({ attack: params.samplerAttack, release: params.samplerRelease })
+      percussionInstrument.current?.set({ attack: params.samplerAttack, release: params.samplerRelease })
       metalInstrument.current?.set({
         harmonicity: params.metalHarmonicity,
         modulationIndex: params.metalModulationIndex,
@@ -648,6 +679,7 @@ export default function useInstruments(
     choralInstrument,
     hxcInstrument,
     rhythmInstrument,
+    percussionInstrument,
     metalInstrument,
     pluckInstrument,
     slotNodesRef,

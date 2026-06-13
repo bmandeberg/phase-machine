@@ -34,8 +34,9 @@ const INSTRUMENT_GROUPS: { heading: string; instruments: { value: string; label:
     instruments: [
       { value: 'drums', label: 'Drums' },
       { value: 'drum-machine', label: 'Drum Machine' },
-      { value: 'rhythmic', label: 'Breaks' },
       { value: 'hxc', label: 'Hardcore' },
+      { value: 'rhythmic', label: 'Breaks' },
+      { value: 'percussion', label: 'Percussion Chops' },
     ],
   },
 ]

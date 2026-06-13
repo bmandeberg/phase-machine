@@ -40,6 +40,9 @@ export default function useSamplerParams(
     if (instruments.rhythmInstrument.current) {
       instruments.rhythmInstrument.current.attack = samplerAttack
     }
+    if (instruments.percussionInstrument.current) {
+      instruments.percussionInstrument.current.attack = samplerAttack
+    }
     updateInstrumentParams('samplerAttack', samplerAttack)
   }, [instruments, samplerAttack, updateInstrumentParams])
 
@@ -70,6 +73,9 @@ export default function useSamplerParams(
     }
     if (instruments.rhythmInstrument.current) {
       instruments.rhythmInstrument.current.release = samplerRelease
+    }
+    if (instruments.percussionInstrument.current) {
+      instruments.percussionInstrument.current.release = samplerRelease
     }
     updateInstrumentParams('samplerRelease', samplerRelease)
   }, [instruments, samplerRelease, updateInstrumentParams])
