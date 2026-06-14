@@ -23,6 +23,14 @@ $darkGreen: color.adjust($green, $lightness: -15%);
 $darkGreenHover: color.adjust($darkGreen, $lightness: 3%);
 $lighterDarkGreen: color.adjust($darkGreen, $lightness: 6%);
 
+// The theme class lives on #container, so its dark background doesn't reach the page
+// root — overscroll / elastic-bounce at the scroll edges would otherwise expose the
+// white <html>/<body> behind the scroller. Paint the page root to match.
+html:has(.contrast-theme),
+body:has(.contrast-theme) {
+  background-color: $darkBackground;
+}
+
 .contrast-theme {
   background-color: $darkBackground;
   color: $lightMediumGray;

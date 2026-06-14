@@ -52,6 +52,14 @@ $blueIconTone: brightness(0) invert(1);
   box-shadow: 0 4px 14px rgba(209, 30, 110, 0.18);
 }
 
+// The theme class lives on #container, so its background doesn't reach the page root —
+// overscroll at the scroll edges would otherwise expose the white <html>/<body>. Paint
+// the page root to match.
+html:has(.coquette-theme),
+body:has(.coquette-theme) {
+  background-color: $bg;
+}
+
 .coquette-theme {
   background-color: $bg;
   color: $text;
