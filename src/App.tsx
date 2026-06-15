@@ -34,8 +34,29 @@ if (!window.localStorage.getItem('presets')) {
   window.localStorage.setItem('activePreset', defaultPresets[0].id)
 }
 
-const PIANO_SCROLL = 60
-const SEQ_SCROLL = 76
+// Each channel's left edge (number, scribbler, mute/solo) lives in a sticky header
+// that floats over the horizontally-scrolling body. The "Scroll To" buttons jump to
+// the piano / sequencer, so their target must clear that pinned header — otherwise
+// the section lands partly behind it. Offset each target by the live width of its
+// channel's sticky header (it differs per view — ~97px horizontal, ~103px condensed),
+// plus a hair to clear the header's elevation shadow (which paints past its box edge
+// and isn't counted in offsetWidth), so the section sits just past the header.
+const STICKY_SHADOW = 8
+function sectionScrollPositions(): number[] {
+  const offsetFor = (el: HTMLElement | null) => {
+    if (!el) return 0
+    const sticky = el.closest('.channel')?.querySelector('.channel-sticky') as HTMLElement | null
+    return el.offsetLeft - (sticky?.offsetWidth ?? 0) - STICKY_SHADOW
+  }
+  // The sequencer section opens with a divider (.channel-module.border) and a gap
+  // before its first step, so scroll to that divider — otherwise the section's
+  // start gets buried under the sticky header and it stops right at step one.
+  const seq = document.querySelector('.sequencer') as HTMLElement | null
+  const seqStart = seq?.previousElementSibling?.classList.contains('border')
+    ? (seq.previousElementSibling as HTMLElement)
+    : seq
+  return [0, offsetFor(document.querySelector('.piano')), offsetFor(seqStart)]
+}
 
 export default function App() {
   const [presets, setPresets] = useState(initializePresets)
@@ -197,11 +218,7 @@ export default function App() {
     if (!containerEl) return
     function handleScroll() {
       if (viewRef.current === 'horizontal' || viewRef.current === 'condensed') {
-        const scrollPositions = [
-          0,
-          (document.querySelector('.piano') as HTMLElement).offsetLeft - PIANO_SCROLL,
-          (document.querySelector('.sequencer') as HTMLElement).offsetLeft - SEQ_SCROLL,
-        ]
+        const scrollPositions = sectionScrollPositions()
         let scrollEl = 0
         for (let i = 0; i < SECTIONS.length; i++) {
           // containerEl is guaranteed non-null by the early return above; TS just
@@ -235,11 +252,7 @@ export default function App() {
   }, [])
 
   const doScroll = useCallback((scrollEl: string) => {
-    const scrollPositions = [
-      0,
-      (document.querySelector('.piano') as HTMLElement).offsetLeft - PIANO_SCROLL,
-      (document.querySelector('.sequencer') as HTMLElement).offsetLeft - SEQ_SCROLL,
-    ]
+    const scrollPositions = sectionScrollPositions()
     const scrollElIndex = SECTIONS.indexOf(scrollEl)
     if (scrollElIndex !== -1) {
       container.current?.scroll({
