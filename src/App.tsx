@@ -45,7 +45,7 @@ export default function App() {
   const [tempo, setTempo] = useState(uiState.tempo)
   const [playing, setPlaying] = useState(false)
   const [numChannels, setNumChannels] = useState(uiState.numChannels)
-  const [view, setView] = useState(window.localStorage.getItem('view') ?? VIEWS[1])
+  const [view, setView] = useState(initialView)
   const viewRef = useRef<string | undefined>(undefined)
   viewRef.current = view
 
@@ -698,4 +698,17 @@ function initializeUiState(): Preset {
   const activePatch: Preset = JSON.parse(window.localStorage.getItem('activePatch') as string)
   patchPresetAndChannels(activePatch)
   return activePatch
+}
+
+// Initial view: a stored preference always wins (switching views persists it). With no
+// stored view, phones default to the most compact 'condensed' layout; everything else
+// keeps the 'stacked' default. "Phone" = a touch device whose shorter screen edge is
+// under 500px — phones sit ~360–430px there in any orientation, tablets ≥ ~740px.
+function initialView(): string {
+  const stored = window.localStorage.getItem('view')
+  if (stored) return stored
+  const isPhone =
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches &&
+    Math.min(window.screen.width, window.screen.height) < 500
+  return isPhone ? 'condensed' : VIEWS[1]
 }
