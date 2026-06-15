@@ -80,5 +80,12 @@ export default function useSamplerParams(
     updateInstrumentParams('samplerRelease', samplerRelease)
   }, [instruments, samplerRelease, updateInstrumentParams])
 
-  return { samplerAttack, setSamplerAttack, samplerRelease, setSamplerRelease }
+  // Note stack ('none' | major-triad | minor-triad | fifth | major-7 | octave). No Tone
+  // node to update — the stacking happens at note-trigger time in Channel; just persist it.
+  const [samplerStack, setSamplerStack] = useState(instrumentParams.samplerStack)
+  useEffect(() => {
+    updateInstrumentParams('samplerStack', samplerStack)
+  }, [samplerStack, updateInstrumentParams])
+
+  return { samplerAttack, setSamplerAttack, samplerRelease, setSamplerRelease, samplerStack, setSamplerStack }
 }

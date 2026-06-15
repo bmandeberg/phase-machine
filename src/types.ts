@@ -175,6 +175,8 @@ export interface InstrumentParams {
   filterAmount: number
   samplerAttack: number
   samplerRelease: number
+  // extra notes stacked above the base note for pitched samplers ('none' = base only)
+  samplerStack: string
   // MetalSynth params
   metalHarmonicity: number
   metalModulationIndex: number

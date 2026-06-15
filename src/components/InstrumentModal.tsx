@@ -235,6 +235,7 @@ export default function InstrumentModal({
             theme={theme}
             grabbing={grabbing}
             setGrabbing={setGrabbing}
+            instrumentType={instrumentType}
           />
         )}
         <EffectControls
