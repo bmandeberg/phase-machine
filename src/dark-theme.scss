@@ -21,6 +21,14 @@ $headerBlueHover: color.adjust($headerBlue, $lightness: 5%);
 $headerBlueActive: color.adjust($headerBlue, $lightness: -3%);
 $headerDarkBlue: #0f182d;
 
+// The theme class lives on #container, so its dark background doesn't reach the page
+// root — overscroll / elastic-bounce at the scroll edges would otherwise expose the
+// white <html>/<body> behind the scroller. Paint the page root to match.
+html:has(.dark-theme),
+body:has(.dark-theme) {
+  background-color: $darkBackground;
+}
+
 .dark-theme {
   background-color: $darkBackground;
   color: $darkLightGray;

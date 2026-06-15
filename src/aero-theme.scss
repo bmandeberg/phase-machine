@@ -76,6 +76,17 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
+// The theme class lives on #container, so its background doesn't reach the page root —
+// overscroll at the scroll edges would otherwise expose the white <html>/<body>. Mirror
+// the same viewport-fixed gradient on the page root so the rubber-band gap blends in.
+html:has(.aero-theme),
+body:has(.aero-theme) {
+  background-color: $aeroAqua;
+  background-image: radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+  background-attachment: fixed;
+}
+
 .aero-theme {
   // sky → aqua → water → meadow, with a soft sun-glow up top. Fixed so the sky
   // stays put while channels scroll over it.
