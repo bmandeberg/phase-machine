@@ -15,6 +15,8 @@ import {
   OCTAVES,
   SUSTAIN_MIN,
   KNOB_MAX,
+  STACKABLE_INSTRUMENTS,
+  NOTE_STACKS,
 } from '../globals'
 import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds } from '../math'
 import classNames from 'classnames'
@@ -523,6 +525,25 @@ export default function Channel({
 
   // loop events
 
+  // Extra notes stacked above the base note for the pitched samplers (piano/bass/etc.).
+  // Empty unless this is a stackable instrument with a chord/interval selected.
+  const stackOffsets = useMemo(
+    () => (STACKABLE_INSTRUMENTS.includes(instrumentType) ? NOTE_STACKS[instrumentParams.samplerStack] ?? [] : []),
+    [instrumentType, instrumentParams.samplerStack]
+  )
+  // Fire the stacked voices alongside the base note. Sampler voices self-release after
+  // `duration`, so (like the base note) these need no separate note-off bookkeeping.
+  const triggerStack = useCallback(
+    (note: string, duration: any, time: any, velocity: number) => {
+      if (!stackOffsets.length || !instrument.current) return
+      for (const semitones of stackOffsets) {
+        const stacked = Tone.Frequency(note).transpose(semitones).toNote()
+        instrument.current.triggerAttackRelease(stacked, duration, time, velocity)
+      }
+    },
+    [stackOffsets, instrument]
+  )
+
   // play note
   const playNote = useCallback(
     (time: any) => {
@@ -547,12 +568,11 @@ export default function Channel({
           instrument.current.loaded)
       ) {
         if (instrumentType !== 'synth') {
-          instrument.current.triggerAttackRelease(
-            note,
-            unheldNote ? scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, SAMPLE_MAX_TIME) : SAMPLE_MAX_TIME,
-            time,
-            velocity
-          )
+          const sampleDuration = unheldNote
+            ? scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, SAMPLE_MAX_TIME)
+            : SAMPLE_MAX_TIME
+          instrument.current.triggerAttackRelease(note, sampleDuration, time, velocity)
+          triggerStack(note, sampleDuration, time, velocity)
         } else if (instrumentParams.poly) {
           // Poly synth self-releases per voice so notes can overlap; match the
           // note length the mono path would have scheduled (its sustainTime).
@@ -590,6 +610,7 @@ export default function Channel({
       seqSteps,
       sustain,
       velocity,
+      triggerStack,
     ]
   )
 
@@ -610,12 +631,9 @@ export default function Channel({
           instrument.current.loaded)
       ) {
         if (instrumentType !== 'synth') {
-          instrument.current.triggerAttackRelease(
-            note,
-            scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, SAMPLE_MAX_TIME),
-            undefined,
-            velocity
-          )
+          const previewDuration = scaleToRange(sustain, SUSTAIN_MIN, KNOB_MAX, 0.05, SAMPLE_MAX_TIME)
+          instrument.current.triggerAttackRelease(note, previewDuration, undefined, velocity)
+          triggerStack(note, previewDuration, undefined, velocity)
         } else if (instrumentParams.poly) {
           instrument.current.triggerAttackRelease(note, sustainTime, undefined, velocity)
         } else {
@@ -648,6 +666,7 @@ export default function Channel({
       midiOutChannel,
       sustain,
       velocity,
+      triggerStack,
     ]
   )
 

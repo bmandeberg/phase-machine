@@ -494,6 +494,33 @@ export const INSTRUMENT_TYPES: Record<string, (theme: string) => React.JSX.Eleme
   ),
 }
 
+// Pitched samplers that can stack extra notes above the base note (a chord/interval
+// voicing). The loop/drum samplers (drums, drum-machine, rhythmic, percussion, hxc) are
+// excluded — stacking transposed slices wouldn't be musical.
+export const STACKABLE_INSTRUMENTS = ['piano', 'bass', 'marimba', 'vibes', 'harp', 'choral']
+
+// Semitone offsets stacked ABOVE the base note for each note-stack option. The base note
+// always plays; these are the extra voices added on top.
+export const NOTE_STACKS: Record<string, number[]> = {
+  none: [],
+  'major-triad': [4, 7], // major 3rd + perfect 5th
+  'minor-triad': [3, 7], // minor 3rd + perfect 5th
+  fifth: [7], // perfect 5th
+  'major-7': [4, 7, 11], // major 3rd + 5th + major 7th
+  octave: [12],
+}
+
+// Dropdown options for the sampler note-stack control (value → shown label). Each `value`
+// must have a matching key in NOTE_STACKS above (an unmatched value falls back to no stack).
+export const NOTE_STACK_OPTIONS = [
+  { value: 'none', label: 'No Stack' },
+  { value: 'major-triad', label: 'Major Triad' },
+  { value: 'minor-triad', label: 'Minor Triad' },
+  { value: 'fifth', label: 'Fifth' },
+  { value: 'major-7', label: 'Major 7' },
+  { value: 'octave', label: 'Octave Above' },
+]
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const MOVEMENTS: Record<string, (...args: any[]) => number> = {
   up: (length: number, i: number | undefined) => (i === undefined ? 0 : i < length - 1 ? i + 1 : 0),
@@ -831,6 +858,7 @@ export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: bool
     filterAmount: 3,
     samplerAttack: 0,
     samplerRelease: 1,
+    samplerStack: 'none',
     metalHarmonicity: 5.1,
     metalModulationIndex: 32,
     metalResonance: 360,
