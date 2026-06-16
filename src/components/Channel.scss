@@ -600,6 +600,8 @@
     }
     .scribbler-input {
       background-color: $muteGray;
+      // dim the name text so it reads as muted (matches aero/coquette/dark/contrast)
+      color: color.adjust($darkGray, $lightness: 20%);
     }
   }
   .button {
