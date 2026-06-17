@@ -104,8 +104,8 @@ $ecHdrHi: #2c55b3;
 $ecHdrHiHov: #3a66c8;
 $ecHdrHiText: #eaf1ff; // light text on the blue highlight fill
 $ecHdrGlow: rgba(74, 126, 224, 0.45); // blue corona glow on active controls
-$ecCorona: #7c5ce8; // violet flank of the corona rim
-$ecCoronaCore: #5b8ce8; // blue core of the corona rim
+$ecCorona: #463486; // violet flank of the corona rim (darkened)
+$ecCoronaCore: #325488; // blue core of the corona rim (darkened)
 
 // The fixed page background: a cool radial glow over a deep vertical charcoal.
 // Stored once so the page root, #container, the sticky channel header and the
@@ -849,7 +849,7 @@ body:has(.eclipse-theme) {
       rgba($ecCorona, 0.32) 82%,
       rgba($ecCorona, 0) 100%
     );
-    box-shadow: 0 0 10px rgba(74, 126, 224, 0.32);
+    box-shadow: 0 0 10px rgba(74, 126, 224, 0.18);
   }
 
   .radio-buttons {
