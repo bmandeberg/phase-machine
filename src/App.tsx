@@ -149,7 +149,7 @@ export default function App() {
     JSON.parse(window.localStorage.getItem('showStepNumbers') as string) ?? true
   )
 
-  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'dark')
+  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'eclipse')
 
   const [defaultChannelModeKeybd, setDefaultChannelModeKeybd] = useState(
     JSON.parse(window.localStorage.getItem('defaultChannelModeKeybd') as string) ?? false
