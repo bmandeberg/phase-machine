@@ -876,6 +876,8 @@ body:has(.contrast-theme) {
       }
       .scribbler-input {
         background-color: color.adjust($darkDarkGray, $lightness: 10%);
+        // dim the name text so it reads as muted (matches the aero/coquette themes)
+        color: $muteGray;
       }
     }
 
