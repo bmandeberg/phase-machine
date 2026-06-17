@@ -1,12 +1,14 @@
 @use '../sass-globals' as *;
 
-$modalTopMargin: 12vh;
+$modalTopGap: 12vh; // preferred gap above a short modal
+$modalMinGap: 2vh; // gap kept at top (once slid up) and at the bottom
 $modalHeaderHeight: 50px;
 
 .modal-container {
   position: fixed;
   display: none;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   top: 0;
   left: 0;
   width: 100vw;
@@ -15,14 +17,28 @@ $modalHeaderHeight: 50px;
   z-index: 3001;
   opacity: 0;
   pointer-events: none;
-  .modal-buffer {
-    height: 0%;
-    margin-top: $modalTopMargin;
-    &.small-buffer {
-      margin-top: 1vw;
-    }
+
+  // Both spacers grow equally, so a modal tall enough to leave little headroom is
+  // vertically centered and uses the vertical space instead of floating up top
+  // with all the slack dumped below it. The top spacer is capped at 12vh, so a
+  // *short* modal still sits at the familiar fixed offset rather than dead-center.
+  // Both keep a 2vh minimum, so a very tall modal rides up to the top edge and
+  // scrolls internally. Clicking either spacer still targets .modal-container →
+  // closes the modal.
+  &::before {
+    content: '';
+    flex: 1 1 0;
+    min-height: $modalMinGap;
+    max-height: $modalTopGap;
   }
+  &::after {
+    content: '';
+    flex: 1 1 0;
+    min-height: $modalMinGap;
+  }
+
   .modal-window {
+    flex: 0 0 auto; // sized to its content; the spacers above/below do the centering
     background-color: #ffffff;
     box-shadow: 0px 0px 6px #111111;
     box-sizing: border-box;
@@ -63,11 +79,10 @@ $modalHeaderHeight: 50px;
       padding: 20px;
       box-sizing: border-box;
       font-size: 18px;
-      max-height: calc(98vh - #{$modalTopMargin} - #{$modalHeaderHeight});
+      // Tall enough to reach the slid-up position; the spacers above only let the
+      // modal climb once the content actually needs the room.
+      max-height: calc(100vh - #{2 * $modalMinGap} - #{$modalHeaderHeight});
       overflow-y: auto;
-      &.full-modal {
-        max-height: calc(100vh - 2vw - #{$modalHeaderHeight});
-      }
       .modal-item {
         margin-top: 10px;
         &:first-of-type {
@@ -85,73 +100,49 @@ $modalHeaderHeight: 50px;
       }
     }
   }
+  // Entrance/exit: fade the scrim (opacity on the container) and slide the window
+  // down into place (translateY on the window) — kept off the spacers so the
+  // animation is independent of where the modal lands vertically.
   &.show-enter {
     display: flex;
     opacity: 0;
     pointer-events: none;
-    .modal-buffer {
-      margin-top: 120px;
-      &.small-buffer {
-        margin-top: 40px;
-      }
+    .modal-window {
+      transform: translateY(-24px);
     }
   }
   &.show-enter-active {
     display: flex;
     opacity: 1;
     transition: opacity $transitionTime;
-    .modal-buffer {
-      transition: margin-top $transitionTime;
-      margin-top: $modalTopMargin;
-      &.small-buffer {
-        margin-top: 1vw;
-      }
+    .modal-window {
+      transform: translateY(0);
+      transition: transform $transitionTime;
     }
   }
   &.show-enter-done {
     display: flex;
     opacity: 1;
     pointer-events: auto;
-    .modal-buffer {
-      margin-top: $modalTopMargin;
-      &.small-buffer {
-        margin-top: 1vw;
-      }
-    }
   }
   &.show-exit {
     display: flex;
     opacity: 1;
     pointer-events: none;
-    .modal-buffer {
-      margin-top: $modalTopMargin;
-      &.small-buffer {
-        margin-top: 1vw;
-      }
-    }
   }
   &.show-exit-active {
     display: flex;
     opacity: 0;
     transition: opacity $transitionTime;
     pointer-events: none;
-    .modal-buffer {
-      transition: margin-top $transitionTime;
-      margin-top: 120px;
-      &.small-buffer {
-        margin-top: 40px;
-      }
+    .modal-window {
+      transform: translateY(-24px);
+      transition: transform $transitionTime;
     }
   }
   &.show-exit-done {
     opacity: 0;
     pointer-events: none;
-    .modal-buffer {
-      margin-top: 120px;
-      &.small-buffer {
-        margin-top: 40px;
-      }
-    }
   }
   .modal-num-input {
     height: 34px;
