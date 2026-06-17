@@ -44,6 +44,8 @@ $modalHeaderHeight: 50px;
     box-sizing: border-box;
     max-width: 98vw;
     overflow-x: auto;
+    // keep horizontal overscroll from triggering browser back/forward navigation
+    overscroll-behavior-x: none;
     .modal-header {
       width: 100%;
       height: 50px;

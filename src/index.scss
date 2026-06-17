@@ -27,6 +27,9 @@
 
 html {
   overflow-y: hidden;
+  // We scroll horizontally a lot (channels, the instrument modal); block the
+  // browser's two-finger overscroll-to-go-back/forward navigation gesture.
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -54,6 +57,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  // don't let horizontal overscroll chain up into browser back/forward navigation
+  overscroll-behavior-x: none;
   margin-top: 60px;
   padding-top: 2px;
   height: calc(100vh - 62px);
