@@ -193,7 +193,8 @@ body:has(.contrast-theme) {
     }
     .scribbler-input {
       background-color: $darkDarkGray;
-      color: $lightMediumGray;
+      // unmuted channels colour the name with the channel colour (muted dims to grey)
+      color: var(--channel-color);
     }
   }
 
