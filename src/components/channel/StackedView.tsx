@@ -93,22 +93,27 @@ function StackedView({
           {channelButtonsEl}
           <div className="channel-primary">{muteSoloEl}</div>
         </div>
-        {velocityEl}
-        {notesModeEl}
-        {keyEl}
-        <div className="transformations">
-          {rangeMode && shiftEl}
-          {rangeMode && axisNormal}
-          {rangeMode && <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />}
-          {rangeMode && flipOppositeEl}
-          {!rangeMode && midiInputModeEl}
-          {!rangeMode && clearResetEl}
+        {/* Key-side card group — see HorizontalView. display:contents by default. */}
+        <div className="channel-section channel-section-key">
+          {velocityEl}
+          {notesModeEl}
+          {keyEl}
+          <div className="transformations">
+            {rangeMode && shiftEl}
+            {rangeMode && axisNormal}
+            {rangeMode && (
+              <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />
+            )}
+            {rangeMode && flipOppositeEl}
+            {!rangeMode && midiInputModeEl}
+            {!rangeMode && clearResetEl}
+          </div>
+          {pianoEl}
+          {keyRateEl}
+          {keyMovementEl}
+          {sustainNormal}
+          {keySwingNormal}
         </div>
-        {pianoEl}
-        {keyRateEl}
-        {keyMovementEl}
-        {sustainNormal}
-        {keySwingNormal}
         <div
           style={{ top: numChannels * CHANNEL_HEIGHT }}
           className={classNames('channel channel-horizontal stacked-auxiliary', {

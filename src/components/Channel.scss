@@ -8,6 +8,15 @@
   margin-right: 16px;
 }
 
+// Groups the key-side controls (key · piano · their controls) into one logical
+// section so a theme can render it as a rounded card. display:contents makes the
+// wrapper invisible to layout, so by default it has zero visual/layout effect —
+// the children flow exactly as if it weren't there. The Eclipse theme overrides
+// this to an inline-block card; every other theme is unaffected.
+.channel-section {
+  display: contents;
+}
+
 .channel-number-container {
   display: inline-block;
   vertical-align: top;

@@ -6,7 +6,7 @@ import type { Dispatch, SetStateAction, MutableRefObject } from 'react'
 import type * as Tone from 'tone'
 import type { RhythmSampler } from './rhythmSampler'
 
-export type Theme = 'dark' | 'light' | 'contrast' | 'aero' | 'coquette'
+export type Theme = 'dark' | 'light' | 'contrast' | 'aero' | 'coquette' | 'eclipse'
 export type View = 'horizontal' | 'stacked' | 'condensed' | 'clock'
 export type Section = 'key' | 'piano' | 'sequence'
 

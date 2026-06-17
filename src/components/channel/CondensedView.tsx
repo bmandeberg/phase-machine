@@ -79,10 +79,13 @@ function CondensedView({
           {channelButtonsEl}
           <div className="channel-primary">{muteSoloEl}</div>
         </div>
-        {keyEl}
-        {pianoEl}
-        {keyRateEl}
-        {keyMovementEl}
+        {/* Key-side card group — see HorizontalView. display:contents by default. */}
+        <div className="channel-section channel-section-key">
+          {keyEl}
+          {pianoEl}
+          {keyRateEl}
+          {keyMovementEl}
+        </div>
         <div className="channel-module border"></div>
         <Sequencer
           className="channel-module"

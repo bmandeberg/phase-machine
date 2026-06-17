@@ -89,22 +89,29 @@ function HorizontalView({
           {channelButtonsEl}
           <div className="channel-primary">{muteSoloEl}</div>
         </div>
-        {velocityEl}
-        {notesModeEl}
-        {keyEl}
-        <div className="transformations">
-          {rangeMode && shiftEl}
-          {rangeMode && axisNormal}
-          {rangeMode && <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />}
-          {rangeMode && flipOppositeEl}
-          {!rangeMode && midiInputModeEl}
-          {!rangeMode && clearResetEl}
+        {/* The key-side group (key · piano · their controls). Wrapped so the Eclipse
+            theme can render it as one rounded card; `.channel-section` is
+            display:contents by default, so every other theme is unaffected. */}
+        <div className="channel-section channel-section-key">
+          {velocityEl}
+          {notesModeEl}
+          {keyEl}
+          <div className="transformations">
+            {rangeMode && shiftEl}
+            {rangeMode && axisNormal}
+            {rangeMode && (
+              <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />
+            )}
+            {rangeMode && flipOppositeEl}
+            {!rangeMode && midiInputModeEl}
+            {!rangeMode && clearResetEl}
+          </div>
+          {pianoEl}
+          {keyRateEl}
+          {keyMovementEl}
+          {sustainNormal}
+          {keySwingNormal}
         </div>
-        {pianoEl}
-        {keyRateEl}
-        {keyMovementEl}
-        {sustainNormal}
-        {keySwingNormal}
         <div className="channel-module border"></div>
         <Sequencer
           className="channel-module"

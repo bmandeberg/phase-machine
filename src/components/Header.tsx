@@ -161,7 +161,7 @@ export default class Header extends React.Component<HeaderProps> {
           id="logo"
           className="no-select"
           src={
-            this.props.theme === 'dark'
+            this.props.theme === 'dark' || this.props.theme === 'eclipse'
               ? logoDark
               : this.props.theme === 'aero'
               ? logoAero
@@ -181,7 +181,7 @@ export default class Header extends React.Component<HeaderProps> {
                 : this.props.theme === 'coquette'
                 ? stopCoquette
                 : stop
-              : this.props.theme === 'dark'
+              : this.props.theme === 'dark' || this.props.theme === 'eclipse'
               ? playDark
               : this.props.theme === 'aero'
               ? playAero

@@ -169,6 +169,7 @@ export default function RotaryKnob({
     if (headerStyle && theme !== 'aero' && theme !== 'coquette') {
       if (theme === 'light') return 'FFE4D1'
       if (theme === 'contrast') return '008DFF' // header accent blue
+      if (theme === 'eclipse') return '1A1D23' // charcoal header knob face
       return '17326D'
     }
     switch (theme) {
@@ -182,6 +183,8 @@ export default function RotaryKnob({
         return mute ? 'C2D9E4' : 'DBEFF8'
       case 'coquette':
         return mute ? 'FFE0EE' : 'FFFFFF'
+      case 'eclipse':
+        return mute ? '1f2229' : '31353f'
       default:
         return mute ? 'D8D8D8' : 'E6E6E6'
     }
@@ -189,7 +192,7 @@ export default function RotaryKnob({
 
   const knobInnerStroke = useMemo(() => {
     if (headerStyle && theme !== 'contrast' && theme !== 'aero' && theme !== 'coquette')
-      return theme === 'light' ? 'FFFFFF' : '0F182D'
+      return theme === 'light' ? 'FFFFFF' : theme === 'eclipse' ? '0A0B0E' : '0F182D'
     switch (theme) {
       case 'light':
         return 'FFFFFF'
@@ -203,6 +206,8 @@ export default function RotaryKnob({
       case 'coquette':
         // white face — only the pink outer ring reads
         return 'FFFFFF'
+      case 'eclipse':
+        return '0A0B0E'
       default:
         return 'FFFFFF'
     }
@@ -210,7 +215,7 @@ export default function RotaryKnob({
 
   const knobOuterStroke = useMemo(() => {
     if (headerStyle && theme !== 'contrast' && theme !== 'aero' && theme !== 'coquette')
-      return theme === 'light' ? 'FF9700' : '0F182D'
+      return theme === 'light' ? 'FF9700' : theme === 'eclipse' ? '28466e' : '0F182D'
     switch (theme) {
       case 'light':
         return 'CCCCCC'
@@ -222,6 +227,8 @@ export default function RotaryKnob({
         return mute ? 'E8F4FA' : 'FFFFFF'
       case 'coquette':
         return mute ? 'FFC9E0' : 'FF9EC4'
+      case 'eclipse':
+        return mute ? '262a32' : '474d5b'
       default:
         return 'CCCCCC'
     }
@@ -229,7 +236,7 @@ export default function RotaryKnob({
 
   const knobIndicator = useMemo(() => {
     if (headerStyle && theme !== 'contrast' && theme !== 'aero' && theme !== 'coquette')
-      return theme === 'light' ? 'FF9700' : '008DFF'
+      return theme === 'light' ? 'FF9700' : theme === 'eclipse' ? '3A6FD6' : '008DFF'
     switch (theme) {
       case 'light':
         return '666666'
@@ -241,6 +248,8 @@ export default function RotaryKnob({
         return mute ? '83AABB' : '5C9BB5'
       case 'coquette':
         return mute ? 'D98FB0' : 'FF2D8F'
+      case 'eclipse':
+        return mute ? '4A4F5A' : 'C2C8D2'
       default:
         return '666666'
     }
@@ -248,7 +257,7 @@ export default function RotaryKnob({
 
   const knobTicks = useMemo(() => {
     if (headerStyle && theme !== 'contrast' && theme !== 'aero' && theme !== 'coquette')
-      return theme === 'light' ? 'FF9700' : '008DFF'
+      return theme === 'light' ? 'FF9700' : theme === 'eclipse' ? '2E5299' : '008DFF'
     switch (theme) {
       case 'light':
         return '999999'
@@ -260,6 +269,8 @@ export default function RotaryKnob({
         return '4A8AA3'
       case 'coquette':
         return 'FFA6CE'
+      case 'eclipse':
+        return '5B6270'
       default:
         return '999999'
     }

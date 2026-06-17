@@ -95,6 +95,7 @@ export const CHANNEL_COLORS = ['#00bdff', '#ab80ff', '#ff8de7', '#00db9c', '#fa4
 // are what the user sees. 'light' is shown as "Toxic" and ordered last.
 export const THEMES = [
   { value: 'dark', label: 'Dark' },
+  { value: 'eclipse', label: 'Eclipse 🌑' },
   { value: 'aero', label: 'Aero 🐬' },
   { value: 'coquette', label: 'Coquette 🎀' },
   { value: 'contrast', label: 'Contrast' },
@@ -148,6 +149,8 @@ export const CLOCK_RATES = [
 export const RATE_DROPDOWN_OPTIONS = [...RATE_GRID, { divider: true }, ...CLOCK_RATES]
 
 function themedIcon(icon: string, theme: string) {
+  // Eclipse is a dark theme; it reuses the dark (light-colored) icon assets.
+  if (theme === 'eclipse') theme = 'dark'
   switch (icon) {
     case 'sine':
       switch (theme) {
@@ -377,6 +380,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#cbe7f3'
         case 'coquette':
           return '#ffc9e0'
+        case 'eclipse':
+          return '#2d323d'
         default:
           return '#e6e6e6'
       }
@@ -392,6 +397,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#cbe7f3'
         case 'coquette':
           return '#ffc9e0'
+        case 'eclipse':
+          return '#2d323d'
         default:
           return '#e6e6e6'
       }
@@ -407,6 +414,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#ffffff'
         case 'coquette':
           return '#ffffff'
+        case 'eclipse':
+          return mute ? '#5b6270' : '#c2c8d2'
         default:
           return '#666666'
       }
@@ -422,6 +431,8 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
           return '#5fd06a'
         case 'coquette':
           return '#ff85be'
+        case 'eclipse':
+          return '#2c55b3'
         default:
           return '#33ff00'
       }

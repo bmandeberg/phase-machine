@@ -494,6 +494,7 @@ export default function App() {
         'contrast-theme': theme === 'contrast',
         'aero-theme': theme === 'aero',
         'coquette-theme': theme === 'coquette',
+        'eclipse-theme': theme === 'eclipse',
       })}>
       <Header
         tempo={tempo}

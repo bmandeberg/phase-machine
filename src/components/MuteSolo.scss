@@ -16,7 +16,9 @@ $buttonSize: 28px;
     padding: 0;
     background-color: $lightGray;
     text-align: center;
-    line-height: 36px;
+    // 34px (vs the box's 28px) optically centers the M/S — sits them a touch high
+    // so the caps read centered in the button across every theme.
+    line-height: 34px;
     cursor: pointer;
     // M stacked above S in every view (MIDI routing now lives in the "…" menu).
     display: block;

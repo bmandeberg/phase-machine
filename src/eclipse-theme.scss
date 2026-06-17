@@ -1,0 +1,1501 @@
+@use './sass-globals' as *;
+@use 'sass:math';
+@use 'sass:color';
+
+// ──────────────────────────────────────────────────────────────────────────
+// Eclipse theme 🌑
+//
+// A polished, near-black "studio" dark theme. Two ideas from the reference UIs:
+//   1. Gradients + lighting across the background. The page is a deep charcoal
+//      with a soft, cool blue-gray glow up top (a fixed radial), and every
+//      control surface is a subtle top→bottom gradient rather than a flat fill,
+//      so the UI reads as lit from above.
+//   2. Subtle glassmorphism. Containers (channels, panels, menus, the modal) and
+//      controls carry a hairline border plus a 1px lighter top-stroke
+//      (inset highlight), giving a faint glassy depth at the top edge.
+// The UI chrome accent is a deep blue ($ecAccent, matching the header dropdowns),
+// while the "on"/playing states keep the app's signature orange ($ecOn).
+//
+// Like aero, this overrides only colors / fills / borders, never layout. No
+// backdrop-filter on the always-visible channel list (a re-blur every scroll
+// frame is the perf killer) — the "glass" there is faux (gradient + top stroke).
+// Real blur is reserved for transient overlays (modal / menus).
+// ──────────────────────────────────────────────────────────────────────────
+
+// ── Palette ─────────────────────────────────────────────────────────────────
+$ecBg: #0b0c10; // base near-black (cool)
+$ecGlow: rgba(96, 124, 168, 0.14); // cool blue-gray top glow
+$ecGlow0: rgba(96, 124, 168, 0);
+
+$ecText: #c2c8d2; // cool light gray body text
+$ecTextSoft: #7a808c; // dimmer labels / placeholders
+$ecTextDim: #4a4f5a; // resting mute/solo, faint icons
+
+$ecBorder: rgba(255, 255, 255, 0.09); // hairline border
+$ecBorderHi: rgba(255, 255, 255, 0.15); // hairline border, a touch brighter
+$ecTopStroke: rgba(255, 255, 255, 0.11); // the glass top-highlight line
+
+// control surfaces (subtle top→bottom gradient) — lightened a touch so buttons /
+// dropdowns / steps read clearly against the near-black background
+$ecSurfTop: #33373f;
+$ecSurfBot: #23262d;
+$ecSurfHovTop: #3e424c;
+$ecSurfHovBot: #2d313a;
+$ecSurfActTop: #1d2027;
+$ecSurfActBot: #16181d;
+
+// UI chrome accent — the same deep blue used by the header dropdowns/highlights
+// (was a cyan glow). Used for dropdown/multiselect option highlights, switches, etc.
+$ecAccent: #2c55b3;
+$ecAccentHov: #3a66c8;
+$ecAccentDeep: #2a4d8f; // dim blue (small-dropdown / num-input surfaces)
+$ecAccentDeepHov: #36599f;
+$ecAccentText: #e6edfb; // light ink on the (dark blue) accent fills
+$ecInkDark: #06222a; // dark ink for the light fills (green button, channel-colour states)
+
+// "on"/playing accent — the dark theme's signature orange. A warm playhead glow
+// over the cool UI; kept separate from the blue chrome above (same split the dark
+// theme uses: orange for playing, other hues for chrome). $orange/$orangeHover/
+// $darkOrange come from sass-globals; the deep tone matches dark theme's #9e5302.
+$ecOn: $orange;
+$ecOnHov: $orangeHover;
+$ecOnAct: $darkOrange;
+$ecOnDeep: #9e5302; // dim (ghost-playing / playing-not-selected)
+$ecOnDeepHov: $darkOrange;
+$ecOnText: #0d0e12; // near-black ink on an orange fill
+
+// green stays semantic (the "create/confirm" green-button)
+$ecGreen: #19c79a;
+$ecGreenHov: #2bdcad;
+$ecGreenAct: #13a880;
+
+// muted channel — a cooler, darker, desaturated version
+$ecMuteVeil: rgba(22, 24, 30, 0.62);
+$ecMuteText: #5a606b;
+$ecMuteSurfTop: #22242b;
+$ecMuteSurfBot: #181a20;
+
+// Section-card surfaces. The rounded channel header (sticky) and the key card
+// share one surface so they read as a single continuous panel; the sequencer
+// card uses it too.
+$ecCardTop: #15171d;
+$ecCardBot: #0d0e12;
+$ecCardMuteTop: #181a20;
+$ecCardMuteBot: #121319;
+
+// ── Header "control deck" — a sleek, futuristic glass surface with an
+// iridescent corona rim. Deliberately distinct from the neutral channel
+// controls: cooler, faintly blue-violet glass tiles with a blue glow on active,
+// evoking an eclipse's glowing corona against the dark.
+$ecHdrDeckTop: #181d2b; // cool blue-violet glass (top of the bar)
+$ecHdrDeckBot: #0a0b11; // near-black (bottom)
+$ecHdrTileTop: #252d40; // control tile, resting
+$ecHdrTileBot: #161b28;
+$ecHdrTileHovTop: #2f3954;
+$ecHdrTileHovBot: #1c2231;
+$ecHdrTileActTop: #151a26;
+$ecHdrTileActBot: #10131c;
+$ecHdrEdge: rgba(132, 170, 226, 0.24); // cool blue tile edge
+$ecHdrText: #a2a8b6; // cool gray control text (à la the dark theme)
+$ecHdrLabel: #3a6fd6; // blue control labels (TEMPO, VIEW, …)
+// Header highlight — selected/active controls + dropdown hover. A deep blue (not
+// cyan/teal, so it doesn't clash with the green logo + play button).
+$ecHdrHi: #2c55b3;
+$ecHdrHiHov: #3a66c8;
+$ecHdrHiText: #eaf1ff; // light text on the blue highlight fill
+$ecHdrGlow: rgba(74, 126, 224, 0.45); // blue corona glow on active controls
+$ecCorona: #7c5ce8; // violet flank of the corona rim
+$ecCoronaCore: #5b8ce8; // blue core of the corona rim
+
+// The fixed page background: a cool radial glow over a deep vertical charcoal.
+// Stored once so the page root, #container, the sticky channel header and the
+// axis-knob backdrop can all paint the same fixed image and stay seamless.
+$ecBgImage: radial-gradient(120% 85% at 50% -15%, $ecGlow 0%, $ecGlow0 55%),
+  linear-gradient(to bottom, #0e1015 0%, #090a0d 55%, #060709 100%);
+
+// ── Mixins ──────────────────────────────────────────────────────────────────
+// A lit control surface: vertical gradient + hairline border + top-stroke.
+@mixin ec-surface($top: $ecSurfTop, $bot: $ecSurfBot, $border: $ecBorder) {
+  background-color: $bot;
+  background-image: linear-gradient(to bottom, $top, $bot);
+  border: 1px solid $border;
+  box-shadow: inset 0 1px 0 $ecTopStroke;
+}
+
+// A glass panel/overlay: like ec-surface but tuned for larger containers, with
+// an optional drop shadow for elevation.
+@mixin ec-panel($top, $bot, $border: $ecBorderHi, $elev: none) {
+  background-color: $bot;
+  background-image: linear-gradient(to bottom, $top, $bot);
+  border: 1px solid $border;
+  @if $elev == none {
+    box-shadow: inset 0 1px 0 $ecTopStroke;
+  } @else {
+    box-shadow: inset 0 1px 0 $ecTopStroke, $elev;
+  }
+}
+
+// A header "control deck" glass tile: cool blue-violet gradient + cool edge +
+// top highlight. Used for the header's buttons / dropdowns / num-inputs / radio.
+@mixin ec-hdr($top: $ecHdrTileTop, $bot: $ecHdrTileBot) {
+  background-color: $bot;
+  background-image: linear-gradient(to bottom, $top, $bot);
+  border: 1px solid $ecHdrEdge;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+// The theme class lives on #container, so its background doesn't reach the page
+// root — overscroll at the scroll edges would expose the white <html>/<body>.
+// Mirror the same fixed background on the page root so the rubber-band gap blends.
+html:has(.eclipse-theme),
+body:has(.eclipse-theme) {
+  background-color: $ecBg;
+  background-image: $ecBgImage;
+  background-attachment: fixed;
+}
+
+.eclipse-theme {
+  background-color: $ecBg;
+  background-image: $ecBgImage;
+  background-attachment: fixed;
+  color: $ecText;
+
+  textarea,
+  input {
+    @include ec-surface($ecSurfActTop, $ecSurfActBot);
+    color: $ecText;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  // ── Buttons ─────────────────────────────────────────────────────────────
+  .button {
+    @include ec-surface;
+    color: $ecText;
+    &:hover {
+      @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+    }
+    &:active {
+      @include ec-surface($ecSurfActTop, $ecSurfActBot);
+    }
+    &.green-button {
+      @include ec-surface(color.adjust($ecGreen, $lightness: 6%), $ecGreen);
+      color: $ecInkDark;
+      &:hover {
+        @include ec-surface(color.adjust($ecGreenHov, $lightness: 6%), $ecGreenHov);
+      }
+      &:active {
+        @include ec-surface($ecGreen, $ecGreenAct);
+      }
+    }
+    &.red-button {
+      @include ec-surface(color.adjust($red, $lightness: 6%), $red);
+      color: #ffffff;
+      &:hover {
+        @include ec-surface(color.adjust($redHover, $lightness: 6%), $redHover);
+      }
+      &:active {
+        @include ec-surface($red, $redActive);
+      }
+    }
+  }
+
+  .mute-solo {
+    .button {
+      @include ec-surface;
+      color: $ecTextSoft;
+      // match the regular button hover (e.g. FLIP / OPPOSITE) — the base
+      // .mute-solo .button:hover is a bright gray that wins on source order, so
+      // override it here with the dark surface hover.
+      &:hover {
+        @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+      }
+    }
+    .mute.muted {
+      @include ec-surface(color.adjust($red, $lightness: 6%), $red);
+      color: #ffffff;
+      &:hover {
+        @include ec-surface(color.adjust($redHover, $lightness: 6%), $redHover);
+      }
+    }
+    .solo.soloed {
+      background-image: none;
+      background-color: var(--channel-color);
+      border: 1px solid var(--channel-color);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      color: $ecInkDark;
+      &:hover {
+        background-color: var(--channel-color-hover);
+      }
+    }
+  }
+
+  .midi-modal {
+    .channel-num {
+      color: var(--channel-color);
+    }
+  }
+
+  .instrument-modal {
+    .controls-row,
+    .controls-module,
+    .effect-slot {
+      border-color: $ecBorderHi;
+    }
+    .controls-label {
+      color: $ecTextSoft;
+    }
+    // knobs sit on the dark glass modal already — no extra treatment needed
+  }
+
+  .about-section {
+    border-color: $ecBorderHi;
+    .about-section-title {
+      color: $ecText;
+    }
+    .about-section-text {
+      a,
+      a:hover,
+      a:visited {
+        color: $ecAccentHov;
+      }
+    }
+    .about-section-warning-container {
+      .about-section-warning {
+        background-color: color.adjust($red, $lightness: -42%);
+        color: color.adjust($red, $lightness: 20%);
+        .about-section-warning-icon {
+          background: transparent url('./assets/alert.png') center center;
+          background-size: auto 20px;
+        }
+      }
+    }
+    .about-section-tip-container {
+      .about-section-tip {
+        background-color: color.adjust($ecAccent, $lightness: -38%);
+        color: $ecAccentText;
+        .about-section-tip-icon {
+          background: transparent url('./assets/lightbulb.png') center center;
+          background-size: auto 20px;
+        }
+        .about-section-tip-content {
+          a,
+          a:hover,
+          a:visited {
+            color: $ecAccentText;
+          }
+        }
+      }
+    }
+  }
+
+  .switch-label {
+    &.selected {
+      color: var(--channel-color);
+    }
+  }
+
+  // Match Channel.scss's full selector so this wins the specificity tie (App
+  // Router emits component CSS after this theme CSS).
+  .stacked-auxiliary.first-auxiliary::before {
+    background-color: $ecBorderHi;
+  }
+
+  .border {
+    border-color: $ecBorder;
+  }
+
+  // Clock view (and the default): plain transparent scribbler text on the surface.
+  // Unmuted channels colour the name with the channel colour (muted reverts to the
+  // grey $ecMuteText in the .mute block below).
+  .scribbler {
+    .scribbler-input-container {
+      background-color: transparent;
+    }
+    .scribbler-input {
+      background-color: transparent;
+      color: var(--channel-color);
+    }
+  }
+  // Row views (horizontal / stacked / condensed): the scribbler is a full-height
+  // label band running down the channel's rounded beginning. The whole scribbler
+  // is rotated 270°, so the container's LOCAL top-left / top-right corners map to
+  // the VISUAL bottom-left / top-left — rounding those follows the channel's
+  // rounded start while the inner (header-facing) edge stays square. The inner
+  // textarea inherits the global `textarea` surface (gradient + border) at its own
+  // small size, which is what truncated the band — strip it so only the container's
+  // full-height band shows. (Clock keeps the plain style above.)
+  .channel-horizontal .scribbler {
+    .scribbler-input-container {
+      background-color: $ecSurfActBot;
+      background-image: linear-gradient(to bottom, $ecSurfActTop, $ecSurfActBot);
+      box-shadow: inset 0 1px 0 $ecTopStroke;
+      // The scribbler is rotated 270°, so the band's visual height runs along the
+      // container's WIDTH axis — clip 1px off its left/right edges to shrink the
+      // band 1px on the visual top + bottom, letting the channel borders show.
+      // (The channel name is centered along that axis, so it isn't clipped.)
+      clip-path: inset(0 1px);
+    }
+    .scribbler-input {
+      background: transparent;
+      background-image: none;
+      border: none;
+      box-shadow: none;
+      color: var(--channel-color);
+    }
+  }
+  // muted channels get a dimmer band (the later .mute block handles the text color)
+  .channel-horizontal.mute .scribbler .scribbler-input-container {
+    background-color: $ecMuteSurfBot;
+    background-image: linear-gradient(to bottom, $ecMuteSurfTop, $ecMuteSurfBot);
+  }
+
+  // ── Channels ──────────────────────────────────────────────────────────────
+  // Clock view keeps the faint glass lane — it's one self-contained card already.
+  // Clock view: each channel is one self-contained card. Give it the same glassy
+  // card surface as the section cards plus the same beveled edge (dark outer
+  // border + light highlight just inside the top) for a touch of depth.
+  .channel-clock {
+    @include ec-surface($ecCardTop, $ecCardBot);
+    border-color: rgba(0, 0, 0, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  }
+  .channel-clock.mute {
+    @include ec-surface($ecCardMuteTop, $ecCardMuteBot);
+    border-color: rgba(0, 0, 0, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  }
+  // Horizontal / stacked / condensed: the lane itself is transparent. The
+  // key-side and sequencer SECTIONS each render as their own rounded card
+  // floating on the lit background (see the section-cards block below), so the
+  // lane no longer carries a veil, border or divider of its own.
+  .channel-horizontal {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    // RGB channels for the trailing fade (reused at zero alpha by border-gradient)
+    --channel-bg: 11, 12, 16;
+    // strong, wide dark drop shadow for the pinned header lifting over dark content
+    --sticky-shadow: 5px 0 10px -2px rgba(0, 0, 0, 0.85);
+    &.mute {
+      --channel-bg: 19, 20, 25;
+      background-color: transparent;
+    }
+    // The sticky header is the beginning of the channel. It shares the key card's
+    // surface and leaves its right edge open (no border) so it flows seamlessly
+    // into the key card — together they read as one continuous panel. The opaque
+    // surface also hides whatever scrolls behind it when scrolled horizontally.
+    .channel-sticky {
+      @include ec-surface($ecCardTop, $ecCardBot);
+      border-right: none;
+    }
+    &.mute .channel-sticky {
+      @include ec-surface($ecCardMuteTop, $ecCardMuteBot);
+      border-right: none;
+    }
+    // create-flash: clear the surface so the flash colour shows through the header
+    &.channel-in-active .channel-sticky {
+      background-image: none;
+      background-color: transparent;
+    }
+    .channel-number-container {
+      // a faint cool glow behind the number cluster so it reads apart from the lane
+      background: linear-gradient(to right, rgba(96, 124, 168, 0.13) 0%, rgba(96, 124, 168, 0) 88%);
+      .channel-number {
+        text-shadow: 0 0 6px $ecBg;
+      }
+      .channel-mute-solo .channel-mute-solo-button:not(.muted):not(.soloed) {
+        color: $ecTextDim;
+        text-shadow: 0 0 5px $ecBg;
+      }
+      .channel-mute-solo .channel-mute-solo-button {
+        text-shadow: 0 0 5px $ecBg;
+      }
+    }
+    &.mute .channel-number-container {
+      background: linear-gradient(to right, rgba(70, 78, 92, 0.15) 0%, rgba(70, 78, 92, 0) 88%);
+    }
+    &.channel-in-active {
+      background-color: color.adjust($ecAccentDeep, $lightness: -34%);
+      .channel-horizontal {
+        background-color: color.adjust($ecAccentDeep, $lightness: -34%);
+      }
+    }
+  }
+
+  // ── Section cards (key-side + sequencer) ──────────────────────────────────
+  // The key-side wrapper is display:contents by default (Channel.scss); promote it
+  // to an inline-block card here. The sequencer is already inline-block — card it
+  // directly, scoped to .channel-horizontal so the clock view's sequencer is left
+  // untouched. (Square corners — this theme uses no rounding.)
+  .channel-section-key,
+  .channel-horizontal .sequencer {
+    @include ec-surface($ecCardTop, $ecCardBot);
+    box-sizing: border-box;
+  }
+  // The key card's LEFT is borderless and flush against the sticky header so the
+  // two read as one continuous panel; the key and sequencer cards abut with NO
+  // margin — their borders are what keep them visually separated. Content keeps its
+  // original x, so `.arrow-small` needs no nudge.
+  .channel-section-key {
+    display: inline-block;
+    vertical-align: top;
+    border-left: none;
+    margin-right: 0;
+    // no extra right padding — the last control's own module margin (~16px, the
+    // same gap as before the RATE dropdown) provides the spacing, so the key→seq
+    // boundary matches the rest of the row (and the dark theme).
+    padding-right: 0;
+  }
+  .channel-horizontal .sequencer {
+    // fill the full channel height (was only as tall as its controls) and
+    // vertically center the steps + controls within it. A little more left padding
+    // than right so the first step/control isn't cramped against the card's left
+    // edge (the right side reads more open thanks to the controls' trailing margin).
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 99px;
+    margin-top: 0;
+    // left padding matches the standard module gap (≈ the gap before the RATE
+    // dropdown) so the sequence section begins like the dark theme
+    padding: 0 14px 0 15px;
+  }
+  // muted sections (header + key + sequencer) read as a cooler, darker card
+  .mute .channel-sticky,
+  .mute .channel-section-key,
+  .channel-horizontal.mute .sequencer {
+    @include ec-surface($ecCardMuteTop, $ecCardMuteBot);
+  }
+  // re-assert the header's open right edge + the key card's flush-left, after the
+  // muted surface re-set every border
+  .mute .channel-sticky {
+    border-right: none;
+  }
+  .mute .channel-section-key {
+    border-left: none;
+  }
+  // Stacked view: the auxiliary (sequence) row's card flows out of ITS OWN sticky
+  // header, just like the key card does in the primary row — borderless + flush on
+  // the left. (In horizontal/condensed the sequencer is a standalone gapped card,
+  // so this is scoped to .stacked-auxiliary; the second selector keeps the aux row
+  // flush when muted too.)
+  .stacked-auxiliary .sequencer,
+  .stacked-auxiliary.mute .sequencer {
+    border-left: none;
+    // flush against the sticky-aux header — drop the card's left padding so the
+    // steps start where they do in the other themes (no extra leading space)
+    padding-left: 0;
+    // The cards stand ~2px taller than their row, so the LAST primary channel's
+    // key card (later in the DOM) overflows onto the FIRST aux row (channel 1,
+    // earlier in the DOM) and paints over its top bevel — making that seam read
+    // black. Lift the aux sequencer card above that overflow so its bevel shows.
+    // (The sticky-aux already escapes via its own z-index:1999.)
+    position: relative;
+    z-index: 1;
+  }
+  // Channel-card borders: a dark stroke next to a light stroke for a touch of
+  // beveled depth — a dark outer edge with a light highlight just inside the top.
+  // (Stacked cards overlap by 1px, so a per-card top bevel reads better than
+  // opposite-edge directional borders, which would collide on the same pixel.)
+  .channel-horizontal .channel-sticky,
+  .channel-section-key,
+  .channel-horizontal .sequencer,
+  .channel-horizontal.mute .channel-sticky,
+  .mute .channel-section-key,
+  .channel-horizontal.mute .sequencer {
+    border-color: rgba(0, 0, 0, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  }
+  // drop the gray section dividers — the gap between the cards separates them now
+  .channel-horizontal .channel-module.border {
+    display: none;
+  }
+  .stacked-auxiliary.first-auxiliary::before {
+    display: none;
+  }
+
+  .channel-buttons {
+    // icon asset is light (#A0A0B4) on the dark bg — dim at rest, full on hover
+    .channel-instrument-button .wave-icon {
+      filter: brightness(0.6);
+    }
+    .channel-instrument-button:hover .wave-icon {
+      filter: brightness(1);
+    }
+    .channel-menu-button span {
+      background-color: $ecTextDim;
+    }
+    // the "…" popover — glass, matching the modals: a translucent panel so its own
+    // backdrop blur frosts the channel content behind it.
+    .channel-menu {
+      background-color: rgba(26, 30, 38, 0.72);
+      background-image: linear-gradient(to bottom, rgba(36, 41, 53, 0.78), rgba(16, 18, 24, 0.74));
+      border: 1px solid $ecBorderHi;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 30px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      .channel-menu-item {
+        color: $ecText;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.08);
+        }
+      }
+    }
+  }
+
+  // ── Key (pitch-class strip + clock) ───────────────────────────────────────
+  .key {
+    &.piano-keys {
+      .pitch-class {
+        background-color: #16181d;
+        border: 2px solid $ecBg;
+        border-top: none;
+        &.mute {
+          border-color: #101116;
+        }
+        &:hover {
+          background-color: #1d2026;
+        }
+        // soft inner glow on the small (black) keys — glassy depth, à la aero.
+        // The larger white keys are left clean (the glow only hazes them).
+        &:not(.white-key):not(.selected):not(.playing) {
+          box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.24);
+        }
+        &.white-key {
+          background-color: #3b404b;
+          border-right: none;
+          border-bottom: none;
+          &:hover {
+            background-color: #464c58;
+          }
+        }
+      }
+    }
+    &.clock {
+      .pitch-class {
+        background-color: #3b404b;
+        &:hover {
+          background-color: #464c58;
+        }
+        &:not(.selected):not(.playing) {
+          box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.13);
+        }
+      }
+    }
+    .pitch-class {
+      cursor: pointer;
+      border-style: solid;
+      border-color: var(--channel-color-dark);
+      border-width: 0;
+      transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2),
+        background-color math.div($transitionTime, 4);
+      &.selected {
+        background-color: var(--channel-color) !important;
+        &:hover {
+          background-color: var(--channel-color-hover) !important;
+        }
+      }
+      &.playing {
+        background-color: $ecOn !important;
+        &:hover {
+          background-color: $ecOnHov !important;
+        }
+      }
+      &.ghost-playing {
+        background-color: $ecOnDeep !important;
+        &:hover {
+          background-color: $ecOnDeepHov !important;
+        }
+      }
+      &.previewed {
+        border-width: 5px;
+      }
+    }
+  }
+
+  // ── Numeric inputs ────────────────────────────────────────────────────────
+  .react-numeric-input {
+    input {
+      @include ec-surface($ecSurfActTop, $ecSurfActBot);
+      color: $ecText;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+    b {
+      @include ec-surface;
+      &:hover {
+        @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+      }
+      &:active {
+        @include ec-surface($ecSurfActTop, $ecSurfActBot);
+      }
+    }
+    b:first-of-type {
+      border-bottom-color: rgba(0, 0, 0, 0.5);
+      i {
+        border-color: transparent transparent $ecText;
+      }
+    }
+    b:last-of-type {
+      i {
+        border-color: $ecText transparent transparent;
+      }
+    }
+  }
+
+  // small num inputs (key/seq) get a blue-tinted accent surface
+  .num-input.small-input {
+    input {
+      background-color: $ecBg;
+      background-image: none;
+      border: 1px solid $ecAccentDeep;
+    }
+    b {
+      @include ec-surface(color.adjust($ecAccentDeep, $lightness: 4%), $ecAccentDeep, $ecAccentDeep);
+      &:hover {
+        @include ec-surface(color.adjust($ecAccentDeepHov, $lightness: 4%), $ecAccentDeepHov, $ecAccentDeepHov);
+      }
+      &:active {
+        @include ec-surface($ecAccentDeep, color.adjust($ecAccentDeep, $lightness: -4%));
+      }
+    }
+    b:first-of-type {
+      border-bottom-color: rgba(0, 0, 0, 0.4);
+      i {
+        border-color: transparent transparent $ecAccentText;
+      }
+    }
+    b:last-of-type {
+      i {
+        border-color: $ecAccentText transparent transparent;
+      }
+    }
+  }
+
+  // ── Header: an elevated charcoal bar with a cool top-stroke ────────────────
+  // ── Header: a sleek "control deck" — glass panel + iridescent corona rim ────
+  #header {
+    background-color: $ecHdrDeckBot;
+    // a faint cool corona glow blooming from the top, over the glass gradient
+    background-image: radial-gradient(110% 160% at 50% -10%, rgba(96, 124, 200, 0.16) 0%, rgba(96, 124, 200, 0) 55%),
+      linear-gradient(to bottom, $ecHdrDeckTop, $ecHdrDeckBot);
+    color: $ecHdrLabel;
+    box-shadow: inset 0 1px 0 rgba(180, 200, 245, 0.1), 0 2px 16px rgba(0, 0, 0, 0.55);
+
+    // the volume knob is dark-on-dark — a blue outer ring (a stroke, set in
+    // RotaryKnob's headerStyle knobOuterStroke) lifts it off the header background
+
+    .button {
+      @include ec-hdr;
+      color: $ecHdrText;
+      &:hover {
+        @include ec-hdr($ecHdrTileHovTop, $ecHdrTileHovBot);
+      }
+      &:active {
+        @include ec-hdr($ecHdrTileActTop, $ecHdrTileActBot);
+      }
+    }
+
+    // tempo / channels steppers
+    .num-input.small-input {
+      input {
+        background-color: $ecHdrDeckBot;
+        background-image: none;
+        border: 1px solid $ecHdrEdge;
+        color: $ecHdrText;
+      }
+      b {
+        @include ec-hdr;
+        &:hover {
+          @include ec-hdr($ecHdrTileHovTop, $ecHdrTileHovBot);
+        }
+        &:active {
+          @include ec-hdr($ecHdrTileActTop, $ecHdrTileActBot);
+        }
+      }
+      b:first-of-type {
+        border-bottom-color: rgba(0, 0, 0, 0.4);
+        i {
+          border-color: transparent transparent $ecHdrText;
+        }
+      }
+      b:last-of-type i {
+        border-color: $ecHdrText transparent transparent;
+      }
+    }
+
+    // View / Scroll-To radio buttons — glass tiles, blue corona glow when active
+    .radio-buttons .radio-button {
+      @include ec-hdr;
+      color: $ecHdrText;
+      &:hover {
+        @include ec-hdr($ecHdrTileHovTop, $ecHdrTileHovBot);
+      }
+      &:active {
+        @include ec-hdr($ecHdrTileActTop, $ecHdrTileActBot);
+      }
+      &.radio-button-selected {
+        background-image: none;
+        background-color: $ecHdrHi;
+        border-color: $ecHdrHi;
+        color: $ecHdrHiText;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 9px $ecHdrGlow;
+        &:hover {
+          background-color: $ecHdrHiHov;
+        }
+      }
+    }
+
+    // View / MIDI dropdowns
+    .dropdown-container.small-dropdown {
+      .dropdown-control {
+        @include ec-hdr;
+        color: $ecHdrText;
+      }
+      .dropdown-arrow-wrapper {
+        @include ec-hdr;
+        border-left-color: rgba(0, 0, 0, 0.35);
+        &:hover {
+          @include ec-hdr($ecHdrTileHovTop, $ecHdrTileHovBot);
+        }
+      }
+      .dropdown-arrow {
+        border-color: $ecHdrText transparent transparent;
+      }
+      .dropdown-root.open .dropdown-arrow {
+        border-color: transparent transparent $ecHdrText !important;
+      }
+      .dropdown-menu {
+        @include ec-panel(#1c2231, #12151e, $ecHdrEdge, 0 8px 22px rgba(0, 0, 0, 0.6));
+      }
+      .dropdown-option {
+        color: $ecHdrText;
+      }
+      .dropdown-option:hover,
+      .dropdown-option.selected {
+        background-color: $ecHdrHi;
+        color: $ecHdrHiText;
+      }
+    }
+
+    // Preset bar
+    .presets {
+      @include ec-hdr;
+      color: $ecHdrText;
+      .preset-action {
+        border-right-color: rgba(0, 0, 0, 0.35);
+        img {
+          filter: hue-rotate(8deg) saturate(0.85) brightness(1.05);
+        }
+        &:hover {
+          background-color: $ecHdrTileHovBot;
+        }
+        &:active {
+          background-color: $ecHdrTileActBot;
+        }
+        &.disabled {
+          background-color: $ecHdrTileActBot;
+        }
+      }
+      input[type='text'] {
+        background-color: $ecHdrDeckBot;
+        background-image: none;
+        color: $ecHdrText;
+        border-color: $ecHdrEdge;
+      }
+      .preset-hotkey {
+        background-color: $ecHdrHi;
+        color: $ecHdrHiText;
+      }
+      .dropdown-arrow-wrapper {
+        border-left-color: $ecHdrEdge !important;
+      }
+      .dropdown-control {
+        border-right-color: rgba(0, 0, 0, 0.35) !important;
+      }
+    }
+
+    // tint the bright #008dff blue gear/? icons toward the cool blue palette
+    .header-aux {
+      .header-settings,
+      .header-about {
+        filter: hue-rotate(8deg) saturate(0.85) brightness(1.05);
+      }
+      .header-settings {
+        background: url('./assets/gear-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/gear-hover-blue.png');
+          background-size: 22px;
+        }
+      }
+      .header-about {
+        background: url('./assets/question-blue.png');
+        background-size: 22px;
+        &:hover {
+          background: url('./assets/question-blue-hover.png');
+          background-size: 22px;
+        }
+      }
+    }
+  }
+  // The corona: a thin iridescent violet→blue→violet rim glowing under the bar.
+  #header-border {
+    background-color: transparent;
+    background-image: linear-gradient(
+      90deg,
+      rgba($ecCorona, 0) 0%,
+      rgba($ecCorona, 0.32) 18%,
+      $ecCoronaCore 50%,
+      rgba($ecCorona, 0.32) 82%,
+      rgba($ecCorona, 0) 100%
+    );
+    box-shadow: 0 0 10px rgba(74, 126, 224, 0.32);
+  }
+
+  .radio-buttons {
+    .radio-button {
+      @include ec-surface;
+      color: $ecText;
+      &:hover {
+        @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+      }
+      &:active {
+        @include ec-surface($ecSurfActTop, $ecSurfActBot);
+      }
+      &.radio-button-selected {
+        @include ec-surface(color.adjust($ecAccent, $lightness: 6%), $ecAccent, $ecAccent);
+        color: $ecAccentText;
+        &:hover {
+          @include ec-surface($ecAccentHov, $ecAccent, $ecAccent);
+        }
+      }
+    }
+  }
+
+  // ── Piano roll ────────────────────────────────────────────────────────────
+  .piano {
+    $inRange: #6c7382;
+    $inRangeHover: color.adjust($inRange, $lightness: 6%);
+    $inRangeBorder: #343a45;
+    // thin shadows hugging the piano roll's left/right edges, cast inward onto the
+    // first/last keys for a touch of depth. An overlay (not an inset shadow on
+    // .piano itself, which would render behind the keys); pointer-events:none and
+    // z-index keep it purely visual and above the keys.
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      box-shadow: inset 6px 0 6px -6px rgba(0, 0, 0, 0.55), inset -6px 0 6px -6px rgba(0, 0, 0, 0.55);
+    }
+    // a 1px light "front-edge" highlight along the very bottom of the keys
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 98%, rgba(255, 255, 255, 0.2) 100%);
+    }
+    .piano-note {
+      background-color: #1a1c22;
+      border-color: $ecBg;
+      &.in-range {
+        background-color: #2a2d35;
+        border-color: transparent;
+      }
+      // keyboard-mode hover on the black keys — kept clearly darker than the white
+      // keys (#343943) so a hovered black key still reads as black, not white
+      &.interactive:hover {
+        background-color: #282c34;
+      }
+      &.white-key {
+        background-color: #343943;
+        border-color: $ecBg;
+        &.in-range {
+          background-color: $inRange;
+          border-color: $inRangeBorder;
+          &.selected {
+            background-color: var(--channel-color);
+          }
+        }
+        // soft inner glow on the playable "white" keys (à la aero)
+        &.in-range:not(.selected):not(.playing) {
+          box-shadow: inset 0 0 7px rgba(255, 255, 255, 0.18);
+        }
+        &.interactive:hover {
+          background-color: color.adjust($inRange, $lightness: -5%);
+          &.selected {
+            background-color: var(--channel-color-hover);
+          }
+        }
+      }
+      &.selected {
+        background-color: var(--channel-color);
+        &.interactive:hover {
+          background-color: var(--channel-color-hover);
+        }
+      }
+      &.playing,
+      &.selected {
+        &.white-key.in-range {
+          border-color: $ecAccentDeep;
+          &.next-black-key-near::before,
+          &.next-black-key-middle::after,
+          &.next-black-key-far::after,
+          &.prev-black-key-near::before,
+          &.prev-black-key-middle::before,
+          &.prev-black-key-far::before {
+            border: 2px solid $inRange;
+            border-top: none;
+          }
+          &.next-black-key-near::before {
+            border-right: none;
+          }
+          &.next-black-key-middle::after,
+          &.next-black-key-far::after {
+            border-right: none;
+          }
+          &.prev-black-key-near::before,
+          &.prev-black-key-middle::before,
+          &.prev-black-key-far::before {
+            border-left: none;
+          }
+          & + .piano-note.in-range {
+            &::after {
+              border: 2px solid $inRange;
+              border-right: none;
+              border-left: none;
+              border-top: none;
+            }
+            & + .white-key.in-range {
+              border-left-color: $ecAccentDeep;
+            }
+          }
+          & + .white-key.in-range {
+            border-left-color: $ecAccentDeep;
+          }
+        }
+      }
+      &.playing {
+        background-color: $ecOn;
+        &.interactive:hover {
+          background-color: $ecOnHov;
+        }
+        &.white-key.in-range {
+          border-color: $ecOnAct;
+          background-color: $ecOn;
+          & + .piano-note.in-range {
+            & + .white-key.in-range {
+              border-left-color: $ecOnAct;
+            }
+          }
+          & + .white-key.in-range {
+            border-left-color: $ecOnAct;
+          }
+          &.interactive:hover {
+            background-color: $ecOnHov;
+          }
+        }
+      }
+    }
+    // a brighter bottom edge on the black keys for a touch of perceived depth
+    .piano-note:not(.white-key):not(.selected):not(.playing) {
+      border-bottom-color: rgba(255, 255, 255, 0.16);
+    }
+    .piano-range {
+      path {
+        stroke: var(--channel-color);
+      }
+    }
+    .piano-border {
+      border-left: 2px solid $ecBg;
+      border-right: 2px solid $ecBg;
+    }
+  }
+
+  .notes-mode {
+    .notes-mode-label.notes-mode-selected {
+      color: var(--channel-color);
+    }
+  }
+
+  // ── MultiSelect ───────────────────────────────────────────────────────────
+  .multi-select {
+    @include ec-surface;
+    color: $ecText;
+
+    .multi-select-placeholder {
+      color: $ecTextSoft;
+    }
+    .multi-select-arrow-container {
+      @include ec-surface;
+      border-left-color: rgba(0, 0, 0, 0.4);
+      &:hover {
+        @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+      }
+    }
+    .multi-select-arrow {
+      border-color: $ecText transparent transparent;
+    }
+    .multi-select-dropdown {
+      @include ec-panel(#1a1d23, #111318, $ecBorderHi, 0 8px 22px rgba(0, 0, 0, 0.6));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .multi-select-option {
+      color: $ecText;
+      &:hover {
+        background-color: $ecAccent;
+        color: $ecAccentText;
+      }
+    }
+    .multi-select-selection {
+      background-color: rgba(255, 255, 255, 0.06);
+      color: $ecText;
+      .multi-select-remove {
+        &:before,
+        &:after {
+          background-color: $ecText;
+        }
+        &:hover {
+          &:before,
+          &:after {
+            background-color: $red;
+          }
+        }
+      }
+    }
+  }
+
+  // ── Dropdowns ─────────────────────────────────────────────────────────────
+  .dropdown-root {
+    &.open .dropdown-arrow {
+      border-color: transparent transparent $ecText !important;
+    }
+  }
+  .dropdown-control {
+    @include ec-surface;
+    color: $ecText;
+  }
+  .dropdown-arrow-wrapper {
+    @include ec-surface;
+    border-left-color: rgba(0, 0, 0, 0.4);
+    &:hover {
+      @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+    }
+    &:active {
+      @include ec-surface($ecSurfActTop, $ecSurfActBot);
+    }
+  }
+  .dropdown-arrow {
+    border-color: $ecText transparent transparent;
+  }
+  .dropdown-menu {
+    @include ec-panel(#1a1d23, #111318, $ecBorderHi, 0 8px 22px rgba(0, 0, 0, 0.6));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .dropdown-option {
+    color: $ecText;
+  }
+  .dropdown-option:hover,
+  .dropdown-option.selected {
+    background-color: $ecAccent;
+    color: $ecAccentText;
+  }
+  // grid-menu group dividers/headings
+  .dropdown-menu.grid-menu {
+    .dropdown-divider,
+    .dropdown-heading:not(:first-child) {
+      border-color: $ecBorderHi;
+    }
+    .dropdown-heading {
+      color: $ecTextSoft;
+    }
+  }
+  .dropdown-noresults {
+    color: $ecTextSoft;
+  }
+  .dropdown-container {
+    &.small-dropdown {
+      .dropdown-control {
+        @include ec-surface(color.adjust($ecAccentDeep, $lightness: 4%), $ecAccentDeep, $ecAccentDeep);
+        color: $ecAccentText;
+      }
+      .dropdown-arrow-wrapper {
+        @include ec-surface(color.adjust($ecAccentDeep, $lightness: 4%), $ecAccentDeep, $ecAccentDeep);
+        border-left-color: rgba(0, 0, 0, 0.35);
+        &:hover {
+          @include ec-surface(color.adjust($ecAccentDeepHov, $lightness: 4%), $ecAccentDeepHov, $ecAccentDeepHov);
+        }
+      }
+      .dropdown-arrow {
+        border-color: $ecAccentText transparent transparent;
+      }
+      .dropdown-root.open .dropdown-arrow {
+        border-color: transparent transparent $ecAccentText !important;
+      }
+      .dropdown-menu {
+        border: 1px solid $ecAccentDeep;
+      }
+      .dropdown-option:hover,
+      .dropdown-option.selected {
+        background-color: $ecAccent;
+        color: $ecAccentText;
+      }
+    }
+    &.dropdown-num-inputs-container {
+      .dropdown-arrow-wrapper {
+        z-index: 1;
+      }
+    }
+    &.graphic-options {
+      .dropdown-option {
+        color: $ecText;
+        &:hover,
+        &.selected {
+          background-color: $ecAccentDeep;
+          color: $ecAccentText;
+        }
+      }
+    }
+  }
+
+  // ── Presets ───────────────────────────────────────────────────────────────
+  .presets {
+    @include ec-surface(color.adjust($ecAccentDeep, $lightness: 4%), $ecAccentDeep, $ecAccentDeep);
+    color: $ecAccentText;
+    .preset-action {
+      border-right-color: rgba(0, 0, 0, 0.35);
+      img {
+        // the save/add/trash icons are the same bright #008dff blue as the gear/?
+        // icons — give them the matching cool-blue tone
+        filter: hue-rotate(8deg) saturate(0.85) brightness(1.05);
+      }
+      &:hover {
+        background-color: $ecAccentDeepHov;
+      }
+      &:active {
+        background-color: color.adjust($ecAccentDeep, $lightness: -4%);
+      }
+      &.disabled {
+        background-color: color.adjust($ecAccentDeep, $lightness: -10%);
+      }
+    }
+    input[type='text'] {
+      background-color: $ecBg;
+      background-image: none;
+      color: $ecText;
+      border-color: $ecAccentDeep;
+    }
+    .preset-hotkey {
+      background-color: $ecAccent;
+      color: $ecAccentText;
+    }
+    .dropdown-arrow-wrapper {
+      border-left-color: $ecAccentDeep !important;
+    }
+    .dropdown-control {
+      border-right-color: rgba(0, 0, 0, 0.35) !important;
+    }
+  }
+
+  // ── Sequencer steps ───────────────────────────────────────────────────────
+  .sequence-step {
+    @include ec-surface;
+    color: $ecText;
+    &:hover {
+      @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+    }
+    &:active {
+      @include ec-surface($ecSurfActTop, $ecSurfActBot);
+    }
+    &.selected {
+      background-image: none;
+      background-color: var(--channel-color);
+      border: 1px solid var(--channel-color);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      color: $ecInkDark;
+      &:hover {
+        background-color: var(--channel-color-hover);
+      }
+    }
+    &.playing {
+      @include ec-surface(color.adjust($ecOnDeep, $lightness: 6%), $ecOnDeep, $ecOnDeep);
+      color: $ecOnText;
+      &:hover {
+        @include ec-surface($ecOnDeepHov, $ecOnDeep, $ecOnDeep);
+      }
+      &.selected {
+        background-image: none;
+        background-color: $ecOn;
+        border-color: $ecOn;
+        color: $ecOnText;
+        &:hover {
+          background-color: $ecOnHov;
+        }
+      }
+    }
+  }
+
+  .knob-container {
+    &.axis-knob {
+      &::before {
+        background-color: $ecBg;
+        background-image: $ecBgImage;
+        background-attachment: fixed;
+      }
+    }
+  }
+
+  // ── Clock view ────────────────────────────────────────────────────────────
+  .channel-clock {
+    .channel-drawer-control {
+      @include ec-surface;
+      .arrow-down {
+        border-top-color: $ecTextSoft;
+      }
+      &:hover {
+        @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+      }
+      &:active {
+        @include ec-surface($ecSurfActTop, $ecSurfActBot);
+      }
+      &.drawer-open {
+        background-image: none;
+        background-color: var(--channel-color);
+        border-color: var(--channel-color);
+        &:hover {
+          background-color: var(--channel-color-hover);
+        }
+        .arrow-down {
+          border-top-color: $ecInkDark;
+        }
+      }
+    }
+    &.channel-in-active {
+      background-color: color.adjust($ecAccentDeep, $lightness: -34%);
+    }
+  }
+
+  // react-switch track: give the gray slot real depth so it separates from the
+  // channel / modal surface — a pronounced recessed inset shadow, a light bottom
+  // rim that catches the "light", and a dark outer ring to outline it against the
+  // surface. (box-shadow via CSS overrides the lib's inline style; !important req.)
+  .react-switch-bg {
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9), inset 0 -1px 1px rgba(255, 255, 255, 0.13),
+      0 0 0 1px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  // ── Modals & dialogs ──────────────────────────────────────────────────────
+  // The full-screen container does the frosting (backdrop-filter blurs the whole
+  // app behind it at once). The window is a TRANSLUCENT rounded glass panel so
+  // that blurred backdrop reads through it — real glassmorphism. Covers the
+  // instrument / MIDI / settings / about modals and the alert dialog (they all
+  // share .modal-window; the alert dialog also carries .modal-container).
+  .modal-container {
+    background-color: rgba(4, 5, 7, 0.62);
+    backdrop-filter: blur(11px);
+    -webkit-backdrop-filter: blur(11px);
+    .modal-window {
+      // NB: no backdrop-filter on the window itself — it would become the
+      // containing block for (and clip) the position:fixed dropdown/multiselect
+      // menus meant to overflow it. The container already blurs the app; the
+      // window's translucency lets that frosted backdrop show through.
+      background-color: rgba(22, 26, 34, 0.78);
+      background-image: linear-gradient(to bottom, rgba(34, 39, 51, 0.82), rgba(14, 16, 21, 0.8));
+      border: 1px solid $ecBorderHi;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 48px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  // ── Muted channel: cooler, darker, desaturated ────────────────────────────
+  .mute {
+    background-color: $ecMuteVeil;
+    color: $ecMuteText;
+
+    .scribbler {
+      .scribbler-input-container {
+        background-color: transparent;
+      }
+      .scribbler-input {
+        background-color: transparent;
+        color: $ecMuteText;
+      }
+    }
+
+    .button,
+    .dropdown-control,
+    .multi-select {
+      @include ec-surface($ecMuteSurfTop, $ecMuteSurfBot);
+      color: $ecMuteText;
+    }
+
+    .react-numeric-input {
+      b {
+        @include ec-surface($ecMuteSurfTop, $ecMuteSurfBot);
+        &:hover {
+          @include ec-surface(color.adjust($ecMuteSurfTop, $lightness: 3%), color.adjust($ecMuteSurfBot, $lightness: 3%));
+        }
+        i {
+          border-color: transparent transparent $ecMuteText;
+        }
+      }
+      b:last-of-type i {
+        border-color: $ecMuteText transparent transparent;
+      }
+      input {
+        border-color: rgba(255, 255, 255, 0.05);
+        color: $ecMuteText;
+      }
+    }
+
+    .dropdown-arrow-wrapper,
+    .multi-select-arrow-container {
+      @include ec-surface($ecMuteSurfTop, $ecMuteSurfBot);
+      border-left-color: rgba(0, 0, 0, 0.4);
+      &:hover {
+        @include ec-surface(color.adjust($ecMuteSurfTop, $lightness: 3%), color.adjust($ecMuteSurfBot, $lightness: 3%));
+      }
+    }
+    .dropdown-arrow,
+    .multi-select-arrow {
+      border-top-color: $ecMuteText;
+    }
+    .dropdown-menu,
+    .multi-select-dropdown {
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .react-switch-bg {
+      background-color: #1c1e24 !important;
+    }
+    .notes-mode,
+    .switch-label {
+      color: $ecMuteText;
+    }
+
+    .sequence-step:not(.selected):not(.playing) {
+      @include ec-surface($ecMuteSurfTop, $ecMuteSurfBot);
+      color: $ecMuteText;
+    }
+
+    .piano-keys {
+      .pitch-class:not(.selected):not(.playing) {
+        background-color: #141519;
+      }
+      .white-key:not(.selected):not(.playing) {
+        background-color: $ecMuteSurfTop !important;
+        &:hover {
+          background-color: color.adjust($ecMuteSurfTop, $lightness: 3%) !important;
+        }
+      }
+    }
+    .piano .piano-note:not(.selected):not(.playing) {
+      background-color: #15171c;
+      &.in-range {
+        background-color: #1c1e24;
+      }
+      &.white-key {
+        background-color: $ecMuteSurfTop;
+        &.in-range {
+          background-color: #3a3f49;
+        }
+      }
+    }
+
+    // colored SVG faders/knobs read as muted when desaturated
+    .fader-slot {
+      filter: saturate(0.4) brightness(0.95);
+    }
+    .fader-knob {
+      filter: saturate(0.4) brightness(0.85);
+    }
+    .arrow-small,
+    .arrow-clock {
+      filter: saturate(0.3) brightness(0.9);
+      opacity: 0.6;
+    }
+
+    &.channel-clock {
+      .channel-clock-bottom.drawer-open .piano-drawer-border {
+        border: 2px solid $ecBg;
+      }
+    }
+    &.channel-horizontal {
+      .channel-number {
+        text-shadow: 0 0 5px $ecMuteSurfBot;
+      }
+    }
+
+    // The instrument modal is a full-screen overlay that merely *renders* inside
+    // the channel's DOM, so the muted-channel rules above bleed into its editor.
+    // Muting a channel shouldn't recolor its instrument editor — re-assert the
+    // normal (non-mute) surfaces for the controls the modal actually contains
+    // (dropdowns, numeric inputs, the poly/sync switch; knobs use .knob-container,
+    // which mute never touches). Nested under .mute so it outweighs those rules.
+    .modal-container {
+      color: $ecText;
+
+      .dropdown-control {
+        @include ec-surface;
+        color: $ecText;
+      }
+      .dropdown-arrow-wrapper {
+        @include ec-surface;
+        border-left-color: rgba(0, 0, 0, 0.4);
+        &:hover {
+          @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+        }
+      }
+      .dropdown-arrow {
+        border-color: $ecText transparent transparent;
+      }
+      .dropdown-menu {
+        border-color: $ecBorderHi;
+      }
+
+      .react-numeric-input {
+        input {
+          @include ec-surface($ecSurfActTop, $ecSurfActBot);
+          color: $ecText;
+        }
+        b {
+          @include ec-surface;
+          &:hover {
+            @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+          }
+          i {
+            border-color: transparent transparent $ecText;
+          }
+        }
+        b:last-of-type i {
+          border-color: $ecText transparent transparent;
+        }
+      }
+
+      // restore the themed switch track (themedSwitch's eclipse off/on color)
+      .react-switch-bg {
+        background-color: #2d323d !important;
+      }
+      .switch-label {
+        color: $ecText;
+      }
+    }
+  }
+
+  // ── Edge fades: dissolve scrolled content into the dark background ─────────
+  .border-gradient {
+    &.gradient-top {
+      background: linear-gradient(to bottom, rgba(11, 12, 16, 1) 5%, rgba(11, 12, 16, 0));
+    }
+    &.gradient-right {
+      background: linear-gradient(to left, rgba(11, 12, 16, 1) 5%, rgba(11, 12, 16, 0));
+    }
+    &.gradient-bottom {
+      background: linear-gradient(to top, rgba(11, 12, 16, 1) 5%, rgba(11, 12, 16, 0));
+    }
+  }
+}

@@ -40,6 +40,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     switch (theme) {
       case 'light':
         return faderSlot
+      case 'eclipse':
       case 'dark':
         return mute ? faderSlotMuteDark : faderSlotDark
       case 'contrast':
@@ -57,6 +58,7 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     switch (theme) {
       case 'light':
         return mute ? faderKnobMute : faderKnob
+      case 'eclipse':
       case 'dark':
         return mute ? faderKnobMuteDark : faderKnobDark
       case 'contrast':

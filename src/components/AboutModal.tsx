@@ -235,7 +235,9 @@ export default function AboutModal({ theme }: AboutModalProps) {
             <img
               className="about-section-image"
               style={{ width: section.img.width }}
-              src={`images/${section.img.src}_${theme === 'aero' || theme === 'coquette' ? 'light' : theme}.png`}
+              src={`images/${section.img.src}_${
+                theme === 'aero' || theme === 'coquette' ? 'light' : theme === 'eclipse' ? 'dark' : theme
+              }.png`}
               alt=""
             />
           )}

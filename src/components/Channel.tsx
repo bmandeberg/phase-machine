@@ -1242,6 +1242,7 @@ export default function Channel({
     switch (theme) {
       case 'light':
         return arrowSmall
+      case 'eclipse':
       case 'dark':
         return arrowSmallDark
       case 'contrast':
@@ -1259,6 +1260,7 @@ export default function Channel({
     switch (theme) {
       case 'light':
         return arrowClock
+      case 'eclipse':
       case 'dark':
         return arrowClockDark
       case 'contrast':
