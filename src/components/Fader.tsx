@@ -16,6 +16,8 @@ import faderKnobAero from '../assets/fader-knob-aero.svg'
 import faderSlotAero from '../assets/fader-slot-aero.svg'
 import faderKnobCoquette from '../assets/fader-knob-coquette.svg'
 import faderSlotCoquette from '../assets/fader-slot-coquette.svg'
+import faderKnobEclipse from '../assets/fader-knob-eclipse.svg'
+import faderKnobMuteEclipse from '../assets/fader-knob-mute-eclipse.svg'
 import './Fader.scss'
 
 const FADER_HEIGHT = 41
@@ -58,7 +60,10 @@ export default function Fader({ label, grabbing, setGrabbing, value, setValue, m
     switch (theme) {
       case 'light':
         return mute ? faderKnobMute : faderKnob
+      // eclipse reuses the dark slot (above) but gets its own knob, styled to
+      // match the eclipse buttons' surface gradient + glass edge.
       case 'eclipse':
+        return mute ? faderKnobMuteEclipse : faderKnobEclipse
       case 'dark':
         return mute ? faderKnobMuteDark : faderKnobDark
       case 'contrast':
