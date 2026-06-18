@@ -224,7 +224,10 @@ export default function RotaryKnob({
       case 'contrast':
         return mute ? '454C60' : '757CA0'
       case 'aero':
-        return mute ? 'E8F4FA' : 'FFFFFF'
+        // a faint cool-teal ring (was white) gives the knob a defined edge against
+        // the bright aqua bg — matching the buttons' subtle rgba(27,92,116,0.18)
+        // hairline (≈ this light teal once composited over the bright background)
+        return mute ? 'C5DCE4' : 'B0D1DB'
       case 'coquette':
         return mute ? 'FFC9E0' : 'FF9EC4'
       case 'eclipse':

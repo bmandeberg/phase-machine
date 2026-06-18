@@ -377,7 +377,7 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
         case 'contrast':
           return '#45454C'
         case 'aero':
-          return '#cbe7f3'
+          return '#9fc3d2'
         case 'coquette':
           return '#ffc9e0'
         case 'eclipse':
@@ -394,7 +394,7 @@ export function themedSwitch(component: string, theme: string, mute?: boolean) {
         case 'contrast':
           return '#45454C'
         case 'aero':
-          return '#cbe7f3'
+          return '#9fc3d2'
         case 'coquette':
           return '#ffc9e0'
         case 'eclipse':
