@@ -55,6 +55,10 @@ $modalHeaderHeight: 50px;
       font-size: 24px;
       text-transform: uppercase;
       letter-spacing: 0.01em;
+      // contain the floated title group + close button so they don't leak into
+      // .modal-content (which is a BFC via overflow-y and would otherwise tuck up
+      // beside an overflowing float).
+      display: flow-root;
       p,
       .modal-close {
         @extend .no-select;
@@ -73,8 +77,25 @@ $modalHeaderHeight: 50px;
           background-size: 22px;
         }
       }
-      p {
+      // title + channel name share a baseline (DIN title vs Marker name have
+      // different font metrics, so float/inline-block can't align them — flex
+      // baseline does). The group floats left; the close button still floats right.
+      .modal-title {
         float: left;
+        display: flex;
+        align-items: baseline;
+        p {
+          margin: 0;
+        }
+      }
+      // the channel's scribbler name beside the title (instrument modal only) —
+      // handwriting font + channel colour (set inline), echoing the scribbler.
+      .modal-channel-name {
+        @extend .no-select;
+        margin-left: 12px;
+        font-family: 'Marker', 'DIN Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        text-transform: none;
+        letter-spacing: 0;
       }
     }
     .modal-content {

@@ -1059,6 +1059,7 @@ export default function Channel({
           midiIn={midiIn}
           setMidiIn={setMidiIn}
           color={color}
+          scribbler={scribbler}
           theme={theme}
           customMidiOutChannel={customMidiOutChannel}
           setCustomMidiOutChannel={setCustomMidiOutChannel}
@@ -1086,6 +1087,7 @@ export default function Channel({
     [
       channelNum,
       color,
+      scribbler,
       customMidiOutChannel,
       slotNodesRef,
       rebuildEffectChain,

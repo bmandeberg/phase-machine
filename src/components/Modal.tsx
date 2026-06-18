@@ -25,6 +25,7 @@ interface ModalProps {
   midiIn?: boolean | string
   setMidiIn?: any
   color?: string
+  scribbler?: string
   customMidiOutChannel?: boolean
   setCustomMidiOutChannel?: any
   channelNum?: number
@@ -75,6 +76,7 @@ export default function Modal({
   midiIn,
   setMidiIn,
   color,
+  scribbler,
   customMidiOutChannel,
   setCustomMidiOutChannel,
   channelNum,
@@ -266,7 +268,14 @@ export default function Modal({
     <div className="modal-container" ref={nodeRef} onClick={clickScrim}>
       <div className="modal-window">
         <div className="modal-header">
-          <p>{modalTypeRef.current}</p>
+          <div className="modal-title">
+            <p>{modalTypeRef.current}</p>
+            {modalTypeRef.current === 'instrument' && scribbler && (
+              <span className="modal-channel-name" style={{ color }}>
+                {scribbler}
+              </span>
+            )}
+          </div>
           <div className="modal-close" onClick={closeModal}></div>
         </div>
         <div className="modal-content">
