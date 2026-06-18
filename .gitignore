@@ -22,6 +22,10 @@ tsconfig.tsbuildinfo
 # vercel
 .vercel
 
+# claude code (per-user local config)
+.claude/settings.local.json
+.claude/worktrees/
+
 # misc
 .DS_Store
 .env.local
