@@ -197,6 +197,10 @@ body:has(.aero-theme) {
     .button {
       @include aero-flat($glassNeutral);
       color: $aeroTextSoft;
+      // match the regular button hover (base sets a gray $lightGrayHover otherwise)
+      &:hover {
+        background-color: $glassNeutralHover;
+      }
     }
     .mute.muted {
       @include aero-flat($glassRed);
@@ -327,6 +331,10 @@ body:has(.aero-theme) {
     // sitting right below the previous channel's teal bottom-stroke for a light/dark
     // seam between channels.
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    // the opaque sticky header (below) paints over the channel's inset highlight, so
+    // it carries its own copy (see .channel-sticky). Fold that highlight into the
+    // horizontal-scroll elevation shadow too, so the bevel survives while scrolled.
+    --sticky-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 2px 0 4px -2px rgba(27, 92, 116, 0.22);
     // Opaque sticky-header backing. Aero's page background is a FIXED vertical
     // gradient and its channels are translucent glass over it, so a flat colour
     // can't match every channel's vertical position. Paint the panel with the same
@@ -339,6 +347,10 @@ body:has(.aero-theme) {
         radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
         linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
       background-attachment: fixed;
+      // the opaque header backing covers the channel's inset top-highlight (the
+      // light half of the bevel), so re-paint it here. (When scrolled-x, the base
+      // swaps in --sticky-shadow, which also carries this highlight — see above.)
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
     }
     // muted: layer the cool desaturated veil over the same fixed gradient so the
     // panel matches the muted glass channel body to its right.
@@ -572,9 +584,9 @@ body:has(.aero-theme) {
     // the roll's edges so they read apart from the key separators:
     //   • thin soft teal shadows hugging the left/right edges, cast inward onto the
     //     first/last keys for depth (borrowed from eclipse; cool teal, not black).
-    //   • the roll's top/bottom edges get a light-over-dark bevel in a deeper teal
-    //     (vs the lighter white-key separators) so the seam between vertically-
-    //     stacked channels' rolls reads with a touch of depth.
+    //   • the roll's top/bottom edges get a light-over-dark bevel: a white top line
+    //     paired with a bottom line in the same aqua as the white-key separators, so
+    //     the seam between vertically-stacked channels' rolls reads with depth.
     &::before {
       content: '';
       position: absolute;
@@ -582,7 +594,7 @@ body:has(.aero-theme) {
       pointer-events: none;
       z-index: 5;
       box-shadow: inset 7px 0 7px -7px rgba($aeroInk, 0.4), inset -7px 0 7px -7px rgba($aeroInk, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba($aeroInk, 0.5);
+        inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(135, 189, 212, 0.82);
     }
     // :not(.selected):not(.playing) so the recolor never overrides the channel
     // color (selected) or orange (playing) — those win for any selected/held key.
@@ -731,10 +743,13 @@ body:has(.aero-theme) {
     color: $aeroText;
   }
   .dropdown-arrow-wrapper {
-    // nested inside the control — translucent only (no second backdrop blur)
+    // nested inside the control — translucent only (no second backdrop blur).
+    // the white border-left divides the value area from the arrow; pair it with a
+    // slightly darker line just inside (inset) for a beveled, engraved seam.
     background-color: rgba(255, 255, 255, 0.12);
     border: 1px solid $glassBorder;
     border-left-color: rgba(255, 255, 255, 0.25);
+    box-shadow: inset 1px 0 0 rgba($aeroInk, 0.2);
     &:hover {
       background-color: rgba(255, 255, 255, 0.26);
     }
@@ -770,6 +785,7 @@ body:has(.aero-theme) {
         background-color: rgba(255, 255, 255, 0.12);
         border: 1px solid $glassBorder;
         border-left-color: rgba(255, 255, 255, 0.25);
+        box-shadow: inset 1px 0 0 rgba($aeroInk, 0.2);
         &:hover {
           background-color: rgba(255, 255, 255, 0.26);
         }
@@ -811,6 +827,7 @@ body:has(.aero-theme) {
       background-color: rgba(255, 255, 255, 0.12);
       border: 1px solid $glassBorder;
       border-left-color: rgba(255, 255, 255, 0.25);
+      box-shadow: inset 1px 0 0 rgba($aeroInk, 0.2);
       &:hover {
         background-color: rgba(255, 255, 255, 0.26);
       }
