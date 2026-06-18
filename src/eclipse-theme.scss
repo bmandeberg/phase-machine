@@ -457,6 +457,16 @@ body:has(.eclipse-theme) {
     // boundary matches the rest of the row (and the dark theme).
     padding-right: 0;
   }
+  // The axis→flip connector arrow is absolutely positioned (Channel.scss top:64px),
+  // tuned for the dark theme's 28px buttons. Eclipse buttons carry a 1px border
+  // (ec-surface), so they render 30px tall and the second ("Flip") button's center
+  // sits ~4px lower — nudge the arrow down to stay vertically centered with it.
+  .channel .arrow-small {
+    top: 68px;
+    // the bordered key card shifts this column a hair left vs the dark theme; nudge
+    // the arrow 1px right (base left:532px) so it sits centered over the flip group.
+    left: 533px;
+  }
   .channel-horizontal .sequencer {
     // fill the full channel height (was only as tall as its controls) and
     // vertically center the steps + controls within it. A little more left padding

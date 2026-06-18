@@ -489,6 +489,13 @@ body:has(.aero-theme) {
       opacity: 0.55;
     }
   }
+  // The axis→flip connector arrow is absolutely positioned (Channel.scss top:64px),
+  // tuned for the dark theme's 28px buttons. Aero buttons carry a 1px border
+  // (aero-flat), so they render 30px tall and the second ("Flip") button's center
+  // sits ~3px lower — nudge the arrow down to stay vertically centered with it.
+  .channel .arrow-small {
+    top: 67px;
+  }
   .stacked-auxiliary.first-auxiliary::before {
     // the seam between a stacked primary group and its first aux channel — match
     // the teal between-channel stroke so the bevel stays consistent
