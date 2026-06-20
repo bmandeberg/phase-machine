@@ -8,6 +8,11 @@ import './RotaryKnob.scss'
 
 const AXIS_LINE_SIZE = 270
 const RANDOM_RANGE = 10000000
+// power-curve strength for `logHighDetail` knobs. Well below 1 (vs the default
+// `e` for low-end detail) so most of the knob travel lands in the high end of the
+// range — e.g. the pluck resonance reaches r≈0.9 (sustain ~10×) by its midpoint,
+// dedicating the whole top half to the long-ring region rather than the last sliver.
+const LOG_HIGH_DETAIL_STRENGTH = 0.14
 
 interface RotaryKnobProps {
   value: number
@@ -36,6 +41,12 @@ interface RotaryKnobProps {
   theme?: string
   rangeMode?: boolean
   logarithmic?: boolean
+  // log-curve direction (only meaningful with `logarithmic`). Default packs the
+  // fine resolution at the LOW end of the range (good for frequency-like params,
+  // e.g. the Dampening cutoff). `logHighDetail` flips it to pack the detail at the
+  // HIGH end — for params whose audible effect saturates near the max, like the
+  // pluck's resonance (Karplus-Strong feedback, where sustain ~ 1/(1-r)).
+  logHighDetail?: boolean
   updateOnce?: boolean
   // color the knob to match the header UI accent (blue in dark/contrast, orange
   // in light) instead of the default neutral channel-knob palette.
@@ -73,14 +84,19 @@ export default function RotaryKnob({
   theme,
   rangeMode,
   logarithmic,
+  logHighDetail,
   updateOnce,
   headerStyle,
   resetValue,
 }: RotaryKnobProps) {
   const minVal = useMemo(() => min || 0, [min])
   const maxVal = useMemo(() => (axisKnob ? 24 : max || KNOB_MAX), [axisKnob, max])
+  // low-end detail by default; logHighDetail swaps in the high-end strength (see above)
+  const logExp = logHighDetail ? LOG_HIGH_DETAIL_STRENGTH : Math.E
 
-  const [internalValue, setInternalValue] = useState(logarithmic ? expInterpolate(minVal, maxVal, value, true) : value)
+  const [internalValue, setInternalValue] = useState(
+    logarithmic ? expInterpolate(minVal, maxVal, value, true, logExp) : value
+  )
 
   const updateValue = useCallback(
     (val: number) => {
@@ -102,19 +118,19 @@ export default function RotaryKnob({
       if (newValue != null) {
         setInternalValue(newValue)
         if (logarithmic) {
-          newValue = expInterpolate(minVal, maxVal, newValue)
+          newValue = expInterpolate(minVal, maxVal, newValue, false, logExp)
         }
         setValue(newValue)
       }
     },
-    [axisKnob, logarithmic, setValue, value, maxVal, minVal, detent]
+    [axisKnob, logarithmic, logExp, setValue, value, maxVal, minVal, detent]
   )
 
   useEffect(() => {
     if (updateOnce) {
-      setInternalValue(logarithmic ? expInterpolate(minVal, maxVal, value, true) : value)
+      setInternalValue(logarithmic ? expInterpolate(minVal, maxVal, value, true, logExp) : value)
     }
-  }, [logarithmic, maxVal, minVal, updateOnce, value])
+  }, [logarithmic, logExp, maxVal, minVal, updateOnce, value])
 
   const startTurningKnob = useCallback(() => {
     setGrabbing?.(true)
@@ -135,9 +151,9 @@ export default function RotaryKnob({
     } else {
       target = minVal
     }
-    setInternalValue(logarithmic ? expInterpolate(minVal, maxVal, target, true) : target)
+    setInternalValue(logarithmic ? expInterpolate(minVal, maxVal, target, true, logExp) : target)
     setValue(target)
-  }, [resetValue, detent, logarithmic, maxVal, minVal, setValue])
+  }, [resetValue, detent, logarithmic, logExp, maxVal, minVal, setValue])
 
   const knobSize = useMemo<React.CSSProperties>(() => {
     if (axisKnobLarge) {
