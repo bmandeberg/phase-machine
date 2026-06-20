@@ -600,18 +600,26 @@ body:has(.aero-theme) {
   // "Black" keys become muted aqua so nothing reads as flat gray; the playable
   // (in-range) keys get a crisp top highlight. selected/playing keep channel/orange.
   .piano {
-    // An overlay above the keys (purely visual, pointer-events:none) that gives the
-    // roll's top/bottom edges a light-over-dark bevel: a white top line paired with a
-    // bottom line in the same aqua as the white-key separators, so the seam between
-    // vertically-stacked channels' rolls reads with depth. (The roll's left/right
-    // edges intentionally carry no inward depth shadow.)
+    // An overlay above the keys (purely visual, pointer-events:none) that frames the
+    // roll's edges:
+    //   • top/bottom get a light-over-dark bevel — a white top line paired with a
+    //     bottom line in the same aqua as the white-key separators — so the seam
+    //     between vertically-stacked channels' rolls reads with depth.
+    //   • start/end (left/right) get a 1px stroke in that same white-key-separator
+    //     aqua at half opacity (0.41) so the roll reads as framed — a touch lighter
+    //     than the seams so the ends don't over-assert — rather than bleeding into
+    //     the channel.
+    // All four are crisp 1px inset box-shadows (no blur) — cheap, and drawn here
+    // (always rendered) rather than on .piano-border, which aero only mounts on muted
+    // channels; so the frame looks identical muted or not.
     &::before {
       content: '';
       position: absolute;
       inset: 0;
       pointer-events: none;
       z-index: 5;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(135, 189, 212, 0.82);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(135, 189, 212, 0.82),
+        inset 1px 0 0 rgba(135, 189, 212, 0.41), inset -1px 0 0 rgba(135, 189, 212, 0.41);
     }
     // :not(.selected):not(.playing) so the recolor never overrides the channel
     // color (selected) or orange (playing) — those win for any selected/held key.
