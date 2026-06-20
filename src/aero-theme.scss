@@ -85,24 +85,36 @@ $aeroBlueIconTone: saturate(0.6) brightness(1.04) hue-rotate(-6deg) opacity(0.62
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-// The theme class lives on #container, so its background doesn't reach the page root —
-// overscroll at the scroll edges would otherwise expose the white <html>/<body>. Mirror
-// the same viewport-fixed gradient on the page root so the rubber-band gap blends in.
+// The page background: a soft sun-glow up top over a sky → aqua → water → meadow
+// vertical wash. Stored once so the fixed background layer + the sticky header +
+// the axis-knob backdrop can all paint the same image and stay seamless.
+$aeroBgImage: radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+  linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+
+// The gradient lives on ONE viewport-fixed compositor layer (body::before), NOT as
+// `background-attachment: fixed` on the scrolling #container — fixed-attachment
+// re-rasterizes the whole-viewport gradient on every scroll frame, while a
+// position:fixed element is painted once and merely kept pinned by the compositor
+// (identical look, no per-scroll repaint). html/body keep a flat base colour for
+// the rubber-band overscroll gap (the fixed layer below also covers it).
 html:has(.aero-theme),
 body:has(.aero-theme) {
   background-color: $aeroAqua;
-  background-image: radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
-    linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
-  background-attachment: fixed;
+}
+body:has(.aero-theme)::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: $aeroAqua;
+  background-image: $aeroBgImage;
 }
 
 .aero-theme {
-  // sky → aqua → water → meadow, with a soft sun-glow up top. Fixed so the sky
-  // stays put while channels scroll over it.
-  background-color: $aeroAqua;
-  background-image: radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
-    linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
-  background-attachment: fixed;
+  // transparent so the viewport-fixed gradient layer above shows through the
+  // scroller instead of #container painting (and re-rastering) its own copy
+  background: transparent;
   color: $aeroText;
 
   textarea,
@@ -343,9 +355,12 @@ body:has(.aero-theme) {
     // of the channel while hiding whatever scrolls behind it.
     .channel-sticky {
       background-color: $aeroAqua;
-      background-image: linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.14)),
-        radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
-        linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+      background-image: linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.14)), $aeroBgImage;
+      // This header is opaque (it hides content scrolled behind it), so it can't
+      // show the body::before layer through — it must paint the sky itself, and
+      // background-attachment:fixed keeps that paint viewport-aligned with the
+      // fixed layer so the two read as one continuous sky. (Unlike #container, this
+      // is a small region, so its per-scroll re-raster is a minor cost.)
       background-attachment: fixed;
       // the opaque header backing covers the channel's inset top-highlight (the
       // light half of the bevel), so re-paint it here. (When scrolled-x, the base
@@ -355,9 +370,7 @@ body:has(.aero-theme) {
     // muted: layer the cool desaturated veil over the same fixed gradient so the
     // panel matches the muted glass channel body to its right.
     &.mute .channel-sticky {
-      background-image: linear-gradient(rgba(199, 213, 221, 0.46), rgba(199, 213, 221, 0.46)),
-        radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
-        linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
+      background-image: linear-gradient(rgba(199, 213, 221, 0.46), rgba(199, 213, 221, 0.46)), $aeroBgImage;
     }
     // create-flash: also drop the fixed gradient (the base rule only clears the
     // background-color) so the flash shows through the header in aero too.
@@ -567,9 +580,10 @@ body:has(.aero-theme) {
   // use the aero sky so it matches the theme instead of flashing white
   .knob-container.axis-knob::before {
     background-color: $aeroAqua;
-    background-image: radial-gradient(90% 60% at 50% -8%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
-      linear-gradient(to bottom, $aeroSky 0%, $aeroAqua 38%, $aeroWater 64%, $aeroMeadow 100%);
-    background-attachment: fixed;
+    // RotaryKnob.scss already makes this ::before a position:fixed, 100vw×100vh
+    // layer, so its gradient is viewport-aligned without `background-attachment:
+    // fixed` — which would only re-add the per-scroll re-raster we removed elsewhere.
+    background-image: $aeroBgImage;
   }
 
   // instrument / wave icons are flat #666 gray SVGs; colorize them to aero aqua.
@@ -583,13 +597,13 @@ body:has(.aero-theme) {
     filter: $aeroIconFilter;
   }
 
-  // ── Piano + key: frosted aqua keys instead of gray, with a light inner glow ──
+  // ── Piano + key: frosted aqua keys instead of gray, with a lit top edge ──
   // "Black" keys become muted aqua so nothing reads as flat gray; the playable
-  // (in-range) keys get a soft inner glow. selected/playing keep channel/orange.
+  // (in-range) keys get a crisp top highlight. selected/playing keep channel/orange.
   .piano {
     // An overlay above the keys (purely visual, pointer-events:none) that paints
     // the roll's edges so they read apart from the key separators:
-    //   • thin soft teal shadows hugging the left/right edges, cast inward onto the
+    //   • thin soft teal gradients hugging the left/right edges, cast inward onto the
     //     first/last keys for depth (borrowed from eclipse; cool teal, not black).
     //   • the roll's top/bottom edges get a light-over-dark bevel: a white top line
     //     paired with a bottom line in the same aqua as the white-key separators, so
@@ -600,8 +614,13 @@ body:has(.aero-theme) {
       inset: 0;
       pointer-events: none;
       z-index: 5;
-      box-shadow: inset 7px 0 7px -7px rgba($aeroInk, 0.4), inset -7px 0 7px -7px rgba($aeroInk, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(135, 189, 212, 0.82);
+      // left/right edge depth via narrow GRADIENTS, not blurred inset shadows: this
+      // overlay spans the whole roll and re-rasterizes under the range box on every
+      // drag frame, and a blurred shadow there is the framerate cost (proved out in
+      // eclipse). The top/bottom bevel lines stay as 0-blur box-shadows (cheap).
+      background: linear-gradient(to right, rgba($aeroInk, 0.4), rgba($aeroInk, 0) 7px),
+        linear-gradient(to left, rgba($aeroInk, 0.4), rgba($aeroInk, 0) 7px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(135, 189, 212, 0.82);
     }
     // :not(.selected):not(.playing) so the recolor never overrides the channel
     // color (selected) or orange (playing) — those win for any selected/held key.
@@ -610,9 +629,11 @@ body:has(.aero-theme) {
       border-color: rgba(255, 255, 255, 0.7);
       &.in-range {
         background-color: #5c9bb5;
-        // in-range black keys are only ~7px wide; an all-around glow eats their
-        // width and makes them look thin, so use a top-only highlight here
-        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
+        // top-only (these black keys are only ~7px wide, so an all-around glow eats
+        // their width) and 0-blur: .in-range toggles on every range-drag frame, so a
+        // blurred shadow here would re-raster on that hot path (it measurably cost
+        // framerate in eclipse). Was inset 0 1px 2px.
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
       }
       &.interactive:hover {
         background-color: #7eb1c7;
@@ -627,7 +648,11 @@ body:has(.aero-theme) {
         border-bottom-color: transparent;
         &.in-range {
           background-color: rgba(255, 255, 255, 0.62);
-          box-shadow: inset 0 0 7px rgba(255, 255, 255, 0.65);
+          // crisp 0-blur top highlight instead of a 7px all-around glow: this exact
+          // pattern (blurred glow on in-range keys, which toggle every range-drag
+          // frame) measurably cost ~15fps in eclipse. The brighter fill carries the
+          // in-range read; a hairline keeps a touch of gloss for ~free.
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
         }
         &.interactive:hover {
           background-color: rgba(255, 255, 255, 0.5);

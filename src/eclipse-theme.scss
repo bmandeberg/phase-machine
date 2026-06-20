@@ -122,6 +122,20 @@ $ecBgImage: radial-gradient(120% 85% at 50% -15%, $ecGlow 0%, $ecGlow0 55%),
   box-shadow: inset 0 1px 0 $ecTopStroke;
 }
 
+// A CHEAP glassy drop-in for ec-surface, for elements that repaint frequently
+// (sequence steps toggling .playing on every playhead tick). Instead of a full
+// vertical linear-gradient (costlier to re-raster), it's a flat midpoint fill + a
+// very faint sheen + a 0-blur beveled rim (bright top edge → dark bottom edge).
+// That reads as edge-lit glass — and follows rounded corners, which a gradient
+// border-image can't — for roughly a flat fill's paint cost (0-blur shadows are
+// cheap; it's blurred shadows that hurt on a repaint hot path).
+@mixin ec-flat($top: $ecSurfTop, $bot: $ecSurfBot, $border: $ecBorder) {
+  background-color: color.mix($top, $bot);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
+  border: 1px solid $border;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.28);
+}
+
 // Engraved double-line seam splitting a dropdown's value area from its arrow
 // toggle: a dark groove (border-left) paired with a light highlight just inside
 // it — the same beveled "double line" the aero dropdowns use. Re-includes the
@@ -155,20 +169,32 @@ $ecBgImage: radial-gradient(120% 85% at 50% -15%, $ecGlow 0%, $ecGlow0 55%),
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-// The theme class lives on #container, so its background doesn't reach the page
-// root — overscroll at the scroll edges would expose the white <html>/<body>.
-// Mirror the same fixed background on the page root so the rubber-band gap blends.
+// The page background gradient lives on ONE viewport-fixed compositor layer
+// (body::before), NOT as a `background-attachment: fixed` on the scrolling
+// #container. Fixed-attachment forces the browser to re-rasterize the whole-
+// viewport gradient on every scroll frame; a position:fixed element is painted
+// once and merely kept pinned by the compositor — identical look, no per-scroll
+// repaint. The theme class lives on #container, whose background doesn't reach the
+// page root, so html/body keep a flat base colour for the rubber-band overscroll
+// gap (the fixed layer below also covers the viewport during overscroll).
 html:has(.eclipse-theme),
 body:has(.eclipse-theme) {
   background-color: $ecBg;
+}
+body:has(.eclipse-theme)::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: $ecBg;
   background-image: $ecBgImage;
-  background-attachment: fixed;
 }
 
 .eclipse-theme {
-  background-color: $ecBg;
-  background-image: $ecBgImage;
-  background-attachment: fixed;
+  // transparent so the viewport-fixed gradient layer above shows through the
+  // scroller instead of #container painting (and re-rastering) its own copy
+  background: transparent;
   color: $ecText;
 
   textarea,
@@ -596,17 +622,18 @@ body:has(.eclipse-theme) {
             background-color: #464c58;
           }
         }
-        // Lit keys (selected = channel color, playing = orange): the resting
-        // white inner-glow washes out against a bright fill, flattening the 3D.
-        // Restore depth hue-agnostically with a glossy bevel that keeps the resting
-        // light direction (bright left + bottom) but amps it for the bright surface
-        // and adds a soft dark shadow on the opposite (top + right) edges so the key
-        // reads as a raised, rounded cap regardless of the fill color.
+        // Lit keys (selected = channel color, playing = orange): keep the raised-
+        // cap light direction (bright lower-left, dark upper-right) but as crisp,
+        // 0-blur edge hairlines rather than soft blurred bevels. These are the
+        // states a key transitions INTO when it plays, so the box-shadow re-
+        // rasterizes on every frame of the light-up transition — a blurred bevel
+        // there is the playback paint cost; crisp edges read nearly the same and
+        // paint almost for free. (Resting keys keep their soft glow — they don't
+        // repaint on a hot path.)
         &.selected,
         &.playing {
-          box-shadow: inset 2px 0 4px -2px rgba(255, 255, 255, 0.55),
-            inset 0 -3px 4px -2px rgba(255, 255, 255, 0.55), inset -2px 0 3px -2px rgba(0, 0, 0, 0.25),
-            inset 0 3px 3px -2px rgba(0, 0, 0, 0.25);
+          box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.5),
+            inset -1px 0 0 rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(0, 0, 0, 0.22);
         }
       }
     }
@@ -916,19 +943,21 @@ body:has(.eclipse-theme) {
     $inRange: #6c7382;
     $inRangeHover: color.adjust($inRange, $lightness: 6%);
     $inRangeBorder: #343a45;
-    // thin shadows hugging the piano roll's left/right edges, cast inward onto the
-    // first/last keys for a touch of depth. An overlay (not an inset shadow on
-    // .piano itself, which would render behind the keys); pointer-events:none and
-    // z-index keep it purely visual and above the keys.
+    // Dark depth hugging the roll's left/right edges, cast inward over the first/last
+    // keys, plus a 1px light front-edge highlight along the bottom. Overlays above the
+    // keys (pointer-events:none + z-index). The left/right depth uses narrow edge
+    // GRADIENTS rather than a blurred inset box-shadow — visually equivalent inner
+    // shadows, but a gradient is a cheap edge lerp (transparent middle paints free)
+    // instead of a full-width blur convolution that re-rasterizes under the range box.
     &::before {
       content: '';
       position: absolute;
       inset: 0;
       pointer-events: none;
       z-index: 5;
-      box-shadow: inset 6px 0 6px -6px rgba(0, 0, 0, 0.55), inset -6px 0 6px -6px rgba(0, 0, 0, 0.55);
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 7px),
+        linear-gradient(to left, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 7px);
     }
-    // a 1px light "front-edge" highlight along the very bottom of the keys
     &::after {
       content: '';
       position: absolute;
@@ -959,10 +988,9 @@ body:has(.eclipse-theme) {
             background-color: var(--channel-color);
           }
         }
-        // soft inner glow on the playable "white" keys (à la aero)
-        &.in-range:not(.selected):not(.playing) {
-          box-shadow: inset 0 0 7px rgba(255, 255, 255, 0.18);
-        }
+        // NB: no blurred inner glow here — these keys toggle .in-range on every frame
+        // of a range-drag, and a blurred inset shadow re-rasterizes expensively on
+        // that hot path (it measurably cost framerate). In-range reads from the fill.
         &.interactive:hover {
           background-color: color.adjust($inRange, $lightness: -5%);
           &.selected {
@@ -1246,14 +1274,18 @@ body:has(.eclipse-theme) {
   }
 
   // ── Sequencer steps ───────────────────────────────────────────────────────
+  // ec-flat (cheap glass), not ec-surface's full gradient: steps toggle .playing on
+  // every playhead tick, so their fill repaints constantly — ec-flat's flat fill +
+  // faint sheen + 0-blur bevel re-rasterizes far cheaper than a full gradient while
+  // still reading as edge-lit glass.
   .sequence-step {
-    @include ec-surface;
+    @include ec-flat;
     color: $ecText;
     &:hover {
-      @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+      @include ec-flat($ecSurfHovTop, $ecSurfHovBot);
     }
     &:active {
-      @include ec-surface($ecSurfActTop, $ecSurfActBot);
+      @include ec-flat($ecSurfActTop, $ecSurfActBot);
     }
     &.selected {
       background-image: none;
@@ -1266,10 +1298,10 @@ body:has(.eclipse-theme) {
       }
     }
     &.playing {
-      @include ec-surface(color.adjust($ecOnDeep, $lightness: 6%), $ecOnDeep, $ecOnDeep);
+      @include ec-flat(color.adjust($ecOnDeep, $lightness: 6%), $ecOnDeep, $ecOnDeep);
       color: $ecOnText;
       &:hover {
-        @include ec-surface($ecOnDeepHov, $ecOnDeep, $ecOnDeep);
+        @include ec-flat($ecOnDeepHov, $ecOnDeep, $ecOnDeep);
       }
       &.selected {
         background-image: none;
@@ -1285,10 +1317,12 @@ body:has(.eclipse-theme) {
 
   .knob-container {
     &.axis-knob {
+      // RotaryKnob.scss already makes this ::before a position:fixed, 100vw×100vh
+      // layer, so its gradient is viewport-aligned without `background-attachment:
+      // fixed` — which would only re-add the per-scroll re-raster we just removed.
       &::before {
         background-color: $ecBg;
         background-image: $ecBgImage;
-        background-attachment: fixed;
       }
     }
   }
