@@ -600,25 +600,17 @@ body:has(.aero-theme) {
   // "Black" keys become muted aqua so nothing reads as flat gray; the playable
   // (in-range) keys get a crisp top highlight. selected/playing keep channel/orange.
   .piano {
-    // An overlay above the keys (purely visual, pointer-events:none) that paints
-    // the roll's edges so they read apart from the key separators:
-    //   • thin soft teal gradients hugging the left/right edges, cast inward onto the
-    //     first/last keys for depth (borrowed from eclipse; cool teal, not black).
-    //   • the roll's top/bottom edges get a light-over-dark bevel: a white top line
-    //     paired with a bottom line in the same aqua as the white-key separators, so
-    //     the seam between vertically-stacked channels' rolls reads with depth.
+    // An overlay above the keys (purely visual, pointer-events:none) that gives the
+    // roll's top/bottom edges a light-over-dark bevel: a white top line paired with a
+    // bottom line in the same aqua as the white-key separators, so the seam between
+    // vertically-stacked channels' rolls reads with depth. (The roll's left/right
+    // edges intentionally carry no inward depth shadow.)
     &::before {
       content: '';
       position: absolute;
       inset: 0;
       pointer-events: none;
       z-index: 5;
-      // left/right edge depth via narrow GRADIENTS, not blurred inset shadows: this
-      // overlay spans the whole roll and re-rasterizes under the range box on every
-      // drag frame, and a blurred shadow there is the framerate cost (proved out in
-      // eclipse). The top/bottom bevel lines stay as 0-blur box-shadows (cheap).
-      background: linear-gradient(to right, rgba($aeroInk, 0.4), rgba($aeroInk, 0) 7px),
-        linear-gradient(to left, rgba($aeroInk, 0.4), rgba($aeroInk, 0) 7px);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(135, 189, 212, 0.82);
     }
     // :not(.selected):not(.playing) so the recolor never overrides the channel

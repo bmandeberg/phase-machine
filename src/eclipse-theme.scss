@@ -943,21 +943,9 @@ body:has(.eclipse-theme)::before {
     $inRange: #6c7382;
     $inRangeHover: color.adjust($inRange, $lightness: 6%);
     $inRangeBorder: #343a45;
-    // Dark depth hugging the roll's left/right edges, cast inward over the first/last
-    // keys, plus a 1px light front-edge highlight along the bottom. Overlays above the
-    // keys (pointer-events:none + z-index). The left/right depth uses narrow edge
-    // GRADIENTS rather than a blurred inset box-shadow — visually equivalent inner
-    // shadows, but a gradient is a cheap edge lerp (transparent middle paints free)
-    // instead of a full-width blur convolution that re-rasterizes under the range box.
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 5;
-      background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 7px),
-        linear-gradient(to left, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 7px);
-    }
+    // A 1px light front-edge highlight along the bottom of the roll. Overlay above the
+    // keys (pointer-events:none + z-index). (The roll's left/right edges intentionally
+    // carry no inward depth shadow.)
     &::after {
       content: '';
       position: absolute;
