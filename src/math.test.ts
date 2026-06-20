@@ -148,6 +148,13 @@ describe('expInterpolate', () => {
   it('is non-linear between endpoints (curves below the midpoint)', () => {
     expect(expInterpolate(0, 10, 5)).toBeLessThan(5)
   })
+  it('strength < 1 packs detail at the high end (curves above the midpoint)', () => {
+    expect(expInterpolate(0, 10, 5, false, 0.14)).toBeGreaterThan(5)
+  })
+  it('inverts: a forward map then an inverted map round-trips', () => {
+    const forward = expInterpolate(0, 0.99, 0.4, false, 0.14)
+    expect(expInterpolate(0, 0.99, forward, true, 0.14)).toBeCloseTo(0.4)
+  })
 })
 
 describe('constrain', () => {

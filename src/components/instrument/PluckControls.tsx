@@ -31,7 +31,8 @@ function PluckControls({
     min: number,
     max: number,
     reset?: number,
-    logarithmic?: boolean
+    logarithmic?: boolean,
+    logHighDetail?: boolean
   ) => (
     <RotaryKnob
       className="instrument-item"
@@ -46,6 +47,7 @@ function PluckControls({
       mute={false}
       theme={theme}
       logarithmic={logarithmic}
+      logHighDetail={logHighDetail}
       resetValue={reset}
     />
   )
@@ -56,7 +58,9 @@ function PluckControls({
           <p className="controls-label">Pluck</p>
           {knob(pluckAttackNoise, setPluckAttackNoise, 'Attack Noise', 0.1, 20, savedInstrumentParams?.pluckAttackNoise)}
           {knob(pluckDampening, setPluckDampening, 'Dampening', 100, 7000, savedInstrumentParams?.pluckDampening, true)}
-          {knob(pluckResonance, setPluckResonance, 'Resonance', 0, 0.99, savedInstrumentParams?.pluckResonance)}
+          {/* logarithmic + high-detail: resonance's audible sustain saturates near
+              the top (1/(1-r)), so pack the knob's fine resolution at the high end */}
+          {knob(pluckResonance, setPluckResonance, 'Resonance', 0, 0.99, savedInstrumentParams?.pluckResonance, true, true)}
           {knob(pluckRelease, setPluckRelease, 'Release', 0.01, 4, savedInstrumentParams?.pluckRelease)}
         </div>
       </div>

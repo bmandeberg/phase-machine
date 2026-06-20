@@ -83,8 +83,13 @@ export function scaleToRange(num: number, inMin: number, inMax: number, outMin: 
   return ((num - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
 }
 
-export function expInterpolate(min: number, max: number, value: number, invert = false) {
-  const exp = invert ? 1 / Math.E : Math.E
+// Maps `value` across [min, max] through a power curve of strength `strength`.
+// strength > 1 packs fine resolution at the LOW end of the range; strength < 1
+// packs it at the HIGH end. `invert` applies the reciprocal exponent — used to go
+// the opposite direction (value↔knob-position), so a forward + inverted call round
+// trips. Default strength e keeps the historical logarithmic knob behavior.
+export function expInterpolate(min: number, max: number, value: number, invert = false, strength = Math.E) {
+  const exp = invert ? 1 / strength : strength
   return (max - min) * Math.pow((value - min) / (max - min), exp) + min
 }
 

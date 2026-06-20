@@ -102,22 +102,11 @@ function EffectSlotControls({
   const setSyncedDelay = useCallback((rate: string) => setField('syncDelayTime', rate), [setField])
   const toggleSyncDelay = useCallback(
     (on: boolean) => {
-      if (!on) {
-        setField('syncDelayTime', false)
-        return
-      }
-      let nearest = syncedDelayOptions[0]
-      let bestDiff = Infinity
-      for (const rate of syncedDelayOptions) {
-        const diff = Math.abs(rateToSeconds(rate, tempo) - slot.delayTime)
-        if (diff < bestDiff) {
-          bestDiff = diff
-          nearest = rate
-        }
-      }
-      setField('syncDelayTime', nearest)
+      // toggling sync on starts at a dotted eighth note (a musical, neutral
+      // default); the user can then pick any other rate from the dropdown.
+      setField('syncDelayTime', on ? '8n.' : false)
     },
-    [setField, syncedDelayOptions, tempo, slot.delayTime]
+    [setField]
   )
 
   const showAmount = WET_EFFECTS.includes(slot.type)
