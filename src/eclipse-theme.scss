@@ -596,6 +596,18 @@ body:has(.eclipse-theme) {
             background-color: #464c58;
           }
         }
+        // Lit keys (selected = channel color, playing = orange): the resting
+        // white inner-glow washes out against a bright fill, flattening the 3D.
+        // Restore depth hue-agnostically with a glossy bevel that keeps the resting
+        // light direction (bright left + bottom) but amps it for the bright surface
+        // and adds a soft dark shadow on the opposite (top + right) edges so the key
+        // reads as a raised, rounded cap regardless of the fill color.
+        &.selected,
+        &.playing {
+          box-shadow: inset 2px 0 4px -2px rgba(255, 255, 255, 0.55),
+            inset 0 -3px 4px -2px rgba(255, 255, 255, 0.55), inset -2px 0 3px -2px rgba(0, 0, 0, 0.25),
+            inset 0 3px 3px -2px rgba(0, 0, 0, 0.25);
+        }
       }
     }
     &.clock {
