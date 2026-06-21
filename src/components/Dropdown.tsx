@@ -96,6 +96,23 @@ export default function Dropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Escape closes the menu (only attached while open, so a stray Escape elsewhere
+  // doesn't repeatedly hit every dropdown on the page). Captured + stopPropagation so
+  // an open dropdown inside the modal swallows the Escape — closing just the menu, not
+  // also the modal (which has its own bubble-phase Escape→close on document). When the
+  // dropdown is closed this listener is gone, so Escape falls through to close the modal.
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.stopPropagation()
+        setOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown, true)
+    return () => document.removeEventListener('keydown', handleKeyDown, true)
+  }, [open])
+
   const optionHeight = useMemo(() => (small ? 20 : 27), [small])
 
   // In grid mode the menu is `gridColumns` wide, so its height is driven by the row
