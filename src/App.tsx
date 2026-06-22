@@ -48,14 +48,15 @@ function sectionScrollPositions(): number[] {
     const sticky = el.closest('.channel')?.querySelector('.channel-sticky') as HTMLElement | null
     return el.offsetLeft - (sticky?.offsetWidth ?? 0) - STICKY_SHADOW
   }
-  // The sequencer section opens with a divider (.channel-module.border) and a gap
-  // before its first step, so scroll to that divider — otherwise the section's
-  // start gets buried under the sticky header and it stops right at step one.
+  // Scroll to the sequencer's left edge (a direct child of .channel), pulled back by
+  // the sticky header's width via offsetFor so the section clears the pinned header.
+  // NB: we deliberately target .sequencer itself, not the .channel-module.border
+  // divider just before it — that divider is display:none in the horizontal/condensed
+  // views this runs in, so its offsetLeft is 0, which broke both the sequence scroll
+  // target (clamped to ~0, "doesn't scroll") and the section highlight (scrollLeft >= a
+  // negative position is always true, pinning it to "sequence").
   const seq = document.querySelector('.sequencer') as HTMLElement | null
-  const seqStart = seq?.previousElementSibling?.classList.contains('border')
-    ? (seq.previousElementSibling as HTMLElement)
-    : seq
-  return [0, offsetFor(document.querySelector('.piano')), offsetFor(seqStart)]
+  return [0, offsetFor(document.querySelector('.piano')), offsetFor(seq)]
 }
 
 export default function App() {
