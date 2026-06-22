@@ -136,6 +136,24 @@ $ecBgImage: radial-gradient(120% 85% at 50% -15%, $ecGlow 0%, $ecGlow0 55%),
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.28);
 }
 
+// Glassy/glowy knob-edge overlay (to match the glass buttons/tiles). A circular,
+// click-through overlay placed over a knob face: a lit-from-above inset highlight
+// over a bottom inner shade reads as glass, a hairline inset rim crisps the edge,
+// and a soft cool-blue outer halo (the header-corona hue) gives the glow. The caller
+// positions/sizes it per knob geometry; `$sm` trims the insets/halo for the tiny
+// inline knobs. Goes on the (un-clipped) .knob-container, not .knob (overflow:hidden),
+// so the outer halo isn't cut off.
+@mixin ec-knob-edge($haloBlur: 5px, $haloAlpha: 0.32, $inset: 1) {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  // $inset scales the glassy bevel (top highlight + bottom shade + hairline rim); the
+  // outer halo is controlled separately via $haloBlur / $haloAlpha.
+  box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2 * $inset), inset 0 -1.5px 2px rgba(0, 0, 0, 0.36 * $inset),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07 * $inset), 0 0 $haloBlur rgba(74, 126, 224, $haloAlpha);
+}
+
 // Engraved double-line seam splitting a dropdown's value area from its arrow
 // toggle: a dark groove (border-left) paired with a light highlight just inside
 // it — the same beveled "double line" the aero dropdowns use. Re-includes the
@@ -1323,6 +1341,59 @@ body:has(.eclipse-theme)::before {
         background-color: $ecBg;
         background-image: $ecBgImage;
       }
+    }
+
+    // Glassy/glowy edge on the knobs (see the ec-knob-edge mixin).
+    //
+    // Standard knob: the 37px face is centered in the 50px .knob, which is
+    // margin:auto-centered in this container and sits 7px down — so a container-level
+    // overlay (un-clipped, full halo) lands concentric.
+    &:not(.axis-knob):not(.axis-knob-large):not(.inline-knob)::after {
+      @include ec-knob-edge;
+      top: 7px;
+      left: 50%;
+      width: 37px;
+      height: 37px;
+      margin-left: -18.5px;
+    }
+    // Inline knob: the knob sits at the container's left with the label beside it (so a
+    // container-centered overlay drifts right) and its box size/aspect vary by context.
+    // Anchor to the .knob box and draw a true CIRCLE at the same ~74%-of-box proportion
+    // the standard knobs use (an inset % here would make a short ellipse on the non-square
+    // box — the bug where the glow didn't reach the knob's full height). aspect-ratio
+    // forces the circle; translate centers it. It's inset far enough from the box edge
+    // that .knob's overflow:hidden barely touches the halo.
+    &.inline-knob .knob::after {
+      @include ec-knob-edge($haloBlur: 4px, $haloAlpha: 0.3);
+      // the inline knob's SVG fills its box, so the face sits ~56% down (not the box
+      // center) — unlike the standard knob, whose shorter SVG lands the face at ~50%.
+      top: 56%;
+      left: 50%;
+      width: 74%;
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+    }
+    // Axis knobs: treat them exactly like the normal knobs — the glassy rim sits right on
+    // the knob's face edge (the axis face fills ~95% of its box, so the ring matches that,
+    // ~40px of the 42px box / ~57px of the 60px box). Earlier the ring sat inside the face
+    // and read as a floating inner ring with the knob's real edge outside it; placed at the
+    // edge it reads as a rim like the normal knobs. The halo casts outward from the
+    // un-clipped container. Small axis (at the container top) and the clock view's large
+    // axis (box at left:119/top:84).
+    &.axis-knob:not(.axis-knob-large):not(.hidden-knob)::after {
+      @include ec-knob-edge;
+      top: 1px;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      margin-left: -20px;
+    }
+    &.axis-knob-large:not(.hidden-knob)::after {
+      @include ec-knob-edge;
+      top: 85.5px;
+      left: 120.5px;
+      width: 57px;
+      height: 57px;
     }
   }
 
