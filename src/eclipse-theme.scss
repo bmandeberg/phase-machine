@@ -1308,7 +1308,12 @@ body:has(.eclipse-theme)::before {
       background-image: none;
       background-color: var(--channel-color);
       border: 1px solid var(--channel-color);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      // keep the same 0-blur edge bevel as the unlit steps (ec-flat) — a bright top
+      // inset over a dark bottom inset — so lit steps read as edge-lit glass too rather
+      // than flat. The bright channel fill washed out a top-only highlight; the dark
+      // bottom inset is what restores the 3D edge (hue-agnostic, like the lit piano
+      // keys). 0-blur, so it adds no per-tick repaint cost on this hot path.
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.28);
       color: $ecInkDark;
       &:hover {
         background-color: var(--channel-color-hover);
