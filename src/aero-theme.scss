@@ -578,6 +578,10 @@ body:has(.aero-theme) {
       color: #ffffff;
       &.selected {
         @include aero-flat($glassSeafoam, 6px);
+        // the base .playing.selected sets an orange number color; since component CSS is
+        // emitted after the theme, that orange would win at equal specificity over the
+        // plain .playing white above — so re-assert white here (this rule out-specifies it).
+        color: #ffffff;
       }
     }
   }
