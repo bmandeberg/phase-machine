@@ -32,7 +32,8 @@
   },
   "resolutions": {
     "@babel/runtime": "^7.26.10",
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.10",
+    "undici": "^7.28.0"
   },
   "devDependencies": {
     "@types/bezier-js": "^4.1.3",
