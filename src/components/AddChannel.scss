@@ -1,0 +1,42 @@
+@use '../sass-globals' as *;
+
+// Faint circular "+" button beneath the last channel. Base / light-theme styling;
+// each theme overrides the resting + hover colors to match (see *-theme.scss). The
+// "faint" look is the resting opacity below — themes only adjust hue, not alpha.
+.add-channel-row {
+  // align the button under the channel's left controls — equal gap from the top and
+  // left so it reads as a separate affordance, not part of the last channel's chrome
+  padding: 16px 0 22px 16px;
+}
+
+.add-channel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  color: $darkGray;
+  background-color: transparent;
+  border: 1px solid $mediumGray;
+  opacity: 0.65; // faint at rest, but legible
+  transition: opacity 0.15s ease, color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease,
+    transform 0.08s ease;
+
+  .add-channel-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+
+  &:hover {
+    opacity: 1;
+    color: $green;
+    border-color: $green;
+  }
+  &:active {
+    transform: scale(0.92);
+  }
+}

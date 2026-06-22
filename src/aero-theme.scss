@@ -173,6 +173,18 @@ body:has(.aero-theme) {
     }
   }
 
+  // Faint "+" beneath the last channel — teal at rest, deeper blue + a frosted
+  // fill on hover, in keeping with the glass controls.
+  .add-channel-button {
+    color: $aeroText;
+    border-color: rgba($aeroInk, 0.3);
+    &:hover {
+      color: $aeroBlueDeep;
+      border-color: rgba($aeroInk, 0.55);
+      background-color: $glassNeutralHover;
+    }
+  }
+
   .button {
     @include aero-flat($glassNeutral);
     color: $aeroText;

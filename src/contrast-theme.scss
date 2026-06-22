@@ -49,6 +49,17 @@ body:has(.contrast-theme) {
     box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
   }
 
+  // Faint "+" beneath the last channel — high-contrast, green accent on hover.
+  .add-channel-button {
+    color: $lightMediumGray;
+    border-color: $darkerMediumGray;
+    &:hover {
+      color: $green;
+      border-color: $green;
+      background-color: rgba(51, 255, 0, 0.12);
+    }
+  }
+
   .button {
     background-color: $lightMediumGray;
     color: $darkTextGray;

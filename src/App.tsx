@@ -20,6 +20,7 @@ import {
 } from './globals'
 import Header from './components/Header'
 import Channel from './components/Channel'
+import AddChannel from './components/AddChannel'
 import Modal from './components/Modal'
 import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
@@ -378,6 +379,13 @@ export default function App() {
     setPreventUpdate(true)
   }, [])
 
+  // Append a blank channel — same path as the header's Channels stepper: bumping
+  // numChannels triggers the effect above that pushes a BLANK_CHANNEL (and flashes
+  // it as freshly created). Capped at MAX_CHANNELS (the button is hidden there too).
+  const addChannel = useCallback(() => {
+    setNumChannels((numChannels: number) => (numChannels < MAX_CHANNELS ? numChannels + 1 : numChannels))
+  }, [])
+
   const changeChannelOrder = useCallback((channelNum: number, newChannelNum: number) => {
     setUIState((uiState: Preset) => {
       const uiStateCopy = deepStateCopy(uiState)
@@ -545,6 +553,7 @@ export default function App() {
                   className="stacked-spacer"
                   style={{ height: numChannels * 97, minWidth: longestAuxChannel + 'px' }}></div>
               )}
+              {numChannels > 0 && numChannels < MAX_CHANNELS && <AddChannel addChannel={addChannel} />}
             </div>
             <div className="border-gradient gradient-right"></div>
           </div>

@@ -112,6 +112,17 @@ body:has(.coquette-theme) {
     }
   }
 
+  // Faint "+" beneath the last channel — soft pink at rest, hot-pink on hover.
+  .add-channel-button {
+    color: $text;
+    border-color: $border;
+    &:hover {
+      color: $hotPink;
+      border-color: $hotPink;
+      background-color: $panelHover;
+    }
+  }
+
   .button {
     @include flat($panel);
     color: $text;

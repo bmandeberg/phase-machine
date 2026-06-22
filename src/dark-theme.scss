@@ -47,6 +47,17 @@ body:has(.dark-theme) {
     box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
   }
 
+  // Faint "+" beneath the last channel — cool gray at rest, green accent on hover.
+  .add-channel-button {
+    color: $darkLightGray;
+    border-color: $darkMediumGray;
+    &:hover {
+      color: $darkGreen;
+      border-color: $darkGreen;
+      background-color: rgba(0, 197, 145, 0.14);
+    }
+  }
+
   .button {
     background-color: $darkMediumGray;
     color: $darkLightGray;
