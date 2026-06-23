@@ -636,7 +636,7 @@ export function patchPreset(preset: Preset, updated?: boolean) {
   return updated
 }
 
-export function patchChannel(channel: ChannelType, updated?: boolean) {
+export function patchChannel(channel: ChannelType, tempo?: number, updated?: boolean) {
   const defaultChannel = DEFAULT_PRESET.channels[0]
   const c = channel as unknown as Record<string, unknown>
   // Migrate the retired orange channel color to baby pink so orange is reserved for the
@@ -662,7 +662,7 @@ export function patchChannel(channel: ChannelType, updated?: boolean) {
   if (cParams.effects === undefined) {
     updated = true
   }
-  cParams.effects = migrateEffectSlots(cParams)
+  cParams.effects = migrateEffectSlots(cParams, tempo)
   for (const prop in defaultChannel.instrumentParams) {
     if (prop === 'effects') continue
     if (cParams[prop] === undefined) {
@@ -676,7 +676,7 @@ export function patchChannel(channel: ChannelType, updated?: boolean) {
 export function patchPresetAndChannels(preset: Preset, updated?: boolean) {
   updated = patchPreset(preset, updated)
   preset.channels.forEach((channel) => {
-    updated = patchChannel(channel, updated)
+    updated = patchChannel(channel, preset.tempo, updated)
   })
   return updated
 }
@@ -699,7 +699,7 @@ function initializePresets(): Preset[] {
             : exampleChannel.instrumentParams.synthType
         channel.instrumentType = 'synth'
       }
-      updated = patchChannel(channel, updated)
+      updated = patchChannel(channel, preset.tempo, updated)
     })
   })
   if (updated) {

@@ -118,3 +118,20 @@ export function rateToSeconds(rate: string, bpm: number) {
   }
   return beats * quarterNote
 }
+
+// Inverse of rateToSeconds: pick the note-rate from `rates` whose interval is
+// closest to `seconds` at the given tempo. Used to upgrade legacy synced-delay
+// presets that stored sync as a boolean `true` — the actual rate has to be
+// recovered from the baked-in delayTime (in seconds at the preset's tempo).
+export function secondsToRate(seconds: number, bpm: number, rates: string[]) {
+  let best = rates[0]
+  let bestErr = Infinity
+  for (const rate of rates) {
+    const err = Math.abs(rateToSeconds(rate, bpm) - seconds)
+    if (err < bestErr) {
+      bestErr = err
+      best = rate
+    }
+  }
+  return best
+}

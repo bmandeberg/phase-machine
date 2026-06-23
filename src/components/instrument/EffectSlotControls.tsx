@@ -4,7 +4,7 @@ import * as Tone from 'tone'
 import RotaryKnob from '../RotaryKnob'
 import Dropdown from '../Dropdown'
 import Switch from 'react-switch'
-import { EFFECTS, WET_EFFECTS, themedSwitch, RATES } from '../../globals'
+import { EFFECTS, WET_EFFECTS, themedSwitch, RATES, DEFAULT_SYNC_DELAY_RATE } from '../../globals'
 import { rateToSeconds } from '../../math'
 import { EffectSlot, EffectType, Setter } from '../../types'
 import { SlotController } from './useEffectParams'
@@ -102,9 +102,9 @@ function EffectSlotControls({
   const setSyncedDelay = useCallback((rate: string) => setField('syncDelayTime', rate), [setField])
   const toggleSyncDelay = useCallback(
     (on: boolean) => {
-      // toggling sync on starts at a dotted eighth note (a musical, neutral
-      // default); the user can then pick any other rate from the dropdown.
-      setField('syncDelayTime', on ? '8n.' : false)
+      // toggling sync on starts at a musical, neutral default rate; the user can
+      // then pick any other rate from the dropdown.
+      setField('syncDelayTime', on ? DEFAULT_SYNC_DELAY_RATE : false)
     },
     [setField]
   )

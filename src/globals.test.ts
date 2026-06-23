@@ -104,4 +104,25 @@ describe('migrateEffectSlots', () => {
     a[0].wet = 0.123
     expect(b[0].wet).toBe(1)
   })
+
+  it('upgrades a legacy boolean synced delay into the recovered note-rate (legacy flat)', () => {
+    // 0.15s at 100bpm is exactly a 16th note (4/16 beats * 0.6s/beat).
+    const slots = migrateEffectSlots({ effectType: 'delay', delayTime: 0.15, syncDelayTime: true }, 100)
+    expect(slots[0].syncDelayTime).toBe('16n')
+  })
+
+  it('upgrades a legacy boolean synced delay inside an existing effects array', () => {
+    const slots = migrateEffectSlots({ effects: [{ type: 'delay', delayTime: 0.6, syncDelayTime: true }] }, 100)
+    expect(slots[0].syncDelayTime).toBe('4n') // 0.6s at 100bpm = one quarter note
+  })
+
+  it('falls back to a musical default when no tempo is available to reverse-derive', () => {
+    const slots = migrateEffectSlots({ effectType: 'delay', delayTime: 0.15, syncDelayTime: true })
+    expect(slots[0].syncDelayTime).toBe('8n.')
+  })
+
+  it('leaves an already-string synced delay and a free (false) delay untouched', () => {
+    expect(migrateEffectSlots({ effectType: 'delay', syncDelayTime: '8n.' }, 100)[0].syncDelayTime).toBe('8n.')
+    expect(migrateEffectSlots({ effectType: 'delay', syncDelayTime: false }, 100)[0].syncDelayTime).toBe(false)
+  })
 })
