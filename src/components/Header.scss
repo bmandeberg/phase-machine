@@ -173,7 +173,9 @@ $margin: 12px;
 }
 
 @media screen and (max-width: 627px) {
-  .presets-container {
+  // Presets is the priority control on small screens; tempo is the first to drop and
+  // reappears (to the right of presets) once there's room again above this width.
+  .tempo-input {
     display: none;
   }
   .view-dropdown {
@@ -193,6 +195,22 @@ $margin: 12px;
 @media screen and (max-width: 485px) {
   .view-dropdown {
     display: none;
+  }
+  // On phones, keep only the preset selector (dropdown) — the save/new/delete actions
+  // would collide with the fixed corner gear and run off-screen, so they drop out here
+  // and return on wider screens. Narrow the selector a touch so its arrow clears the gear.
+  .presets .preset-action {
+    display: none;
+  }
+  .presets .preset-dummy,
+  .presets .dropdown-container {
+    width: 112px;
+  }
+  // The editable name input overlays the dropdown (z-index:10) and reserves 22px on its
+  // right for the dropdown arrow button. Narrow it in step with the container (90 + 22 =
+  // 112) so it doesn't creep over and hide the arrow.
+  .presets input[type='text'] {
+    width: 90px;
   }
 }
 

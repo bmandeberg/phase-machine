@@ -205,7 +205,7 @@ export default class Header extends React.Component<HeaderProps> {
           theme={this.props.theme}
         />
         <NumInput
-          className="header-item"
+          className="header-item tempo-input"
           value={this.props.tempo}
           setValue={this.props.setTempo}
           label="Tempo"
