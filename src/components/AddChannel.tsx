@@ -5,10 +5,10 @@ interface AddChannelProps {
   addChannel: () => void
 }
 
-// A faint circular "+" button sitting beneath the last channel — a low-friction way
-// to add a channel without reaching for the header's Channels stepper. The parent
-// hides it at MAX_CHANNELS. The plus is an inline SVG using currentColor, so each
-// theme only has to set the button's color/border (see the *-theme.scss files).
+// A faint circular "+" button sitting beneath the last channel — the way to add a
+// channel (channels are removed via each channel's "..." menu). The parent hides it
+// at MAX_CHANNELS. The plus is an inline SVG using currentColor, so each theme only
+// has to set the button's color/border (see the *-theme.scss files).
 export default function AddChannel({ addChannel }: AddChannelProps) {
   return (
     <div className="add-channel-row">

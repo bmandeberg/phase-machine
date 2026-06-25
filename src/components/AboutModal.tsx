@@ -34,7 +34,7 @@ The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-ton
       width: 1143,
     },
     text: 'Global controls.',
-    tags: ['header', 'play/pause', 'channels', 'view', 'midi in', 'tempo', 'preset', 'midi out', 'settings'],
+    tags: ['header', 'play/pause', 'view', 'midi in', 'tempo', 'preset', 'midi out', 'settings'],
   },
   {
     title: 'Preset',
@@ -189,7 +189,7 @@ The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-ton
     title: 'Notes',
     tips: [
       'If you are on a Mac, you can send MIDI from The Phase Machine to other applications on your computer, like a DAW, by configuring the IAC Driver in Audio MIDI Setup: https://support.apple.com/guide/audio-midi-setup/transfer-midi-information-between-apps-ams1013/mac',
-      'To clear your current patch, you can set the number of Channels to 0, and then reintroduce blank Channels from the Header.',
+      'To clear your current patch, delete each channel from its “...” menu (Delete Channel), then add fresh blank channels with the + button beneath the channels.',
       'The Phase Machine works best in Google Chrome, which has full MIDI support. While the app works on mobile, it is not optimized for mobile or Safari, which can have performance and audio issues.',
     ],
     warnings: [

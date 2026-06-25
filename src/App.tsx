@@ -380,7 +380,7 @@ export default function App() {
     setPreventUpdate(true)
   }, [])
 
-  // Append a blank channel — same path as the header's Channels stepper: bumping
+  // Append a blank channel (driven by the "+" button beneath the channels): bumping
   // numChannels triggers the effect above that pushes a BLANK_CHANNEL (and flashes
   // it as freshly created). Capped at MAX_CHANNELS (the button is hidden there too).
   const addChannel = useCallback(() => {
@@ -518,8 +518,6 @@ export default function App() {
         setMidiIn={setMidiIn}
         midiEnabled={midiEnabled}
         midiUnavailableReason={midiUnavailableReason}
-        numChannels={numChannels}
-        setNumChannels={setNumChannels}
         view={view}
         setView={updateView}
         scrollTo={scrollTo}

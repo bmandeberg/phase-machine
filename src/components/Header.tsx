@@ -1,7 +1,7 @@
 import React from 'react'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
-import { VIEWS, SECTIONS, MAX_CHANNELS, ALT } from '../globals'
+import { VIEWS, SECTIONS, ALT } from '../globals'
 import { midiStartContinue, midiStop } from '../hooks/useMIDI'
 import NumInput from './NumInput'
 import RotaryKnob from './RotaryKnob'
@@ -42,8 +42,6 @@ interface HeaderProps {
   setMidiIn: any
   midiEnabled?: boolean
   midiUnavailableReason?: string | null
-  numChannels: number
-  setNumChannels: any
   view?: string
   setView: any
   scrollTo?: string
@@ -193,24 +191,6 @@ export default class Header extends React.Component<HeaderProps> {
           onClick={this.playStop.bind(this)}
           draggable="false"
         />
-        <NumInput
-          className="header-item"
-          value={this.props.tempo}
-          setValue={this.props.setTempo}
-          label="Tempo"
-          min={0}
-          max={300}
-          small
-        />
-        <NumInput
-          className="header-item"
-          value={this.props.numChannels}
-          setValue={this.props.setNumChannels}
-          label="Channels"
-          min={0}
-          max={MAX_CHANNELS}
-          small
-        />
         <Presets
           className="header-item"
           preset={this.props.preset}
@@ -223,6 +203,15 @@ export default class Header extends React.Component<HeaderProps> {
           newPreset={this.props.newPreset}
           deletePreset={this.props.deletePreset}
           theme={this.props.theme}
+        />
+        <NumInput
+          className="header-item"
+          value={this.props.tempo}
+          setValue={this.props.setTempo}
+          label="Tempo"
+          min={0}
+          max={300}
+          small
         />
         <RadioButtons
           className="header-item view-buttons"

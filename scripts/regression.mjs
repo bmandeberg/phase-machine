@@ -51,15 +51,6 @@ const playingStepIndex = () =>
     const steps = [...document.querySelectorAll('.sequence-step')]
     return steps.findIndex((s) => s.classList.contains('playing'))
   })
-// find a NumInput by its label text and return an ElementHandle for it
-const numInputByLabel = async (label) => {
-  for (const h of await page.$$('.num-input')) {
-    const l = await h.$eval('.num-input-label', (e) => e.textContent.trim()).catch(() => '')
-    if (l === label) return h
-  }
-  return null
-}
-
 // ---- 1. mount / render ----
 const channels0 = await count('.channel')
 ok('app mounted with channels', channels0 > 0, `channels=${channels0}`)
@@ -97,19 +88,25 @@ ok('sequencer steps render', (await count('.sequence-step')) > 0, `steps=${await
   ok('playback stops', idxAfterStop === (await playingStepIndex()), `idleBefore=${idxBefore}`)
 }
 
-// ---- 4. channel CRUD (via the Channels stepper) ----
+// ---- 4. channel CRUD (add via the "+" button, delete via the channel menu) ----
 {
-  const channelsInput = await numInputByLabel('Channels')
-  if (!channelsInput) {
-    ok('found Channels control', false)
+  const base = await count('.channel')
+  const addBtn = await page.$('.add-channel-button')
+  if (!addBtn) {
+    ok('found add-channel control', false)
   } else {
-    ok('found Channels control', true)
-    const base = await count('.channel')
-    await (await channelsInput.$('.react-numeric-input b:first-of-type')).click() // +1
+    ok('found add-channel control', true)
+    await addBtn.click()
     await sleep(600)
     const added = await count('.channel')
     ok('add channel increases count', added > base, `${base} -> ${added}`)
-    await (await channelsInput.$('.react-numeric-input b:last-of-type')).click() // -1
+
+    // delete the just-added (last) channel via its "..." menu → Delete Channel
+    const menuButtons = await page.$$('.channel-menu-button')
+    await menuButtons[menuButtons.length - 1].click()
+    await sleep(200)
+    const deleted = await clickByText('.channel-menu-item', 'Delete Channel')
+    ok('found Delete Channel menu item', deleted)
     await sleep(600)
     const removed = await count('.channel')
     ok('remove channel restores count', removed === base, `${added} -> ${removed}`)
