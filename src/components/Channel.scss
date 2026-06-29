@@ -111,6 +111,24 @@
   --channel-color-dark: color-mix(in srgb, var(--channel-color), black 32%);
 }
 
+// Selected-channel highlight: a very faint full-bleed wash over the whole channel. Drawn
+// as an overlay above the sticky header (z-index 1999) so the header tints in step, but
+// below the dropdown menus (3000) and modals; pointer-events:none so it never blocks the
+// controls underneath. Default = a subtle LIGHTEN (every theme except Toxic); the Toxic
+// (`light`) theme darkens instead (override just below). Kept very subtle — tune here.
+.channel.selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+// Toxic theme (value `light`, the only bright theme) reads better darkened.
+.light-theme .channel.selected::after {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
 .channel-primary {
   display: inline-block;
   vertical-align: top;

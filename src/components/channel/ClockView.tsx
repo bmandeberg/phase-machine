@@ -25,11 +25,17 @@ type ClockViewProps = UIElements & {
   drawerOpen: boolean
   toggleDrawerOpen: () => void
   flash: boolean
+  selected: boolean
+  onWrapperMouseDown: (e: React.MouseEvent) => void
+  onWrapperFocus: () => void
 }
 
 function ClockView({
   flash,
   muted,
+  selected,
+  onWrapperMouseDown,
+  onWrapperFocus,
   color,
   channelNum,
   rangeMode,
@@ -82,7 +88,9 @@ function ClockView({
       nodeRef={clockViewRef}>
       <div
         ref={clockViewRef}
-        className={classNames('channel channel-clock', { mute: muted })}
+        className={classNames('channel channel-clock', { mute: muted, selected })}
+        onMouseDownCapture={onWrapperMouseDown}
+        onFocusCapture={onWrapperFocus}
         style={{ '--channel-color': color } as React.CSSProperties}>
         <div className="channel-clock-top">
           {scribblerEl}

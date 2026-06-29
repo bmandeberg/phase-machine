@@ -18,7 +18,7 @@ import {
   STACKABLE_INSTRUMENTS,
   NOTE_STACKS,
 } from '../globals'
-import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds } from '../math'
+import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds, shift, opposite, flip } from '../math'
 import classNames from 'classnames'
 import Modal from './Modal'
 import StackedView from './channel/StackedView'
@@ -26,6 +26,7 @@ import CondensedView from './channel/CondensedView'
 import HorizontalView from './channel/HorizontalView'
 import ClockView from './channel/ClockView'
 import useLoop from '../hooks/useLoop'
+import { SelectionModifiers } from '../hooks/useSelection'
 import useKeyManipulation from '../hooks/useKeyManipulation'
 import useUI from '../hooks/useUI'
 import useInstruments from '../hooks/useInstruments'
@@ -41,7 +42,7 @@ import arrowClockLight from '../assets/arrow-clock-light.svg'
 import arrowClockLightMute from '../assets/arrow-clock-light-mute.svg'
 import arrowClockAero from '../assets/arrow-clock-aero.svg'
 import arrowClockCoquette from '../assets/arrow-clock-coquette.svg'
-import { Channel as ChannelType, Setter, MidiNoteEvent } from '../types'
+import { Channel as ChannelType, Setter, MidiNoteEvent, ApplyEdit, ApplyAction, ChannelAction } from '../types'
 import './Channel.scss'
 
 const CLOCK_CHANNEL_WIDTH = 621
@@ -52,6 +53,13 @@ interface ChannelProps {
   numChannels: number
   color: string
   channelNum: number
+  selected: boolean
+  selectionSize: number
+  onSelect: (id: string, mods: SelectionModifiers) => void
+  registerApplyEdit: (id: string, fn: ApplyEdit) => () => void
+  fanOutEdit: (sourceId: string, field: keyof ChannelType, value: unknown) => void
+  registerApplyAction: (id: string, fn: ApplyAction) => () => void
+  fanOutAction: (sourceId: string, action: ChannelAction) => void
   setGrabbing: Setter<boolean>
   grabbing: boolean
   resizing: boolean
@@ -88,6 +96,13 @@ export default function Channel({
   numChannels,
   color,
   channelNum,
+  selected,
+  selectionSize,
+  onSelect,
+  registerApplyEdit,
+  fanOutEdit,
+  registerApplyAction,
+  fanOutAction,
   setGrabbing,
   grabbing,
   resizing,
@@ -115,6 +130,82 @@ export default function Channel({
   longestSequence,
 }: ChannelProps) {
   const id = useRef(initState.id)
+
+  // Selection: a capture-phase mousedown on the channel wrapper selects it before any
+  // child handler runs, and never preventDefault/stopPropagation — so it coexists with
+  // the channel-number color picker, reorder drag, and sequencer/key painting. Refs keep
+  // the latest selected/size for the multi-select-preserve guard without re-creating the
+  // handler. `onWrapperFocus` covers keyboard/typing entry (scribbler, num inputs).
+  const isSelectedRef = useRef(selected)
+  isSelectedRef.current = selected
+  const selectionSizeRef = useRef(selectionSize)
+  selectionSizeRef.current = selectionSize
+  const onWrapperMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.button !== 0) return
+      const mods = { shift: e.shiftKey, meta: e.metaKey || e.ctrlKey }
+      // A modifier-click is a selection gesture, not an edit: suppress the native
+      // text-selection it would otherwise drag across the scribblers / instrument icons
+      // / num inputs (and clear any selection already started). Plain clicks are left
+      // alone so normal focus/editing still works.
+      if (mods.shift || mods.meta) {
+        e.preventDefault()
+        window.getSelection()?.removeAllRanges()
+      }
+      // editing a member of an existing multi-selection must not collapse it
+      if (!mods.shift && !mods.meta && isSelectedRef.current && selectionSizeRef.current > 1) return
+      onSelect(id.current, mods)
+    },
+    [onSelect]
+  )
+  const onWrapperFocus = useCallback(() => {
+    if (!isSelectedRef.current && selectionSizeRef.current <= 1) onSelect(id.current, {})
+  }, [onSelect])
+
+  // ── Selected-channel edit fan-out ──────────────────────────────────────────────
+  // A user edit updates THIS channel and queues the new value to be replayed onto the
+  // other selected channels — flushed post-commit (the useEffect below) so we never set
+  // sibling state during render. `makeMirroredSetter` wraps a raw setter to do both; a
+  // couple of inline transforms (seq shift/opposite) push to the queue directly. The
+  // replay side (applyEdit, further down) uses the RAW setters and never re-emits —
+  // that's what keeps the fan-out loop-free. (color uses an App-level setter, so it's
+  // mirrored in App, not here.)
+  const fanOutEditRef = useRef(fanOutEdit)
+  fanOutEditRef.current = fanOutEdit
+  const emitQueue = useRef<Array<{ field: keyof ChannelType; value: unknown }>>([])
+  useEffect(() => {
+    if (!emitQueue.current.length) return
+    const q = emitQueue.current
+    emitQueue.current = []
+    q.forEach(({ field, value }) => fanOutEditRef.current(id.current, field, value))
+  })
+  const makeMirroredSetter = useCallback(
+    <T,>(field: keyof ChannelType, raw: Setter<T>): Setter<T> =>
+      ((update) => {
+        raw((prev: T) => {
+          const next = typeof update === 'function' ? (update as (p: T) => T)(prev) : update
+          emitQueue.current.push({ field, value: next })
+          return next
+        })
+      }) as Setter<T>,
+    []
+  )
+
+  // Pattern/key edits fan out as GESTURES (see ChannelAction): each selected channel
+  // applies the action to its OWN data, so they stay distinct. Same post-commit flush.
+  const fanOutActionRef = useRef(fanOutAction)
+  fanOutActionRef.current = fanOutAction
+  const actionQueue = useRef<ChannelAction[]>([])
+  useEffect(() => {
+    if (!actionQueue.current.length) return
+    const q = actionQueue.current
+    actionQueue.current = []
+    q.forEach((action) => fanOutActionRef.current(id.current, action))
+  })
+  const emitAction = useCallback((action: ChannelAction) => {
+    actionQueue.current.push(action)
+  }, [])
+
   const [scribbler, setScribbler] = useState(initState.scribbler)
   const [velocity, setVelocity] = useState(initState.velocity)
   const [key, setKey] = useState(initState.key)
@@ -169,6 +260,9 @@ export default function Channel({
     (newShift: number) => {
       if (newShift === 0) newShift = seqShiftDirectionForward ? 1 : -1
       setSeqShiftAmt(newShift)
+      // mirror the shift-amount value to other selected channels (the SHIFT button then
+      // fans out the actual transform as a gesture — see doSeqShift)
+      emitQueue.current.push({ field: 'seqShiftAmt', value: newShift })
       previewSeqShift(seqShiftDirectionForward, newShift)
     },
     [previewSeqShift, seqShiftDirectionForward]
@@ -176,8 +270,10 @@ export default function Channel({
   const doSeqShift = useCallback(() => {
     const shifted = shiftSeq(seqShiftAmt, seqSteps, seqLength)
     setSeqSteps(shifted)
+    // mirror as a gesture: each selected channel shifts its own pattern by this amount
+    emitAction({ kind: 'seqShift', amount: seqShiftAmt })
     previewSeqShift(seqShiftDirectionForward, seqShiftAmt, shifted)
-  }, [seqShiftAmt, seqSteps, seqLength, previewSeqShift, seqShiftDirectionForward])
+  }, [seqShiftAmt, seqSteps, seqLength, previewSeqShift, seqShiftDirectionForward, emitAction])
   const [playingStep, setPlayingStep] = useState<any>()
   const prevStep = useRef<any>(undefined)
   const currentStep = useRef<any>(undefined)
@@ -254,7 +350,9 @@ export default function Channel({
 
   const seqOpposite = useCallback(() => {
     setSeqSteps((seqSteps: any) => seqSteps.map((step: any, i: number) => (i < seqLength ? !step : step)))
-  }, [seqLength])
+    // mirror as a gesture: each selected channel inverts its own active steps
+    emitAction({ kind: 'seqOpposite' })
+  }, [seqLength, emitAction])
 
   // MIDI
 
@@ -432,6 +530,191 @@ export default function Channel({
     openInstrumentModal,
     instruments,
   } = useInstruments(instrument, instrumentParams, instrumentType, cleanupInstruments, setModalType)
+
+  // applyEdit replays a single mirrored field onto this channel via its RAW setter.
+  // Array/object values are cloned so selected channels don't share references;
+  // instrumentParams additionally re-applies to this channel's live Tone nodes
+  // (the same path the channelPreset reload uses), mirroring instrument-editor edits.
+  const applyEdit = useCallback<ApplyEdit>(
+    (field, value) => {
+      switch (field) {
+        case 'velocity': setVelocity(value as number); break
+        case 'sustain': setSustain(value as number); break
+        case 'hold': setHold(value as boolean); break
+        case 'mute': setMute(value as boolean); break
+        case 'solo': setSolo(value as boolean); break
+        case 'instrumentOn': setInstrumentOn(value as boolean); break
+        case 'instrumentType': setInstrumentType(value as string); break
+        case 'keyRate': setKeyRate(value as string); break
+        case 'keyMovement': setKeyMovement(value as string); break
+        case 'keyArpInc1': setKeyArpInc1(value as number); break
+        case 'keyArpInc2': setKeyArpInc2(value as number); break
+        case 'keySwing': setKeySwing(value as number); break
+        case 'keySwingLength': setKeySwingLength(value as number); break
+        case 'seqRate': setSeqRate(value as string); break
+        case 'seqMovement': setSeqMovement(value as string); break
+        case 'seqArpInc1': setSeqArpInc1(value as number); break
+        case 'seqArpInc2': setSeqArpInc2(value as number); break
+        case 'seqSwing': setSeqSwing(value as number); break
+        case 'seqSwingLength': setSeqSwingLength(value as number); break
+        case 'seqLength': setSeqLength(value as number); break
+        case 'rangeMode': setRangeMode(value as boolean); break
+        case 'rangeStart': setRangeStart(value as number); break
+        case 'rangeEnd': setRangeEnd(value as number); break
+        case 'midiHold': setMidiHold(value as boolean); break
+        case 'scribbler': setScribbler(value as string); break
+        case 'shiftAmt': setShiftAmt(value as number); break
+        case 'axis': setAxis(value as number); break
+        case 'seqShiftAmt': setSeqShiftAmt(value as number); break
+        case 'midiIn': setMidiIn(value as boolean | string); break
+        case 'customMidiOutChannel': setCustomMidiOutChannel(value as boolean); break
+        case 'midiOutChannel': setMidiOutChannel(value as number); break
+        case 'instrumentParams': {
+          const params = value as typeof instrumentParams
+          setInstrumentParams(params)
+          reloadInstruments(params)
+          break
+        }
+        default: break
+      }
+    },
+    [reloadInstruments]
+  )
+  useEffect(() => registerApplyEdit(id.current, applyEdit), [registerApplyEdit, applyEdit])
+
+  // Mirrored setters for the user-facing controls (raw setters stay for applyEdit, the
+  // channelPreset reload, and the key/range derived effects — all of which must never
+  // re-emit). Built once; each wraps the matching raw setter. Substituted into useUI /
+  // useKeyManipulation / the views / the instrument modal at the call sites below.
+  const mset = useMemo(
+    () => ({
+      scribbler: makeMirroredSetter('scribbler', setScribbler),
+      shiftAmt: makeMirroredSetter('shiftAmt', setShiftAmt),
+      axis: makeMirroredSetter('axis', setAxis),
+      midiIn: makeMirroredSetter('midiIn', setMidiIn),
+      customMidiOutChannel: makeMirroredSetter('customMidiOutChannel', setCustomMidiOutChannel),
+      midiOutChannel: makeMirroredSetter('midiOutChannel', setMidiOutChannel),
+      velocity: makeMirroredSetter('velocity', setVelocity),
+      sustain: makeMirroredSetter('sustain', setSustain),
+      hold: makeMirroredSetter('hold', setHold),
+      mute: makeMirroredSetter('mute', setMute),
+      solo: makeMirroredSetter('solo', setSolo),
+      instrumentOn: makeMirroredSetter('instrumentOn', setInstrumentOn),
+      instrumentType: makeMirroredSetter('instrumentType', setInstrumentType),
+      keyRate: makeMirroredSetter('keyRate', setKeyRate),
+      keyMovement: makeMirroredSetter('keyMovement', setKeyMovement),
+      keyArpInc1: makeMirroredSetter('keyArpInc1', setKeyArpInc1),
+      keyArpInc2: makeMirroredSetter('keyArpInc2', setKeyArpInc2),
+      keySwing: makeMirroredSetter('keySwing', setKeySwing),
+      keySwingLength: makeMirroredSetter('keySwingLength', setKeySwingLength),
+      seqRate: makeMirroredSetter('seqRate', setSeqRate),
+      seqMovement: makeMirroredSetter('seqMovement', setSeqMovement),
+      seqArpInc1: makeMirroredSetter('seqArpInc1', setSeqArpInc1),
+      seqArpInc2: makeMirroredSetter('seqArpInc2', setSeqArpInc2),
+      seqSwing: makeMirroredSetter('seqSwing', setSeqSwing),
+      seqSwingLength: makeMirroredSetter('seqSwingLength', setSeqSwingLength),
+      seqLength: makeMirroredSetter('seqLength', setSeqLength),
+      rangeMode: makeMirroredSetter('rangeMode', setRangeMode),
+      rangeStart: makeMirroredSetter('rangeStart', setRangeStart),
+      rangeEnd: makeMirroredSetter('rangeEnd', setRangeEnd),
+      midiHold: makeMirroredSetter('midiHold', setMidiHold),
+      instrumentParams: makeMirroredSetter('instrumentParams', setInstrumentParams),
+    }),
+    [makeMirroredSetter]
+  )
+
+  // Latest axis / seqLength for the gesture replays below (applyAction is stable).
+  const axisRef = useRef(axis)
+  axisRef.current = axis
+  const seqLengthRef = useRef(seqLength)
+  seqLengthRef.current = seqLength
+
+  // Toggle setters for the key grid / sequencer / keybd piano: update this channel's
+  // array AND emit a per-element gesture so each selected channel toggles the SAME
+  // index/pitch on its own pattern (rather than copying the whole array). Passed to the
+  // Key/Sequencer/Piano controls; the raw setters stay for transforms + derived effects.
+  const mSetKeyToggle = useCallback<Setter<boolean[]>>((update) => {
+    setKey((prev) => {
+      const next = typeof update === 'function' ? (update as (p: boolean[]) => boolean[])(prev) : update
+      for (let i = 0; i < next.length; i++) {
+        if (!!next[i] !== !!prev[i]) actionQueue.current.push({ kind: 'keyPitchClass', index: i, value: !!next[i] })
+      }
+      return next
+    })
+  }, [])
+  const mSetSeqStepsToggle = useCallback<Setter<boolean[]>>((update) => {
+    setSeqSteps((prev: boolean[]) => {
+      const next = typeof update === 'function' ? (update as (p: boolean[]) => boolean[])(prev) : update
+      for (let i = 0; i < next.length; i++) {
+        if (!!next[i] !== !!prev[i]) actionQueue.current.push({ kind: 'seqStep', index: i, value: !!next[i] })
+      }
+      return next
+    })
+  }, [])
+  const mSetKeybdPitchesToggle = useCallback<Setter<number[]>>((update) => {
+    setKeybdPitches((prev: number[]) => {
+      const next = typeof update === 'function' ? (update as (p: number[]) => number[])(prev) : update
+      const prevSet = new Set(prev)
+      const nextSet = new Set(next)
+      next.forEach((p) => {
+        if (!prevSet.has(p)) actionQueue.current.push({ kind: 'keybdPitch', pitch: p, value: true })
+      })
+      prev.forEach((p) => {
+        if (!nextSet.has(p)) actionQueue.current.push({ kind: 'keybdPitch', pitch: p, value: false })
+      })
+      return next
+    })
+  }, [])
+
+  // Target side: replay a fanned-out gesture onto THIS channel's own data via raw setters
+  // (never re-emits). Transforms reuse the same pure math helpers as the source controls.
+  const applyAction = useCallback<ApplyAction>((action) => {
+    switch (action.kind) {
+      case 'seqStep':
+        setSeqSteps((prev: boolean[]) => {
+          const c = prev.slice()
+          c[action.index] = action.value
+          return c
+        })
+        break
+      case 'seqShift':
+        setSeqSteps((prev: boolean[]) => shiftSeq(action.amount, prev, seqLengthRef.current))
+        break
+      case 'seqOpposite':
+        setSeqSteps((prev: boolean[]) => prev.map((s, i) => (i < seqLengthRef.current ? !s : s)))
+        break
+      case 'keyPitchClass':
+        setKey((prev) => {
+          const c = prev.slice()
+          c[action.index] = action.value
+          return c
+        })
+        break
+      case 'keybdPitch':
+        setKeybdPitches((prev: number[]) =>
+          action.value
+            ? prev.includes(action.pitch)
+              ? prev
+              : [...prev, action.pitch]
+            : prev.filter((p) => p !== action.pitch)
+        )
+        break
+      case 'keyShift':
+        setKey((prev) => shift(action.amount, prev))
+        break
+      case 'keyFlip':
+        setKey((prev) => flip(axisRef.current, prev))
+        break
+      case 'keyOpposite':
+        setKey((prev) => opposite(prev))
+        break
+      case 'keyClear':
+        setKey(BLANK_PITCH_CLASSES())
+        setKeybdPitches([])
+        break
+    }
+  }, [])
+  useEffect(() => registerApplyAction(id.current, applyAction), [registerApplyAction, applyAction])
 
   // Keep any tempo-synced delay SLOT locked to the global tempo even while the
   // instrument modal (where useEffectParams lives) is closed. A delay slot whose
@@ -905,29 +1188,48 @@ export default function Channel({
   const {
     previewShift,
     updateShift,
-    doShift,
-    doOpposite,
+    doShift: doShiftRaw,
+    doOpposite: doOppositeRaw,
     previewOpposite,
     updateAxis,
-    doFlip,
+    doFlip: doFlipRaw,
     previewFlip,
     startChangingAxis,
     stopChangingAxis,
-    keyClear,
+    keyClear: keyClearRaw,
   } = useKeyManipulation(
     key,
     shiftAmt,
     shiftDirectionForward,
     setKeyPreview,
     setShowKeyPreview,
-    setShiftAmt,
+    mset.shiftAmt,
     setKey,
-    setAxis,
+    mset.axis,
     axis,
     setGrabbing,
     setTurningAxisKnob,
     setKeybdPitches
   )
+
+  // Wrap the key transforms so they also fan out as gestures: each selected channel
+  // shifts/flips/inverts/clears its OWN key (the raw transform already updated ours).
+  const doShift = useCallback(() => {
+    doShiftRaw()
+    emitAction({ kind: 'keyShift', amount: shiftAmt })
+  }, [doShiftRaw, emitAction, shiftAmt])
+  const doOpposite = useCallback(() => {
+    doOppositeRaw()
+    emitAction({ kind: 'keyOpposite' })
+  }, [doOppositeRaw, emitAction])
+  const doFlip = useCallback(() => {
+    doFlipRaw()
+    emitAction({ kind: 'keyFlip' })
+  }, [doFlipRaw, emitAction])
+  const keyClear = useCallback(() => {
+    keyClearRaw()
+    emitAction({ kind: 'keyClear' })
+  }, [keyClearRaw, emitAction])
 
   // ui elements
 
@@ -935,10 +1237,10 @@ export default function Channel({
     id.current,
     color,
     scribbler,
-    setScribbler,
+    mset.scribbler,
     channelNum,
     key,
-    setKey,
+    mSetKeyToggle,
     playingPitchClass,
     setPlayingPitchClass,
     turningAxisKnob,
@@ -946,11 +1248,11 @@ export default function Channel({
     showKeyPreview,
     mute,
     muted,
-    setMute,
+    mset.mute,
     solo,
-    setSolo,
+    mset.solo,
     velocity,
-    setVelocity,
+    mset.velocity,
     setGrabbing,
     grabbing,
     shiftAmt,
@@ -970,51 +1272,51 @@ export default function Channel({
     playingNote,
     noteOn,
     rangeStart,
-    setRangeStart,
+    mset.rangeStart,
     rangeEnd,
-    setRangeEnd,
+    mset.rangeEnd,
     resizing,
     setResizing,
-    setKeyRate,
+    mset.keyRate,
     keyRate,
-    setKeyMovement,
+    mset.keyMovement,
     keyMovement,
     keyArpInc1,
-    setKeyArpInc1,
+    mset.keyArpInc1,
     keyArpInc2,
-    setKeyArpInc2,
+    mset.keyArpInc2,
     sustain,
-    setSustain,
+    mset.sustain,
     keySwing,
-    setKeySwing,
+    mset.keySwing,
     keySwingLength,
-    setKeySwingLength,
+    mset.keySwingLength,
     seqLength,
-    setSeqLength,
-    setSeqRate,
+    mset.seqLength,
+    mset.seqRate,
     seqRate,
-    setSeqMovement,
+    mset.seqMovement,
     seqMovement,
     seqArpInc1,
-    setSeqArpInc1,
+    mset.seqArpInc1,
     seqArpInc2,
-    setSeqArpInc2,
+    mset.seqArpInc2,
     seqSwing,
-    setSeqSwing,
+    mset.seqSwing,
     seqSwingLength,
-    setSeqSwingLength,
+    mset.seqSwingLength,
     seqShiftAmt,
     updateSeqShift,
     previewSeqShift,
     setShowSeqPreview,
     setSeqShiftDirectionForward,
     doSeqShift,
-    setHold,
+    mset.hold,
     hold,
     instrumentOn,
-    setInstrumentOn,
+    mset.instrumentOn,
     instrumentType,
-    setInstrumentType,
+    mset.instrumentType,
     keyViewType,
     setKeyViewType,
     duplicateChannel,
@@ -1025,11 +1327,11 @@ export default function Channel({
     seqRestart,
     seqOpposite,
     rangeMode,
-    setRangeMode,
+    mset.rangeMode,
     keybdPitches,
-    setKeybdPitches,
+    mSetKeybdPitchesToggle,
     midiHold,
-    setMidiHold,
+    mset.midiHold,
     keyClear,
     keyRestart,
     openMidiModal,
@@ -1055,23 +1357,23 @@ export default function Channel({
           modalType={modalType}
           setModalType={setModalType}
           midiHold={midiHold}
-          setMidiHold={setMidiHold}
+          setMidiHold={mset.midiHold}
           midiIn={midiIn}
-          setMidiIn={setMidiIn}
+          setMidiIn={mset.midiIn}
           color={color}
           scribbler={scribbler}
           theme={theme}
           customMidiOutChannel={customMidiOutChannel}
-          setCustomMidiOutChannel={setCustomMidiOutChannel}
+          setCustomMidiOutChannel={mset.customMidiOutChannel}
           channelNum={channelNum}
           midiOutChannel={midiOutChannel}
-          setMidiOutChannel={setMidiOutChannel}
+          setMidiOutChannel={mset.midiOutChannel}
           instrumentOn={instrumentOn}
-          setInstrumentOn={setInstrumentOn}
+          setInstrumentOn={mset.instrumentOn}
           instrumentType={instrumentType}
-          setInstrumentType={setInstrumentType}
+          setInstrumentType={mset.instrumentType}
           instrumentParams={instrumentParams}
-          setInstrumentParams={setInstrumentParams}
+          setInstrumentParams={mset.instrumentParams}
           savedInstrumentParams={channelPreset?.instrumentParams}
           instruments={instruments}
           gainNode={gainNode}
@@ -1283,13 +1585,16 @@ export default function Channel({
           {...ui}
           flash={flash}
           muted={muted}
+          selected={selected}
+          onWrapperMouseDown={onWrapperMouseDown}
+          onWrapperFocus={onWrapperFocus}
           color={color}
           channelNum={channelNum}
           numChannels={numChannels}
           rangeMode={rangeMode}
           arrowSmallGraphic={arrowSmallGraphic}
           seqSteps={seqSteps}
-          setSeqSteps={setSeqSteps}
+          setSeqSteps={mSetSeqStepsToggle}
           seqLength={seqLength}
           seqPreview={seqPreview}
           showSeqPreview={showSeqPreview}
@@ -1308,10 +1613,13 @@ export default function Channel({
           {...ui}
           flash={flash}
           muted={muted}
+          selected={selected}
+          onWrapperMouseDown={onWrapperMouseDown}
+          onWrapperFocus={onWrapperFocus}
           color={color}
           channelNum={channelNum}
           seqSteps={seqSteps}
-          setSeqSteps={setSeqSteps}
+          setSeqSteps={mSetSeqStepsToggle}
           seqLength={seqLength}
           seqPreview={seqPreview}
           showSeqPreview={showSeqPreview}
@@ -1330,12 +1638,15 @@ export default function Channel({
           {...ui}
           flash={flash}
           muted={muted}
+          selected={selected}
+          onWrapperMouseDown={onWrapperMouseDown}
+          onWrapperFocus={onWrapperFocus}
           color={color}
           channelNum={channelNum}
           rangeMode={rangeMode}
           arrowSmallGraphic={arrowSmallGraphic}
           seqSteps={seqSteps}
-          setSeqSteps={setSeqSteps}
+          setSeqSteps={mSetSeqStepsToggle}
           seqLength={seqLength}
           seqPreview={seqPreview}
           showSeqPreview={showSeqPreview}
@@ -1354,12 +1665,15 @@ export default function Channel({
           {...ui}
           flash={flash}
           muted={muted}
+          selected={selected}
+          onWrapperMouseDown={onWrapperMouseDown}
+          onWrapperFocus={onWrapperFocus}
           color={color}
           channelNum={channelNum}
           rangeMode={rangeMode}
           arrowClockGraphic={arrowClockGraphic}
           seqSteps={seqSteps}
-          setSeqSteps={setSeqSteps}
+          setSeqSteps={mSetSeqStepsToggle}
           seqLength={seqLength}
           seqPreview={seqPreview}
           showSeqPreview={showSeqPreview}

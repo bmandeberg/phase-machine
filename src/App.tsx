@@ -24,9 +24,11 @@ import AddChannel from './components/AddChannel'
 import Modal from './components/Modal'
 import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
+import useSelection from './hooks/useSelection'
+import useSelectionHotkeys from './hooks/useSelectionHotkeys'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import { subscribeDialogs, getActiveDialog, DialogRequest } from './dialog'
-import { Channel as ChannelType, Preset } from './types'
+import { Channel as ChannelType, Preset, ApplyEdit, ApplyAction, ChannelAction } from './types'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
@@ -64,6 +66,9 @@ export default function App() {
   const [presets, setPresets] = useState(initializePresets)
   const [currentPreset, setCurrentPreset] = useState(initialPreset)
   const [uiState, setUIState] = useState(initializeUiState)
+  // latest uiState for imperative reads in hotkey handlers (unified mute/solo, delete)
+  const uiStateRef = useRef(uiState)
+  uiStateRef.current = uiState
 
   const [tempo, setTempo] = useState(uiState.tempo)
   const [playing, setPlaying] = useState(false)
@@ -317,6 +322,53 @@ export default function App() {
 
   // channel management
 
+  // selected channels (click / shift-range / cmd-toggle). orderedIds is in channelNum
+  // order so shift-range math and pruning track reorders + deletions.
+  const orderedIds = useMemo(() => uiState.channels.map((c: ChannelType) => c.id), [uiState.channels])
+  const selection = useSelection(orderedIds)
+
+  // Edit fan-out: each Channel registers an `applyEdit(field, value)` that writes the
+  // field via its RAW setter (no re-emit). When a user edits a channel that's part of a
+  // multi-selection, the channel calls `fanOutEdit`, which replays the edit onto the
+  // other selected channels. Loop-free because applyEdit never re-emits.
+  const channelApplyRegistry = useRef<Map<string, ApplyEdit>>(new Map())
+  const registerApplyEdit = useCallback((id: string, fn: ApplyEdit) => {
+    channelApplyRegistry.current.set(id, fn)
+    return () => {
+      channelApplyRegistry.current.delete(id)
+    }
+  }, [])
+  const fanOutEdit = useCallback(
+    (sourceId: string, field: keyof ChannelType, value: unknown) => {
+      const sel = selection.selectedIdsRef.current
+      if (sel.size < 2 || !sel.has(sourceId)) return
+      sel.forEach((targetId) => {
+        if (targetId !== sourceId) channelApplyRegistry.current.get(targetId)?.(field, value)
+      })
+    },
+    [selection]
+  )
+
+  // Parallel registry for pattern/key GESTURES (toggle a step, shift, flip, …). Same
+  // fan-out shape, but each target applies the action to its own data via applyAction.
+  const channelActionRegistry = useRef<Map<string, ApplyAction>>(new Map())
+  const registerApplyAction = useCallback((id: string, fn: ApplyAction) => {
+    channelActionRegistry.current.set(id, fn)
+    return () => {
+      channelActionRegistry.current.delete(id)
+    }
+  }, [])
+  const fanOutAction = useCallback(
+    (sourceId: string, action: ChannelAction) => {
+      const sel = selection.selectedIdsRef.current
+      if (sel.size < 2 || !sel.has(sourceId)) return
+      sel.forEach((targetId) => {
+        if (targetId !== sourceId) channelActionRegistry.current.get(targetId)?.(action)
+      })
+    },
+    [selection]
+  )
+
   const getChannelColor = useCallback((channels: ChannelType[]) => {
     const nextColor = CHANNEL_COLORS.find((color) => !channels.map((c) => c.color).includes(color))
     return nextColor || CHANNEL_COLORS[0]
@@ -380,6 +432,81 @@ export default function App() {
     setPreventUpdate(true)
   }, [])
 
+  // Delete several channels at once (the Delete hotkey over a multi-selection): splice
+  // them all, renumber once, drop the count, and clear the selection. Deleting every
+  // channel is allowed — the empty state offers an "add a channel" button to recover.
+  const deleteChannels = useCallback(
+    (ids: string[]) => {
+      if (!ids.length) return
+      setUIState((uiState: Preset) => {
+        const uiStateCopy = deepStateCopy(uiState)
+        uiStateCopy.channels = uiStateCopy.channels.filter((c: ChannelType) => !ids.includes(c.id))
+        uiStateCopy.channels.forEach((channel, i) => {
+          channel.channelNum = i
+        })
+        return uiStateCopy
+      })
+      setNumChannels((numChannels: number) => numChannels - ids.length)
+      setPreventUpdate(true)
+      selection.deselectAll()
+    },
+    [selection]
+  )
+
+  // m / s hotkeys: mute or solo every selected channel to a UNIFIED state — if any
+  // selected channel is currently off, turn them all on; otherwise turn them all off.
+  // Applied through each channel's applyEdit (the same raw-setter path as the fan-out).
+  // Color uses an App-level setter (not channel-local state), so mirror it here: a color
+  // change on a channel that's part of a multi-selection applies to all selected channels.
+  const setChannelColorFanned = useCallback(
+    (id: string, color: string) => {
+      const sel = selection.selectedIdsRef.current
+      if (sel.size >= 2 && sel.has(id)) {
+        sel.forEach((tid) => setChannelColor(tid, color))
+      } else {
+        setChannelColor(id, color)
+      }
+    },
+    [selection, setChannelColor]
+  )
+
+  const muteSoloSelected = useCallback(
+    (field: 'mute' | 'solo') => {
+      const ids = Array.from(selection.selectedIdsRef.current)
+      if (!ids.length) return
+      const channels = uiStateRef.current.channels
+      const target = ids.some((id) => {
+        const c = channels.find((ch: ChannelType) => ch.id === id)
+        return c ? !c[field] : false
+      })
+      ids.forEach((id) => channelApplyRegistry.current.get(id)?.(field, target))
+    },
+    [selection]
+  )
+
+  // Click blank background to deselect (like Escape). Bubble phase: a channel click
+  // selects in the channel's capture handler first, then bubbles here where we skip it
+  // (target is inside a .channel). The header / add button / open modals are excluded.
+  const onBackgroundMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (!selection.anySelected() || modalType || activeDialog) return
+      const t = e.target as HTMLElement
+      if (t.closest('.channel') || t.closest('#header') || t.closest('.add-channel') || t.closest('.add-first-channel'))
+        return
+      selection.deselectAll()
+    },
+    [selection, modalType, activeDialog]
+  )
+
+  useSelectionHotkeys({
+    anySelected: selection.anySelected,
+    onMute: useCallback(() => muteSoloSelected('mute'), [muteSoloSelected]),
+    onSolo: useCallback(() => muteSoloSelected('solo'), [muteSoloSelected]),
+    onDelete: useCallback(() => deleteChannels(Array.from(selection.selectedIdsRef.current)), [deleteChannels, selection]),
+    onDeselect: selection.deselectAll,
+    isBlocked: useCallback(() => !!modalType || !!activeDialog, [modalType, activeDialog]),
+  })
+
   // Append a blank channel (driven by the "+" button beneath the channels): bumping
   // numChannels triggers the effect above that pushes a BLANK_CHANNEL (and flashes
   // it as freshly created). Capped at MAX_CHANNELS (the button is hidden there too).
@@ -429,6 +556,13 @@ export default function App() {
             flash={flash}
           color={d.color}
           channelNum={d.channelNum}
+          selected={selection.isSelected(d.id)}
+          selectionSize={selection.selectedIds.size}
+          onSelect={selection.clickSelect}
+          registerApplyEdit={registerApplyEdit}
+          fanOutEdit={fanOutEdit}
+          registerApplyAction={registerApplyAction}
+          fanOutAction={fanOutAction}
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           resizing={resizing}
@@ -442,7 +576,7 @@ export default function App() {
           showStepNumbers={showStepNumbers}
           midiOut={midiOut}
           setChannelState={setChannelState}
-          setChannelColor={setChannelColor}
+          setChannelColor={setChannelColorFanned}
           // match by id (not index) so a freshly added channel — whose id isn't in the
           // current preset — gets no preset applied and stays blank, instead of inheriting
           // the preset's channel at that position.
@@ -469,7 +603,11 @@ export default function App() {
       defaultChannelModeKeybd,
       deleteChannel,
       duplicateChannel,
+      fanOutAction,
+      fanOutEdit,
       grabbing,
+      registerApplyAction,
+      registerApplyEdit,
       longestSequence,
       midiNoteOff,
       midiNoteOn,
@@ -481,6 +619,8 @@ export default function App() {
       resetTransport,
       resizing,
       restartChannels,
+      selection,
+      setChannelColorFanned,
       setChannelState,
       showStepNumbers,
       tempo,
@@ -496,6 +636,7 @@ export default function App() {
     <div
       id="container"
       ref={container}
+      onMouseDown={onBackgroundMouseDown}
       className={classNames({
         grabbing,
         resizing,
@@ -504,6 +645,9 @@ export default function App() {
         'aero-theme': theme === 'aero',
         'coquette-theme': theme === 'coquette',
         'eclipse-theme': theme === 'eclipse',
+        // the default 'light' theme (labelled "Toxic") had no class; add one so the
+        // selected-channel wash can darken it specifically (all other themes lighten)
+        'light-theme': theme === 'light',
       })}>
       <Header
         tempo={tempo}
@@ -562,6 +706,9 @@ export default function App() {
           <div className="no-channels">
             <p>😴</p>
             <p>no channels</p>
+            <div className="button add-first-channel no-select" onClick={addChannel}>
+              add a channel
+            </div>
           </div>
         )}
         <div className="border-gradient gradient-top" ref={topGradient}></div>

@@ -24,11 +24,17 @@ type HorizontalViewProps = UIElements & {
   dragTargetHorizontal: React.ReactNode
   modalEl: React.ReactNode
   flash: boolean
+  selected: boolean
+  onWrapperMouseDown: (e: React.MouseEvent) => void
+  onWrapperFocus: () => void
 }
 
 function HorizontalView({
   flash,
   muted,
+  selected,
+  onWrapperMouseDown,
+  onWrapperFocus,
   color,
   channelNum,
   rangeMode,
@@ -81,7 +87,9 @@ function HorizontalView({
       nodeRef={horizontalViewRef}>
       <div
         ref={horizontalViewRef}
-        className={classNames('channel channel-horizontal', { mute: muted })}
+        className={classNames('channel channel-horizontal', { mute: muted, selected })}
+        onMouseDownCapture={onWrapperMouseDown}
+        onFocusCapture={onWrapperFocus}
         style={{ '--channel-color': color } as React.CSSProperties}>
         <div className="channel-sticky">
           {scribblerEl}

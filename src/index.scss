@@ -88,6 +88,11 @@ body {
       color: $mediumGray;
       margin-top: 40px;
       font-size: 24px;
+      .add-first-channel {
+        display: inline-block;
+        margin-top: 16px;
+        font-size: 16px;
+      }
     }
   }
 }

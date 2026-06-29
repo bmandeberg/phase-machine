@@ -113,14 +113,16 @@ export default class Header extends React.Component<HeaderProps> {
         this.playStop()
       }
       if (this.props.view === 'horizontal' || this.props.view === 'condensed') {
+        // z / x / c jump to the key / piano / sequence sections. (Moved off a / s / d so
+        // 's' is free for the solo-selected-channels hotkey; 'm'/'s' now act on selection.)
         switch (e.key) {
-          case 'a':
+          case 'z':
             this.props.setScrollTo(SECTIONS[0])
             break
-          case 's':
+          case 'x':
             this.props.setScrollTo(SECTIONS[1])
             break
-          case 'd':
+          case 'c':
             this.props.setScrollTo(SECTIONS[2])
             break
           default:

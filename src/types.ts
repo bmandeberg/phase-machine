@@ -13,6 +13,26 @@ export type Section = 'key' | 'piano' | 'sequence'
 // Shorthand for a React state setter (the second tuple element of useState).
 export type Setter<T> = Dispatch<SetStateAction<T>>
 
+// Applies a single mirrored field edit to a channel's live local state (used by the
+// selected-channel edit fan-out and the m/s hotkeys). `field` is a Channel field name.
+export type ApplyEdit = (field: keyof Channel, value: unknown) => void
+
+// A pattern/key edit fanned out to the other selected channels as a GESTURE (not a value
+// copy): each channel applies it to its OWN data so they stay distinct. Toggles carry the
+// index + new value; transforms carry only their parameters (shift amount), and flip/
+// opposite/clear apply to each channel's own axis/pattern.
+export type ChannelAction =
+  | { kind: 'seqStep'; index: number; value: boolean }
+  | { kind: 'seqShift'; amount: number }
+  | { kind: 'seqOpposite' }
+  | { kind: 'keyPitchClass'; index: number; value: boolean }
+  | { kind: 'keybdPitch'; pitch: number; value: boolean }
+  | { kind: 'keyShift'; amount: number }
+  | { kind: 'keyFlip' }
+  | { kind: 'keyOpposite' }
+  | { kind: 'keyClear' }
+export type ApplyAction = (action: ChannelAction) => void
+
 // ---- Tone.js audio nodes used across the app ----
 // The synth is a MonoSynth in mono mode and a PolySynth wrapping MonoSynth
 // voices in poly mode (see InstrumentParams.poly / useInstruments).

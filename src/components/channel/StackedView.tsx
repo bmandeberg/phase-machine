@@ -26,11 +26,17 @@ type StackedViewProps = UIElements & {
   dragTargetHorizontal: React.ReactNode
   modalEl: React.ReactNode
   flash: boolean
+  selected: boolean
+  onWrapperMouseDown: (e: React.MouseEvent) => void
+  onWrapperFocus: () => void
 }
 
 function StackedView({
   flash,
   muted,
+  selected,
+  onWrapperMouseDown,
+  onWrapperFocus,
   color,
   channelNum,
   numChannels,
@@ -85,7 +91,9 @@ function StackedView({
       nodeRef={stackedViewRef}>
       <div
         ref={stackedViewRef}
-        className={classNames('channel channel-horizontal', { mute: muted })}
+        className={classNames('channel channel-horizontal', { mute: muted, selected })}
+        onMouseDownCapture={onWrapperMouseDown}
+        onFocusCapture={onWrapperFocus}
         style={{ '--channel-color': color } as React.CSSProperties}>
         <div className="channel-sticky">
           {scribblerEl}
@@ -116,8 +124,11 @@ function StackedView({
         </div>
         <div
           style={{ top: numChannels * CHANNEL_HEIGHT }}
+          onMouseDownCapture={onWrapperMouseDown}
+          onFocusCapture={onWrapperFocus}
           className={classNames('channel channel-horizontal stacked-auxiliary', {
             mute: muted,
+            selected,
             'first-auxiliary': channelNum === 0,
           })}>
           <div className="channel-sticky channel-sticky-aux">

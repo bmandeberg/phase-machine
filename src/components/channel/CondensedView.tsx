@@ -30,11 +30,17 @@ type CondensedViewProps = UIElements & {
   dragTargetHorizontal: React.ReactNode
   modalEl: React.ReactNode
   flash: boolean
+  selected: boolean
+  onWrapperMouseDown: (e: React.MouseEvent) => void
+  onWrapperFocus: () => void
 }
 
 function CondensedView({
   flash,
   muted,
+  selected,
+  onWrapperMouseDown,
+  onWrapperFocus,
   color,
   channelNum,
   seqSteps,
@@ -71,7 +77,9 @@ function CondensedView({
       nodeRef={condensedViewRef}>
       <div
         ref={condensedViewRef}
-        className={classNames('channel channel-horizontal channel-condensed', { mute: muted })}
+        className={classNames('channel channel-horizontal channel-condensed', { mute: muted, selected })}
+        onMouseDownCapture={onWrapperMouseDown}
+        onFocusCapture={onWrapperFocus}
         style={{ '--channel-color': color } as React.CSSProperties}>
         <div className="channel-sticky">
           {scribblerEl}
