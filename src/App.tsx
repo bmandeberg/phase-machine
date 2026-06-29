@@ -327,6 +327,17 @@ export default function App() {
   const orderedIds = useMemo(() => uiState.channels.map((c: ChannelType) => c.id), [uiState.channels])
   const selection = useSelection(orderedIds)
 
+  // The whole channel-selection feature (click/shift/cmd select, edit-selects-channel,
+  // mirror fan-out, m/s/Delete/Escape hotkeys) is desktop-only: it relies on modifier
+  // clicks and a keyboard, which don't translate to touch. On a touch device we make
+  // `onSelect` a no-op and block the hotkeys — with nothing ever selected, fan-out, the
+  // `selected` tint, and background-deselect all stay inert on their own.
+  const isTouch = useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia('(hover: none) and (pointer: coarse)').matches,
+    []
+  )
+  const onSelect = useMemo(() => (isTouch ? () => {} : selection.clickSelect), [isTouch, selection.clickSelect])
+
   // Edit fan-out: each Channel registers an `applyEdit(field, value)` that writes the
   // field via its RAW setter (no re-emit). When a user edits a channel that's part of a
   // multi-selection, the channel calls `fanOutEdit`, which replays the edit onto the
@@ -504,7 +515,7 @@ export default function App() {
     onSolo: useCallback(() => muteSoloSelected('solo'), [muteSoloSelected]),
     onDelete: useCallback(() => deleteChannels(Array.from(selection.selectedIdsRef.current)), [deleteChannels, selection]),
     onDeselect: selection.deselectAll,
-    isBlocked: useCallback(() => !!modalType || !!activeDialog, [modalType, activeDialog]),
+    isBlocked: useCallback(() => isTouch || !!modalType || !!activeDialog, [isTouch, modalType, activeDialog]),
   })
 
   // Append a blank channel (driven by the "+" button beneath the channels): bumping
@@ -558,7 +569,7 @@ export default function App() {
           channelNum={d.channelNum}
           selected={selection.isSelected(d.id)}
           selectionSize={selection.selectedIds.size}
-          onSelect={selection.clickSelect}
+          onSelect={onSelect}
           registerApplyEdit={registerApplyEdit}
           fanOutEdit={fanOutEdit}
           registerApplyAction={registerApplyAction}
@@ -614,6 +625,7 @@ export default function App() {
       midiOut,
       numChannels,
       numChannelsSoloed,
+      onSelect,
       playing,
       preventUpdate,
       resetTransport,
