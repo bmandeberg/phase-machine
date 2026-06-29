@@ -87,6 +87,9 @@
     margin-top: 4px;
   }
   .effect-slot {
+    // all controls (no selectable text) — keep a finger-drag on the EQ/multiband graph
+    // handles or the move arrows from accidentally text-selecting the surrounding UI
+    @extend .no-select;
     display: flex;
     align-items: flex-start;
     flex-wrap: wrap;
@@ -202,6 +205,14 @@
         margin-bottom: 14px;
       }
     }
+    // The EQ/multiband graphs are dragged with the finger on touch devices. touch-action
+    // must gate that, but Chrome ignores touch-action on SVG elements — so set it on the
+    // graph's HTML parent (the eq-slot's .effect-slot-controls / the .mb-controls wrapper),
+    // which gates the SVG child's touch behavior. Without this the browser claims the first
+    // touch-move as a scroll and fires pointercancel, killing the drag.
+    &.eq-slot .effect-slot-controls {
+      touch-action: none;
+    }
     // interactive EQ response graph (drag the band nodes). Neutral grey/alpha
     // colors so it reads on every theme without per-theme overrides.
     .eq-graph {
@@ -251,6 +262,9 @@
       flex-direction: column;
       margin-top: 6px;
       margin-right: 10px;
+      // gate finger-drags on the SVG graph (Chrome ignores touch-action on SVG, so it
+      // lives on this HTML parent) — see the EQ note above
+      touch-action: none;
       .mb-knobs {
         display: flex;
         margin-top: 6px;

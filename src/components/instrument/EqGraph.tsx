@@ -2,6 +2,7 @@ import React, { useRef, useCallback } from 'react'
 import { EffectSlot } from '../../types'
 import { constrain } from '../../math'
 import useRafLoop from '../../hooks/useRafLoop'
+import usePointerDrag from '../../hooks/usePointerDrag'
 
 // EQ-8-style interactive 3-band EQ: drag each band's node to set frequency (x, log)
 // and gain (y, dB); a live response curve is drawn from the real biquad responses.
@@ -53,7 +54,6 @@ interface EqGraphProps {
 
 function EqGraph({ slot, setField, color, setGrabbing, getSpectrum, sampleRate = 44100 }: EqGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null)
-  const dragRef = useRef<Band | null>(null)
 
   // Live spectrum: sample the FFT each animation frame, map bins -> log-x / level-y,
   // and rebuild the filled path via a ref (no per-frame React state). Only mounted
@@ -118,41 +118,24 @@ function EqGraph({ slot, setField, color, setGrabbing, getSpectrum, sampleRate =
     return pts
   })()
 
-  const onDrag = useCallback(
-    (e: MouseEvent) => {
-      const band = dragRef.current
-      const svg = svgRef.current
-      if (!band || !svg) return
-      const r = svg.getBoundingClientRect()
-      const x = constrain(((e.clientX - r.left) / r.width) * WIDTH, 0, WIDTH)
-      const y = constrain(((e.clientY - r.top) / r.height) * HEIGHT, 0, HEIGHT)
-      const [fMin, fMax] = BAND_FREQ[band]
-      const freq = Math.round(constrain(xToFreq(x), fMin, fMax))
-      const gain = +constrain(yToGain(y), -12, 12).toFixed(2)
-      const cap = band[0].toUpperCase() + band.slice(1)
-      setField(`eq${cap}Freq` as keyof EffectSlot, freq)
-      setField(`eq${cap}Gain` as keyof EffectSlot, gain)
-    },
-    [setField]
-  )
-
-  const endDrag = useCallback(() => {
-    dragRef.current = null
-    setGrabbing(false)
-    window.removeEventListener('mousemove', onDrag)
-    window.removeEventListener('mouseup', endDrag)
-  }, [onDrag, setGrabbing])
-
-  const startDrag = useCallback(
-    (band: Band) => (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      dragRef.current = band
-      setGrabbing(true)
-      window.addEventListener('mousemove', onDrag)
-      window.addEventListener('mouseup', endDrag)
-    },
-    [onDrag, endDrag, setGrabbing]
+  const startDrag = usePointerDrag<Band>(
+    useCallback(
+      (e, band) => {
+        const svg = svgRef.current
+        if (!svg) return
+        const r = svg.getBoundingClientRect()
+        const x = constrain(((e.clientX - r.left) / r.width) * WIDTH, 0, WIDTH)
+        const y = constrain(((e.clientY - r.top) / r.height) * HEIGHT, 0, HEIGHT)
+        const [fMin, fMax] = BAND_FREQ[band]
+        const freq = Math.round(constrain(xToFreq(x), fMin, fMax))
+        const gain = +constrain(yToGain(y), -12, 12).toFixed(2)
+        const cap = band[0].toUpperCase() + band.slice(1)
+        setField(`eq${cap}Freq` as keyof EffectSlot, freq)
+        setField(`eq${cap}Gain` as keyof EffectSlot, gain)
+      },
+      [setField]
+    ),
+    setGrabbing
   )
 
   const nodes: { band: Band; freq: number; gain: number }[] = [
@@ -224,7 +207,7 @@ function EqGraph({ slot, setField, color, setGrabbing, getSpectrum, sampleRate =
           cy={gainToY(gain)}
           r={6}
           fill={color}
-          onMouseDown={startDrag(band)}
+          onPointerDown={startDrag(band)}
         />
       ))}
     </svg>

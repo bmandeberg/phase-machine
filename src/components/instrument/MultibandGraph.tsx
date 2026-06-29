@@ -2,6 +2,7 @@ import React, { useRef, useCallback } from 'react'
 import { EffectSlot } from '../../types'
 import { constrain } from '../../math'
 import useRafLoop from '../../hooks/useRafLoop'
+import usePointerDrag from '../../hooks/usePointerDrag'
 
 // Typical multiband-compressor view: the spectrum split into 3 band regions by two
 // draggable crossover lines; each band has a draggable threshold, and the region
@@ -42,7 +43,6 @@ interface MultibandGraphProps {
 
 function MultibandGraph({ slot, setField, color, setGrabbing, getReductions }: MultibandGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null)
-  const dragRef = useRef<Drag | null>(null)
 
   // Per-band gain-reduction meters: sample the live compressors' .reduction each
   // animation frame and grow a full-width band fill downward from 0 dB, on the
@@ -72,42 +72,25 @@ function MultibandGraph({ slot, setField, color, setGrabbing, getReductions }: M
     { which: 'high' as const, x: highX, freq: slot.mbHighFreq },
   ]
 
-  const onDrag = useCallback(
-    (e: MouseEvent) => {
-      const d = dragRef.current
-      const svg = svgRef.current
-      if (!d || !svg) return
-      const r = svg.getBoundingClientRect()
-      const x = constrain(((e.clientX - r.left) / r.width) * WIDTH, 0, WIDTH)
-      const y = constrain(((e.clientY - r.top) / r.height) * HEIGHT, 0, HEIGHT)
-      if (d.k === 'thr') {
-        setField(THR_FIELD[d.band], +constrain(yToDb(y), -60, 0).toFixed(1))
-      } else {
-        const freq = Math.round(xToFreq(x))
-        if (d.which === 'low') setField('mbLowFreq', constrain(freq, 40, slot.mbHighFreq - 50))
-        else setField('mbHighFreq', constrain(freq, slot.mbLowFreq + 50, 16000))
-      }
-    },
-    [setField, slot.mbHighFreq, slot.mbLowFreq]
-  )
-
-  const endDrag = useCallback(() => {
-    dragRef.current = null
-    setGrabbing(false)
-    window.removeEventListener('mousemove', onDrag)
-    window.removeEventListener('mouseup', endDrag)
-  }, [onDrag, setGrabbing])
-
-  const startDrag = useCallback(
-    (d: Drag) => (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      dragRef.current = d
-      setGrabbing(true)
-      window.addEventListener('mousemove', onDrag)
-      window.addEventListener('mouseup', endDrag)
-    },
-    [onDrag, endDrag, setGrabbing]
+  const startDrag = usePointerDrag<Drag>(
+    useCallback(
+      (e, d) => {
+        const svg = svgRef.current
+        if (!svg) return
+        const r = svg.getBoundingClientRect()
+        const x = constrain(((e.clientX - r.left) / r.width) * WIDTH, 0, WIDTH)
+        const y = constrain(((e.clientY - r.top) / r.height) * HEIGHT, 0, HEIGHT)
+        if (d.k === 'thr') {
+          setField(THR_FIELD[d.band], +constrain(yToDb(y), -60, 0).toFixed(1))
+        } else {
+          const freq = Math.round(xToFreq(x))
+          if (d.which === 'low') setField('mbLowFreq', constrain(freq, 40, slot.mbHighFreq - 50))
+          else setField('mbHighFreq', constrain(freq, slot.mbLowFreq + 50, 16000))
+        }
+      },
+      [setField, slot.mbHighFreq, slot.mbLowFreq]
+    ),
+    setGrabbing
   )
 
   return (
@@ -177,7 +160,7 @@ function MultibandGraph({ slot, setField, color, setGrabbing, getReductions }: M
             y={dbToY(b.thr) - 5}
             width={Math.max(0, b.x1 - b.x0)}
             height={10}
-            onMouseDown={startDrag({ k: 'thr', band: b.band })}
+            onPointerDown={startDrag({ k: 'thr', band: b.band })}
           />
         </g>
       ))}
@@ -196,9 +179,9 @@ function MultibandGraph({ slot, setField, color, setGrabbing, getReductions }: M
             y={0}
             width={10}
             height={HEIGHT}
-            onMouseDown={startDrag({ k: 'xover', which: c.which })}
+            onPointerDown={startDrag({ k: 'xover', which: c.which })}
           />
-          <rect className="mb-xover-grip" x={c.x - 4} y={0} width={8} height={7} fill={color} onMouseDown={startDrag({ k: 'xover', which: c.which })} />
+          <rect className="mb-xover-grip" x={c.x - 4} y={0} width={8} height={7} fill={color} onPointerDown={startDrag({ k: 'xover', which: c.which })} />
         </g>
       ))}
     </svg>
