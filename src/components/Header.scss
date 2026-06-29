@@ -202,6 +202,14 @@ $margin: 12px;
   .presets .preset-action {
     display: none;
   }
+  // With the actions gone, the outer .presets box hugs the dropdown, so its own border
+  // doubles up ~2px outside the dropdown's border (a stray "bevel" near the right edge).
+  // The dropdown supplies its own border, so drop the redundant outer one here. Every
+  // theme restyles this border at `.<theme> #header .presets` (specificity 1,2,0), so
+  // rather than re-out-specify each one, force it off within this mobile-only query.
+  .presets {
+    border: none !important;
+  }
   .presets .preset-dummy,
   .presets .dropdown-container {
     width: 112px;
@@ -211,6 +219,13 @@ $margin: 12px;
   // 112) so it doesn't creep over and hide the arrow.
   .presets input[type='text'] {
     width: 90px;
+  }
+  // .preset-tags is positioned with `right: 88px` against the wide desktop box (which
+  // includes the now-hidden action buttons). On the narrowed mobile box that offset
+  // lands the dirty/hotkey tags at the left edge — re-anchor them just left of the
+  // dropdown arrow (~20px arrow + small gap) so they sit at the right of the name.
+  .presets .preset-tags {
+    right: 30px;
   }
 }
 

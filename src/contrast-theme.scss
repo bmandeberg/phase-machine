@@ -788,7 +788,13 @@ body:has(.contrast-theme) {
       border-left-color: $blue !important;
     }
     .dropdown-control {
+      // dark seam dividing the dropdown from the save/new/delete action buttons
       border-right-color: $headerDarkBlue !important;
+      // …but on phones those actions are hidden, so this is the button's exposed right
+      // edge — match the other (bright) edges instead of showing a dark bevel.
+      @media screen and (max-width: 485px) {
+        border-right-color: $blue !important;
+      }
     }
   }
 
