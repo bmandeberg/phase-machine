@@ -68,12 +68,18 @@ export default class Loop {
     if (this.swingAmt === 0.5) {
       this.swingEnable = false
       this.loop.interval = this.interval
-      this.loop.stop()
-      this.loop.start(0)
     } else {
       this.swingEnable = true
       this.loop.interval = this.interval * this.swingPhraseLength
     }
+    // Always (re)start the loop after changing swing. Enabling swing used to only set
+    // swingEnable + interval without restarting, so if the loop happened to be stopped
+    // at that moment — which it is during a preset load (the loop is reset before the
+    // channel's swing value is applied) — it would stay stopped forever and the whole
+    // sequence/key would never play. This is why presets with swung channels (Duet,
+    // Strolling, Jazz, …) had silent, non-advancing channels until a manual restart.
+    this.loop.stop()
+    this.loop.start(0)
     this.updateCurve()
   }
 
