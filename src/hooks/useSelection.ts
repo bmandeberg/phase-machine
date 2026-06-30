@@ -18,6 +18,7 @@ export interface SelectionAPI {
   anySelected: () => boolean
   clickSelect: (id: string, mods: SelectionModifiers) => void
   selectOnly: (id: string) => void
+  selectAll: () => void
   deselectAll: () => void
 }
 
@@ -53,6 +54,13 @@ export default function useSelection(orderedIds: string[]): SelectionAPI {
     setSelectedIds((prev) => (prev.size ? new Set() : prev))
     anchorId.current = null
   }, [])
+
+  // Select every channel (Cmd/Ctrl+A). Anchor the last one so a follow-up shift-click
+  // narrows the range from the end.
+  const selectAll = useCallback(() => {
+    setSelectedIds(new Set(orderedIds))
+    anchorId.current = orderedIds.length ? orderedIds[orderedIds.length - 1] : null
+  }, [orderedIds])
 
   const clickSelect = useCallback(
     (id: string, mods: SelectionModifiers) => {
@@ -91,7 +99,7 @@ export default function useSelection(orderedIds: string[]): SelectionAPI {
   const anySelected = useCallback(() => selectedIdsRef.current.size > 0, [])
 
   return useMemo(
-    () => ({ selectedIds, selectedIdsRef, isSelected, anySelected, clickSelect, selectOnly, deselectAll }),
-    [selectedIds, isSelected, anySelected, clickSelect, selectOnly, deselectAll]
+    () => ({ selectedIds, selectedIdsRef, isSelected, anySelected, clickSelect, selectOnly, selectAll, deselectAll }),
+    [selectedIds, isSelected, anySelected, clickSelect, selectOnly, selectAll, deselectAll]
   )
 }

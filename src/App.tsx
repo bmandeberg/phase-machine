@@ -557,6 +557,7 @@ export default function App() {
     onSolo: useCallback(() => muteSoloSelected('solo'), [muteSoloSelected]),
     onDelete: useCallback(() => deleteChannels(Array.from(selection.selectedIdsRef.current)), [deleteChannels, selection]),
     onDeselect: selection.deselectAll,
+    onSelectAll: selection.selectAll,
     isBlocked: useCallback(() => isTouch || !!modalType || !!activeDialog, [isTouch, modalType, activeDialog]),
   })
 

@@ -14,6 +14,7 @@ interface SelectionHotkeysParams {
   onSolo: () => void
   onDelete: () => void
   onDeselect: () => void
+  onSelectAll: () => void
   // true while a modal / alert dialog is open — Escape and Delete should defer to it
   isBlocked: () => boolean
 }
@@ -36,9 +37,19 @@ export default function useSelectionHotkeys(params: SelectionHotkeysParams) {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      const p = ref.current
+      // Cmd/Ctrl+A selects all channels, overriding the browser's select-all (which would
+      // otherwise highlight stray page text/graphics). Defer to native select-all while
+      // typing in a field or when a modal is open (so text there still selects).
+      if ((e.key === 'a' || e.key === 'A') && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
+        if (!typingTarget() && !p.isBlocked()) {
+          e.preventDefault()
+          p.onSelectAll()
+        }
+        return
+      }
       if (e.metaKey || e.ctrlKey || e.altKey) return
       if (typingTarget()) return
-      const p = ref.current
       switch (e.key) {
         case 'm':
         case 'M':

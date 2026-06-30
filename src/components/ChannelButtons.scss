@@ -4,6 +4,9 @@
 // above a "..." button that opens a small Duplicate / Delete menu. (Replaced the
 // old stacked +/trash icons.)
 .channel-buttons {
+  // The instrument icon (and the "..." menu icons) are graphics, not text — keep them
+  // out of any drag-select or Cmd+A highlight. user-select inherits to the children.
+  @extend .no-select;
   position: absolute;
   left: 14px;
   top: 48px;

@@ -14,7 +14,11 @@ $margin: 12px;
   top: 0;
   left: 0;
   z-index: 2001;
+  // Decorative graphics (logo glow + sinusoid waves): never selectable/draggable, so a
+  // drag-select or stray Cmd+A can't highlight them.
   .logo-shadow {
+    @extend .no-select;
+    -webkit-user-drag: none;
     position: absolute;
     height: 48px;
     left: 5px;
@@ -22,6 +26,8 @@ $margin: 12px;
     opacity: 0.5;
   }
   .waves-background {
+    @extend .no-select;
+    -webkit-user-drag: none;
     position: absolute;
     height: 100%;
     left: 0;
@@ -83,6 +89,8 @@ $margin: 12px;
 }
 
 #logo {
+  // already carries .no-select; also block the image drag-ghost (Safari/WebKit)
+  -webkit-user-drag: none;
   height: 40px;
   margin-right: 7px;
   z-index: 1;
