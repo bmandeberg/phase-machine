@@ -1,4 +1,5 @@
 import React from 'react'
+import classNames from 'classnames'
 import regeneratorRuntime from 'regenerator-runtime'
 import * as Tone from 'tone'
 import { VIEWS, SECTIONS, ALT } from '../globals'
@@ -64,6 +65,10 @@ interface HeaderProps {
   setGlobalVolume: any
   grabbing?: boolean
   setGrabbing?: any
+  undo: () => void
+  redo: () => void
+  canUndo: boolean
+  canRedo: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -274,6 +279,24 @@ export default class Header extends React.Component<HeaderProps> {
           headerStyle
           resetValue={1}
         />
+        <div className="header-item header-undo-redo no-select">
+          <div
+            className={classNames('undo-redo-btn', { disabled: !this.props.canUndo })}
+            onClick={this.props.undo}
+            title="Undo (⌘Z)">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
+            </svg>
+          </div>
+          <div
+            className={classNames('undo-redo-btn', { disabled: !this.props.canRedo })}
+            onClick={this.props.redo}
+            title="Redo (⇧⌘Z)">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z" />
+            </svg>
+          </div>
+        </div>
         <div className="header-aux">
           <div className="aux-item header-about" onClick={this.openAbout.bind(this)} title="About"></div>
           <div className="aux-item header-settings" onClick={this.openSettings.bind(this)} title="Settings"></div>

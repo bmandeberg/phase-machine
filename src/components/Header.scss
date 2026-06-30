@@ -123,6 +123,43 @@ $margin: 12px;
   }
 }
 
+// Undo / redo, just right of the volume knob. Icons inherit the header text colour via
+// currentColor, so they track every theme without per-theme assets.
+.header-undo-redo {
+  // Sit up on the control row (top of the header), centred on the dropdowns/knob rather
+  // than on the full 60px header height.
+  align-self: flex-start;
+  margin-top: -3px;
+  // The volume knob is scaled to 0.75 from its top-left corner, leaving ~13px of
+  // transformed-away whitespace on its right. Pull back over it (a touch past the
+  // standard 12px item spacing) to snug the arrows up against the knob.
+  margin-left: -19px;
+  display: flex;
+  align-items: center;
+  .undo-redo-btn {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+    &:hover {
+      opacity: 0.7;
+    }
+    // Nothing to undo/redo: dim and inert, but still laid out so the pair doesn't shift.
+    &.disabled {
+      opacity: 0.25;
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+}
+
 .view-dropdown {
   display: none;
 }
@@ -233,6 +270,21 @@ $margin: 12px;
 // width (still adjustable on desktop; per-channel volume lives in the instrument editor)
 @media screen and (max-width: 1024px) {
   .global-volume {
+    display: none;
+  }
+  // The undo/redo pull-back compensates for the volume knob's scale slack; with the knob
+  // gone the arrows sit after the View dropdown, so drop the negative margin (it would
+  // otherwise clip the dropdown) and fall back to the standard item spacing.
+  .header-undo-redo {
+    margin-left: 0;
+  }
+}
+
+// Phones: the header has no room for undo/redo — hide it. (It stays on desktop/tablet;
+// touch devices have no keyboard for ⌘Z anyway.) Above the tempo-drop width so every
+// tablet keeps the arrows.
+@media screen and (max-width: 627px) {
+  .header-undo-redo {
     display: none;
   }
 }

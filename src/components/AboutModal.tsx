@@ -193,7 +193,7 @@ The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-ton
       'The Phase Machine works best in Google Chrome, which has full MIDI support. While the app works on mobile, it is not optimized for mobile or Safari, which can have performance and audio issues.',
     ],
     warnings: [
-      'Beware! There is not yet any undo/redo, so things you do, presets or channels you delete, cannot be undone.',
+      'Undo/redo (the arrows by the volume knob, or ⌘Z / ⇧⌘Z) covers your edits — channel, sequencer, key and instrument changes, tempo, and adding, deleting or reordering channels. It does not undo saving, deleting or importing presets.',
       'The clock may drift if you navigate away from The Phase Machine while it is running. If you want your timing to be as consistent as possible, make sure The Phase Machine is focused while it is running.',
     ],
     tags: ['notes'],

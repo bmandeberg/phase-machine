@@ -26,9 +26,10 @@ import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
 import useSelection from './hooks/useSelection'
 import useSelectionHotkeys from './hooks/useSelectionHotkeys'
+import useHistory, { deepEqual } from './hooks/useHistory'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import { subscribeDialogs, getActiveDialog, DialogRequest } from './dialog'
-import { Channel as ChannelType, Preset, ApplyEdit, ApplyAction, ChannelAction } from './types'
+import { Channel as ChannelType, Preset, ApplyEdit, ApplyAction, ApplyChannelState, ChannelAction } from './types'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
@@ -380,6 +381,47 @@ export default function App() {
     [selection]
   )
 
+  // Undo/redo restore: each Channel registers a full-snapshot apply (raw setters + Tone,
+  // no re-emit). `applySnapshot` rewrites the musical/structural state from a history
+  // entry without touching `currentPreset` (the dirty baseline stays the saved preset),
+  // and preserves the preset's identity fields so an unrelated undo never reverts a
+  // rename. New/removed channels mount-from-initState / unmount via the channels array.
+  const channelRestoreRegistry = useRef<Map<string, ApplyChannelState>>(new Map())
+  const registerApplyChannelState = useCallback((id: string, fn: ApplyChannelState) => {
+    channelRestoreRegistry.current.set(id, fn)
+    return () => {
+      channelRestoreRegistry.current.delete(id)
+    }
+  }, [])
+  const applySnapshot = useCallback((snap: Preset) => {
+    const current = uiStateRef.current
+    setTempo(snap.tempo)
+    setChannelSync(snap.channelSync)
+    setNumChannels(snap.numChannels)
+    setUIState((prev: Preset) =>
+      Object.assign({}, prev, {
+        tempo: snap.tempo,
+        channelSync: snap.channelSync,
+        numChannels: snap.numChannels,
+        channels: snap.channels.map((c) => channelCopy(c)),
+      })
+    )
+    // Push the restored fields onto each still-mounted channel that actually changed.
+    // (Re-added channels aren't registered yet — they initialize from their initState
+    // prop on mount; removed channels just unmount.)
+    snap.channels.forEach((ch: ChannelType) => {
+      const cur = current.channels.find((c: ChannelType) => c.id === ch.id)
+      if (!cur || deepEqual(cur, ch)) return
+      const reloadInstr =
+        cur.instrumentType !== ch.instrumentType || !deepEqual(cur.instrumentParams, ch.instrumentParams)
+      channelRestoreRegistry.current.get(ch.id)?.(ch, { reloadInstr })
+    })
+    // No setPreventUpdate here (unlike the structural mutators): undo never touches
+    // currentPreset, so every surviving channel's channelPreset prop is referentially
+    // unchanged and its reload effect can't fire — there's nothing to suppress.
+  }, [])
+  const { undo, redo, canUndo, canRedo } = useHistory(uiState, applySnapshot)
+
   const getChannelColor = useCallback((channels: ChannelType[]) => {
     const nextColor = CHANNEL_COLORS.find((color) => !channels.map((c) => c.color).includes(color))
     return nextColor || CHANNEL_COLORS[0]
@@ -574,6 +616,7 @@ export default function App() {
           fanOutEdit={fanOutEdit}
           registerApplyAction={registerApplyAction}
           fanOutAction={fanOutAction}
+          registerApplyChannelState={registerApplyChannelState}
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           resizing={resizing}
@@ -618,6 +661,7 @@ export default function App() {
       fanOutEdit,
       grabbing,
       registerApplyAction,
+      registerApplyChannelState,
       registerApplyEdit,
       longestSequence,
       midiNoteOff,
@@ -696,6 +740,10 @@ export default function App() {
         setGlobalVolume={setGlobalVolume}
         grabbing={grabbing}
         setGrabbing={setGrabbing}
+        undo={undo}
+        redo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
       />
       <div id="header-border"></div>
       <div id="channels" className={classNames({ empty: numChannels === 0 })}>

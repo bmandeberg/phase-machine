@@ -17,6 +17,11 @@ export type Setter<T> = Dispatch<SetStateAction<T>>
 // selected-channel edit fan-out and the m/s hotkeys). `field` is a Channel field name.
 export type ApplyEdit = (field: keyof Channel, value: unknown) => void
 
+// Restores a whole channel's saved state onto its live local state + Tone nodes (used by
+// undo/redo). `reloadInstr` rebuilds the instrument/effects graph only when the
+// instrument actually changed, so restoring an unrelated field never clicks the audio.
+export type ApplyChannelState = (data: Channel, opts: { reloadInstr: boolean }) => void
+
 // A pattern/key edit fanned out to the other selected channels as a GESTURE (not a value
 // copy): each channel applies it to its OWN data so they stay distinct. Toggles carry the
 // index + new value; transforms carry only their parameters (shift amount), and flip/

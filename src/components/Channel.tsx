@@ -42,7 +42,15 @@ import arrowClockLight from '../assets/arrow-clock-light.svg'
 import arrowClockLightMute from '../assets/arrow-clock-light-mute.svg'
 import arrowClockAero from '../assets/arrow-clock-aero.svg'
 import arrowClockCoquette from '../assets/arrow-clock-coquette.svg'
-import { Channel as ChannelType, Setter, MidiNoteEvent, ApplyEdit, ApplyAction, ChannelAction } from '../types'
+import {
+  Channel as ChannelType,
+  Setter,
+  MidiNoteEvent,
+  ApplyEdit,
+  ApplyAction,
+  ApplyChannelState,
+  ChannelAction,
+} from '../types'
 import './Channel.scss'
 
 const CLOCK_CHANNEL_WIDTH = 621
@@ -60,6 +68,7 @@ interface ChannelProps {
   fanOutEdit: (sourceId: string, field: keyof ChannelType, value: unknown) => void
   registerApplyAction: (id: string, fn: ApplyAction) => () => void
   fanOutAction: (sourceId: string, action: ChannelAction) => void
+  registerApplyChannelState: (id: string, fn: ApplyChannelState) => () => void
   setGrabbing: Setter<boolean>
   grabbing: boolean
   resizing: boolean
@@ -103,6 +112,7 @@ export default function Channel({
   fanOutEdit,
   registerApplyAction,
   fanOutAction,
+  registerApplyChannelState,
   setGrabbing,
   grabbing,
   resizing,
@@ -973,14 +983,20 @@ export default function Channel({
     if (noNoteOffScheduled.current && !seqSteps[currentStep.current] && notePlaying.current) {
       Tone.getContext().clearTimeout(noteOffTimeout.current)
       let offNote = noteIndex.current === playingNoteRef.current ? playingNoteRef.current : prevNoteIndex.current
-      if (offNote) {
+      // We're here because the step is OFF, so `seq` may be null — the flush could have
+      // been scheduled by the key buffer alone. Use whichever slot is set; guarding the
+      // `.time` read avoids a null deref that throws inside Tone's timeout loop (which
+      // wedges the scheduler and sticks audio). Flipping hold/seqSteps mid-play (e.g. an
+      // undo) is one way to reach this combination.
+      const bufferedNote = playNoteBuffer.current.seq ?? playNoteBuffer.current.key
+      if (offNote && bufferedNote) {
         const { channel, midiOutObj, clockOffset } = getChannelData()
         noteOff(
           channel,
           noteString(offNote),
           midiOutObj,
           false,
-          playNoteBuffer.current.seq.time + PLAY_NOTE_BUFFER_TIME - 0.005,
+          bufferedNote.time + PLAY_NOTE_BUFFER_TIME - 0.005,
           clockOffset
         )
       }
@@ -1101,57 +1117,86 @@ export default function Channel({
 
   // set channel state when preset is changed
 
+  // Apply a whole saved channel snapshot onto this channel's live local state (+ Tone
+  // graph). Shared by the preset-load effect below and the undo/redo restore registry.
+  // Arrays/objects are cloned so the source snapshot (a preset or a history entry) is
+  // never mutated by later edits. `reloadInstr` rebuilds the instrument/effect graph —
+  // the preset path always does; restore skips it unless the instrument actually changed,
+  // so undoing an unrelated field doesn't click channels that didn't change.
+  const applyChannelData = useCallback(
+    (data: ChannelType, opts: { restart: boolean; closeModal: boolean; reloadInstr: boolean }) => {
+      if (opts.restart) {
+        seqRestart()
+        keyRestart()
+      }
+      setScribbler(data.scribbler)
+      setVelocity(data.velocity)
+      setKey(data.key.slice())
+      setKeyRate(data.keyRate)
+      setKeyMovement(data.keyMovement)
+      setKeyArpInc1(data.keyArpInc1)
+      setKeyArpInc2(data.keyArpInc2)
+      setSustain(data.sustain)
+      setKeySwing(data.keySwing)
+      setKeySwingLength(data.keySwingLength)
+      setMute(data.mute)
+      setSolo(data.solo)
+      setShiftAmt(data.shiftAmt)
+      setAxis(data.axis)
+      setRangeStart(data.rangeStart)
+      setRangeEnd(data.rangeEnd)
+      setSeqSteps(data.seqSteps.slice())
+      setSeqLength(data.seqLength)
+      setSeqShiftAmt(data.seqShiftAmt)
+      setSeqRate(data.seqRate)
+      setSeqMovement(data.seqMovement)
+      setSeqArpInc1(data.seqArpInc1)
+      setSeqArpInc2(data.seqArpInc2)
+      setSeqSwing(data.seqSwing)
+      setSeqSwingLength(data.seqSwingLength)
+      setHold(data.hold)
+      setInstrumentOn(data.instrumentOn)
+      setInstrumentType(data.instrumentType)
+      setRangeMode(data.rangeMode)
+      setKeybdPitches(data.keybdPitches.slice())
+      setMidiIn(data.midiIn)
+      setMidiHold(data.midiHold)
+      setCustomMidiOutChannel(data.customMidiOutChannel)
+      setMidiOutChannel(data.midiOutChannel)
+      // effects is a fixed 3-slot tuple (EffectSlots); .map() widens it to an array, so
+      // cast it back. Slots are cloned so the source snapshot is never mutated.
+      const params = {
+        ...data.instrumentParams,
+        effects: data.instrumentParams.effects.map((e) => ({ ...e })) as typeof data.instrumentParams.effects,
+      }
+      setInstrumentParams(params)
+      if (opts.closeModal) setModalType(null)
+      if (opts.reloadInstr) reloadInstruments(params)
+      setUpdateOnce(true)
+    },
+    [keyRestart, seqRestart, reloadInstruments]
+  )
+
   useEffect(() => {
     if (channelPreset) {
       if (!presetInitialized.current) {
         presetInitialized.current = true
       } else if (channelPreset !== prevChannelPreset.current) {
-        if (restartChannels) {
-          seqRestart()
-          keyRestart()
-        }
-        setScribbler(channelPreset.scribbler)
-        setVelocity(channelPreset.velocity)
-        setKey(channelPreset.key.slice())
-        setKeyRate(channelPreset.keyRate)
-        setKeyMovement(channelPreset.keyMovement)
-        setKeyArpInc1(channelPreset.keyArpInc1)
-        setKeyArpInc2(channelPreset.keyArpInc2)
-        setSustain(channelPreset.sustain)
-        setKeySwing(channelPreset.keySwing)
-        setKeySwingLength(channelPreset.keySwingLength)
-        setMute(channelPreset.mute)
-        setSolo(channelPreset.solo)
-        setShiftAmt(channelPreset.shiftAmt)
-        setAxis(channelPreset.axis)
-        setRangeStart(channelPreset.rangeStart)
-        setRangeEnd(channelPreset.rangeEnd)
-        setSeqSteps(channelPreset.seqSteps.slice())
-        setSeqLength(channelPreset.seqLength)
-        setSeqShiftAmt(channelPreset.seqShiftAmt)
-        setSeqRate(channelPreset.seqRate)
-        setSeqMovement(channelPreset.seqMovement)
-        setSeqArpInc1(channelPreset.seqArpInc1)
-        setSeqArpInc2(channelPreset.seqArpInc2)
-        setSeqSwing(channelPreset.seqSwing)
-        setSeqSwingLength(channelPreset.seqSwingLength)
-        setHold(channelPreset.hold)
-        setInstrumentOn(channelPreset.instrumentOn)
-        setInstrumentType(channelPreset.instrumentType)
-        setRangeMode(channelPreset.rangeMode)
-        setKeybdPitches(channelPreset.keybdPitches)
-        setMidiIn(channelPreset.midiIn)
-        setMidiHold(channelPreset.midiHold)
-        setCustomMidiOutChannel(channelPreset.customMidiOutChannel)
-        setMidiOutChannel(channelPreset.midiOutChannel)
-        setInstrumentParams(channelPreset.instrumentParams)
-        setModalType(null)
-        reloadInstruments(channelPreset.instrumentParams)
-        setUpdateOnce(true)
+        applyChannelData(channelPreset, { restart: restartChannels, closeModal: true, reloadInstr: true })
       }
       prevChannelPreset.current = channelPreset
     }
-  }, [channelPreset, restartChannels, keyRestart, seqRestart, reloadInstruments])
+  }, [channelPreset, restartChannels, applyChannelData])
+
+  // Undo/redo: App pushes a saved channel snapshot straight onto this live channel (no
+  // re-emit, no transport restart, no modal close) when it differs from the current state.
+  useEffect(
+    () =>
+      registerApplyChannelState(id.current, (data, { reloadInstr }) =>
+        applyChannelData(data, { restart: false, closeModal: false, reloadInstr })
+      ),
+    [registerApplyChannelState, applyChannelData]
+  )
 
   // manage key and notes for range and keybd modes
 
