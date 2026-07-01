@@ -15,6 +15,7 @@ interface SelectionHotkeysParams {
   onDelete: () => void
   onDeselect: () => void
   onSelectAll: () => void
+  onOpenInstrument: () => void
   // true while a modal / alert dialog is open — Escape and Delete should defer to it
   isBlocked: () => boolean
 }
@@ -70,6 +71,14 @@ export default function useSelectionHotkeys(params: SelectionHotkeysParams) {
           if (p.anySelected() && !p.isBlocked()) {
             e.preventDefault()
             p.onDelete()
+          }
+          break
+        case 'i':
+        case 'I':
+          // open the instrument editor for the selection (first channel in order)
+          if (p.anySelected() && !p.isBlocked()) {
+            e.preventDefault()
+            p.onOpenInstrument()
           }
           break
         case 'Escape':

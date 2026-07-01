@@ -69,6 +69,7 @@ interface ChannelProps {
   registerApplyAction: (id: string, fn: ApplyAction) => () => void
   fanOutAction: (sourceId: string, action: ChannelAction) => void
   registerApplyChannelState: (id: string, fn: ApplyChannelState) => () => void
+  registerOpenInstrument: (id: string, fn: () => void) => () => void
   setGrabbing: Setter<boolean>
   grabbing: boolean
   resizing: boolean
@@ -113,6 +114,7 @@ export default function Channel({
   registerApplyAction,
   fanOutAction,
   registerApplyChannelState,
+  registerOpenInstrument,
   setGrabbing,
   grabbing,
   resizing,
@@ -540,6 +542,10 @@ export default function Channel({
     openInstrumentModal,
     instruments,
   } = useInstruments(instrument, instrumentParams, instrumentType, cleanupInstruments, setModalType)
+
+  // Expose this channel's instrument-modal opener so the `i` hotkey (App-owned, keyed off
+  // the selection) can open the editor for the selected channel.
+  useEffect(() => registerOpenInstrument(id.current, openInstrumentModal), [registerOpenInstrument, openInstrumentModal])
 
   // applyEdit replays a single mirrored field onto this channel via its RAW setter.
   // Array/object values are cloned so selected channels don't share references;

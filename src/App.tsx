@@ -523,6 +523,22 @@ export default function App() {
     [selection, setChannelColor]
   )
 
+  // Each channel registers its openInstrumentModal so the `i` hotkey can open the
+  // instrument editor for the selected channel (the first one in channel order when
+  // several are selected) without threading a prop through every view.
+  const channelOpenInstrumentRegistry = useRef<Map<string, () => void>>(new Map())
+  const registerOpenInstrument = useCallback((id: string, fn: () => void) => {
+    channelOpenInstrumentRegistry.current.set(id, fn)
+    return () => {
+      channelOpenInstrumentRegistry.current.delete(id)
+    }
+  }, [])
+  const openInstrumentForSelection = useCallback(() => {
+    const sel = selection.selectedIdsRef.current
+    const firstId = orderedIds.find((id) => sel.has(id))
+    if (firstId) channelOpenInstrumentRegistry.current.get(firstId)?.()
+  }, [orderedIds, selection])
+
   const muteSoloSelected = useCallback(
     (field: 'mute' | 'solo') => {
       const ids = Array.from(selection.selectedIdsRef.current)
@@ -558,6 +574,7 @@ export default function App() {
     onDelete: useCallback(() => deleteChannels(Array.from(selection.selectedIdsRef.current)), [deleteChannels, selection]),
     onDeselect: selection.deselectAll,
     onSelectAll: selection.selectAll,
+    onOpenInstrument: openInstrumentForSelection,
     isBlocked: useCallback(() => isTouch || !!modalType || !!activeDialog, [isTouch, modalType, activeDialog]),
   })
 
@@ -618,6 +635,7 @@ export default function App() {
           registerApplyAction={registerApplyAction}
           fanOutAction={fanOutAction}
           registerApplyChannelState={registerApplyChannelState}
+          registerOpenInstrument={registerOpenInstrument}
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           resizing={resizing}
@@ -664,6 +682,7 @@ export default function App() {
       registerApplyAction,
       registerApplyChannelState,
       registerApplyEdit,
+      registerOpenInstrument,
       longestSequence,
       midiNoteOff,
       midiNoteOn,
