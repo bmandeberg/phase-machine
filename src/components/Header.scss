@@ -172,13 +172,20 @@ $margin: 12px;
   display: none;
 }
 
-@media screen and (max-width: 1207px) {
+// Horizontal/condensed view adds the wide "Scroll To" radio group. Since the undo/redo
+// arrows joined the row, keeping Scroll To until 1207px let the arrows slide under the
+// fixed gear/question aux icons in a ~1208-1250px band. Drop it earlier so the row clears
+// the aux zone with margin to spare.
+@media screen and (max-width: 1279px) {
   .scroll-to {
     display: none;
   }
 }
 
-@media screen and (max-width: 1057px) {
+// Swap the wide "View" segmented control for the compact dropdown. Raised from 1057px
+// once the undo/redo arrows joined the row: with View buttons shown the row reached under
+// the fixed aux icons in a ~1058-1092px band. The dropdown frees ~150px and clears them.
+@media screen and (max-width: 1120px) {
   .view-buttons {
     display: none;
   }
