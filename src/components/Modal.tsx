@@ -48,6 +48,9 @@ interface ModalProps {
   grabbing?: boolean
   setGrabbing?: any
   tempo?: number
+  // bump to remount InstrumentModal so its param hooks re-seed after an external
+  // instrument change (undo/redo, preset load) — see Channel.instrumentSyncKey
+  instrumentSyncKey?: number
   presetsRestartTransport?: boolean
   setPresetsRestartTransport?: any
   midiClockIn?: boolean
@@ -100,6 +103,7 @@ export default function Modal({
   grabbing,
   setGrabbing,
   tempo,
+  instrumentSyncKey,
   presetsRestartTransport,
   setPresetsRestartTransport,
   midiClockIn,
@@ -223,6 +227,7 @@ export default function Modal({
   const instrumentEl = useMemo(
     () => (
       <InstrumentModal
+        key={instrumentSyncKey}
         instrumentOn={instrumentOn}
         setInstrumentOn={setInstrumentOn}
         instrumentType={instrumentType as string}
@@ -251,6 +256,7 @@ export default function Modal({
       grabbing,
       instrumentOn,
       instrumentParams,
+      instrumentSyncKey,
       savedInstrumentParams,
       instrumentType,
       instruments,

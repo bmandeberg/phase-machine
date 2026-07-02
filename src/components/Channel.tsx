@@ -343,6 +343,12 @@ export default function Channel({
 
   const channelNumRef = useRef(channelNum)
   const [modalType, setModalType] = useState<any>('')
+  // Bumped whenever an external apply (undo/redo, preset load) changes this channel's
+  // instrument. The open InstrumentModal is keyed off it so it remounts and re-seeds its
+  // param hooks from the new instrumentParams — otherwise those hooks keep their stale
+  // mount-time state and the knobs don't move on undo (only on/off + type, which read
+  // live channel state, would update).
+  const [instrumentSyncKey, setInstrumentSyncKey] = useState(0)
 
   const [updateOnce, setUpdateOnce] = useState(false)
 
@@ -1177,7 +1183,11 @@ export default function Channel({
       }
       setInstrumentParams(params)
       if (opts.closeModal) setModalType(null)
-      if (opts.reloadInstr) reloadInstruments(params)
+      if (opts.reloadInstr) {
+        reloadInstruments(params)
+        // remount an open InstrumentModal so its param hooks re-seed from `params`
+        setInstrumentSyncKey((k) => k + 1)
+      }
       setUpdateOnce(true)
     },
     [keyRestart, seqRestart, reloadInstruments]
@@ -1434,6 +1444,7 @@ export default function Channel({
           grabbing={grabbing}
           setGrabbing={setGrabbing}
           tempo={tempo}
+          instrumentSyncKey={instrumentSyncKey}
         />
       </CSSTransition>
     ),
@@ -1453,6 +1464,7 @@ export default function Channel({
       channelPreset?.instrumentParams,
       instrumentType,
       instruments,
+      instrumentSyncKey,
       midiHold,
       midiIn,
       setMidiIn,
