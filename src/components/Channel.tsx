@@ -1081,10 +1081,30 @@ export default function Channel({
         if (!emptyKey && !muted) {
           loadPlayNoteBuffer('key', time, interval)
         }
+      } else if (notePlaying.current || noteIndex.current !== undefined) {
+        // The range no longer contains any of the selected pitches: switch to nothing.
+        // Turn off whatever is sounding and clear noteIndex so the sequence loop plays
+        // silence (getChannelData → noteString(undefined) → null) until a pitch comes
+        // back into range. Without this the last in-range note would keep replaying.
+        if (notePlaying.current) {
+          const { channel, midiOutObj, clockOffset } = getChannelData()
+          const offNote = noteIndex.current === playingNoteRef.current ? playingNoteRef.current : prevNoteIndex.current
+          if (offNote) {
+            Tone.getContext().clearTimeout(noteOffTimeout.current)
+            noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
+          }
+          noNoteOffScheduled.current = false
+        }
+        noteIndex.current = undefined
+        prevNoteIndex.current = undefined
+        playingNoteRef.current = undefined
+        setPlayingPitchClass(undefined)
+        setPlayingNote(undefined)
       }
     },
     [
       emptyKey,
+      getChannelData,
       key,
       keyArpInc1,
       keyArpInc2,
@@ -1092,6 +1112,7 @@ export default function Channel({
       keybdPitches,
       loadPlayNoteBuffer,
       muted,
+      noteOff,
       rangeEnd,
       rangeMode,
       rangeStart,
