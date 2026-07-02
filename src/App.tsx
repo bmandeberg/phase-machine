@@ -627,6 +627,7 @@ export default function App() {
     onDeselect: selection.deselectAll,
     onSelectAll: selection.selectAll,
     onOpenInstrument: openInstrumentForSelection,
+    onSavePreset: useCallback(() => savePreset(null), [savePreset]),
     onCopy: copyChannels,
     onPaste: pasteChannels,
     canPaste: useCallback(() => channelClipboard.current.length > 0, []),

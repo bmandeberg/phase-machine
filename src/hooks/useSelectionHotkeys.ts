@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 // Global hotkeys that act on the selected channels:
+//   Cmd/Ctrl+S → save the current preset (app-wide, not selection-scoped)
 //   Cmd/Ctrl+C → copy the selected channels to the channel clipboard
 //   Cmd/Ctrl+V → paste the copied channels (after the selection, or at the end)
 //   m / s   → mute / solo the selection (unified — see App's handler)
@@ -18,6 +19,7 @@ interface SelectionHotkeysParams {
   onDeselect: () => void
   onSelectAll: () => void
   onOpenInstrument: () => void
+  onSavePreset: () => void
   onCopy: () => void
   onPaste: () => void
   // true when the channel clipboard holds something to paste
@@ -53,6 +55,15 @@ export default function useSelectionHotkeys(params: SelectionHotkeysParams) {
           e.preventDefault()
           p.onSelectAll()
         }
+        return
+      }
+      // Cmd/Ctrl+S saves the current preset, overriding the browser's save-page dialog.
+      // Always preventDefault (there's no useful native Cmd+S here); save unless a modal /
+      // dialog is open. Fires even while editing the preset-name field — the natural place
+      // to hit save — since the guard below (which bails on text inputs) is skipped here.
+      if ((e.key === 's' || e.key === 'S') && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
+        e.preventDefault()
+        if (!p.isBlocked()) p.onSavePreset()
         return
       }
       // Cmd/Ctrl+C copies the selected channels; Cmd/Ctrl+V pastes them. Both defer to the
