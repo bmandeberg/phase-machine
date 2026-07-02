@@ -506,6 +506,58 @@ export default function App() {
     [selection]
   )
 
+  // Copy / paste selected channels. The clipboard is an App-level ref of deep channel
+  // copies, so pasting survives the source channels being edited or deleted, and persists
+  // across preset changes for the life of the session.
+  const channelClipboard = useRef<ChannelType[]>([])
+  const copyChannels = useCallback(() => {
+    const sel = selection.selectedIdsRef.current
+    if (!sel.size) return
+    // store in channel order so the pasted block keeps the on-screen order
+    channelClipboard.current = uiStateRef.current.channels
+      .filter((c: ChannelType) => sel.has(c.id))
+      .map((c: ChannelType) => channelCopy(c))
+  }, [selection])
+
+  // Paste after the last selected channel (or at the end when nothing is selected), giving
+  // each clone a fresh id + an unused color, then select the pasted block. Obeys the channel
+  // limit: only as many as fit under MAX_CHANNELS are pasted; the rest are dropped.
+  const pasteChannels = useCallback(() => {
+    const clip = channelClipboard.current
+    if (!clip.length) return
+    const current = uiStateRef.current
+    const room = MAX_CHANNELS - current.channels.length
+    if (room <= 0) return
+    const sel = selection.selectedIdsRef.current
+    let insertAt = current.channels.length
+    if (sel.size) {
+      const selNums = current.channels.filter((c: ChannelType) => sel.has(c.id)).map((c: ChannelType) => c.channelNum)
+      if (selNums.length) insertAt = Math.max(...selNums) + 1
+    }
+    // Build outside the state updater so ids/colors are stable under StrictMode's double
+    // invoke; the running accumulator keeps pasted channels from colliding on color.
+    const newChannels: ChannelType[] = []
+    clip.slice(0, room).forEach((c: ChannelType) => {
+      newChannels.push(
+        Object.assign({}, channelCopy(c), {
+          id: uuid(),
+          color: getChannelColor(current.channels.concat(newChannels)),
+        })
+      )
+    })
+    setUIState((uiState: Preset) => {
+      const uiStateCopy = deepStateCopy(uiState)
+      uiStateCopy.channels.splice(insertAt, 0, ...newChannels.map((c) => channelCopy(c)))
+      uiStateCopy.channels.forEach((channel, i) => {
+        channel.channelNum = i
+      })
+      return uiStateCopy
+    })
+    setNumChannels((numChannels: number) => numChannels + newChannels.length)
+    setPreventUpdate(true)
+    selection.selectIds(newChannels.map((c) => c.id))
+  }, [getChannelColor, selection])
+
   // m / s hotkeys: mute or solo every selected channel to a UNIFIED state — if any
   // selected channel is currently off, turn them all on; otherwise turn them all off.
   // Applied through each channel's applyEdit (the same raw-setter path as the fan-out).
@@ -575,6 +627,9 @@ export default function App() {
     onDeselect: selection.deselectAll,
     onSelectAll: selection.selectAll,
     onOpenInstrument: openInstrumentForSelection,
+    onCopy: copyChannels,
+    onPaste: pasteChannels,
+    canPaste: useCallback(() => channelClipboard.current.length > 0, []),
     isBlocked: useCallback(() => isTouch || !!modalType || !!activeDialog, [isTouch, modalType, activeDialog]),
   })
 

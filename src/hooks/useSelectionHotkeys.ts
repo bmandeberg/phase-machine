@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
 
 // Global hotkeys that act on the selected channels:
+//   Cmd/Ctrl+C → copy the selected channels to the channel clipboard
+//   Cmd/Ctrl+V → paste the copied channels (after the selection, or at the end)
 //   m / s   → mute / solo the selection (unified — see App's handler)
 //   Delete  → delete the selected channels
 //   Escape  → deselect all (only when no modal / dialog / menu is open)
@@ -16,6 +18,10 @@ interface SelectionHotkeysParams {
   onDeselect: () => void
   onSelectAll: () => void
   onOpenInstrument: () => void
+  onCopy: () => void
+  onPaste: () => void
+  // true when the channel clipboard holds something to paste
+  canPaste: () => boolean
   // true while a modal / alert dialog is open — Escape and Delete should defer to it
   isBlocked: () => boolean
 }
@@ -46,6 +52,23 @@ export default function useSelectionHotkeys(params: SelectionHotkeysParams) {
         if (!typingTarget() && !p.isBlocked()) {
           e.preventDefault()
           p.onSelectAll()
+        }
+        return
+      }
+      // Cmd/Ctrl+C copies the selected channels; Cmd/Ctrl+V pastes them. Both defer to the
+      // native clipboard while typing in a field or when a modal is open, and only preempt
+      // the browser when there's actually a selection to copy / clipboard content to paste.
+      if ((e.key === 'c' || e.key === 'C') && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
+        if (!typingTarget() && !p.isBlocked() && p.anySelected()) {
+          e.preventDefault()
+          p.onCopy()
+        }
+        return
+      }
+      if ((e.key === 'v' || e.key === 'V') && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey) {
+        if (!typingTarget() && !p.isBlocked() && p.canPaste()) {
+          e.preventDefault()
+          p.onPaste()
         }
         return
       }

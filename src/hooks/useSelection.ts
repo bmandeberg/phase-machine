@@ -18,6 +18,7 @@ export interface SelectionAPI {
   anySelected: () => boolean
   clickSelect: (id: string, mods: SelectionModifiers) => void
   selectOnly: (id: string) => void
+  selectIds: (ids: string[]) => void
   selectAll: () => void
   deselectAll: () => void
 }
@@ -48,6 +49,13 @@ export default function useSelection(orderedIds: string[]): SelectionAPI {
   const selectOnly = useCallback((id: string) => {
     setSelectedIds(new Set([id]))
     anchorId.current = id
+  }, [])
+
+  // Select an explicit set of ids (e.g. the channels just pasted). Anchor the last one so
+  // a follow-up shift-click ranges from the end of the pasted block.
+  const selectIds = useCallback((ids: string[]) => {
+    setSelectedIds(new Set(ids))
+    anchorId.current = ids.length ? ids[ids.length - 1] : null
   }, [])
 
   const deselectAll = useCallback(() => {
@@ -99,7 +107,17 @@ export default function useSelection(orderedIds: string[]): SelectionAPI {
   const anySelected = useCallback(() => selectedIdsRef.current.size > 0, [])
 
   return useMemo(
-    () => ({ selectedIds, selectedIdsRef, isSelected, anySelected, clickSelect, selectOnly, selectAll, deselectAll }),
-    [selectedIds, isSelected, anySelected, clickSelect, selectOnly, selectAll, deselectAll]
+    () => ({
+      selectedIds,
+      selectedIdsRef,
+      isSelected,
+      anySelected,
+      clickSelect,
+      selectOnly,
+      selectIds,
+      selectAll,
+      deselectAll,
+    }),
+    [selectedIds, isSelected, anySelected, clickSelect, selectOnly, selectIds, selectAll, deselectAll]
   )
 }
