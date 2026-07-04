@@ -139,6 +139,14 @@ export const RATE_GRID = RATES.flatMap((rate) => (rate === '1n.' ? [rate, ''] : 
 // delay with no tempo to reverse-derive from. See upgradeSyncDelay / EffectSlotControls.
 export const DEFAULT_SYNC_DELAY_RATE = '8n.'
 
+// Max delay time (seconds) for the FeedbackDelay node's buffer / delayTime AudioParam.
+// A tempo-synced delay derives its time from the global tempo, so at very low tempos the
+// derived seconds can grow large (e.g. '8n.' at 1 BPM ≈ 45s). Tone's Param THROWS when a
+// value exceeds its max, which crashed the app when typing a low tempo. Build delay nodes
+// with this generous max and clamp synced seconds to it: covers normal musical tempos and
+// caps (rather than crashes) at extreme lows. The manual delay-time knob tops out at 1s.
+export const MAX_DELAY_TIME = 10
+
 // Clock-division rates, relative to the global tempo's beat (quarter note). Stored as
 // '/N' (÷N, N times slower) and '*N' (×N, N times faster); '*1' is unity (== 4n). Listed
 // slowest → fastest. rateToSeconds() converts these to an interval. See math.ts.

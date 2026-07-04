@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { EffectSlot, EffectSlots, EffectType } from '../../types'
-import { rateToSeconds } from '../../math'
+import { rateToSeconds, constrain } from '../../math'
+import { MAX_DELAY_TIME } from '../../globals'
 import { SlotNode, SlotNodesRef } from '../../hooks/useInstruments'
 
 export type SlotFieldValue = number | boolean | string
@@ -72,7 +73,8 @@ function useSlotParams(
   // Channel.tsx so the delay tracks tempo whether the modal is open or not).
   useEffect(() => {
     if (slot.type === 'delay' && typeof slot.syncDelayTime === 'string') {
-      const seconds = rateToSeconds(slot.syncDelayTime, tempo)
+      // clamp to the node's max — Tone's Param throws out of range (see MAX_DELAY_TIME)
+      const seconds = constrain(rateToSeconds(slot.syncDelayTime, tempo), 0, MAX_DELAY_TIME)
       if (slot.delayTime !== seconds) setField('delayTime', seconds)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

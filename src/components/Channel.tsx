@@ -17,6 +17,7 @@ import {
   KNOB_MAX,
   STACKABLE_INSTRUMENTS,
   NOTE_STACKS,
+  MAX_DELAY_TIME,
 } from '../globals'
 import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds, shift, opposite, flip } from '../math'
 import classNames from 'classnames'
@@ -756,7 +757,9 @@ export default function Channel({
     let changed = false
     const next = effects.map((slot, i) => {
       if (slot.type === 'delay' && typeof slot.syncDelayTime === 'string') {
-        const seconds = rateToSeconds(slot.syncDelayTime, tempo)
+        // clamp to the delay node's max: at very low tempos the synced seconds can exceed
+        // it, and Tone's Param throws (not clamps) out of range — see MAX_DELAY_TIME.
+        const seconds = constrain(rateToSeconds(slot.syncDelayTime, tempo), 0, MAX_DELAY_TIME)
         if (slot.delayTime !== seconds) {
           changed = true
           const updated = { ...slot, delayTime: seconds }

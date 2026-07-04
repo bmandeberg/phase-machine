@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback, useMemo, MutableRefObject } from 'react'
-import { CHORUS_ENABLED } from '../globals'
+import { CHORUS_ENABLED, MAX_DELAY_TIME } from '../globals'
+import { constrain } from '../math'
 import * as Tone from 'tone'
 import {
   InstrumentParams,
@@ -99,9 +100,18 @@ export function createSlotNode(slot: EffectSlot): SlotNode | null {
       })
     }
     case 'delay': {
-      const n = new Tone.FeedbackDelay(slot.delayTime, slot.delayFeedback)
+      // maxDelay caps the delayTime AudioParam; a tempo-synced delay can exceed the
+      // default 1s at low tempos, so build with MAX_DELAY_TIME and clamp sets to it
+      // (Tone's Param throws — not clamps — when a value goes out of range).
+      const n = new Tone.FeedbackDelay({
+        delayTime: constrain(slot.delayTime, 0, MAX_DELAY_TIME),
+        feedback: slot.delayFeedback,
+        maxDelay: MAX_DELAY_TIME,
+      })
       n.set({ wet: slot.wet })
-      return wrapNode('delay', n, (s) => n.set({ wet: s.wet, delayTime: s.delayTime, feedback: s.delayFeedback }))
+      return wrapNode('delay', n, (s) =>
+        n.set({ wet: s.wet, delayTime: constrain(s.delayTime, 0, MAX_DELAY_TIME), feedback: s.delayFeedback })
+      )
     }
     case 'reverb': {
       const n = new Tone.Reverb(slot.reverbDecay)
