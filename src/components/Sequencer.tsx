@@ -71,12 +71,6 @@ export default function Sequencer({
     return () => window.removeEventListener('mouseup', stopDragging)
   }, [])
 
-  useEffect(() => {
-    setSeqSteps((seqSteps) => {
-      return seqSteps.map((s, i) => (i + 1 > seqLength ? false : s))
-    })
-  }, [seqLength, setSeqSteps])
-
   const steps = useMemo(
     () =>
       [...Array(seqLength)].map((_d, i) => (
