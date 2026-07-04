@@ -164,8 +164,17 @@ export default function Channel({
         e.preventDefault()
         window.getSelection()?.removeAllRanges()
       }
-      // editing a member of an existing multi-selection must not collapse it
-      if (!mods.shift && !mods.meta && isSelectedRef.current && selectionSizeRef.current > 1) return
+      // Plain click on a member of an existing multi-selection: collapse to just this
+      // channel when the click lands on blank channel space, but keep the whole selection
+      // when it lands on a control (that's an edit, which fans out across the selection).
+      // Blank space vs. control is read off the resolved cursor — every control sets a
+      // non-default cursor (pointer / grab / text / resize), containers keep default/auto.
+      if (!mods.shift && !mods.meta && isSelectedRef.current && selectionSizeRef.current > 1) {
+        const cursor = e.target instanceof Element ? window.getComputedStyle(e.target).cursor : 'default'
+        const onControl = cursor !== 'default' && cursor !== 'auto'
+        if (onControl) return
+        // blank space → fall through to select only this channel
+      }
       onSelect(id.current, mods)
     },
     [onSelect]
