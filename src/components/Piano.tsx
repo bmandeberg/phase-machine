@@ -12,6 +12,7 @@ const WHITE_KEY_WIDTH = 13
 
 interface PianoProps {
   playingNote?: number | null
+  noteAttack?: number
   rangeStart: number
   setRangeStart: (value: number) => void
   rangeEnd: number
@@ -33,6 +34,7 @@ interface PianoProps {
 
 export default function Piano({
   playingNote,
+  noteAttack = 0,
   rangeStart,
   setRangeStart,
   rangeEnd,
@@ -179,36 +181,46 @@ export default function Piano({
 
   const pianoKeys = useMemo(
     () =>
-      [...Array(12 * OCTAVES)].map((_d, i) => (
-        <div
-          key={i}
-          onMouseDown={(e) => handleKeyMouseDown(e, i)}
-          onMouseEnter={() => handleKeyMouseEnter(i)}
-          className={classNames('piano-note', {
-            'white-key': whiteKey(i),
-            'next-black-key-near': nextBlackKey.near(i),
-            'next-black-key-middle': nextBlackKey.middle(i),
-            'next-black-key-far': nextBlackKey.far(i),
-            'prev-black-key-near': prevBlackKey.near(i),
-            'prev-black-key-middle': prevBlackKey.middle(i),
-            'prev-black-key-far': prevBlackKey.far(i),
-            'black-key-left': blackKeyLeft(i),
-            'black-key-right': blackKeyRight(i),
-            // Only range mode marks in-range keys (the inset highlight). Keyboard-mode keys
-            // are left as default (out-of-range) keys, so they match out-of-range styling
-            // exactly — color, border, and flush geometry. Selected/playing override.
-            'in-range': !mute && rangeMode && i >= rangeStart && i < rangeEnd,
-            selected: !rangeMode && keybdPitches.includes(i),
-            interactive: !rangeMode,
-            mute,
-            playing: (noteOn && playingNote === i) || noteTriggered === i,
-          })}></div>
-      )),
+      [...Array(12 * OCTAVES)].map((_d, i) => {
+        const playing = (noteOn && playingNote === i) || noteTriggered === i
+        return (
+          <div
+            key={i}
+            onMouseDown={(e) => handleKeyMouseDown(e, i)}
+            onMouseEnter={() => handleKeyMouseEnter(i)}
+            className={classNames('piano-note', {
+              'white-key': whiteKey(i),
+              'next-black-key-near': nextBlackKey.near(i),
+              'next-black-key-middle': nextBlackKey.middle(i),
+              'next-black-key-far': nextBlackKey.far(i),
+              'prev-black-key-near': prevBlackKey.near(i),
+              'prev-black-key-middle': prevBlackKey.middle(i),
+              'prev-black-key-far': prevBlackKey.far(i),
+              'black-key-left': blackKeyLeft(i),
+              'black-key-right': blackKeyRight(i),
+              // Only range mode marks in-range keys (the inset highlight). Keyboard-mode keys
+              // are left as default (out-of-range) keys, so they match out-of-range styling
+              // exactly — color, border, and flush geometry. Selected/playing override.
+              'in-range': !mute && rangeMode && i >= rangeStart && i < rangeEnd,
+              selected: !rangeMode && keybdPitches.includes(i),
+              interactive: !rangeMode,
+              mute,
+              playing,
+              // Alternating attack classes so the CSS animation restarts on every note-on,
+              // including a repeated pitch where the key is already lit (an animation only
+              // replays when its animation-name changes). noteAttack is bumped per note by
+              // Channel — its parity is all we need here.
+              'attack-a': playing && noteAttack % 2 === 0,
+              'attack-b': playing && noteAttack % 2 === 1,
+            })}></div>
+        )
+      }),
     [
       keybdPitches,
       mute,
       handleKeyMouseDown,
       handleKeyMouseEnter,
+      noteAttack,
       noteOn,
       noteTriggered,
       playingNote,

@@ -259,8 +259,22 @@ export default function Channel({
   // The per-view transition refs now live inside the view components themselves.
   const modalNodeRef = useRef<HTMLDivElement>(null)
   const [noteOn, setNoteOn] = useState(false)
+  // increments on every note-on — see the comment where it is bumped in playNote
+  const [noteAttack, setNoteAttack] = useState(0)
   const notePlaying = useRef(false)
   const noteOffTimeout = useRef<any>(undefined)
+  // Tone's context timeout loop invokes every callback due in a pass from a *copy* of its
+  // timeline (Timeline._iterate slices), so clearTimeout() cannot stop a note-off that is
+  // already part of the pass in progress: it still fires, right after the note-on that was
+  // supposed to supersede it. Both land in the same React batch, so `noteOn` ends up false
+  // and the piano key never lights for that note (and a mono synth voice gets released
+  // early). Every scheduled note-off carries a token; cancelNoteOff bumps it so a
+  // superseded callback becomes a no-op even when the timeout can no longer be cleared.
+  const noteOffToken = useRef(0)
+  const cancelNoteOff = useCallback(() => {
+    Tone.getContext().clearTimeout(noteOffTimeout.current)
+    noteOffToken.current++
+  }, [])
   const noNoteOffScheduled = useRef(false)
   const [seqSteps, setSeqSteps] = useState(initState.seqSteps)
   const [seqLength, setSeqLength] = useState(initState.seqLength)
@@ -531,7 +545,7 @@ export default function Channel({
 
   const cleanupInstruments = useCallback(() => {
     if (notePlaying.current && noteIndex.current !== undefined) {
-      Tone.getContext().clearTimeout(noteOffTimeout.current)
+      cancelNoteOff()
       if (instrument.current) {
         // PolySynth (poly mode) releases by note, so drop all voices instead.
         if (instrument.current instanceof Tone.PolySynth) {
@@ -547,7 +561,7 @@ export default function Channel({
         midiOutObj.stopNote(note, { channels: channel })
       }
     }
-  }, [instrument])
+  }, [cancelNoteOff, instrument])
 
   const {
     gainNode,
@@ -813,10 +827,10 @@ export default function Channel({
   useEffect(() => {
     if (!playing && notePlaying.current && noteIndex.current !== undefined) {
       const { channel, note, midiOutObj } = getChannelData()
-      Tone.getContext().clearTimeout(noteOffTimeout.current)
+      cancelNoteOff()
       noteOff(channel, note, midiOutObj, true, Tone.now(), WebMidi.time - Tone.immediate() * 1000)
     }
-  }, [getChannelData, noteOff, playing])
+  }, [cancelNoteOff, getChannelData, noteOff, playing])
 
   // note off when muting
   useEffect(() => {
@@ -867,7 +881,7 @@ export default function Channel({
       const { channel, note, midiOutObj, clockOffset } = getChannelData()
       if (!note) return
       if (notePlaying.current) {
-        Tone.getContext().clearTimeout(noteOffTimeout.current)
+        cancelNoteOff()
         let offNote = noteIndex.current === playingNoteRef.current ? playingNoteRef.current : prevNoteIndex.current
         if (offNote) {
           noNoteOffScheduled.current = false
@@ -903,12 +917,26 @@ export default function Channel({
       }
       setNoteOn(true)
       setPlayingNote(noteIndex.current)
+      // A fresh pitch already shows itself: `playingNote` changes, the key gains .playing,
+      // and its attack accent runs on mount. But a *repeated* pitch (a held note
+      // re-articulated, or a note-off/note-on pair landing 1-2ms apart in the same React
+      // batch) leaves `noteOn`/`playingNote` unchanged — React bails out, nothing repaints,
+      // and the eye sees no new note. Only in that case do we bump this counter, whose
+      // parity flips the key's attack-a/attack-b class in Piano so the accent replays. This
+      // keeps every audible attack visible while adding a render only when one is actually
+      // needed (playingNoteRef still holds the previous note here — it's updated just below).
+      if (playingNoteRef.current === noteIndex.current) {
+        setNoteAttack((c) => c + 1)
+      }
       notePlaying.current = true
       playingNoteRef.current = noteIndex.current
       // schedule note-off if we are not hold or if the next step is off
       if (unheldNote) {
-        Tone.getContext().clearTimeout(noteOffTimeout.current)
+        cancelNoteOff()
+        const token = noteOffToken.current
         noteOffTimeout.current = Tone.getContext().setTimeout(() => {
+          // a later cancelNoteOff() supersedes this one even if it was too late to clear
+          if (token !== noteOffToken.current) return
           noteOff(channel, note, midiOutObj, false, null)
         }, time - Tone.immediate() + sustainTime)
       } else {
@@ -916,6 +944,7 @@ export default function Channel({
       }
     },
     [
+      cancelNoteOff,
       getChannelData,
       hold,
       instrument,
@@ -1005,7 +1034,7 @@ export default function Channel({
     }
     // while holding, ensure notes are turned off when the sequence is off
     if (noNoteOffScheduled.current && !seqSteps[currentStep.current] && notePlaying.current) {
-      Tone.getContext().clearTimeout(noteOffTimeout.current)
+      cancelNoteOff()
       let offNote = noteIndex.current === playingNoteRef.current ? playingNoteRef.current : prevNoteIndex.current
       // We're here because the step is OFF, so `seq` may be null — the flush could have
       // been scheduled by the key buffer alone. Use whichever slot is set; guarding the
@@ -1027,7 +1056,7 @@ export default function Channel({
       noNoteOffScheduled.current = false
     }
     playNoteBuffer.current = { seq: null, key: null }
-  }, [emptyKey, getChannelData, hold, muted, noteOff, playNote, seqSteps])
+  }, [cancelNoteOff, emptyKey, getChannelData, hold, muted, noteOff, playNote, seqSteps])
 
   const loadPlayNoteBuffer = useCallback(
     (type: any, time: any, interval: any) => {
@@ -1102,7 +1131,7 @@ export default function Channel({
           const { channel, midiOutObj, clockOffset } = getChannelData()
           const offNote = noteIndex.current === playingNoteRef.current ? playingNoteRef.current : prevNoteIndex.current
           if (offNote) {
-            Tone.getContext().clearTimeout(noteOffTimeout.current)
+            cancelNoteOff()
             noteOff(channel, noteString(offNote), midiOutObj, false, time - 0.005, clockOffset)
           }
           noNoteOffScheduled.current = false
@@ -1115,6 +1144,7 @@ export default function Channel({
       }
     },
     [
+      cancelNoteOff,
       emptyKey,
       getChannelData,
       key,
@@ -1365,6 +1395,7 @@ export default function Channel({
     previewOpposite,
     playingNote,
     noteOn,
+    noteAttack,
     rangeStart,
     mset.rangeStart,
     rangeEnd,

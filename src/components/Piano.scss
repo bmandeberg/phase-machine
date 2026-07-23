@@ -2,6 +2,30 @@
 @use 'sass:math';
 @use 'sass:color';
 
+// The attack accent for a played key. Deliberately starts at full brightness so the key
+// snaps to its `.playing` colour on the very first frame — no fade-in, no perceived
+// latency, matching the old instant behaviour. The animation is only a brief brighten
+// that decays back to normal, so its whole job is to give a *repeated* pitch (key already
+// lit) a visible re-strike. Written with `filter` (not a colour) so it layers over
+// whatever `.playing` background each theme sets. Two identical keyframe sets, alternated
+// by Piano via attack-a / attack-b, because a CSS animation only restarts when its
+// animation-name changes — that is what makes a repeated pitch pop again instead of
+// sitting there already lit.
+@mixin piano-note-attack-frames {
+  from {
+    filter: brightness(1.5);
+  }
+  to {
+    filter: brightness(1);
+  }
+}
+@keyframes piano-note-attack-a {
+  @include piano-note-attack-frames;
+}
+@keyframes piano-note-attack-b {
+  @include piano-note-attack-frames;
+}
+
 .piano {
   height: 97px;
   vertical-align: top;
@@ -223,6 +247,12 @@
     }
     &.playing {
       background-color: color.adjust($orange, $lightness: -2%);
+      &.attack-a {
+        animation: piano-note-attack-a $piano-attack-time ease-out;
+      }
+      &.attack-b {
+        animation: piano-note-attack-b $piano-attack-time ease-out;
+      }
       &.interactive:hover {
         background-color: $orangeHover;
       }

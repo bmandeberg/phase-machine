@@ -56,6 +56,7 @@ export default function useUI(
   previewOpposite: () => void,
   playingNote: number | undefined,
   noteOn: boolean,
+  noteAttack: number,
   rangeStart: number,
   setRangeStart: Setter<number>,
   rangeEnd: number,
@@ -394,6 +395,7 @@ export default function useUI(
       <Piano
         playingNote={playingNote}
         noteOn={noteOn}
+        noteAttack={noteAttack}
         rangeStart={rangeStart}
         setRangeStart={setRangeStart}
         rangeEnd={rangeEnd}
@@ -416,6 +418,7 @@ export default function useUI(
     grabbing,
     keybdPitches,
     muted,
+    noteAttack,
     noteOn,
     playingNote,
     rangeEnd,
