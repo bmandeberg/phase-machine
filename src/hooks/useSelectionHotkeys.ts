@@ -44,6 +44,10 @@ export default function useSelectionHotkeys(params: SelectionHotkeysParams) {
   const ref = useRef(params)
   ref.current = params
 
+  // Was the selection "blocked" (a modal / dialog open) at the moment Escape was pressed?
+  // Set by the capture-phase listener in the effect below; read by the bubble handler.
+  const escapeBlockedAtCapture = useRef(false)
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const p = ref.current
@@ -116,14 +120,31 @@ export default function useSelectionHotkeys(params: SelectionHotkeysParams) {
           }
           break
         case 'Escape':
-          if (p.anySelected() && !p.isBlocked()) {
+          // Use the capture-phase snapshot, not a fresh isBlocked() call: a Modal closing
+          // on this same Escape flushes synchronously and clears its open-state before this
+          // bubble handler runs, so isBlocked() would read false and wrongly deselect. (A
+          // Dropdown / menu / dialog stops propagation on capture, so this never runs for
+          // them.) Deselect only if nothing was open when Escape was pressed.
+          if (p.anySelected() && !escapeBlockedAtCapture.current) {
             p.onDeselect()
           }
           break
         default:
       }
     }
+    // Snapshot isBlocked() for Escape on the CAPTURE phase — before handleKeyDown (bubble)
+    // runs. A Modal closes itself on Escape (bubble) and that state update flushes
+    // synchronously, clearing its open-state mid-event; reading isBlocked() in the bubble
+    // handler above would therefore miss it and deselect the channel. Capturing here freezes
+    // the answer while the modal is still open. (Runs for every Escape but only reads state.)
+    function captureEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') escapeBlockedAtCapture.current = ref.current.isBlocked()
+    }
+    document.addEventListener('keydown', captureEscape, true)
     document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', captureEscape, true)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [])
 }

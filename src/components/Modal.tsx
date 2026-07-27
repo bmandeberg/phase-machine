@@ -6,6 +6,16 @@ import AboutModal from './AboutModal'
 import { InstrumentParams, Preset } from '../types'
 import './Modal.scss'
 
+// How many <Modal>s (app settings, or any channel's instrument / MIDI editor) are
+// currently open. Every modal shares this component, so tracking it here covers them
+// all — including the per-channel modals whose open state App can't otherwise see.
+// useSelectionHotkeys' isBlocked() reads this so Escape closes the modal without also
+// deselecting the channel underneath.
+let openModalCount = 0
+export function isAnyModalOpen(): boolean {
+  return openModalCount > 0
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface ModalProps {
   // Shared with the wrapping <CSSTransition nodeRef>: react-transition-group needs a
@@ -145,6 +155,19 @@ export default function Modal({
   useEffect(() => {
     if (modalType) {
       modalTypeRef.current = modalType
+    }
+  }, [modalType])
+
+  // Reflect this modal's open state in the shared counter (see isAnyModalOpen), so the
+  // selection hotkeys know a per-channel modal is open even though App's modalType only
+  // tracks the app-level one. Closing via Escape flushes synchronously and drops the
+  // count mid-event, so useSelectionHotkeys snapshots the blocked state on the capture
+  // phase (before this modal's bubble-phase close runs) — see useSelectionHotkeys.
+  useEffect(() => {
+    if (!modalType) return
+    openModalCount++
+    return () => {
+      openModalCount--
     }
   }, [modalType])
 

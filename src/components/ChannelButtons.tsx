@@ -62,14 +62,20 @@ export default function ChannelButtons({
         setMenuOpen(false)
       }
     }
+    // Captured + stopPropagation (like Dropdown) so Escape closes just this menu and
+    // doesn't also reach the selection hotkeys, which would deselect the channel. Only
+    // attached while open, so a second Escape (menu now gone) falls through to deselect.
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenuOpen(false)
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        setMenuOpen(false)
+      }
     }
     document.addEventListener('mousedown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keydown', handleKeyDown, true)
     return () => {
       document.removeEventListener('mousedown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keydown', handleKeyDown, true)
     }
   }, [menuOpen])
 

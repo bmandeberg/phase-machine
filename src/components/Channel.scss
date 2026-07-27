@@ -129,6 +129,24 @@
   background-color: rgba(0, 0, 0, 0.06);
 }
 
+// While the "…" menu is open, its .channel-sticky panel is lifted to z-index:3000 (see
+// `.channel-sticky:has(.channel-menu)` below) so the popover escapes above later
+// channels — which also lifts the panel above the wash (z 2000), dropping the selected
+// tint from the channel's start. Re-apply the same wash inside the sticky's own stacking
+// context so the panel stays tinted while its menu is open. z-index sits above the
+// buttons (2000) and below the popover (2100), so only the panel — not the menu — tints.
+.channel.selected .channel-sticky:has(.channel-menu)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2050;
+  pointer-events: none;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+.light-theme .channel.selected .channel-sticky:has(.channel-menu)::after {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
 .channel-primary {
   display: inline-block;
   vertical-align: top;

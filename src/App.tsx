@@ -21,7 +21,7 @@ import {
 import Header from './components/Header'
 import Channel from './components/Channel'
 import AddChannel from './components/AddChannel'
-import Modal from './components/Modal'
+import Modal, { isAnyModalOpen } from './components/Modal'
 import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
 import useSelection from './hooks/useSelection'
@@ -631,7 +631,12 @@ export default function App() {
     onCopy: copyChannels,
     onPaste: pasteChannels,
     canPaste: useCallback(() => channelClipboard.current.length > 0, []),
-    isBlocked: useCallback(() => isTouch || !!modalType || !!activeDialog, [isTouch, modalType, activeDialog]),
+    // isAnyModalOpen() also covers per-channel instrument / MIDI modals, whose open
+    // state lives in each Channel and isn't reflected in App's modalType.
+    isBlocked: useCallback(
+      () => isTouch || !!modalType || !!activeDialog || isAnyModalOpen(),
+      [isTouch, modalType, activeDialog]
+    ),
   })
 
   // Append a blank channel (driven by the "+" button beneath the channels): bumping
