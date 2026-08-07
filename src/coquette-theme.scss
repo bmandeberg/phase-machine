@@ -32,10 +32,6 @@ $muteBorder: #e2c6d4;
 // colorize the flat #666 gray instrument/wave SVGs to the soft button pink
 // ($pink ~#ff85be) so they sit in with the rest of the palette, not a loud hot pink
 $iconFilter: invert(64%) sepia(34%) saturate(771%) hue-rotate(291deg) brightness(118%) contrast(118%);
-// render the header/preset icons solid white (brightness(0) flattens the blue
-// icon to black, invert(1) flips it to white) so they read on the pink bar
-$blueIconTone: brightness(0) invert(1);
-
 // Flat control surface: solid fill + crisp pink border. No inset highlight, no
 // blur — that's the whole point of the flat look.
 @mixin flat($bg, $bd: $border) {
@@ -214,24 +210,17 @@ body:has(.coquette-theme) {
       filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
     }
     .header-aux {
+      // shape comes from the mask in Header.scss. These used to be blue PNGs flattened
+      // to white with a `brightness(0) invert(1)` filter so they'd read on the pink bar;
+      // masked, that's just a white fill. Repeating white on hover is
+      // required, not redundant: without it the default orange hover from Header.scss
+      // ties on specificity and wins on source order (component CSS is emitted after
+      // theme CSS). These have always rendered the same hovered as at rest.
       .header-settings,
       .header-about {
-        filter: $blueIconTone;
-      }
-      .header-settings {
-        background: url('./assets/gear-blue.png');
-        background-size: 22px;
+        background-color: #ffffff;
         @include hover {
-          background: url('./assets/gear-hover-blue.png');
-          background-size: 22px;
-        }
-      }
-      .header-about {
-        background: url('./assets/question-blue.png');
-        background-size: 22px;
-        @include hover {
-          background: url('./assets/question-blue-hover.png');
-          background-size: 22px;
+          background-color: #ffffff;
         }
       }
     }

@@ -396,20 +396,12 @@ body:has(.dark-theme) {
       }
     }
     .header-aux {
-      .header-settings {
-        background: url('./assets/gear-blue.png');
-        background-size: 22px;
-        @include hover {
-          background: url('./assets/gear-hover-blue.png');
-          background-size: 22px;
-        }
-      }
+      // shape comes from the mask in Header.scss; the theme only recolours it
+      .header-settings,
       .header-about {
-        background: url('./assets/question-blue.png');
-        background-size: 22px;
+        background-color: $auxIconBlue;
         @include hover {
-          background: url('./assets/question-blue-hover.png');
-          background-size: 22px;
+          background-color: $auxIconBlueHover;
         }
       }
     }

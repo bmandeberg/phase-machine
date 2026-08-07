@@ -69,21 +69,29 @@ $margin: 12px;
       margin-left: 10px;
       cursor: pointer;
     }
-    .header-settings {
-      background: transparent url('../assets/gear.png') center center;
-      background-size: 22px;
+    // The gear/? are flat single-colour silhouettes, so they're drawn as a MASK over a
+    // background-colour rather than as a coloured image: the PNG contributes only its
+    // alpha (the shape), and every colour — per state and per theme — is CSS. That means
+    // one asset instead of the four this used to need (orange/blue × rest/hover), and no
+    // second file to fetch on first hover, which used to flash a blank icon for a frame.
+    // Themes recolour these by overriding background-color only; they nest under #header
+    // so they out-specify these rules. Same treatment on .modal-close in Modal.scss.
+    .header-settings,
+    .header-about {
+      background-color: $auxIcon;
       @include hover {
-        background: transparent url('../assets/gear-hover.png') center center;
-        background-size: 22px;
+        background-color: $auxIconHover;
       }
     }
+    .header-settings {
+      -webkit-mask-image: url('../assets/gear.png');
+      mask-image: url('../assets/gear.png');
+      @include mask-icon;
+    }
     .header-about {
-      background: transparent url('../assets/question-orange.png') center center;
-      background-size: 22px;
-      @include hover {
-        background: transparent url('../assets/question-orange-hover.png') center center;
-        background-size: 22px;
-      }
+      -webkit-mask-image: url('../assets/question.png');
+      mask-image: url('../assets/question.png');
+      @include mask-icon;
     }
   }
 }

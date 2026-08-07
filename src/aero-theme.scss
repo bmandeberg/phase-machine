@@ -276,26 +276,14 @@ body:has(.aero-theme) {
       mix-blend-mode: screen;
     }
     .header-aux {
-      // the gear/? PNGs are a bright #008dff blue; tone them toward the aero
-      // aqua-teal palette
+      // shape comes from the mask in Header.scss; tint them the shared icon blue, then
+      // tone that toward the aero aqua-teal palette
       .header-settings,
       .header-about {
+        background-color: $auxIconBlue;
         filter: $aeroBlueIconTone;
-      }
-      .header-settings {
-        background: url('./assets/gear-blue.png');
-        background-size: 22px;
         @include hover {
-          background: url('./assets/gear-hover-blue.png');
-          background-size: 22px;
-        }
-      }
-      .header-about {
-        background: url('./assets/question-blue.png');
-        background-size: 22px;
-        @include hover {
-          background: url('./assets/question-blue-hover.png');
-          background-size: 22px;
+          background-color: $auxIconBlueHover;
         }
       }
     }

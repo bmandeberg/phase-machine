@@ -920,26 +920,15 @@ body:has(.eclipse-theme)::before {
       }
     }
 
-    // tint the bright #008dff blue gear/? icons toward the cool blue palette
+    // shape comes from the mask in Header.scss; tint the gear/? the shared icon blue,
+    // then pull that toward the cool blue palette
     .header-aux {
       .header-settings,
       .header-about {
+        background-color: $auxIconBlue;
         filter: hue-rotate(8deg) saturate(0.85) brightness(1.05);
-      }
-      .header-settings {
-        background: url('./assets/gear-blue.png');
-        background-size: 22px;
         @include hover {
-          background: url('./assets/gear-hover-blue.png');
-          background-size: 22px;
-        }
-      }
-      .header-about {
-        background: url('./assets/question-blue.png');
-        background-size: 22px;
-        @include hover {
-          background: url('./assets/question-blue-hover.png');
-          background-size: 22px;
+          background-color: $auxIconBlueHover;
         }
       }
     }

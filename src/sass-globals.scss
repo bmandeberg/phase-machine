@@ -10,6 +10,15 @@ $red: #ff413e;
 $redHover: color.adjust($red, $lightness: 10%);
 $redActive: color.adjust($red, $lightness: -5%);
 $darkRed: color.adjust($red, $lightness: -15%);
+// Tints for the masked gear/? aux icons (see the note in Header.scss). Default (Toxic)
+// uses the orange pair — a deeper, more saturated orange than $orange, hence its own
+// names; every theme but coquette, which paints them white, uses the blue pair. Named
+// for the icons rather than for the colour on purpose: contrast-theme defines its own
+// $blueHover, which would silently shadow a generically-named global and retint these.
+$auxIcon: #ff9700;
+$auxIconHover: #ffac33;
+$auxIconBlue: $blue;
+$auxIconBlueHover: #24a7ff;
 $orange: #ffa64a;
 $orangeHover: color.adjust($orange, $lightness: 10%);
 $lightOrange: #ffe4d1;
@@ -79,6 +88,35 @@ $piano-width: 726px;
   @media (hover: none) and (pointer: coarse) {
     @content;
   }
+}
+
+// Draw a flat, single-colour icon as a MASK over background-color instead of as a
+// coloured image. The asset contributes only its alpha channel — the shape — so one file
+// covers every theme and every state, and recolouring is a plain CSS colour rather than a
+// second PNG or a hand-tuned filter(). Nothing to fetch on hover, so there's no first-hover
+// flash. Only valid for art that is genuinely one colour; multi-tone icons must stay images.
+// Longhands rather than the `mask:` shorthand so the `/ <size>` slash can't be read as
+// Sass division.
+//
+// The `mask-image` itself is NOT set here — write it at the call site, next to the
+// include, and keep $size equal to the element's own width/height:
+//   .header-settings {
+//     -webkit-mask-image: url('../assets/gear.png');
+//     mask-image: url('../assets/gear.png');
+//     @include mask-icon;
+//   }
+// It can't be a parameter. Webpack resolves a url() against the file that DEFINES the
+// mixin (this one), not the file that calls it, so the asset is looked up a directory
+// off and the build dies with "Cannot find module '../../assets/gear.png'". Both forms
+// were tried — passing the path as a string and building url() inside, and passing a
+// ready-made url() from the call site — and both fail the same way.
+@mixin mask-icon($size: 22px) {
+  -webkit-mask-position: center center;
+  mask-position: center center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: $size;
+  mask-size: $size;
 }
 
 .no-select {
