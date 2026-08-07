@@ -72,7 +72,7 @@ $modalHeaderHeight: 50px;
         cursor: pointer;
         background: url('../assets/x-icon.png');
         background-size: 22px;
-        &:hover {
+        @include hover {
           background: url('../assets/x-icon-hover.png');
           background-size: 22px;
         }

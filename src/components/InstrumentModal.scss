@@ -137,8 +137,10 @@
       line-height: 12px;
       color: $lightTextGray;
       cursor: pointer;
-      &:hover:not(:disabled) {
-        color: $darkGray;
+      @include can-hover {
+        &:hover:not(:disabled) {
+          color: $darkGray;
+        }
       }
       &:disabled {
         opacity: 0.25;

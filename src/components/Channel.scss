@@ -78,18 +78,18 @@
       // scrolling sequencer content (same trick as .channel-number).
       text-shadow: 0 0 5px #ffffff;
       transition: color $transitionTime;
-      &:hover {
+      @include hover {
         color: $darkGray;
       }
       &.muted {
         color: $red;
-        &:hover {
+        @include hover {
           color: $redHover;
         }
       }
       &.soloed {
         color: $green;
-        &:hover {
+        @include hover {
           color: $greenHover;
         }
       }
@@ -247,7 +247,7 @@
   // space, so the inline modules after it would be overlapped — push them over by the
   // keyboard's growth (plus the usual 16px module gap). Clock view contains its piano in a
   // scroll wrapper, so this only applies to the .channel-horizontal inline strip.
-  @media (hover: none) and (pointer: coarse) {
+  @include touch-only {
     .piano {
       margin-right: $piano-width * ($piano-touch-scale - 1) + 16px;
     }
@@ -339,7 +339,7 @@
     top: 231px;
     left: 16px;
     cursor: pointer;
-    &:hover {
+    @include hover {
       background: $lightMediumGray;
     }
     &:active {
@@ -357,7 +357,7 @@
     }
     &.drawer-open {
       background: var(--channel-color);
-      &:hover {
+      @include hover {
         background: var(--channel-color-hover);
       }
       .arrow-down {
@@ -652,7 +652,7 @@
   .button {
     background-color: $muteGray;
     transition: background-color $muteTransitionTime;
-    &:hover {
+    @include hover {
       background-color: $muteGrayHover;
     }
   }
@@ -671,7 +671,7 @@
     border-color: $muteBorder;
     background-color: $muteGray;
     transition: background-color $muteTransitionTime;
-    &:hover {
+    @include hover {
       background-color: $muteGrayHover;
     }
   }
@@ -680,18 +680,18 @@
   }
   .piano-keys .white-key {
     background-color: $muteGray !important;
-    &:hover {
+    @include hover {
       background-color: $muteGrayHover !important;
     }
     &.selected {
       background-color: var(--channel-color) !important;
-      &:hover {
+      @include hover {
         background-color: var(--channel-color-hover) !important;
       }
     }
     &.playing {
       background-color: $orange !important;
-      &:hover {
+      @include hover {
         background-color: $orangeHover !important;
       }
     }

@@ -35,7 +35,6 @@
     margin-top: 5px;
     white-space: pre-wrap;
     a,
-    a:hover,
     a:visited {
       color: $darkGray;
     }
@@ -88,7 +87,6 @@
         vertical-align: top;
         max-width: calc(100% - 43px);
         a,
-        a:hover,
         a:visited {
           color: color.adjust($green, $lightness: -35%);
         }

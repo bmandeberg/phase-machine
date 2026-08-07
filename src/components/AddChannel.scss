@@ -31,7 +31,7 @@
     display: block;
   }
 
-  &:hover {
+  @include hover {
     opacity: 1;
     color: $green;
     border-color: $green;

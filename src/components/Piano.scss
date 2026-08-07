@@ -40,7 +40,7 @@
   // pins the first key so the keyboard grows rightward, and scaleX leaves the height (and
   // thus the surrounding layout) untouched. The inline siblings in .channel-horizontal get
   // matching right-margin (Channel.scss) so they clear the grown keyboard.
-  @media (hover: none) and (pointer: coarse) {
+  @include touch-only {
     transform: scaleX($piano-touch-scale);
     transform-origin: left center;
   }
@@ -87,14 +87,16 @@
     }
     &.interactive {
       cursor: pointer;
-      &:hover {
-        background-color: $darkGrayHover;
-      }
-      &.mute:hover {
-        background-color: color.adjust($lightTextGray, $lightness: -5%);
-      }
-      &.selected.mute:hover {
-        background-color: var(--channel-color-hover);
+      @include can-hover {
+        &:hover {
+          background-color: $darkGrayHover;
+        }
+        &.mute:hover {
+          background-color: color.adjust($lightTextGray, $lightness: -5%);
+        }
+        &.selected.mute:hover {
+          background-color: var(--channel-color-hover);
+        }
       }
     }
     &.white-key {
@@ -122,20 +124,22 @@
         display: none;
       }
       &.interactive {
-        &:hover {
-          background-color: $lightGray;
-        }
-        &.mute:hover {
-          background-color: color.adjust($lightGray, $lightness: -5%);
-        }
-        &.selected:hover {
-          background-color: var(--channel-color-hover);
+        @include can-hover {
+          &:hover {
+            background-color: $lightGrayHover;
+          }
+          &.mute:hover {
+            background-color: color.adjust($lightGray, $lightness: -5%);
+          }
+          &.selected:hover {
+            background-color: var(--channel-color-hover);
+          }
         }
       }
     }
     &.selected {
       background-color: var(--channel-color);
-      &:hover {
+      @include hover {
         background-color: var(--channel-color-hover);
       }
     }
@@ -253,8 +257,10 @@
       &.attack-b {
         animation: piano-note-attack-b $piano-attack-time ease-out;
       }
-      &.interactive:hover {
-        background-color: $orangeHover;
+      @include can-hover {
+        &.interactive:hover {
+          background-color: $orangeHover;
+        }
       }
       &.white-key.in-range {
         border-right: none;
@@ -270,8 +276,10 @@
         & + .white-key.in-range {
           border-left-color: $lightOrange;
         }
-        &.interactive:hover {
-          background-color: $orangeHover;
+        @include can-hover {
+          &.interactive:hover {
+            background-color: $orangeHover;
+          }
         }
       }
     }
@@ -311,8 +319,10 @@
     // &:hover {
     //   background: lightblue;
     // }
-    &:hover ~ svg {
-      opacity: 1;
+    @include can-hover {
+      &:hover ~ svg {
+        opacity: 1;
+      }
     }
   }
   .range-drag {
@@ -327,8 +337,10 @@
     // &:hover {
     //   background: yellow;
     // }
-    &:hover ~ svg {
-      opacity: 1;
+    @include can-hover {
+      &:hover ~ svg {
+        opacity: 1;
+      }
     }
   }
   // Octave numbers at the bottom of each octave's C key. No explicit colour, so they

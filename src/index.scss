@@ -107,7 +107,7 @@ body {
   background-color: $lightGray;
   padding: 0 7px;
   cursor: pointer;
-  &:hover {
+  @include hover {
     background-color: $lightGrayHover;
   }
   &:active {
@@ -118,7 +118,7 @@ body {
   }
   &.green-button {
     background-color: $green;
-    &:hover {
+    @include hover {
       background-color: $greenHover;
     }
     &:active {
@@ -128,7 +128,7 @@ body {
   &.red-button {
     background-color: $red;
     color: #ffffff;
-    &:hover {
+    @include hover {
       background-color: $redHover;
     }
     &:active {

@@ -44,8 +44,10 @@
       filter: brightness(1.2);
       transition: filter $transitionTime;
     }
-    &:hover .wave-icon {
-      filter: brightness(0.8);
+    @include can-hover {
+      &:hover .wave-icon {
+        filter: brightness(0.8);
+      }
     }
   }
 
@@ -68,9 +70,13 @@
       background-color: $lightGray;
       transition: background-color $transitionTime;
     }
-    &:hover span,
     &.open span {
       background-color: $darkGray;
+    }
+    @include can-hover {
+      &:hover span {
+        background-color: $darkGray;
+      }
     }
   }
 
@@ -130,7 +136,7 @@
         position: relative;
         top: 1px;
       }
-      &:hover {
+      @include hover {
         background-color: $lightGray;
       }
     }

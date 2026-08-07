@@ -25,7 +25,7 @@
   text-align: center;
   line-height: 26px;
 
-  &:hover {
+  @include hover {
     background-color: $darkGrayHover;
   }
   // preview of where steps would land after a sequencer shift — the same darker
@@ -36,21 +36,21 @@
   &.selected {
     background-color: var(--channel-color);
     color: color-mix(in srgb, var(--channel-color), black 45%);
-    &:hover {
+    @include hover {
       background-color: var(--channel-color-hover);
     }
   }
   &.playing {
     background-color: $darkerLightOrange;
     color: #e85e00;
-    &:hover {
+    @include hover {
       background-color: $darkLightOrange;
     }
     &.selected {
       background-color: $orange;
       // color: #a84400;
       color: #b14700;
-      &:hover {
+      @include hover {
         background-color: $orangeHover;
       }
     }

@@ -45,7 +45,7 @@
     &:last-of-type {
       border-right: none;
     }
-    &:hover {
+    @include hover {
       background-color: $darkLightOrange;
     }
     &:active {

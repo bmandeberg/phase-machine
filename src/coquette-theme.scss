@@ -97,7 +97,7 @@ body:has(.coquette-theme) {
       background-color: $panelActive;
       border-color: $border;
       box-shadow: none;
-      &:hover {
+      @include hover {
         background-color: $panelHover;
       }
       &:active {
@@ -116,7 +116,7 @@ body:has(.coquette-theme) {
   .add-channel-button {
     color: $text;
     border-color: $border;
-    &:hover {
+    @include hover {
       color: $hotPink;
       border-color: $hotPink;
       background-color: $panelHover;
@@ -126,7 +126,7 @@ body:has(.coquette-theme) {
   .button {
     @include flat($panel);
     color: $text;
-    &:hover {
+    @include hover {
       @include flat($panelHover);
     }
     &:active {
@@ -136,14 +136,14 @@ body:has(.coquette-theme) {
       // confirm/save stays green so the affordance reads everywhere
       @include flat($green, #2fb84a);
       color: #ffffff;
-      &:hover {
+      @include hover {
         @include flat(#5bd66e, #2fb84a);
       }
     }
     &.red-button {
       @include flat($red, #e0282c);
       color: #ffffff;
-      &:hover {
+      @include hover {
         @include flat(#ff5a57, #e0282c);
       }
       &:active {
@@ -221,7 +221,7 @@ body:has(.coquette-theme) {
       .header-settings {
         background: url('./assets/gear-blue.png');
         background-size: 22px;
-        &:hover {
+        @include hover {
           background: url('./assets/gear-hover-blue.png');
           background-size: 22px;
         }
@@ -229,7 +229,7 @@ body:has(.coquette-theme) {
       .header-about {
         background: url('./assets/question-blue.png');
         background-size: 22px;
-        &:hover {
+        @include hover {
           background: url('./assets/question-blue-hover.png');
           background-size: 22px;
         }
@@ -260,7 +260,7 @@ body:has(.coquette-theme) {
     .radio-button {
       @include flat($pink, $pink);
       color: #ffffff;
-      &:hover {
+      @include hover {
         background-color: $pinkHover;
       }
       &:active {
@@ -269,7 +269,7 @@ body:has(.coquette-theme) {
       &.radio-button-selected {
         @include flat($panel);
         color: $text;
-        &:hover {
+        @include hover {
           background-color: $panelHover;
         }
       }
@@ -437,7 +437,7 @@ body:has(.coquette-theme) {
       @include flat-panel($panel);
       .channel-menu-item {
         color: $text;
-        &:hover {
+        @include hover {
           background-color: $panelHover;
         }
       }
@@ -448,7 +448,7 @@ body:has(.coquette-theme) {
   .sequence-step {
     @include flat($panel);
     color: $textSoft;
-    &:hover {
+    @include hover {
       background-color: $panelHover;
     }
     &.selected {
@@ -479,9 +479,13 @@ body:has(.coquette-theme) {
   .wave-icon {
     filter: $iconFilter;
   }
-  .channel-buttons .channel-instrument-button .wave-icon,
-  .channel-buttons .channel-instrument-button:hover .wave-icon {
+  .channel-buttons .channel-instrument-button .wave-icon {
     filter: $iconFilter;
+  }
+  @include can-hover {
+    .channel-buttons .channel-instrument-button:hover .wave-icon {
+      filter: $iconFilter;
+    }
   }
 
   // ── Piano + key: dull dusty-rose "black" keys, bright-white in-range ────────
@@ -496,8 +500,10 @@ body:has(.coquette-theme) {
       &.in-range {
         background-color: #e06aa0; // deeper rose marks the active range
       }
-      &.interactive:hover {
-        background-color: #ea93bd;
+      @include can-hover {
+        &.interactive:hover {
+          background-color: #ea93bd;
+        }
       }
       &.white-key {
         background-color: #ffe3f0; // out-of-range white = pale pink (recedes)
@@ -505,15 +511,19 @@ body:has(.coquette-theme) {
         &.in-range {
           background-color: #ffffff; // in-range white = bright white (airy / light)
         }
-        &.interactive:hover {
-          background-color: #fff0f6;
+        @include can-hover {
+          &.interactive:hover {
+            background-color: #fff0f6;
+          }
         }
       }
     }
     .piano-note.playing {
       background-color: $hotPink;
-      &.interactive:hover {
-        background-color: $hotPinkHover;
+      @include can-hover {
+        &.interactive:hover {
+          background-color: $hotPinkHover;
+        }
       }
       &.white-key.in-range {
         background-color: $hotPink;
@@ -558,18 +568,18 @@ body:has(.coquette-theme) {
           border-color: #ffd9ec;
         }
       }
-      &:hover {
+      @include hover {
         background-color: #ea93bd;
       }
       &.white-key {
         background-color: #ffffff;
-        &:hover {
+        @include hover {
           background-color: #fff0f6;
         }
       }
       &.playing {
         background-color: $hotPink !important;
-        &:hover {
+        @include hover {
           background-color: $hotPinkHover !important;
         }
       }
@@ -580,7 +590,7 @@ body:has(.coquette-theme) {
     &.clock .pitch-class {
       background-color: #e06aa0;
       box-shadow: none;
-      &:hover {
+      @include hover {
         background-color: #ea93bd;
       }
     }
@@ -600,7 +610,7 @@ body:has(.coquette-theme) {
     background-color: $panelActive;
     border: 1px solid $border;
     border-left-color: $border;
-    &:hover {
+    @include hover {
       background-color: $panelHover;
     }
   }
@@ -615,8 +625,11 @@ body:has(.coquette-theme) {
   }
   .dropdown-option {
     color: $text;
-    &:hover,
     &.selected {
+      background-color: $panelActive;
+      color: $text;
+    }
+    @include hover {
       background-color: $panelActive;
       color: $text;
     }
@@ -634,7 +647,7 @@ body:has(.coquette-theme) {
         background-color: $panelActive;
         border: 1px solid $border;
         border-left-color: $border;
-        &:hover {
+        @include hover {
           background-color: $panelHover;
         }
       }
@@ -647,16 +660,25 @@ body:has(.coquette-theme) {
       .dropdown-menu {
         @include flat-panel($panel);
       }
-      .dropdown-option:hover,
       .dropdown-option.selected {
         background-color: $panelActive;
         color: $text;
       }
+      @include can-hover {
+        .dropdown-option:hover {
+          background-color: $panelActive;
+          color: $text;
+        }
+      }
     }
     &.graphic-options {
-      .dropdown-option:hover,
       .dropdown-option.selected {
         background-color: $panelActive;
+      }
+      @include can-hover {
+        .dropdown-option:hover {
+          background-color: $panelActive;
+        }
       }
     }
   }
@@ -672,7 +694,7 @@ body:has(.coquette-theme) {
       background-color: $panelActive;
       border: 1px solid $border;
       border-left-color: $border;
-      &:hover {
+      @include hover {
         background-color: $panelHover;
       }
     }
@@ -684,7 +706,7 @@ body:has(.coquette-theme) {
     }
     .multi-select-option {
       color: $text;
-      &:hover {
+      @include hover {
         background-color: $panelActive;
         color: $text;
       }
@@ -697,7 +719,7 @@ body:has(.coquette-theme) {
         &:after {
           background-color: $text;
         }
-        &:hover {
+        @include hover {
           &:before,
           &:after {
             background-color: $red;
@@ -727,7 +749,7 @@ body:has(.coquette-theme) {
       img {
         filter: hue-rotate(123deg) saturate(0.62) brightness(0.98);
       }
-      &:hover {
+      @include hover {
         background-color: $panelHover;
       }
       &:active {

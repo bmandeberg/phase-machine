@@ -51,7 +51,7 @@ body:has(.dark-theme) {
   .add-channel-button {
     color: $darkLightGray;
     border-color: $darkMediumGray;
-    &:hover {
+    @include hover {
       color: $darkGreen;
       border-color: $darkGreen;
       background-color: rgba(0, 197, 145, 0.14);
@@ -61,7 +61,7 @@ body:has(.dark-theme) {
   .button {
     background-color: $darkMediumGray;
     color: $darkLightGray;
-    &:hover {
+    @include hover {
       background-color: $darkMediumGrayHover;
     }
     &:active {
@@ -70,7 +70,7 @@ body:has(.dark-theme) {
     &.green-button {
       background-color: $darkGreen;
       color: $darkBackground;
-      &:hover {
+      @include hover {
         background-color: $darkGreenHover;
       }
       &:active {
@@ -82,7 +82,7 @@ body:has(.dark-theme) {
       // `.dark-theme .button`'s gray on source order, so without this it reads gray
       background-color: $red;
       color: $darkBackground;
-      &:hover {
+      @include hover {
         background-color: $redHover;
       }
       &:active {
@@ -94,7 +94,7 @@ body:has(.dark-theme) {
   .mute-solo {
     .button {
       background-color: $darkMediumGray;
-      &:hover {
+      @include hover {
         background-color: $darkMediumGrayHover;
       }
     }
@@ -102,7 +102,7 @@ body:has(.dark-theme) {
       &.muted {
         color: $darkBackground;
         background: $red;
-        &:hover {
+        @include hover {
           background: $redHover;
         }
       }
@@ -111,7 +111,7 @@ body:has(.dark-theme) {
       &.soloed {
         color: $darkBackground;
         background: var(--channel-color);
-        &:hover {
+        @include hover {
           background: var(--channel-color-hover);
         }
       }
@@ -142,7 +142,6 @@ body:has(.dark-theme) {
     }
     .about-section-text {
       a,
-      a:hover,
       a:visited {
         color: $darkLightGray;
       }
@@ -167,7 +166,6 @@ body:has(.dark-theme) {
         }
         .about-section-tip-content {
           a,
-          a:hover,
           a:visited {
             color: #87ff69;
           }
@@ -243,8 +241,10 @@ body:has(.dark-theme) {
     .channel-instrument-button .wave-icon {
       filter: brightness(0.6);
     }
-    .channel-instrument-button:hover .wave-icon {
-      filter: brightness(1);
+    @include can-hover {
+      .channel-instrument-button:hover .wave-icon {
+        filter: brightness(1);
+      }
     }
     .channel-menu-button span {
       background-color: $darkMediumGray;
@@ -254,7 +254,7 @@ body:has(.dark-theme) {
       box-shadow: 0px 0px 6px $darkGreen;
       .channel-menu-item {
         color: $darkLightGray;
-        &:hover {
+        @include hover {
           background-color: $darkMuteBackground;
         }
       }
@@ -270,14 +270,14 @@ body:has(.dark-theme) {
         &.mute {
           border-color: $darkMuteBackground;
         }
-        &:hover {
+        @include hover {
           background-color: $darkDarkGrayHover;
         }
         &.white-key {
           background-color: $darkMediumGray;
           border-right: none;
           border-bottom: none;
-          &:hover {
+          @include hover {
             background-color: $darkMediumGrayHover;
           }
         }
@@ -286,7 +286,7 @@ body:has(.dark-theme) {
     &.clock {
       .pitch-class {
         background-color: $darkMediumGray;
-        &:hover {
+        @include hover {
           background-color: $darkMediumGrayHover;
         }
       }
@@ -300,19 +300,19 @@ body:has(.dark-theme) {
         background-color math.div($transitionTime, 4);
       &.selected {
         background-color: var(--channel-color) !important;
-        &:hover {
+        @include hover {
           background-color: var(--channel-color-hover) !important;
         }
       }
       &.playing {
         background-color: $orange !important;
-        &:hover {
+        @include hover {
           background-color: $orangeHover !important;
         }
       }
       &.ghost-playing {
         background-color: $darkDarkOrange !important;
-        &:hover {
+        @include hover {
           background-color: $darkOrange !important;
         }
       }
@@ -332,7 +332,7 @@ body:has(.dark-theme) {
     b {
       border-color: $darkMediumGray;
       background-color: $darkMediumGray;
-      &:hover {
+      @include hover {
         background-color: $darkMediumGrayHover;
       }
       &:active {
@@ -360,7 +360,7 @@ body:has(.dark-theme) {
     b {
       border-color: $headerBlue;
       background: $headerBlue;
-      &:hover {
+      @include hover {
         background: $headerBlueHover;
       }
       &:active {
@@ -388,7 +388,7 @@ body:has(.dark-theme) {
       color: $blue;
       background-color: $headerBlue;
       cursor: pointer;
-      &:hover {
+      @include hover {
         background-color: $headerBlueHover;
       }
       &:active {
@@ -399,7 +399,7 @@ body:has(.dark-theme) {
       .header-settings {
         background: url('./assets/gear-blue.png');
         background-size: 22px;
-        &:hover {
+        @include hover {
           background: url('./assets/gear-hover-blue.png');
           background-size: 22px;
         }
@@ -407,7 +407,7 @@ body:has(.dark-theme) {
       .header-about {
         background: url('./assets/question-blue.png');
         background-size: 22px;
-        &:hover {
+        @include hover {
           background: url('./assets/question-blue-hover.png');
           background-size: 22px;
         }
@@ -423,7 +423,7 @@ body:has(.dark-theme) {
       border: 1px solid $headerBlue;
       color: $blue;
       background-color: $headerBlue;
-      &:hover {
+      @include hover {
         background-color: $headerBlueHover;
       }
       &:active {
@@ -448,10 +448,12 @@ body:has(.dark-theme) {
         background-color: $darkDarkGray;
         border-color: transparent;
       }
-      &.interactive:hover {
-        background-color: $darkDarkGrayHover;
-        &.mute {
-          background-color: color.adjust($darkDarkGrayHover, $lightness: 3%);
+      @include can-hover {
+        &.interactive:hover {
+          background-color: $darkDarkGrayHover;
+          &.mute {
+            background-color: color.adjust($darkDarkGrayHover, $lightness: 3%);
+          }
         }
       }
       &.white-key {
@@ -466,20 +468,24 @@ body:has(.dark-theme) {
             background-color: var(--channel-color);
           }
         }
-        &.interactive:hover {
-          background-color: color.adjust($inRangeColor, $lightness: -5%);
-          &.mute {
-            background-color: color.adjust($darkMediumGray, $lightness: 3%);
-          }
-          &.selected {
-            background-color: var(--channel-color-hover);
+        @include can-hover {
+          &.interactive:hover {
+            background-color: color.adjust($inRangeColor, $lightness: -5%);
+            &.mute {
+              background-color: color.adjust($darkMediumGray, $lightness: 3%);
+            }
+            &.selected {
+              background-color: var(--channel-color-hover);
+            }
           }
         }
       }
       &.selected {
         background-color: var(--channel-color);
-        &.interactive:hover {
-          background-color: var(--channel-color-hover);
+        @include can-hover {
+          &.interactive:hover {
+            background-color: var(--channel-color-hover);
+          }
         }
       }
       &.playing,
@@ -546,8 +552,10 @@ body:has(.dark-theme) {
       }
       &.playing {
         background-color: color.adjust($orange, $lightness: -2%);
-        &.interactive:hover {
-          background-color: $orangeHover;
+        @include can-hover {
+          &.interactive:hover {
+            background-color: $orangeHover;
+          }
         }
         &.white-key.in-range {
           border-color: $darkOrange;
@@ -560,8 +568,10 @@ body:has(.dark-theme) {
           & + .white-key.in-range {
             border-left-color: $darkOrange;
           }
-          &.interactive:hover {
-            background-color: $orangeHover;
+          @include can-hover {
+            &.interactive:hover {
+              background-color: $orangeHover;
+            }
           }
         }
       }
@@ -598,7 +608,7 @@ body:has(.dark-theme) {
       border: 1px solid $darkMediumGray;
       border-left-color: $darkBackground;
       background-color: $darkMediumGray;
-      &:hover {
+      @include hover {
         background-color: $darkMediumGrayHover;
       }
       &:active {
@@ -617,7 +627,7 @@ body:has(.dark-theme) {
 
     .multi-select-option {
       color: $darkLightGray;
-      &:hover {
+      @include hover {
         background-color: $darkGreen;
         color: $darkBackground;
       }
@@ -631,7 +641,7 @@ body:has(.dark-theme) {
         &:after {
           background-color: $darkLightGray;
         }
-        &:hover {
+        @include hover {
           &:before,
           &:after {
             background-color: $red;
@@ -657,7 +667,7 @@ body:has(.dark-theme) {
     border: 1px solid $darkMediumGray;
     border-left-color: $darkBackground;
     background-color: $darkMediumGray;
-    &:hover {
+    @include hover {
       background-color: $darkMediumGrayHover;
     }
     &:active {
@@ -678,10 +688,15 @@ body:has(.dark-theme) {
     color: $darkLightGray;
   }
 
-  .dropdown-option:hover,
   .dropdown-option.selected {
     background-color: $darkGreen;
     color: $darkBackground;
+  }
+  @include can-hover {
+    .dropdown-option:hover {
+      background-color: $darkGreen;
+      color: $darkBackground;
+    }
   }
 
   // grid-menu group dividers/headings: match the instrument-modal divider tone so the
@@ -712,7 +727,7 @@ body:has(.dark-theme) {
         border: 1px solid $headerBlue;
         border-left-color: $headerDarkBlue;
         background-color: $headerBlue;
-        &:hover {
+        @include hover {
           background-color: $headerBlueHover;
         }
         &:active {
@@ -728,10 +743,15 @@ body:has(.dark-theme) {
       .dropdown-menu {
         border: 1px solid $headerBlue;
       }
-      .dropdown-option:hover,
       .dropdown-option.selected {
         background-color: $darkGreen;
         color: $darkBackground;
+      }
+      @include can-hover {
+        .dropdown-option:hover {
+          background-color: $darkGreen;
+          color: $darkBackground;
+        }
       }
     }
     &.dropdown-num-inputs-container {
@@ -742,8 +762,10 @@ body:has(.dark-theme) {
     &.graphic-options {
       .dropdown-option {
         color: $darkLightGray;
-        &:hover,
         &.selected {
+          background-color: color.adjust($darkestGreen, $lightness: 10%);
+        }
+        @include hover {
           background-color: color.adjust($darkestGreen, $lightness: 10%);
         }
       }
@@ -756,7 +778,7 @@ body:has(.dark-theme) {
     color: $blue;
     .preset-action {
       border-right-color: $headerDarkBlue;
-      &:hover {
+      @include hover {
         background-color: $headerBlueHover;
       }
       &:active {
@@ -792,7 +814,7 @@ body:has(.dark-theme) {
   .sequence-step {
     background-color: $darkMediumGray;
     color: $darkBackground;
-    &:hover {
+    @include hover {
       background-color: $darkMediumGrayHover;
     }
     &:active {
@@ -802,19 +824,19 @@ body:has(.dark-theme) {
       background-color: var(--channel-color);
       // Explicit dark text so the step number stays readable on the channel color.
       color: $darkBackground;
-      &:hover {
+      @include hover {
         background-color: var(--channel-color-hover);
       }
     }
     &.playing {
       background-color: $darkDarkOrange;
-      &:hover {
+      @include hover {
         background-color: $darkOrange;
       }
       &.selected {
         background-color: $orange;
         color: $darkBackground;
-        &:hover {
+        @include hover {
           background-color: $orangeHover;
         }
       }
@@ -834,7 +856,7 @@ body:has(.dark-theme) {
     .channel-drawer-control {
       $arrow-size: 8px;
       background-color: $darkMediumGray;
-      &:hover {
+      @include hover {
         background-color: $darkMediumGrayHover;
       }
       &:active {
@@ -845,7 +867,7 @@ body:has(.dark-theme) {
       }
       &.drawer-open {
         background: var(--channel-color);
-        &:hover {
+        @include hover {
           background: var(--channel-color-hover);
         }
         .arrow-down {
@@ -886,7 +908,7 @@ body:has(.dark-theme) {
 
     .button {
       background-color: $muteGray;
-      &:hover {
+      @include hover {
         background-color: $muteGrayHover;
       }
       &:active {
@@ -898,7 +920,7 @@ body:has(.dark-theme) {
       b {
         background-color: $muteGray;
         border-color: $muteGray;
-        &:hover {
+        @include hover {
           background-color: $muteGrayHover;
         }
         &:active {
@@ -925,7 +947,7 @@ body:has(.dark-theme) {
 
     .dropdown-arrow-wrapper {
       border-left-color: $darkMuteBackground;
-      &:hover {
+      @include hover {
         background-color: $muteGrayHover;
       }
     }
@@ -940,18 +962,18 @@ body:has(.dark-theme) {
       }
       .white-key {
         background-color: $muteGray !important;
-        &:hover {
+        @include hover {
           background-color: $muteGrayHover !important;
         }
         &.selected {
           background-color: var(--channel-color) !important;
-          &:hover {
+          @include hover {
             background-color: var(--channel-color-hover) !important;
           }
         }
         &.playing {
           background-color: $orange !important;
-          &:hover {
+          @include hover {
             background-color: $orangeHover !important;
           }
         }

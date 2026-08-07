@@ -158,7 +158,7 @@ body:has(.aero-theme) {
       border-color: rgba($aeroInk, 0.18);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba($aeroInk, 0.1),
         0 1px 1.5px rgba($aeroInk, 0.07);
-      &:hover {
+      @include hover {
         background-color: #d8f3fa;
       }
       &:active {
@@ -178,7 +178,7 @@ body:has(.aero-theme) {
   .add-channel-button {
     color: $aeroText;
     border-color: rgba($aeroInk, 0.3);
-    &:hover {
+    @include hover {
       color: $aeroBlueDeep;
       border-color: rgba($aeroInk, 0.55);
       background-color: $glassNeutralHover;
@@ -188,7 +188,7 @@ body:has(.aero-theme) {
   .button {
     @include aero-flat($glassNeutral);
     color: $aeroText;
-    &:hover {
+    @include hover {
       @include aero-flat($glassNeutralHover);
     }
     &:active {
@@ -197,7 +197,7 @@ body:has(.aero-theme) {
     &.green-button {
       @include aero-flat($glassGreen);
       color: #ffffff;
-      &:hover {
+      @include hover {
         @include aero-flat($glassGreenHover);
       }
     }
@@ -207,7 +207,7 @@ body:has(.aero-theme) {
       // washed out against the bright aqua UI)
       @include aero-flat(rgba($red, 0.86));
       color: #ffffff;
-      &:hover {
+      @include hover {
         @include aero-flat(rgba($red, 0.96));
       }
       &:active {
@@ -221,7 +221,7 @@ body:has(.aero-theme) {
       @include aero-flat($glassNeutral);
       color: $aeroTextSoft;
       // match the regular button hover (base sets a gray $lightGrayHover otherwise)
-      &:hover {
+      @include hover {
         background-color: $glassNeutralHover;
       }
     }
@@ -280,7 +280,7 @@ body:has(.aero-theme) {
       .header-settings {
         background: url('./assets/gear-blue.png');
         background-size: 22px;
-        &:hover {
+        @include hover {
           background: url('./assets/gear-hover-blue.png');
           background-size: 22px;
         }
@@ -288,7 +288,7 @@ body:has(.aero-theme) {
       .header-about {
         background: url('./assets/question-blue.png');
         background-size: 22px;
-        &:hover {
+        @include hover {
           background: url('./assets/question-blue-hover.png');
           background-size: 22px;
         }
@@ -310,7 +310,7 @@ body:has(.aero-theme) {
     .radio-button {
       @include aero-flat($glassNeutral);
       color: $aeroBlueDeep;
-      &:hover {
+      @include hover {
         background-color: $glassNeutralHover;
       }
       &:active {
@@ -319,7 +319,7 @@ body:has(.aero-theme) {
       &.radio-button-selected {
         @include aero-flat($glassBlue);
         color: #ffffff;
-        &:hover {
+        @include hover {
           background-color: $glassBlueHover;
         }
       }
@@ -551,7 +551,7 @@ body:has(.aero-theme) {
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(27, 92, 116, 0.22);
       .channel-menu-item {
         color: $aeroText;
-        &:hover {
+        @include hover {
           background-color: rgba(255, 255, 255, 0.3);
         }
       }
@@ -564,7 +564,7 @@ body:has(.aero-theme) {
     color: $aeroTextSoft;
     // base hover is a dark gray; use the frosted hover (selected/playing keep
     // their channel/orange hovers — those base rules out-specify this one)
-    &:hover {
+    @include hover {
       background-color: $glassNeutralHover;
     }
     &.selected {
@@ -607,9 +607,13 @@ body:has(.aero-theme) {
   .wave-icon {
     filter: $aeroIconFilter;
   }
-  .channel-buttons .channel-instrument-button .wave-icon,
-  .channel-buttons .channel-instrument-button:hover .wave-icon {
+  .channel-buttons .channel-instrument-button .wave-icon {
     filter: $aeroIconFilter;
+  }
+  @include can-hover {
+    .channel-buttons .channel-instrument-button:hover .wave-icon {
+      filter: $aeroIconFilter;
+    }
   }
 
   // ── Piano + key: frosted aqua keys instead of gray, with a lit top edge ──
@@ -650,8 +654,10 @@ body:has(.aero-theme) {
         // framerate in eclipse). Was inset 0 1px 2px.
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
       }
-      &.interactive:hover {
-        background-color: #7eb1c7;
+      @include can-hover {
+        &.interactive:hover {
+          background-color: #7eb1c7;
+        }
       }
       &.white-key {
         background-color: rgba(255, 255, 255, 0.34);
@@ -669,8 +675,10 @@ body:has(.aero-theme) {
           // in-range read; a hairline keeps a touch of gloss for ~free.
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
         }
-        &.interactive:hover {
-          background-color: rgba(255, 255, 255, 0.5);
+        @include can-hover {
+          &.interactive:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+          }
         }
       }
     }
@@ -678,8 +686,10 @@ body:has(.aero-theme) {
     // (covers black + white, in-range + keyboard, plus the in-range border tint)
     .piano-note.playing {
       background-color: $seafoam;
-      &.interactive:hover {
-        background-color: $seafoamHover;
+      @include can-hover {
+        &.interactive:hover {
+          background-color: $seafoamHover;
+        }
       }
       &.white-key.in-range {
         background-color: $seafoam;
@@ -740,13 +750,13 @@ body:has(.aero-theme) {
           border-color: #d2f0fc;
         }
       }
-      &:hover {
+      @include hover {
         background-color: #6ba6bf;
       }
       &.white-key {
         background-color: rgba(255, 255, 255, 0.55);
         // (depth shadows inherited from .pitch-class above)
-        &:hover {
+        @include hover {
           background-color: rgba(255, 255, 255, 0.7);
         }
       }
@@ -754,7 +764,7 @@ body:has(.aero-theme) {
       // seafoam (same !important + .aero-theme prefix beats the base rule)
       &.playing {
         background-color: $seafoam !important;
-        &:hover {
+        @include hover {
           background-color: $seafoamHover !important;
         }
       }
@@ -765,7 +775,7 @@ body:has(.aero-theme) {
     &.clock .pitch-class {
       background-color: #5c9bb5;
       box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.4);
-      &:hover {
+      @include hover {
         background-color: #6ba6bf;
       }
     }
@@ -797,7 +807,7 @@ body:has(.aero-theme) {
     border: 1px solid $glassBorder;
     border-left-color: rgba(255, 255, 255, 0.25);
     box-shadow: inset 1px 0 0 rgba($aeroInk, 0.2);
-    &:hover {
+    @include hover {
       background-color: rgba(255, 255, 255, 0.26);
     }
   }
@@ -813,8 +823,11 @@ body:has(.aero-theme) {
   }
   .dropdown-option {
     color: $aeroText;
-    &:hover,
     &.selected {
+      background-color: rgba(255, 255, 255, 0.62);
+      color: $aeroBlueDeep;
+    }
+    @include hover {
       background-color: rgba(255, 255, 255, 0.62);
       color: $aeroBlueDeep;
     }
@@ -833,7 +846,7 @@ body:has(.aero-theme) {
         border: 1px solid $glassBorder;
         border-left-color: rgba(255, 255, 255, 0.25);
         box-shadow: inset 1px 0 0 rgba($aeroInk, 0.2);
-        &:hover {
+        @include hover {
           background-color: rgba(255, 255, 255, 0.26);
         }
       }
@@ -849,16 +862,25 @@ body:has(.aero-theme) {
       }
       // base .small-dropdown keeps an orange option highlight at higher
       // specificity than the global rule — override here
-      .dropdown-option:hover,
       .dropdown-option.selected {
         background-color: rgba(255, 255, 255, 0.62);
         color: $aeroBlueDeep;
       }
+      @include can-hover {
+        .dropdown-option:hover {
+          background-color: rgba(255, 255, 255, 0.62);
+          color: $aeroBlueDeep;
+        }
+      }
     }
     &.graphic-options {
-      .dropdown-option:hover,
       .dropdown-option.selected {
         background-color: rgba(255, 255, 255, 0.62);
+      }
+      @include can-hover {
+        .dropdown-option:hover {
+          background-color: rgba(255, 255, 255, 0.62);
+        }
       }
     }
   }
@@ -875,7 +897,7 @@ body:has(.aero-theme) {
       border: 1px solid $glassBorder;
       border-left-color: rgba(255, 255, 255, 0.25);
       box-shadow: inset 1px 0 0 rgba($aeroInk, 0.2);
-      &:hover {
+      @include hover {
         background-color: rgba(255, 255, 255, 0.26);
       }
     }
@@ -888,7 +910,7 @@ body:has(.aero-theme) {
     }
     .multi-select-option {
       color: $aeroText;
-      &:hover {
+      @include hover {
         background-color: rgba(255, 255, 255, 0.62);
         color: $aeroBlueDeep;
       }
@@ -901,7 +923,7 @@ body:has(.aero-theme) {
         &:after {
           background-color: $aeroText;
         }
-        &:hover {
+        @include hover {
           &:before,
           &:after {
             background-color: $red;
@@ -934,7 +956,7 @@ body:has(.aero-theme) {
       img {
         filter: $aeroBlueIconTone;
       }
-      &:hover {
+      @include hover {
         background-color: rgba(255, 255, 255, 0.26);
       }
       &:active {

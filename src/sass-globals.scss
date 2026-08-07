@@ -38,6 +38,49 @@ $piano-attack-time: 0.09s;
 $piano-touch-scale: 1.15;
 $piano-width: 726px;
 
+// Every :hover rule in the app goes through one of these two. Touch browsers emulate
+// hover on tap and then leave it latched on the tapped element until you tap somewhere
+// else, so a tapped key, piano note, or button sits there wrongly highlighted.
+// `(hover: hover)` is true only for a real pointing device, so the styles inside simply
+// never exist on a touch screen — nothing to get stuck. Desktop output is unchanged
+// (media queries affect neither specificity nor source order), so gating a rule can only
+// ever subtract on touch.
+//
+// `hover` is the one to reach for — it styles this element's own :hover:
+//   &.green-button {
+//     background-color: $green;
+//     @include hover { background-color: $greenHover; }
+//   }
+@mixin hover {
+  @media (hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+// `can-hover` is the raw gate, for hover selectors `hover` can't express — a modifier
+// combination, a descendant/sibling, or a group of them sharing one media block:
+//   @include can-hover {
+//     &.mute:hover { ... }
+//     &:hover ~ svg { ... }
+//   }
+@mixin can-hover {
+  @media (hover: hover) {
+    @content;
+  }
+}
+
+// The additive counterpart: styles that only exist on a touch screen (bigger tap targets
+// and the layout that compensates for them — see $piano-touch-scale above). Deliberately
+// narrower than `not (hover: hover)`, since it also requires a coarse pointer, so a
+// hoverless fine pointer doesn't get finger-sized hit areas.
+@mixin touch-only {
+  @media (hover: none) and (pointer: coarse) {
+    @content;
+  }
+}
+
 .no-select {
   -webkit-user-select: none;
   -moz-user-select: none;

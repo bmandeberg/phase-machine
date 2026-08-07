@@ -22,7 +22,7 @@ $buttonSize: 28px;
     cursor: pointer;
     // M stacked above S in every view (MIDI routing now lives in the "…" menu).
     display: block;
-    &:hover {
+    @include hover {
       background: $lightGrayHover;
     }
   }
@@ -31,7 +31,7 @@ $buttonSize: 28px;
     &.muted {
       color: #ffffff;
       background: $red;
-      &:hover {
+      @include hover {
         background: $redHover;
       }
     }
@@ -40,7 +40,7 @@ $buttonSize: 28px;
     &.soloed {
       color: #ffffff;
       background: var(--channel-color);
-      &:hover {
+      @include hover {
         background: var(--channel-color-hover);
       }
     }

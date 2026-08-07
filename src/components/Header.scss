@@ -50,7 +50,7 @@ $margin: 12px;
     color: $orange;
     background-color: $lightOrange;
     cursor: pointer;
-    &:hover {
+    @include hover {
       background-color: $darkLightOrange;
     }
     &:active {
@@ -72,7 +72,7 @@ $margin: 12px;
     .header-settings {
       background: transparent url('../assets/gear.png') center center;
       background-size: 22px;
-      &:hover {
+      @include hover {
         background: transparent url('../assets/gear-hover.png') center center;
         background-size: 22px;
       }
@@ -80,7 +80,7 @@ $margin: 12px;
     .header-about {
       background: transparent url('../assets/question-orange.png') center center;
       background-size: 22px;
-      &:hover {
+      @include hover {
         background: transparent url('../assets/question-orange-hover.png') center center;
         background-size: 22px;
       }
@@ -156,7 +156,7 @@ $margin: 12px;
       height: 22px;
       fill: currentColor;
     }
-    &:hover {
+    @include hover {
       opacity: 0.7;
     }
     // Nothing to undo/redo: dim and inert, but still laid out so the pair doesn't shift.

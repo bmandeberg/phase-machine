@@ -37,7 +37,7 @@
   position: absolute;
   right: -1px;
   top: -1px;
-  &:hover {
+  @include hover {
     background-color: $lightGrayHover;
   }
   &:active {
@@ -153,10 +153,15 @@
   padding: 5px;
 }
 
-.dropdown-option:hover,
 .dropdown-option.selected {
   background-color: $lightGray;
   color: $darkGray;
+}
+@include can-hover {
+  .dropdown-option:hover {
+    background-color: $lightGray;
+    color: $darkGray;
+  }
 }
 
 .dropdown-noresults {
@@ -201,7 +206,7 @@
       height: 20px;
       border: 1px solid $orange;
       background-color: $lightOrange;
-      &:hover {
+      @include hover {
         background-color: $darkLightOrange;
       }
       &:active {
@@ -228,10 +233,15 @@
       line-height: 15px;
       height: 12px;
     }
-    .dropdown-option:hover,
     .dropdown-option.selected {
       background-color: $lightOrange;
       color: $orange;
+    }
+    @include can-hover {
+      .dropdown-option:hover {
+        background-color: $lightOrange;
+        color: $orange;
+      }
     }
     .dropdown-min-width {
       text-transform: uppercase;

@@ -27,7 +27,7 @@
       &.black-key-right {
         margin-left: -7px;
       }
-      &:hover {
+      @include hover {
         background-color: $darkGrayHover;
       }
       &.white-key {
@@ -38,7 +38,7 @@
         margin-left: 0;
         border-right: none;
         border-bottom: none;
-        &:hover {
+        @include hover {
           background-color: $lightGrayHover;
         }
       }
@@ -78,7 +78,7 @@
       width: 22px;
       border-radius: 24px;
       background-color: $darkGray;
-      &:hover {
+      @include hover {
         background-color: $darkGrayHover;
       }
     }
@@ -94,19 +94,19 @@
     transition: border-width math.div($transitionTime, 4), border-color math.div($transitionTime, 2), background-color math.div($transitionTime, 4);
     &.selected {
       background-color: var(--channel-color) !important;
-      &:hover {
+      @include hover {
         background-color: var(--channel-color-hover) !important;
       }
     }
     &.playing {
       background-color: $orange !important;
-      &:hover {
+      @include hover {
         background-color: $orangeHover !important;
       }
     }
     &.ghost-playing {
       background-color: $darkerLightOrange !important;
-      &:hover {
+      @include hover {
         background-color: $darkLightOrange !important;
       }
     }

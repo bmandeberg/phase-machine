@@ -35,7 +35,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    &:hover {
+    @include hover {
       background-color: $lightGrayHover;
     }
     &:active {
@@ -88,7 +88,7 @@
     line-height: 21px;
     height: 17px;
     white-space: nowrap;
-    &:hover {
+    @include hover {
       background-color: $lightGray;
       color: $darkGray;
     }
@@ -127,7 +127,7 @@
       &:after {
         transform: rotate(-45deg);
       }
-      &:hover {
+      @include hover {
         &:before, &:after {
           background-color: $red;
         }
