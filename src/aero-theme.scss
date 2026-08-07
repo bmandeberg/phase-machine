@@ -26,6 +26,11 @@ $aeroTextSoft: #4a8aa3;
 $glassNeutral: rgba(255, 255, 255, 0.24);
 $glassNeutralHover: rgba(255, 255, 255, 0.42);
 $glassNeutralActive: rgba(255, 255, 255, 0.14);
+// The highlighted entry in an open menu — dropdown options and multi-select options,
+// whether hovered or already selected (both states share one look here). Sits a rung
+// above $glassNeutralHover because it reads against a blurred overlay rather than the
+// page, so it needs more fill to separate from the menu behind it.
+$glassHighlight: rgba(255, 255, 255, 0.62);
 $glassBlue: rgba(63, 169, 224, 0.5);
 $glassBlueHover: rgba(63, 169, 224, 0.64);
 $glassGreen: rgba(95, 208, 106, 0.54);
@@ -824,11 +829,11 @@ body:has(.aero-theme) {
   .dropdown-option {
     color: $aeroText;
     &.selected {
-      background-color: rgba(255, 255, 255, 0.62);
+      background-color: $glassHighlight;
       color: $aeroBlueDeep;
     }
     @include hover {
-      background-color: rgba(255, 255, 255, 0.62);
+      background-color: $glassHighlight;
       color: $aeroBlueDeep;
     }
   }
@@ -863,23 +868,23 @@ body:has(.aero-theme) {
       // base .small-dropdown keeps an orange option highlight at higher
       // specificity than the global rule — override here
       .dropdown-option.selected {
-        background-color: rgba(255, 255, 255, 0.62);
+        background-color: $glassHighlight;
         color: $aeroBlueDeep;
       }
       @include can-hover {
         .dropdown-option:hover {
-          background-color: rgba(255, 255, 255, 0.62);
+          background-color: $glassHighlight;
           color: $aeroBlueDeep;
         }
       }
     }
     &.graphic-options {
       .dropdown-option.selected {
-        background-color: rgba(255, 255, 255, 0.62);
+        background-color: $glassHighlight;
       }
       @include can-hover {
         .dropdown-option:hover {
-          background-color: rgba(255, 255, 255, 0.62);
+          background-color: $glassHighlight;
         }
       }
     }
@@ -911,7 +916,7 @@ body:has(.aero-theme) {
     .multi-select-option {
       color: $aeroText;
       @include hover {
-        background-color: rgba(255, 255, 255, 0.62);
+        background-color: $glassHighlight;
         color: $aeroBlueDeep;
       }
     }
