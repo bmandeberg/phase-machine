@@ -14,6 +14,7 @@ import {
   DEFAULT_PRESETS,
   BLANK_CHANNEL,
   migrateEffectSlots,
+  effectiveMidiOutChannel,
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
   SIGNAL_TYPES,
@@ -29,7 +30,15 @@ import useSelectionHotkeys from './hooks/useSelectionHotkeys'
 import useHistory, { deepEqual } from './hooks/useHistory'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import { subscribeDialogs, getActiveDialog, DialogRequest } from './dialog'
-import { Channel as ChannelType, Preset, ApplyEdit, ApplyAction, ApplyChannelState, ChannelAction } from './types'
+import {
+  Channel as ChannelType,
+  Preset,
+  ApplyEdit,
+  ApplyAction,
+  ApplyChannelState,
+  ChannelAction,
+  ChannelMidiAssignment,
+} from './types'
 
 // load/set presets
 if (!window.localStorage.getItem('presets')) {
@@ -360,6 +369,66 @@ export default function App() {
     },
     [selection]
   )
+
+  // Settings MIDI matrices: a slim per-channel view of each channel's effective MIDI
+  // output channel (null = send to all) and input channel filter (null = accept all),
+  // plus setters that route through that channel's registered applyEdit — the same
+  // loop-free raw-setter path the mirror fan-out uses, so the channel updates its own
+  // state and reports back up through setChannelState. On the output side, assigning
+  // a channel's default column (channelNum + 1) clears the custom flag instead of
+  // setting it, so the MIDI modal keeps reading "custom" only when true.
+  // Identity-pinned: uiState.channels gets a fresh identity on every debounced channel
+  // report (any field), but this view only projects the MIDI fields — returning the
+  // previous array when nothing it projects changed keeps the settings modal (and its
+  // memoized element in Modal) from re-rendering on unrelated channel edits.
+  const prevMidiAssignments = useRef<ChannelMidiAssignment[]>([])
+  const channelMidiAssignments = useMemo(() => {
+    const next = uiState.channels.map((c: ChannelType) => {
+      const out = effectiveMidiOutChannel(c.midiOutAll, c.customMidiOutChannel, c.midiOutChannel, c.channelNum)
+      return {
+        id: c.id,
+        channelNum: c.channelNum,
+        color: c.color,
+        // the matrix view uses null for "all" where webmidi uses the full array
+        midiOutChannel: Array.isArray(out) ? null : out,
+        midiInChannel: c.customMidiInChannel ? c.midiInChannel : null,
+      }
+    })
+    const prev = prevMidiAssignments.current
+    const unchanged =
+      prev.length === next.length &&
+      prev.every((p, i) => {
+        const n = next[i]
+        return (
+          p.id === n.id &&
+          p.channelNum === n.channelNum &&
+          p.color === n.color &&
+          p.midiOutChannel === n.midiOutChannel &&
+          p.midiInChannel === n.midiInChannel
+        )
+      })
+    if (unchanged) return prev
+    prevMidiAssignments.current = next
+    return next
+  }, [uiState.channels])
+  const setChannelMidiAssignment = useCallback((id: string, midiChannel: number | null) => {
+    const channel = uiStateRef.current.channels.find((c: ChannelType) => c.id === id)
+    const apply = channelApplyRegistry.current.get(id)
+    if (!channel || !apply) return
+    apply('midiOutAll', midiChannel === null)
+    if (midiChannel !== null) {
+      apply('customMidiOutChannel', midiChannel !== channel.channelNum + 1)
+      apply('midiOutChannel', midiChannel)
+    }
+  }, [])
+  const setChannelMidiInAssignment = useCallback((id: string, midiChannel: number | null) => {
+    const apply = channelApplyRegistry.current.get(id)
+    if (!apply) return
+    apply('customMidiInChannel', midiChannel !== null)
+    if (midiChannel !== null) {
+      apply('midiInChannel', midiChannel)
+    }
+  }, [])
 
   // Parallel registry for pattern/key GESTURES (toggle a step, shift, flip, …). Same
   // fan-out shape, but each target applies the action to its own data via applyAction.
@@ -884,6 +953,9 @@ export default function App() {
           setIgnorePresetsTempo={setIgnorePresetsTempo}
           presetsStopTransport={presetsStopTransport}
           setPresetsStopTransport={setPresetsStopTransport}
+          channelMidiAssignments={channelMidiAssignments}
+          setChannelMidiAssignment={setChannelMidiAssignment}
+          setChannelMidiInAssignment={setChannelMidiInAssignment}
         />
       </CSSTransition>
       <CSSTransition in={!!activeDialog} timeout={300} classNames="show" nodeRef={alertNodeRef}>

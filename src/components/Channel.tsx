@@ -12,6 +12,7 @@ import {
   handleArpMode,
   noteString,
   convertMidiNumber,
+  effectiveMidiOutChannel,
   OCTAVES,
   SUSTAIN_MIN,
   KNOB_MAX,
@@ -340,6 +341,12 @@ export default function Channel({
   const midiInRef = useRef<any>(undefined)
   const [midiHold, setMidiHold] = useState(initState.midiHold)
   const midiHoldRef = useRef<any>(undefined)
+  const [customMidiInChannel, setCustomMidiInChannel] = useState(initState.customMidiInChannel)
+  const customMidiInChannelRef = useRef(customMidiInChannel)
+  const [midiInChannel, setMidiInChannel] = useState(initState.midiInChannel)
+  const midiInChannelRef = useRef(midiInChannel)
+  const [midiOutAll, setMidiOutAll] = useState(initState.midiOutAll)
+  const midiOutAllRef = useRef(midiOutAll)
   const [customMidiOutChannel, setCustomMidiOutChannel] = useState(initState.customMidiOutChannel)
   const customMidiOutChannelRef = useRef(customMidiOutChannel)
   const [midiOutChannel, setMidiOutChannel] = useState(initState.midiOutChannel)
@@ -405,6 +412,12 @@ export default function Channel({
     midiHoldRef.current = midiHold
   }, [midiHold])
   useEffect(() => {
+    customMidiInChannelRef.current = customMidiInChannel
+  }, [customMidiInChannel])
+  useEffect(() => {
+    midiInChannelRef.current = midiInChannel
+  }, [midiInChannel])
+  useEffect(() => {
     rangeModeRef.current = rangeMode
   }, [rangeMode])
   useEffect(() => {
@@ -421,8 +434,16 @@ export default function Channel({
     keybdPitchesRef.current = keybdPitches
   }, [keybdPitches])
 
+  // Per-channel input filter: with a custom input channel set, ignore notes that
+  // arrived on any other MIDI channel. Events without channel info pass through.
+  const midiInChannelMatches = useCallback((e: MidiNoteEvent) => {
+    if (!customMidiInChannelRef.current) return true
+    const eventChannel = e.message?.channel
+    return eventChannel === undefined || eventChannel === midiInChannelRef.current
+  }, [])
+
   useEffect(() => {
-    if (midiInRef.current && midiNoteOn) {
+    if (midiInRef.current && midiNoteOn && midiInChannelMatches(midiNoteOn)) {
       if (rangeModeRef.current) {
         const pitchClassIndex = midiNoteOn.note.number % 12
         if (midiHoldRef.current || !keyRef.current[pitchClassIndex]) {
@@ -453,10 +474,10 @@ export default function Channel({
         }
       }
     }
-  }, [midiNoteOn])
+  }, [midiNoteOn, midiInChannelMatches])
 
   useEffect(() => {
-    if (midiInRef.current && midiNoteOff && midiHoldRef.current) {
+    if (midiInRef.current && midiNoteOff && midiHoldRef.current && midiInChannelMatches(midiNoteOff)) {
       if (rangeModeRef.current) {
         const pitchClassIndex = midiNoteOff.note.number % 12
         setKey((key: any) => {
@@ -471,7 +492,7 @@ export default function Channel({
         }
       }
     }
-  }, [midiNoteOff])
+  }, [midiNoteOff, midiInChannelMatches])
 
   const openMidiModal = useCallback(() => {
     setModalType('MIDI')
@@ -554,7 +575,12 @@ export default function Channel({
           instrument.current.triggerRelease()
         }
       }
-      const channel = customMidiOutChannelRef.current ? midiOutChannelRef.current : channelNumRef.current + 1
+      const channel = effectiveMidiOutChannel(
+        midiOutAllRef.current,
+        customMidiOutChannelRef.current,
+        midiOutChannelRef.current,
+        channelNumRef.current
+      )
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOutRef.current ? (WebMidi.getOutputByName(midiOutRef.current) as any) : null
       if (midiOutObj) {
@@ -613,6 +639,9 @@ export default function Channel({
         case 'axis': setAxis(value as number); break
         case 'seqShiftAmt': setSeqShiftAmt(value as number); break
         case 'midiIn': setMidiIn(value as boolean | string); break
+        case 'customMidiInChannel': setCustomMidiInChannel(value as boolean); break
+        case 'midiInChannel': setMidiInChannel(value as number); break
+        case 'midiOutAll': setMidiOutAll(value as boolean); break
         case 'customMidiOutChannel': setCustomMidiOutChannel(value as boolean); break
         case 'midiOutChannel': setMidiOutChannel(value as number); break
         case 'instrumentParams': {
@@ -638,6 +667,9 @@ export default function Channel({
       shiftAmt: makeMirroredSetter('shiftAmt', setShiftAmt),
       axis: makeMirroredSetter('axis', setAxis),
       midiIn: makeMirroredSetter('midiIn', setMidiIn),
+      customMidiInChannel: makeMirroredSetter('customMidiInChannel', setCustomMidiInChannel),
+      midiInChannel: makeMirroredSetter('midiInChannel', setMidiInChannel),
+      midiOutAll: makeMirroredSetter('midiOutAll', setMidiOutAll),
       customMidiOutChannel: makeMirroredSetter('customMidiOutChannel', setCustomMidiOutChannel),
       midiOutChannel: makeMirroredSetter('midiOutChannel', setMidiOutChannel),
       velocity: makeMirroredSetter('velocity', setVelocity),
@@ -816,12 +848,12 @@ export default function Channel({
   )
 
   const getChannelData = useCallback(() => {
-    const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
+    const channel = effectiveMidiOutChannel(midiOutAll, customMidiOutChannel, midiOutChannel, channelNum)
     const note = noteString(noteIndex.current)
     const midiOutObj = midiOut ? (WebMidi.getOutputByName(midiOut) as any) : null
     const clockOffset = WebMidi.time - Tone.immediate() * 1000
     return { channel, note, midiOutObj, clockOffset }
-  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel])
+  }, [channelNum, midiOutAll, customMidiOutChannel, midiOut, midiOutChannel])
 
   // note off when stop playing
   useEffect(() => {
@@ -843,16 +875,19 @@ export default function Channel({
   // note off when changing channel number
   useEffect(() => {
     if (notePlaying.current && noteIndex.current !== undefined && channelNumRef.current !== channelNum) {
-      const channel = customMidiOutChannel ? midiOutChannel : channelNumRef.current + 1
+      // NB: channelNumRef.current here is the OLD channel number — the note-off must
+      // land on the channel the note was played on, before this reorder
+      const channel = effectiveMidiOutChannel(midiOutAll, customMidiOutChannel, midiOutChannel, channelNumRef.current)
       const note = noteString(noteIndex.current)
       const midiOutObj = midiOutRef.current ? (WebMidi.getOutputByName(midiOutRef.current) as any) : null
       noteOff(channel, note, midiOutObj, true, null)
       channelNumRef.current = channelNum
     }
     midiOutRef.current = midiOut
+    midiOutAllRef.current = midiOutAll
     customMidiOutChannelRef.current = customMidiOutChannel
     midiOutChannelRef.current = midiOutChannel
-  }, [channelNum, customMidiOutChannel, midiOut, midiOutChannel, noteOff])
+  }, [channelNum, midiOutAll, customMidiOutChannel, midiOut, midiOutChannel, noteOff])
 
   // loop events
 
@@ -965,7 +1000,7 @@ export default function Channel({
     (i: number, callback: any) => {
       const note = noteString(i)
       if (!note) return
-      const channel = customMidiOutChannel ? midiOutChannel : channelNum + 1
+      const channel = effectiveMidiOutChannel(midiOutAll, customMidiOutChannel, midiOutChannel, channelNum)
       const midiOutObj = midiOut ? (WebMidi.getOutputByName(midiOut) as any) : null
       const sustainTime = Math.max(sustain * rateToSeconds(keyRate, Tone.getTransport().bpm.value), 0.08)
       if (
@@ -1002,6 +1037,7 @@ export default function Channel({
     },
     [
       channelNum,
+      midiOutAll,
       customMidiOutChannel,
       instrument,
       instrumentOn,
@@ -1236,6 +1272,9 @@ export default function Channel({
       setKeybdPitches(data.keybdPitches.slice())
       setMidiIn(data.midiIn)
       setMidiHold(data.midiHold)
+      setCustomMidiInChannel(data.customMidiInChannel)
+      setMidiInChannel(data.midiInChannel)
+      setMidiOutAll(data.midiOutAll)
       setCustomMidiOutChannel(data.customMidiOutChannel)
       setMidiOutChannel(data.midiOutChannel)
       // effects is a fixed 3-slot tuple (EffectSlots); .map() widens it to an array, so
@@ -1488,6 +1527,12 @@ export default function Channel({
           color={color}
           scribbler={scribbler}
           theme={theme}
+          customMidiInChannel={customMidiInChannel}
+          setCustomMidiInChannel={mset.customMidiInChannel}
+          midiInChannel={midiInChannel}
+          setMidiInChannel={mset.midiInChannel}
+          midiOutAll={midiOutAll}
+          setMidiOutAll={mset.midiOutAll}
           customMidiOutChannel={customMidiOutChannel}
           setCustomMidiOutChannel={mset.customMidiOutChannel}
           channelNum={channelNum}
@@ -1516,6 +1561,9 @@ export default function Channel({
       channelNum,
       color,
       scribbler,
+      customMidiInChannel,
+      midiInChannel,
+      midiOutAll,
       customMidiOutChannel,
       slotNodesRef,
       rebuildEffectChain,
@@ -1622,6 +1670,9 @@ export default function Channel({
         keybdPitches,
         midiIn,
         midiHold,
+        customMidiInChannel,
+        midiInChannel,
+        midiOutAll,
         customMidiOutChannel,
         midiOutChannel,
         instrumentParams,
@@ -1632,6 +1683,9 @@ export default function Channel({
     axis,
     channelNum,
     color,
+    customMidiInChannel,
+    midiInChannel,
+    midiOutAll,
     customMidiOutChannel,
     instrumentOn,
     instrumentParams,

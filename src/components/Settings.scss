@@ -1,7 +1,9 @@
 @use '../sass-globals' as *;
 
 .settings {
-  width: 280px;
+  // 288 = a MIDI matrix row: 18px row label + 17 cells ("all" + 16 MIDI channels)
+  // at 14px + 2px gap.
+  width: 288px;
   .settings-item {
     margin-top: 10px;
     p {
@@ -51,6 +53,80 @@
           margin-left: 0;
           margin-right: 8px;
         }
+      }
+    }
+    // MIDI matrix: rows are phase machine channels, columns are MIDI channels 1-16.
+    // Cells use translucent grays so they read on every theme's modal surface; the
+    // assigned cell is painted inline with the channel's color.
+    .midi-matrix-header {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      .midi-matrix-arrow {
+        margin-left: 8px;
+        width: 0;
+        height: 0;
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        border-left: 6px solid currentColor;
+        opacity: 0.7;
+        transition: transform $transitionTime;
+        &.expanded {
+          transform: rotate(90deg);
+        }
+      }
+    }
+    .midi-matrix {
+      @extend .no-select;
+      margin-top: 6px;
+      .midi-matrix-row {
+        display: flex;
+        align-items: center;
+        margin-top: 2px;
+        &:first-of-type {
+          margin-top: 0;
+        }
+      }
+      .midi-matrix-row-label {
+        width: 18px;
+        font-size: 11px;
+        font-weight: bold;
+      }
+      .midi-matrix-column-label {
+        width: 14px;
+        margin-right: 2px;
+        font-size: 8px;
+        text-align: center;
+        opacity: 0.7;
+        &.all {
+          font-size: 7px;
+        }
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+      .midi-matrix-cell {
+        width: 14px;
+        height: 14px;
+        margin-right: 2px;
+        border-radius: 2px;
+        background-color: rgba(128, 128, 128, 0.25);
+        cursor: pointer;
+        &:last-child {
+          margin-right: 0;
+        }
+        @include hover {
+          &:not(.assigned) {
+            background-color: rgba(128, 128, 128, 0.5);
+          }
+        }
+        &.assigned {
+          cursor: default;
+        }
+      }
+      .midi-matrix-empty {
+        font-size: 12px;
+        opacity: 0.7;
       }
     }
   }

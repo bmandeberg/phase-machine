@@ -38,6 +38,18 @@ export type ChannelAction =
   | { kind: 'keyClear' }
 export type ApplyAction = (action: ChannelAction) => void
 
+// A row of the settings MIDI matrices: one phase-machine channel, its EFFECTIVE
+// MIDI output channel (null = send to all channels; else the custom one when set,
+// else the default channelNum + 1), and its MIDI input channel filter (null =
+// accept all channels, the default).
+export interface ChannelMidiAssignment {
+  id: string
+  channelNum: number
+  color: string
+  midiOutChannel: number | null
+  midiInChannel: number | null
+}
+
 // ---- Tone.js audio nodes used across the app ----
 // The synth is a MonoSynth in mono mode and a PolySynth wrapping MonoSynth
 // voices in poly mode (see InstrumentParams.poly / useInstruments).
@@ -91,7 +103,8 @@ export interface MidiInputLike {
 }
 export interface MidiNoteEvent {
   note: { number: number; attack?: number; release?: number }
-  message?: { data?: number[] }
+  // channel is the 1-16 MIDI channel the note arrived on (per-channel input filter)
+  message?: { data?: number[]; channel?: number }
   port?: { name: string }
 }
 export type MidiOutRef = MutableRefObject<string | null | undefined>
@@ -257,6 +270,11 @@ export interface Channel {
   keybdPitches: number[]
   midiIn: boolean | string
   midiHold: boolean
+  // input filter: when custom is off the channel accepts notes from ALL MIDI channels
+  customMidiInChannel: boolean
+  midiInChannel: number
+  // output: midiOutAll sends to all 16 channels and masks the custom/default pair
+  midiOutAll: boolean
   customMidiOutChannel: boolean
   midiOutChannel: number
   instrumentParams: InstrumentParams

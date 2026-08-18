@@ -379,6 +379,9 @@ export default function usePresets(
         invalidProp(channel, 'keybdPitches', 'object') ||
         invalidProp(channel, 'midiIn', 'boolean') ||
         invalidProp(channel, 'midiHold', 'boolean') ||
+        invalidProp(channel, 'customMidiInChannel', 'boolean') ||
+        invalidProp(channel, 'midiInChannel', 'number') ||
+        invalidProp(channel, 'midiOutAll', 'boolean') ||
         invalidProp(channel, 'customMidiOutChannel', 'boolean') ||
         invalidProp(channel, 'midiOutChannel', 'number')
       ) {

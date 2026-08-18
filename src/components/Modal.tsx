@@ -3,7 +3,7 @@ import Settings from './Settings'
 import MIDIModal from './MIDIModal'
 import InstrumentModal from './InstrumentModal'
 import AboutModal from './AboutModal'
-import { InstrumentParams, Preset } from '../types'
+import { ChannelMidiAssignment, InstrumentParams, Preset } from '../types'
 import './Modal.scss'
 
 // How many <Modal>s (app settings, or any channel's instrument / MIDI editor) are
@@ -36,6 +36,12 @@ interface ModalProps {
   setMidiIn?: any
   color?: string
   scribbler?: string
+  customMidiInChannel?: boolean
+  setCustomMidiInChannel?: any
+  midiInChannel?: number
+  setMidiInChannel?: any
+  midiOutAll?: boolean
+  setMidiOutAll?: any
   customMidiOutChannel?: boolean
   setCustomMidiOutChannel?: any
   channelNum?: number
@@ -71,6 +77,9 @@ interface ModalProps {
   setIgnorePresetsTempo?: any
   presetsStopTransport?: boolean
   setPresetsStopTransport?: any
+  channelMidiAssignments?: ChannelMidiAssignment[]
+  setChannelMidiAssignment?: (id: string, midiChannel: number | null) => void
+  setChannelMidiInAssignment?: (id: string, midiChannel: number | null) => void
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -90,6 +99,12 @@ export default function Modal({
   setMidiIn,
   color,
   scribbler,
+  customMidiInChannel,
+  setCustomMidiInChannel,
+  midiInChannel,
+  setMidiInChannel,
+  midiOutAll,
+  setMidiOutAll,
   customMidiOutChannel,
   setCustomMidiOutChannel,
   channelNum,
@@ -124,6 +139,9 @@ export default function Modal({
   setIgnorePresetsTempo,
   presetsStopTransport,
   setPresetsStopTransport,
+  channelMidiAssignments,
+  setChannelMidiAssignment,
+  setChannelMidiInAssignment,
 }: ModalProps) {
   const modalTypeRef = useRef<string | null>(null)
 
@@ -193,9 +211,15 @@ export default function Modal({
         setIgnorePresetsTempo={setIgnorePresetsTempo}
         presetsStopTransport={presetsStopTransport}
         setPresetsStopTransport={setPresetsStopTransport}
+        channelMidiAssignments={channelMidiAssignments}
+        setChannelMidiAssignment={setChannelMidiAssignment}
+        setChannelMidiInAssignment={setChannelMidiInAssignment}
       />
     ),
     [
+      channelMidiAssignments,
+      setChannelMidiAssignment,
+      setChannelMidiInAssignment,
       defaultChannelModeKeybd,
       ignorePresetsTempo,
       importPresets,
@@ -224,6 +248,12 @@ export default function Modal({
         setMidiIn={setMidiIn}
         midiHold={midiHold}
         setMidiHold={setMidiHold}
+        customMidiInChannel={customMidiInChannel}
+        setCustomMidiInChannel={setCustomMidiInChannel}
+        midiInChannel={midiInChannel}
+        setMidiInChannel={setMidiInChannel}
+        midiOutAll={midiOutAll}
+        setMidiOutAll={setMidiOutAll}
         customMidiOutChannel={customMidiOutChannel}
         setCustomMidiOutChannel={setCustomMidiOutChannel}
         channelNum={channelNum}
@@ -236,6 +266,12 @@ export default function Modal({
     [
       channelNum,
       color,
+      customMidiInChannel,
+      setCustomMidiInChannel,
+      midiInChannel,
+      setMidiInChannel,
+      midiOutAll,
+      setMidiOutAll,
       customMidiOutChannel,
       midiIn,
       setMidiIn,
