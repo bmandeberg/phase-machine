@@ -2,7 +2,17 @@
 @use 'sass:color';
 
 .midi-modal {
-  width: 220px;
+  // fits the output-channel cell row: 17 cells ("all" + 16) at 14px + 2px gap
+  width: 270px;
+  .midi-out-channels {
+    .modal-label {
+      display: block;
+      float: none;
+    }
+    .midi-matrix {
+      margin-top: 8px;
+    }
+  }
   .midi-input-mode {
     width: 100%;
     height: auto;

@@ -38,16 +38,15 @@ export type ChannelAction =
   | { kind: 'keyClear' }
 export type ApplyAction = (action: ChannelAction) => void
 
-// A row of the settings MIDI matrices: one phase-machine channel, its EFFECTIVE
-// MIDI output channel (null = send to all channels; else the custom one when set,
-// else the default channelNum + 1), and its MIDI input channel filter (null =
-// accept all channels, the default).
+// A row of the settings MIDI matrices: one phase-machine channel, its MIDI output
+// channels (normalized set; empty = NO MIDI output), and its MIDI input channel
+// filter ([n] = only channel n, empty = accept all, the default).
 export interface ChannelMidiAssignment {
   id: string
   channelNum: number
   color: string
-  midiOutChannel: number | null
-  midiInChannel: number | null
+  midiOutChannels: number[]
+  midiInChannels: number[]
 }
 
 // ---- Tone.js audio nodes used across the app ----
@@ -273,10 +272,9 @@ export interface Channel {
   // input filter: when custom is off the channel accepts notes from ALL MIDI channels
   customMidiInChannel: boolean
   midiInChannel: number
-  // output: midiOutAll sends to all 16 channels and masks the custom/default pair
-  midiOutAll: boolean
-  customMidiOutChannel: boolean
-  midiOutChannel: number
+  // output: the set of MIDI channels notes are sent to, normalized (unique,
+  // sorted). New channels start at [channelNum + 1]; EMPTY = no MIDI output.
+  midiOutChannels: number[]
   instrumentParams: InstrumentParams
 }
 

@@ -14,7 +14,7 @@ import {
   DEFAULT_PRESETS,
   BLANK_CHANNEL,
   migrateEffectSlots,
-  effectiveMidiOutChannel,
+  ALL_MIDI_CHANNELS,
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
   SIGNAL_TYPES,
@@ -25,6 +25,7 @@ import AddChannel from './components/AddChannel'
 import Modal, { isAnyModalOpen } from './components/Modal'
 import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
+import { arrayEq } from './math'
 import useSelection from './hooks/useSelection'
 import useSelectionHotkeys from './hooks/useSelectionHotkeys'
 import useHistory, { deepEqual } from './hooks/useHistory'
@@ -370,30 +371,26 @@ export default function App() {
     [selection]
   )
 
-  // Settings MIDI matrices: a slim per-channel view of each channel's effective MIDI
-  // output channel (null = send to all) and input channel filter (null = accept all),
-  // plus setters that route through that channel's registered applyEdit — the same
-  // loop-free raw-setter path the mirror fan-out uses, so the channel updates its own
-  // state and reports back up through setChannelState. On the output side, assigning
-  // a channel's default column (channelNum + 1) clears the custom flag instead of
-  // setting it, so the MIDI modal keeps reading "custom" only when true.
+  // Settings MIDI matrices: a slim per-channel view of each channel's MIDI routing —
+  // out is the canonical midiOutChannels set (empty = no MIDI output), in is a
+  // set-shaped adapter over the customMidiInChannel/midiInChannel pair ([n] = only
+  // channel n, empty = accept all) — plus setters that route through the channel's
+  // registered applyEdit: the same loop-free raw-setter path the mirror fan-out
+  // uses, so the channel updates its own state and reports back via setChannelState.
   // Identity-pinned: uiState.channels gets a fresh identity on every debounced channel
   // report (any field), but this view only projects the MIDI fields — returning the
   // previous array when nothing it projects changed keeps the settings modal (and its
   // memoized element in Modal) from re-rendering on unrelated channel edits.
   const prevMidiAssignments = useRef<ChannelMidiAssignment[]>([])
   const channelMidiAssignments = useMemo(() => {
-    const next = uiState.channels.map((c: ChannelType) => {
-      const out = effectiveMidiOutChannel(c.midiOutAll, c.customMidiOutChannel, c.midiOutChannel, c.channelNum)
-      return {
-        id: c.id,
-        channelNum: c.channelNum,
-        color: c.color,
-        // the matrix view uses null for "all" where webmidi uses the full array
-        midiOutChannel: Array.isArray(out) ? null : out,
-        midiInChannel: c.customMidiInChannel ? c.midiInChannel : null,
-      }
-    })
+    const next = uiState.channels.map((c: ChannelType) => ({
+      id: c.id,
+      channelNum: c.channelNum,
+      color: c.color,
+      midiOutChannels: c.midiOutChannels,
+      // the matrix view uses an empty set for "all channels"
+      midiInChannels: c.customMidiInChannel ? [c.midiInChannel] : [],
+    }))
     const prev = prevMidiAssignments.current
     const unchanged =
       prev.length === next.length &&
@@ -403,30 +400,26 @@ export default function App() {
           p.id === n.id &&
           p.channelNum === n.channelNum &&
           p.color === n.color &&
-          p.midiOutChannel === n.midiOutChannel &&
-          p.midiInChannel === n.midiInChannel
+          arrayEq(p.midiOutChannels, n.midiOutChannels) &&
+          arrayEq(p.midiInChannels, n.midiInChannels)
         )
       })
     if (unchanged) return prev
     prevMidiAssignments.current = next
     return next
   }, [uiState.channels])
-  const setChannelMidiAssignment = useCallback((id: string, midiChannel: number | null) => {
-    const channel = uiStateRef.current.channels.find((c: ChannelType) => c.id === id)
-    const apply = channelApplyRegistry.current.get(id)
-    if (!channel || !apply) return
-    apply('midiOutAll', midiChannel === null)
-    if (midiChannel !== null) {
-      apply('customMidiOutChannel', midiChannel !== channel.channelNum + 1)
-      apply('midiOutChannel', midiChannel)
-    }
+  // The matrix computes the full next set itself (from its pending-aware view, so
+  // rapid clicks compose without waiting on the debounced report) — these just
+  // route the value through the channel's registered applyEdit.
+  const setChannelMidiAssignment = useCallback((id: string, midiChannels: number[]) => {
+    channelApplyRegistry.current.get(id)?.('midiOutChannels', midiChannels)
   }, [])
-  const setChannelMidiInAssignment = useCallback((id: string, midiChannel: number | null) => {
+  const setChannelMidiInAssignment = useCallback((id: string, midiChannels: number[]) => {
     const apply = channelApplyRegistry.current.get(id)
     if (!apply) return
-    apply('customMidiInChannel', midiChannel !== null)
-    if (midiChannel !== null) {
-      apply('midiInChannel', midiChannel)
+    apply('customMidiInChannel', midiChannels.length > 0)
+    if (midiChannels.length) {
+      apply('midiInChannel', midiChannels[0])
     }
   }, [])
 
@@ -969,6 +962,7 @@ function channelCopy(c: ChannelType): ChannelType {
   return Object.assign({}, c, {
     key: c.key.slice(),
     seqSteps: c.seqSteps.slice(),
+    midiOutChannels: c.midiOutChannels.slice(),
     instrumentParams: Object.assign({}, c.instrumentParams),
   })
 }
@@ -1001,6 +995,22 @@ export function patchChannel(channel: ChannelType, tempo?: number, updated?: boo
   // "playing" indicator (channel/instrument selected/on now uses the channel color).
   if (c.color === '#ff9700') {
     c.color = '#ff85de'
+    updated = true
+  }
+  // Migrate the retired output tri-state (midiOutAll / customMidiOutChannel /
+  // midiOutChannel) to the explicit midiOutChannels set — the old default becomes
+  // a stored [channelNum + 1]. Must run BEFORE the generic fill below, both so old
+  // presets keep their routing and so no default array is aliased across channels.
+  if (c.midiOutChannels === undefined) {
+    c.midiOutChannels =
+      c.midiOutAll === true
+        ? ALL_MIDI_CHANNELS.slice()
+        : c.customMidiOutChannel === true && typeof c.midiOutChannel === 'number'
+        ? [c.midiOutChannel]
+        : [channel.channelNum + 1]
+    delete c.midiOutAll
+    delete c.customMidiOutChannel
+    delete c.midiOutChannel
     updated = true
   }
   const cParams = channel.instrumentParams as unknown as Record<string, unknown>

@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useMemo, ChangeEvent, MutableRefObject } from 'react'
 import { v4 as uuid } from 'uuid'
 import { PRESET_HOLD_TIME } from '../globals'
+import { arrayEq } from '../math'
 import { midiStartContinue, midiStop } from './useMIDI'
 import { patchPresetAndChannels } from '../App'
 import * as Tone from 'tone'
@@ -117,12 +118,10 @@ export default function usePresets(
             const presetChannel = cur[param][i]
             for (const channelParam in channel) {
               if (channel.hasOwnProperty(channelParam) && channelParam !== 'id') {
-                if (['key', 'seqSteps', 'keybdPitches'].some((s) => s === channelParam)) {
-                  // compare arrays
-                  for (let j = 0; j < channel[channelParam].length; j++) {
-                    if (channel[channelParam][j] !== presetChannel[channelParam][j]) {
-                      return true
-                    }
+                if (['key', 'seqSteps', 'keybdPitches', 'midiOutChannels'].some((s) => s === channelParam)) {
+                  // compare arrays element-wise (keybdPitches/midiOutChannels grow and shrink)
+                  if (!arrayEq(channel[channelParam], presetChannel[channelParam])) {
+                    return true
                   }
                 } else if (channelParam === 'instrumentParams') {
                   // compare objects
@@ -381,9 +380,9 @@ export default function usePresets(
         invalidProp(channel, 'midiHold', 'boolean') ||
         invalidProp(channel, 'customMidiInChannel', 'boolean') ||
         invalidProp(channel, 'midiInChannel', 'number') ||
-        invalidProp(channel, 'midiOutAll', 'boolean') ||
-        invalidProp(channel, 'customMidiOutChannel', 'boolean') ||
-        invalidProp(channel, 'midiOutChannel', 'number')
+        // legacy midiOutAll/customMidiOutChannel/midiOutChannel presets are migrated
+        // into this set by patchPresetAndChannels before validation runs
+        invalidProp(channel, 'midiOutChannels', 'object')
       ) {
         return false
       }
