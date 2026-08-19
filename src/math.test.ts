@@ -12,6 +12,7 @@ import {
   expInterpolate,
   constrain,
   rateToSeconds,
+  arrayEq,
 } from './math'
 
 const P = (...trueIndexes: number[]) => Array.from({ length: 12 }, (_, i) => trueIndexes.includes(i))
@@ -203,5 +204,18 @@ describe('rateToSeconds', () => {
     expect(rateToSeconds('/9', 120)).toBeCloseTo(4.5) // every 9 beats
     expect(rateToSeconds('*2', 120)).toBeCloseTo(0.25) // twice as fast
     expect(rateToSeconds('*9', 120)).toBeCloseTo(0.5 / 9) // 9 per beat
+  })
+})
+
+describe('arrayEq', () => {
+  it('compares element-wise', () => {
+    expect(arrayEq([1, 2, 3], [1, 2, 3])).toBe(true)
+    expect(arrayEq([1, 2, 3], [1, 2, 4])).toBe(false)
+    expect(arrayEq([1, 2], [1, 2, 3])).toBe(false)
+    expect(arrayEq([], [])).toBe(true)
+  })
+  it('takes the reference fast path', () => {
+    const a = [1, 2, 3]
+    expect(arrayEq(a, a)).toBe(true)
   })
 })

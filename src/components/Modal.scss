@@ -65,6 +65,26 @@ $modalHeaderHeight: 50px;
         display: inline-block;
         vertical-align: top;
       }
+      // the visualizer's "restore down" button beside the close X. currentColor
+      // (at reduced opacity) instead of the close X's masked/tinted approach, so
+      // it follows each theme's modal text color with no per-theme rules.
+      .modal-dock {
+        @extend .no-select;
+        float: right;
+        height: 22px;
+        width: 22px;
+        margin-right: 14px;
+        cursor: pointer;
+        opacity: 0.55;
+        @include hover {
+          opacity: 1;
+        }
+        svg {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      }
       .modal-close {
         float: right;
         height: 22px;

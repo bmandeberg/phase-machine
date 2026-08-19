@@ -18,6 +18,12 @@ type StackedViewProps = UIElements & {
   layered?: boolean
   // Condensed modifier: only the whitelisted controls render — see HorizontalView.
   condensed?: boolean
+  // extra downward shift for the aux row while inline visualizer docks are open
+  // above it — keeps the absolutely-positioned aux block below the (now taller)
+  // main-row block. 0 when no docks are open. See App.stackedAuxOffsets. Stacked
+  // only: a layered channel's dock flows in AFTER its margin-reserved aux row, so
+  // layered aux rows never need shifting.
+  stackedAuxOffset: number
   rangeMode: boolean
   arrowSmallGraphic: string | null
   seqSteps: boolean[]
@@ -49,6 +55,7 @@ function StackedView({
   numChannels,
   layered,
   condensed,
+  stackedAuxOffset,
   rangeMode,
   arrowSmallGraphic,
   seqSteps,
@@ -147,7 +154,7 @@ function StackedView({
           )}
         </div>
         <div
-          style={{ top: layered ? CHANNEL_HEIGHT : numChannels * CHANNEL_HEIGHT }}
+          style={{ top: layered ? CHANNEL_HEIGHT : numChannels * CHANNEL_HEIGHT + stackedAuxOffset }}
           onMouseDownCapture={onWrapperMouseDown}
           onFocusCapture={onWrapperFocus}
           className={classNames('channel channel-horizontal stacked-auxiliary', {

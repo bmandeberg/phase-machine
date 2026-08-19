@@ -14,6 +14,10 @@
 
 .sequence-step {
   @extend .no-select;
+  // border-box so themes that border the steps (eclipse/aero glass) don't grow
+  // them past the 22px the views' row math assumes (clock view fits exactly
+  // 16 × (22 + 16px margin) = 608px per row)
+  box-sizing: border-box;
   width: 22px;
   height: 22px;
   margin-right: 18px;

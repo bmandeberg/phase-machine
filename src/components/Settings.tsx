@@ -1,121 +1,17 @@
-import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import Switch from 'react-switch'
 import Dropdown from '../components/Dropdown'
 import MultiSelect from './MultiSelect'
-import { THEMES, themedSwitch, ALL_MIDI_CHANNELS } from '../globals'
+import MidiMatrix from './MidiMatrix'
+import { THEMES, themedSwitch } from '../globals'
 import classNames from 'classnames'
 import { ChannelMidiAssignment, Preset } from '../types'
-import { alertDialog, confirmDialog } from '../dialog'
+import { alertDialog, confirmDialog, copyWithAlert } from '../dialog'
+import { encodePreset } from '../presetCode'
 import './Settings.scss'
 
-// One MIDI routing matrix (out or in): rows are phase machine channels, columns are
-// "all" + MIDI channels 1-16, radio-style cells. Owns its own condensed/expanded
-// state (collapsed by default, re-condensing when the modal closes) and an
-// optimistic overlay: a clicked assignment round-trips through the channel (whose
-// upward state report is debounced) before it comes back in `channels`, so the
-// clicked value is held here in the meantime. An entry is dropped once the channel
-// catches up — or when the actual value changes to anything else, so an external
-// write can never be masked by a stale click. Values may be null ("all"), so
-// presence is checked with `in`.
 // stable fallback so a missing channels prop doesn't defeat MidiMatrix's memo
 const NO_CHANNELS: ChannelMidiAssignment[] = []
-
-interface MidiMatrixProps {
-  label: string
-  channels: ChannelMidiAssignment[]
-  field: 'midiOutChannel' | 'midiInChannel'
-  onAssign?: (id: string, midiChannel: number | null) => void
-  modalType?: string | null
-}
-
-const MidiMatrix = React.memo(function MidiMatrix({ label, channels, field, onAssign, modalType }: MidiMatrixProps) {
-  const [expanded, setExpanded] = useState(false)
-  const toggleExpanded = useCallback(() => setExpanded((e) => !e), [])
-  const [pending, setPending] = useState<Record<string, number | null>>({})
-
-  const assign = useCallback(
-    (id: string, midiChannel: number | null) => {
-      setPending((pending) => ({ ...pending, [id]: midiChannel }))
-      onAssign?.(id, midiChannel)
-    },
-    [onAssign]
-  )
-
-  const prevChannels = useRef(channels)
-  useEffect(() => {
-    const prev = prevChannels.current
-    prevChannels.current = channels
-    setPending((pending) => {
-      if (Object.keys(pending).length === 0) return pending
-      let changed = false
-      const next = { ...pending }
-      channels.forEach((c) => {
-        if (!(c.id in next)) return
-        if (c[field] === next[c.id] || c[field] !== prev.find((p) => p.id === c.id)?.[field]) {
-          delete next[c.id]
-          changed = true
-        }
-      })
-      return changed ? next : pending
-    })
-  }, [channels, field])
-
-  useEffect(() => {
-    if (!modalType) {
-      setExpanded(false)
-      setPending({})
-    }
-  }, [modalType])
-
-  return (
-    <div className="settings-item midi-matrix-item">
-      <div className="midi-matrix-header" onClick={toggleExpanded}>
-        <p className="settings-label">{label}</p>
-        <span className={classNames('midi-matrix-arrow', { expanded })}></span>
-      </div>
-      {expanded && (
-        <div className="midi-matrix">
-          {channels.length ? (
-            <>
-              <div className="midi-matrix-row">
-                <div className="midi-matrix-row-label"></div>
-                <div className="midi-matrix-column-label all">all</div>
-                {ALL_MIDI_CHANNELS.map((midiChannel) => (
-                  <div key={midiChannel} className="midi-matrix-column-label">
-                    {midiChannel}
-                  </div>
-                ))}
-              </div>
-              {channels.map((channel) => {
-                const assigned = channel.id in pending ? pending[channel.id] : channel[field]
-                return (
-                  <div key={channel.id} className="midi-matrix-row">
-                    <div className="midi-matrix-row-label" style={{ color: channel.color }}>
-                      {channel.channelNum + 1}
-                    </div>
-                    <div
-                      className={classNames('midi-matrix-cell', { assigned: assigned === null })}
-                      style={assigned === null ? { backgroundColor: channel.color } : undefined}
-                      onClick={() => assign(channel.id, null)}></div>
-                    {ALL_MIDI_CHANNELS.map((midiChannel) => (
-                      <div
-                        key={midiChannel}
-                        className={classNames('midi-matrix-cell', { assigned: assigned === midiChannel })}
-                        style={assigned === midiChannel ? { backgroundColor: channel.color } : undefined}
-                        onClick={() => assign(channel.id, midiChannel)}></div>
-                    ))}
-                  </div>
-                )
-              })}
-            </>
-          ) : (
-            <p className="midi-matrix-empty">no channels</p>
-          )}
-        </div>
-      )}
-    </div>
-  )
-})
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface SettingsProps {
@@ -139,8 +35,8 @@ interface SettingsProps {
   presetsStopTransport?: boolean
   setPresetsStopTransport: any
   channelMidiAssignments?: ChannelMidiAssignment[]
-  setChannelMidiAssignment?: (id: string, midiChannel: number | null) => void
-  setChannelMidiInAssignment?: (id: string, midiChannel: number | null) => void
+  setChannelMidiAssignment?: (id: string, midiChannels: number[]) => void
+  setChannelMidiInAssignment?: (id: string, midiChannels: number[]) => void
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -198,14 +94,8 @@ export default function Settings({
 
   const copyPresets = useCallback(() => {
     const exportPresets = selectedPresets.map((sp) => presets.find((p) => p.name === sp))
-    navigator.clipboard.writeText(JSON.stringify(exportPresets)).then(
-      () => {
-        alertDialog('Presets copied to clipboard!')
-      },
-      () => {
-        alertDialog('Unable to copy presets to clipboard!')
-      }
-    )
+    // compressed base64 (see presetCode.ts) — Import Presets accepts this and legacy raw JSON
+    copyWithAlert(encodePreset(exportPresets), 'Presets copied to clipboard!', 'Unable to copy presets to clipboard!')
   }, [presets, selectedPresets])
 
   const clearLocalStorage = useCallback(async () => {
@@ -321,14 +211,14 @@ export default function Settings({
       <MidiMatrix
         label="MIDI out matrix"
         channels={channelMidiAssignments ?? NO_CHANNELS}
-        field="midiOutChannel"
+        variant="out"
         onAssign={setChannelMidiAssignment}
         modalType={modalType}
       />
       <MidiMatrix
         label="MIDI in matrix"
         channels={channelMidiAssignments ?? NO_CHANNELS}
-        field="midiInChannel"
+        variant="in"
         onAssign={setChannelMidiInAssignment}
         modalType={modalType}
       />

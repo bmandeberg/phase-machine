@@ -1,5 +1,8 @@
 @use '../sass-globals' as *;
 
+// outer width of one .preset-action cell (21px incl. its border — border-box)
+$presetActionWidth: 21px;
+
 .presets {
   height: 21px;
   border: 1px solid $orange;
@@ -23,7 +26,7 @@
     display: inline-block;
     vertical-align: top;
     height: 100%;
-    width: 21px;
+    width: $presetActionWidth;
     border-right: 1px solid $orange;
     cursor: pointer;
     img {
@@ -40,6 +43,10 @@
     }
     &.preset-save img {
       width: 60%;
+      margin-top: 3px;
+    }
+    &.preset-share img {
+      width: 62%;
       margin-top: 3px;
     }
     &:last-of-type {
@@ -87,7 +94,9 @@
   }
   .preset-tags {
     position: absolute;
-    right: 88px;
+    // anchored from the bar's right edge: past the action cells (save/delete/
+    // duplicate/share), landing just inside the name input's right edge
+    right: 25px + 4 * $presetActionWidth;
     top: 3px;
     height: 15px;
     z-index: 11;

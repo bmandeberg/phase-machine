@@ -135,3 +135,10 @@ export function secondsToRate(seconds: number, bpm: number, rates: string[]) {
   }
   return best
 }
+
+// Shallow element-wise array equality with a reference fast path (the common
+// case for state arrays that only get replaced when they actually change).
+export function arrayEq<T>(a: T[], b: T[]): boolean {
+  if (a === b) return true
+  return a.length === b.length && a.every((v, i) => v === b[i])
+}

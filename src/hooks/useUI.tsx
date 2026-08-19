@@ -122,6 +122,7 @@ export default function useUI(
   keyRestart: () => void,
   openMidiModal: () => void,
   openInstrumentModal: () => void,
+  openVizModal: () => void,
   updateOnce: boolean,
   triggerNote: (i: number, callback: () => void) => void,
   // the saved version of this channel in the current preset — supplies each knob's
@@ -228,11 +229,12 @@ export default function useUI(
         mute={mute}
         openInstrumentModal={openInstrumentModal}
         openMidiModal={openMidiModal}
+        openVizModal={openVizModal}
         duplicateChannel={duplicateChannel}
         deleteChannel={deleteChannel}
       />
     ),
-    [deleteChannel, duplicateChannel, id, instrumentType, mute, openInstrumentModal, openMidiModal, theme]
+    [deleteChannel, duplicateChannel, id, instrumentType, mute, openInstrumentModal, openMidiModal, openVizModal, theme]
   )
 
   const keyEl = useMemo(() => {

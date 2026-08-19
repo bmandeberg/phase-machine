@@ -1,8 +1,10 @@
 import React, { useCallback, useRef, useEffect, useMemo } from 'react'
+import classNames from 'classnames'
 import Settings from './Settings'
 import MIDIModal from './MIDIModal'
 import InstrumentModal from './InstrumentModal'
 import AboutModal from './AboutModal'
+import VizModal, { VizData, VizActions } from './VizModal'
 import { ChannelMidiAssignment, InstrumentParams, Preset } from '../types'
 import './Modal.scss'
 
@@ -40,13 +42,8 @@ interface ModalProps {
   setCustomMidiInChannel?: any
   midiInChannel?: number
   setMidiInChannel?: any
-  midiOutAll?: boolean
-  setMidiOutAll?: any
-  customMidiOutChannel?: boolean
-  setCustomMidiOutChannel?: any
-  channelNum?: number
-  midiOutChannel?: number
-  setMidiOutChannel?: any
+  midiOutChannels?: number[]
+  setMidiOutChannels?: any
   presets?: Preset[]
   importPresets?: any
   instrumentOn?: boolean
@@ -78,8 +75,14 @@ interface ModalProps {
   presetsStopTransport?: boolean
   setPresetsStopTransport?: any
   channelMidiAssignments?: ChannelMidiAssignment[]
-  setChannelMidiAssignment?: (id: string, midiChannel: number | null) => void
-  setChannelMidiInAssignment?: (id: string, midiChannel: number | null) => void
+  setChannelMidiAssignment?: (id: string, midiChannels: number[]) => void
+  setChannelMidiInAssignment?: (id: string, midiChannels: number[]) => void
+  // the channel's visualizer bundle — only built while that modal is open — and
+  // the (stable) edit/audition hooks its interactive views use
+  vizData?: VizData | null
+  vizActions?: VizActions
+  // visualizer header button: switch to the inline dock view below the channel
+  onDockViz?: () => void
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -103,13 +106,8 @@ export default function Modal({
   setCustomMidiInChannel,
   midiInChannel,
   setMidiInChannel,
-  midiOutAll,
-  setMidiOutAll,
-  customMidiOutChannel,
-  setCustomMidiOutChannel,
-  channelNum,
-  midiOutChannel,
-  setMidiOutChannel,
+  midiOutChannels,
+  setMidiOutChannels,
   presets,
   importPresets,
   modalContent,
@@ -142,6 +140,9 @@ export default function Modal({
   channelMidiAssignments,
   setChannelMidiAssignment,
   setChannelMidiInAssignment,
+  vizData,
+  vizActions,
+  onDockViz,
 }: ModalProps) {
   const modalTypeRef = useRef<string | null>(null)
 
@@ -252,34 +253,24 @@ export default function Modal({
         setCustomMidiInChannel={setCustomMidiInChannel}
         midiInChannel={midiInChannel}
         setMidiInChannel={setMidiInChannel}
-        midiOutAll={midiOutAll}
-        setMidiOutAll={setMidiOutAll}
-        customMidiOutChannel={customMidiOutChannel}
-        setCustomMidiOutChannel={setCustomMidiOutChannel}
-        channelNum={channelNum}
+        midiOutChannels={midiOutChannels}
+        setMidiOutChannels={setMidiOutChannels}
         theme={theme}
-        midiOutChannel={midiOutChannel}
-        setMidiOutChannel={setMidiOutChannel}
         color={color as string}
       />
     ),
     [
-      channelNum,
       color,
       customMidiInChannel,
       setCustomMidiInChannel,
       midiInChannel,
       setMidiInChannel,
-      midiOutAll,
-      setMidiOutAll,
-      customMidiOutChannel,
+      midiOutChannels,
+      setMidiOutChannels,
       midiIn,
       setMidiIn,
       midiHold,
-      midiOutChannel,
-      setCustomMidiOutChannel,
       setMidiHold,
-      setMidiOutChannel,
       theme,
     ]
   )
@@ -328,26 +319,40 @@ export default function Modal({
     ]
   )
   const aboutEl = useMemo(() => <AboutModal theme={theme} />, [theme])
+  const vizEl = useMemo(
+    () => (vizData ? <VizModal data={vizData} actions={vizActions} /> : null),
+    [vizData, vizActions]
+  )
 
   return (
     <div className="modal-container" ref={nodeRef} onClick={clickScrim}>
-      <div className="modal-window">
+      <div className={classNames('modal-window', { 'viz-window': modalTypeRef.current === 'visualizer' })}>
         <div className="modal-header">
           <div className="modal-title">
             <p>{modalTypeRef.current}</p>
-            {modalTypeRef.current === 'instrument' && scribbler && (
+            {(modalTypeRef.current === 'instrument' || modalTypeRef.current === 'visualizer') && scribbler && (
               <span className="modal-channel-name" style={{ color }}>
                 {scribbler}
               </span>
             )}
           </div>
           <div className="modal-close" onClick={closeModal}></div>
+          {modalTypeRef.current === 'visualizer' && onDockViz && (
+            // "restore down": swap the visualizer out of the window, docked below its channel
+            <div className="modal-dock" onClick={onDockViz} title="Dock below channel">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="4" y="9" width="11" height="11" rx="1" stroke="currentColor" strokeWidth="2" />
+                <path d="M9 4.5h10.5V15" stroke="currentColor" strokeWidth="2" />
+              </svg>
+            </div>
+          )}
         </div>
         <div className="modal-content">
           {modalTypeRef.current === 'settings' && modalContent && settingsEl}
           {modalTypeRef.current === 'MIDI' && modalContent && midiEl}
           {modalTypeRef.current === 'instrument' && modalContent && instrumentEl}
           {modalTypeRef.current === 'about' && modalContent && aboutEl}
+          {modalTypeRef.current === 'visualizer' && modalContent && vizEl}
         </div>
       </div>
     </div>

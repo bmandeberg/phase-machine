@@ -1,0 +1,377 @@
+@use '../sass-globals' as *;
+
+// The visualizer wants room: near-fullscreen, unlike the content-sized modals.
+// (Matches Modal.scss's $modalMinGap/$modalHeaderHeight arithmetic.)
+.modal-window.viz-window {
+  width: min(1440px, 96vw);
+  .modal-content {
+    min-height: calc(100vh - 4vh - 50px - 12vh);
+  }
+}
+
+// The inline visualizer, a flow sibling right below its channel's row: no
+// window or backdrop, just the cards on the page background. Block-level so it
+// takes its own line (and pushes later channels down) in every channel view;
+// sticky-left at viewport width so it stays in view while the (much wider)
+// channel strip scrolls horizontally.
+.viz-dock {
+  position: sticky;
+  left: 0;
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 10px 12px 16px;
+}
+
+.viz-modal {
+  // the modal mounts inside the channel tree, whose horizontal layout sets
+  // white-space: nowrap — reset it so descriptions and readouts wrap
+  white-space: normal;
+  // neutral ink mixes that read on every theme's modal background
+  $faint-border: rgba(128, 128, 128, 0.35);
+
+  // the dock's slim header row: identity label left, expand/close right
+  .viz-dock-toolbar {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+    .viz-dock-title {
+      @extend .no-select;
+      margin-right: auto;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .viz-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px dashed $faint-border;
+    border-radius: 4px;
+    opacity: 0.85;
+  }
+
+  // DIN Condensed sits high in its box; like the app's .button (28px tall,
+  // 34px line-height), these small buttons need an oversized line-height to
+  // optically center their text.
+  .viz-button {
+    font: inherit;
+    font-size: 13px;
+    height: 21px;
+    line-height: 23px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: inherit;
+    background: none;
+    border: 1px solid $faint-border;
+    border-radius: 3px;
+    padding: 0 10px;
+    cursor: pointer;
+    @include hover {
+      border-color: var(--viz-accent);
+    }
+  }
+
+  .viz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+
+  .viz-card {
+    border: 1px solid $faint-border;
+    border-radius: 6px;
+    padding: 12px 14px 14px;
+    box-sizing: border-box;
+    min-width: 0;
+    &.wide {
+      grid-column: 1 / -1;
+    }
+    .viz-card-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+      .viz-card-title {
+        @extend .no-select;
+        font-size: 17px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .viz-card-subtitle {
+        @extend .no-select;
+        font-size: 12px;
+        opacity: 0.55;
+      }
+      .viz-card-desc-toggle {
+        @extend .no-select;
+        margin-left: auto;
+        width: 17px;
+        height: 17px;
+        font: inherit;
+        font-size: 12px;
+        // oversized line-height to optically center DIN Condensed (see .viz-button).
+        // NB: must come after `font: inherit` — the font shorthand resets line-height
+        line-height: 18px;
+        text-align: center;
+        color: inherit;
+        background: none;
+        border: 1px solid rgba(128, 128, 128, 0.35);
+        border-radius: 50%;
+        padding: 0;
+        cursor: pointer;
+        opacity: 0.55;
+        @include hover {
+          opacity: 1;
+        }
+        &.open {
+          opacity: 1;
+          border-color: var(--viz-accent);
+        }
+      }
+    }
+    // Collapsible description: the 0fr -> 1fr grid-row transition animates to the
+    // content's natural height (which max-height tricks can only approximate).
+    .viz-card-desc {
+      display: grid;
+      grid-template-rows: 0fr;
+      margin: 0;
+      transition: grid-template-rows 0.3s ease, margin 0.3s ease, opacity 0.3s ease;
+      font-size: 13px;
+      line-height: 1.45;
+      opacity: 0;
+      &.open {
+        grid-template-rows: 1fr;
+        margin: -4px 0 10px;
+        opacity: 0.7;
+      }
+      .viz-card-desc-inner {
+        overflow: hidden;
+        min-height: 0;
+      }
+    }
+    .viz-card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  .viz-seg {
+    @extend .no-select;
+    display: flex;
+    gap: 4px;
+    align-self: flex-start;
+    .viz-seg-option {
+      font: inherit;
+      font-size: 12px;
+      // oversized line-height to optically center DIN Condensed (see .viz-button)
+      height: 19px;
+      line-height: 21px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: inherit;
+      background: none;
+      border: 1px solid rgba(128, 128, 128, 0.35);
+      border-radius: 3px;
+      padding: 0 8px;
+      cursor: pointer;
+      opacity: 0.65;
+      @include hover {
+        opacity: 1;
+      }
+      &.active {
+        opacity: 1;
+        border-color: var(--viz-accent);
+        box-shadow: inset 0 0 0 1px var(--viz-accent);
+      }
+    }
+  }
+
+  .viz-svg {
+    max-width: 100%;
+    height: auto;
+    text {
+      fill: currentColor;
+      font-size: 12px;
+      text-anchor: middle;
+      &.small {
+        font-size: 10px;
+      }
+      &.left {
+        text-anchor: start;
+      }
+      &.right {
+        text-anchor: end;
+      }
+      &.faint {
+        opacity: 0.45;
+      }
+    }
+  }
+
+  .viz-faint-stroke {
+    stroke: currentColor;
+    stroke-opacity: 0.3;
+  }
+
+  // the key card's two control groups (circle ordering · key transforms)
+  .viz-key-toolbar {
+    align-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    .viz-seg {
+      align-self: auto;
+    }
+  }
+
+  // clickable pitch nodes on the key circle
+  .viz-key-node {
+    cursor: pointer;
+    @include hover {
+      text {
+        opacity: 1;
+      }
+    }
+  }
+
+  // pitch-bearing marks that audition on click (histogram bars, roll notes, nodes)
+  .viz-audition {
+    cursor: pointer;
+    @include hover {
+      filter: brightness(1.25);
+    }
+  }
+
+  .viz-axis-line {
+    stroke-dasharray: 3 4;
+    stroke-opacity: 0.5;
+  }
+
+  .viz-readout {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    line-height: 1.35;
+    .viz-label {
+      @extend .no-select;
+      display: inline-block;
+      min-width: 118px;
+      margin-right: 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.55;
+    }
+  }
+
+  // small italic asides (truncation notice, the key card's keybd-mode hint) —
+  // used both inside and outside .viz-readout, so styled at modal level
+  .viz-note {
+    font-size: 12px;
+    opacity: 0.6;
+    font-style: italic;
+  }
+
+  .viz-strips {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+    .viz-cycle-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      .viz-label {
+        @extend .no-select;
+        width: 28px;
+        font-size: 11px;
+        text-transform: uppercase;
+        opacity: 0.55;
+      }
+      .viz-strip {
+        position: relative;
+        flex: 1;
+        height: 10px;
+        .viz-strip-block {
+          position: absolute;
+          top: 0;
+          height: 100%;
+          background-color: currentColor;
+          opacity: 0.55;
+          border-radius: 2px;
+          &.dense {
+            opacity: 0.25;
+          }
+        }
+      }
+      .viz-strip-count {
+        @extend .no-select;
+        font-size: 11px;
+        opacity: 0.6;
+        min-width: 34px;
+        text-align: right;
+      }
+    }
+  }
+
+  .viz-legend {
+    @extend .no-select;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    font-size: 12px;
+    opacity: 0.8;
+    .viz-swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      vertical-align: -1px;
+      margin-right: 5px;
+      &.dash {
+        height: 0;
+        width: 14px;
+        border-top: 2px dashed;
+        border-radius: 0;
+        vertical-align: 2px;
+      }
+      &.dot {
+        height: 0;
+        width: 14px;
+        border-top: 2px dotted currentColor;
+        opacity: 0.5;
+        border-radius: 0;
+        vertical-align: 2px;
+      }
+    }
+  }
+
+  .viz-scroll {
+    align-self: stretch;
+    overflow-x: auto;
+    overscroll-behavior-x: none;
+    // the scrolled chart is wider than the card on purpose
+    .viz-svg {
+      max-width: none;
+    }
+  }
+
+  .viz-empty {
+    font-size: 14px;
+    opacity: 0.55;
+    padding: 24px 0;
+  }
+}

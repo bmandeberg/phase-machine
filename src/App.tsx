@@ -11,10 +11,7 @@ import {
   CHANNEL_HEIGHT,
   SECTIONS,
   DEFAULT_PRESET,
-  DEFAULT_PRESETS,
   BLANK_CHANNEL,
-  migrateEffectSlots,
-  effectiveMidiOutChannel,
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
   SIGNAL_TYPES,
@@ -25,11 +22,13 @@ import AddChannel from './components/AddChannel'
 import Modal, { isAnyModalOpen } from './components/Modal'
 import AlertDialog from './components/AlertDialog'
 import usePresets from './hooks/usePresets'
+import { arrayEq } from './math'
 import useSelection from './hooks/useSelection'
 import useSelectionHotkeys from './hooks/useSelectionHotkeys'
 import useHistory, { deepEqual } from './hooks/useHistory'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import { subscribeDialogs, getActiveDialog, DialogRequest } from './dialog'
+import { patchPreset, patchChannel, patchPresetAndChannels } from './preset'
 import {
   Channel as ChannelType,
   Preset,
@@ -40,12 +39,9 @@ import {
   ChannelMidiAssignment,
 } from './types'
 
-// load/set presets
-if (!window.localStorage.getItem('presets')) {
-  window.localStorage.setItem('presets', DEFAULT_PRESETS)
-  const defaultPresets = JSON.parse(DEFAULT_PRESETS)
-  window.localStorage.setItem('activePreset', defaultPresets[0].id)
-}
+// Preset bootstrapping (factory-preset seeding and ?preset= share links) happens
+// entirely before this module loads — presetBoot.ts, awaited by AppLoader — by
+// writing the same localStorage keys the initializers below read.
 
 // Pre-modifier migration: 'condensed' used to be a fifth view (the pared-down
 // horizontal layout); it's now a modifier flag any layout can apply. Rewrite the
@@ -388,30 +384,26 @@ export default function App() {
     [selection]
   )
 
-  // Settings MIDI matrices: a slim per-channel view of each channel's effective MIDI
-  // output channel (null = send to all) and input channel filter (null = accept all),
-  // plus setters that route through that channel's registered applyEdit — the same
-  // loop-free raw-setter path the mirror fan-out uses, so the channel updates its own
-  // state and reports back up through setChannelState. On the output side, assigning
-  // a channel's default column (channelNum + 1) clears the custom flag instead of
-  // setting it, so the MIDI modal keeps reading "custom" only when true.
+  // Settings MIDI matrices: a slim per-channel view of each channel's MIDI routing —
+  // out is the canonical midiOutChannels set (empty = no MIDI output), in is a
+  // set-shaped adapter over the customMidiInChannel/midiInChannel pair ([n] = only
+  // channel n, empty = accept all) — plus setters that route through the channel's
+  // registered applyEdit: the same loop-free raw-setter path the mirror fan-out
+  // uses, so the channel updates its own state and reports back via setChannelState.
   // Identity-pinned: uiState.channels gets a fresh identity on every debounced channel
   // report (any field), but this view only projects the MIDI fields — returning the
   // previous array when nothing it projects changed keeps the settings modal (and its
   // memoized element in Modal) from re-rendering on unrelated channel edits.
   const prevMidiAssignments = useRef<ChannelMidiAssignment[]>([])
   const channelMidiAssignments = useMemo(() => {
-    const next = uiState.channels.map((c: ChannelType) => {
-      const out = effectiveMidiOutChannel(c.midiOutAll, c.customMidiOutChannel, c.midiOutChannel, c.channelNum)
-      return {
-        id: c.id,
-        channelNum: c.channelNum,
-        color: c.color,
-        // the matrix view uses null for "all" where webmidi uses the full array
-        midiOutChannel: Array.isArray(out) ? null : out,
-        midiInChannel: c.customMidiInChannel ? c.midiInChannel : null,
-      }
-    })
+    const next = uiState.channels.map((c: ChannelType) => ({
+      id: c.id,
+      channelNum: c.channelNum,
+      color: c.color,
+      midiOutChannels: c.midiOutChannels,
+      // the matrix view uses an empty set for "all channels"
+      midiInChannels: c.customMidiInChannel ? [c.midiInChannel] : [],
+    }))
     const prev = prevMidiAssignments.current
     const unchanged =
       prev.length === next.length &&
@@ -421,30 +413,26 @@ export default function App() {
           p.id === n.id &&
           p.channelNum === n.channelNum &&
           p.color === n.color &&
-          p.midiOutChannel === n.midiOutChannel &&
-          p.midiInChannel === n.midiInChannel
+          arrayEq(p.midiOutChannels, n.midiOutChannels) &&
+          arrayEq(p.midiInChannels, n.midiInChannels)
         )
       })
     if (unchanged) return prev
     prevMidiAssignments.current = next
     return next
   }, [uiState.channels])
-  const setChannelMidiAssignment = useCallback((id: string, midiChannel: number | null) => {
-    const channel = uiStateRef.current.channels.find((c: ChannelType) => c.id === id)
-    const apply = channelApplyRegistry.current.get(id)
-    if (!channel || !apply) return
-    apply('midiOutAll', midiChannel === null)
-    if (midiChannel !== null) {
-      apply('customMidiOutChannel', midiChannel !== channel.channelNum + 1)
-      apply('midiOutChannel', midiChannel)
-    }
+  // The matrix computes the full next set itself (from its pending-aware view, so
+  // rapid clicks compose without waiting on the debounced report) — these just
+  // route the value through the channel's registered applyEdit.
+  const setChannelMidiAssignment = useCallback((id: string, midiChannels: number[]) => {
+    channelApplyRegistry.current.get(id)?.('midiOutChannels', midiChannels)
   }, [])
-  const setChannelMidiInAssignment = useCallback((id: string, midiChannel: number | null) => {
+  const setChannelMidiInAssignment = useCallback((id: string, midiChannels: number[]) => {
     const apply = channelApplyRegistry.current.get(id)
     if (!apply) return
-    apply('customMidiInChannel', midiChannel !== null)
-    if (midiChannel !== null) {
-      apply('midiInChannel', midiChannel)
+    apply('customMidiInChannel', midiChannels.length > 0)
+    if (midiChannels.length) {
+      apply('midiInChannel', midiChannels[0])
     }
   }, [])
 
@@ -678,6 +666,50 @@ export default function App() {
     if (firstId) channelOpenInstrumentRegistry.current.get(firstId)?.()
   }, [orderedIds, selection])
 
+  // Stacked view geometry for the inline visualizer docks: a dock adds height
+  // after its channel's main row, but the aux (sequencer) rows are absolutely
+  // positioned assuming uniform CHANNEL_HEIGHT rows. Channels report their open
+  // dock's height; each channel's aux row then shifts down by the total dock
+  // height minus the docks above its own row, which restacks the aux block
+  // below all main rows + docks. (Zero everywhere while no dock is open.)
+  const [dockHeights, setDockHeights] = useState<Record<string, number>>({})
+  const setChannelDockHeight = useCallback((id: string, height: number) => {
+    setDockHeights((prev) => {
+      if ((prev[id] ?? 0) === height) return prev
+      const next = { ...prev }
+      if (height) {
+        next[id] = height
+      } else {
+        delete next[id]
+      }
+      return next
+    })
+  }, [])
+  const stackedAuxOffsets = useMemo(() => {
+    const total = orderedIds.reduce((acc: number, id: string) => acc + (dockHeights[id] ?? 0), 0)
+    let before = 0
+    const offsets: Record<string, number> = {}
+    orderedIds.forEach((id: string) => {
+      offsets[id] = total - before
+      before += dockHeights[id] ?? 0
+    })
+    return offsets
+  }, [orderedIds, dockHeights])
+
+  // Same registry pattern for the `v` hotkey → the channel's visualizer modal.
+  const channelOpenVizRegistry = useRef<Map<string, () => void>>(new Map())
+  const registerOpenViz = useCallback((id: string, fn: () => void) => {
+    channelOpenVizRegistry.current.set(id, fn)
+    return () => {
+      channelOpenVizRegistry.current.delete(id)
+    }
+  }, [])
+  const openVizForSelection = useCallback(() => {
+    const sel = selection.selectedIdsRef.current
+    const firstId = orderedIds.find((id) => sel.has(id))
+    if (firstId) channelOpenVizRegistry.current.get(firstId)?.()
+  }, [orderedIds, selection])
+
   const muteSoloSelected = useCallback(
     (field: 'mute' | 'solo') => {
       const ids = Array.from(selection.selectedIdsRef.current)
@@ -714,6 +746,7 @@ export default function App() {
     onDeselect: selection.deselectAll,
     onSelectAll: selection.selectAll,
     onOpenInstrument: openInstrumentForSelection,
+    onOpenVisualizer: openVizForSelection,
     onSavePreset: useCallback(() => savePreset(null), [savePreset]),
     onCopy: copyChannels,
     onPaste: pasteChannels,
@@ -784,6 +817,9 @@ export default function App() {
           fanOutAction={fanOutAction}
           registerApplyChannelState={registerApplyChannelState}
           registerOpenInstrument={registerOpenInstrument}
+          registerOpenViz={registerOpenViz}
+          reportDockHeight={setChannelDockHeight}
+          stackedAuxOffset={stackedAuxOffsets[d.id] ?? 0}
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           resizing={resizing}
@@ -832,6 +868,9 @@ export default function App() {
       registerApplyChannelState,
       registerApplyEdit,
       registerOpenInstrument,
+      registerOpenViz,
+      setChannelDockHeight,
+      stackedAuxOffsets,
       longestSequence,
       midiNoteOff,
       midiNoteOn,
@@ -998,6 +1037,7 @@ function channelCopy(c: ChannelType): ChannelType {
   return Object.assign({}, c, {
     key: c.key.slice(),
     seqSteps: c.seqSteps.slice(),
+    midiOutChannels: c.midiOutChannels.slice(),
     instrumentParams: Object.assign({}, c.instrumentParams),
   })
 }
@@ -1006,66 +1046,6 @@ function deepStateCopy(state: Preset): Preset {
   return Object.assign({}, state, {
     channels: state.channels.map((c) => channelCopy(c)),
   })
-}
-
-// The patch* helpers backfill missing fields on presets/channels loaded from
-// localStorage or imported files (schema migration). The objects are partially
-// formed, so they're walked generically via a loose indexable view.
-export function patchPreset(preset: Preset, updated?: boolean) {
-  const p = preset as unknown as Record<string, unknown>
-  const defaults = DEFAULT_PRESET as unknown as Record<string, unknown>
-  for (const prop in DEFAULT_PRESET) {
-    if (p[prop] === undefined) {
-      p[prop] = defaults[prop]
-      updated = true
-    }
-  }
-  return updated
-}
-
-export function patchChannel(channel: ChannelType, tempo?: number, updated?: boolean) {
-  const defaultChannel = DEFAULT_PRESET.channels[0]
-  const c = channel as unknown as Record<string, unknown>
-  // Migrate the retired orange channel color to baby pink so orange is reserved for the
-  // "playing" indicator (channel/instrument selected/on now uses the channel color).
-  if (c.color === '#ff9700') {
-    c.color = '#ff85de'
-    updated = true
-  }
-  const cParams = channel.instrumentParams as unknown as Record<string, unknown>
-  const dc = defaultChannel as unknown as Record<string, unknown>
-  const dcParams = defaultChannel.instrumentParams as unknown as Record<string, unknown>
-  for (const prop in defaultChannel) {
-    if (c[prop] === undefined) {
-      c[prop] = dc[prop]
-      updated = true
-    }
-  }
-  // 3-slot effects: migrate legacy single-effect presets into slot 0 / normalize.
-  // Flag a change only when there was no `effects` yet (avoids spurious re-saves on
-  // every load). NB: must run BEFORE the generic instrumentParams fill, and that
-  // loop must SKIP `effects` so it never aliases DEFAULT_PRESET's slot array onto
-  // every channel (migrateEffectSlots always returns fresh per-channel objects).
-  if (cParams.effects === undefined) {
-    updated = true
-  }
-  cParams.effects = migrateEffectSlots(cParams, tempo)
-  for (const prop in defaultChannel.instrumentParams) {
-    if (prop === 'effects') continue
-    if (cParams[prop] === undefined) {
-      cParams[prop] = dcParams[prop]
-      updated = true
-    }
-  }
-  return updated
-}
-
-export function patchPresetAndChannels(preset: Preset, updated?: boolean) {
-  updated = patchPreset(preset, updated)
-  preset.channels.forEach((channel) => {
-    updated = patchChannel(channel, preset.tempo, updated)
-  })
-  return updated
 }
 
 function initializePresets(): Preset[] {

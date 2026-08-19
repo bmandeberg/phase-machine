@@ -2,7 +2,9 @@ import React, { useMemo, useCallback } from 'react'
 import classNames from 'classnames'
 import Dropdown from './Dropdown'
 import { BROWSER } from '../globals'
-import { confirmDialog } from '../dialog'
+import { confirmDialog, copyWithAlert } from '../dialog'
+import { encodePreset } from '../presetCode'
+import { presetShareUrl } from '../presetBoot'
 import { Preset } from '../types'
 import addIcon from '../assets/plus-icon-orange.svg'
 import addIconBlue from '../assets/plus-icon-blue.svg'
@@ -19,6 +21,9 @@ import saveIconDark from '../assets/save-icon-dark.svg'
 import saveIconDisabled from '../assets/save-icon-disabled.svg'
 import saveIconDisabledBlue from '../assets/save-icon-disabled-blue.svg'
 import saveIconDisabledDark from '../assets/save-icon-disabled-dark.svg'
+import linkIcon from '../assets/link-icon.svg'
+import linkIconBlue from '../assets/link-icon-blue.svg'
+import linkIconDark from '../assets/link-icon-dark.svg'
 import edited from '../assets/edit-tag.svg'
 import './Presets.scss'
 
@@ -37,6 +42,22 @@ interface PresetsProps {
   theme: string
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+// every preset-bar icon ships in the same three color variants; the theme→variant
+// grouping lives here once instead of once per icon
+function themedIcon(theme: string, light: string, blue: string, dark: string) {
+  switch (theme) {
+    case 'dark':
+    case 'eclipse':
+    case 'aero':
+    case 'coquette':
+      return blue
+    case 'contrast':
+      return dark
+    default:
+      return light
+  }
+}
 
 export default function Presets({
   className,
@@ -62,53 +83,30 @@ export default function Presets({
     return padding
   }, [presetDirty, presetHotkey])
 
-  const activeTrashIcon = useMemo(() => {
-    switch (theme) {
-      case 'light':
-        return preset.placeholder ? trashIconDisabled : trashIcon
-      case 'dark':
-      case 'eclipse':
-      case 'aero':
-      case 'coquette':
-        return preset.placeholder ? trashIconDisabledBlue : trashIconBlue
-      case 'contrast':
-        return preset.placeholder ? trashIconDisabledDark : trashIconDark
-      default:
-        return preset.placeholder ? trashIconDisabled : trashIcon
-    }
-  }, [preset.placeholder, theme])
+  const activeTrashIcon = useMemo(
+    () =>
+      themedIcon(
+        theme,
+        preset.placeholder ? trashIconDisabled : trashIcon,
+        preset.placeholder ? trashIconDisabledBlue : trashIconBlue,
+        preset.placeholder ? trashIconDisabledDark : trashIconDark
+      ),
+    [preset.placeholder, theme]
+  )
 
   const activeSaveIcon = useMemo(() => {
-    switch (theme) {
-      case 'light':
-        return presetDirty || preset.placeholder ? saveIcon : saveIconDisabled
-      case 'dark':
-      case 'eclipse':
-      case 'aero':
-      case 'coquette':
-        return presetDirty || preset.placeholder ? saveIconBlue : saveIconDisabledBlue
-      case 'contrast':
-        return presetDirty || preset.placeholder ? saveIconDark : saveIconDisabledDark
-      default:
-        return presetDirty || preset.placeholder ? saveIcon : saveIconDisabled
-    }
+    const enabled = presetDirty || preset.placeholder
+    return themedIcon(
+      theme,
+      enabled ? saveIcon : saveIconDisabled,
+      enabled ? saveIconBlue : saveIconDisabledBlue,
+      enabled ? saveIconDark : saveIconDisabledDark
+    )
   }, [preset.placeholder, presetDirty, theme])
 
-  const activeAddIcon = useMemo(() => {
-    switch (theme) {
-      case 'light':
-        return addIcon
-      case 'dark':
-      case 'eclipse':
-      case 'aero':
-      case 'coquette':
-        return addIconBlue
-      case 'contrast':
-        return addIconDark
-      default:
-        return addIcon
-    }
-  }, [theme])
+  const activeAddIcon = useMemo(() => themedIcon(theme, addIcon, addIconBlue, addIconDark), [theme])
+
+  const activeLinkIcon = useMemo(() => themedIcon(theme, linkIcon, linkIconBlue, linkIconDark), [theme])
 
   const doSave = useCallback(() => {
     if (!(!presetDirty && !preset.placeholder)) {
@@ -127,6 +125,16 @@ export default function Presets({
       }
     }
   }, [deletePreset, preset.placeholder, preset.name])
+
+  const doShare = useCallback(() => {
+    // deep link of the current patch, including unsaved edits — the receiver stamps
+    // its own identity fields (id/hotkey/placeholder) on load, see presetBoot.ts
+    copyWithAlert(
+      encodePreset(preset).then(presetShareUrl),
+      'Preset link copied to clipboard!',
+      'Unable to copy preset link!'
+    )
+  }, [preset])
 
   const presetEdited = useMemo(() => <img className="preset-edited" src={edited} alt="" />, [])
   const presetHotkeyEl = useMemo(
@@ -176,6 +184,9 @@ export default function Presets({
         </div>
         <div className="preset-action preset-new" onClick={newPreset} title="Duplicate Preset">
           <img src={activeAddIcon} alt="Duplicate" draggable="false" />
+        </div>
+        <div className="preset-action preset-share" onClick={doShare} title="Copy Preset Link">
+          <img src={activeLinkIcon} alt="Share" draggable="false" />
         </div>
       </div>
       <p className="presets-label no-select">Preset</p>

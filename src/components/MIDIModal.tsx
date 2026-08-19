@@ -1,11 +1,19 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import MidiInputMode from './MidiInputMode'
 import Switch from 'react-switch'
 import NumInput from './NumInput'
+import {
+  MidiChannelLabels,
+  MidiChannelCells,
+  midiAllCellLit,
+  nextMidiOutChannels,
+  sweepMidiOutChannels,
+} from './MidiMatrix'
+import useDragPaint from '../hooks/useDragPaint'
 import { themedSwitch } from '../globals'
 import './MIDIModal.scss'
 
-// "All" readout, shared by the output (midiOutAll) and input (non-custom) sides
+// "All" readout for the input side (accept all channels)
 const ALL_CHANNELS_EL = <p className="channel-num">All</p>
 
 interface MIDIModalProps {
@@ -17,14 +25,9 @@ interface MIDIModalProps {
   setCustomMidiInChannel: (custom: boolean) => void
   midiInChannel?: number
   setMidiInChannel: (value: number) => void
-  midiOutAll?: boolean
-  setMidiOutAll: (all: boolean) => void
-  customMidiOutChannel?: boolean
-  setCustomMidiOutChannel: (custom: boolean) => void
-  channelNum?: number
+  midiOutChannels?: number[]
+  setMidiOutChannels: (value: number[]) => void
   theme: string
-  midiOutChannel?: number
-  setMidiOutChannel: (value: number) => void
   color: string
 }
 
@@ -37,14 +40,9 @@ export default function MIDIModal({
   setCustomMidiInChannel,
   midiInChannel,
   setMidiInChannel,
-  midiOutAll,
-  setMidiOutAll,
-  customMidiOutChannel,
-  setCustomMidiOutChannel,
-  channelNum,
+  midiOutChannels,
+  setMidiOutChannels,
   theme,
-  midiOutChannel,
-  setMidiOutChannel,
   color,
 }: MIDIModalProps) {
   const offColor = useMemo(() => themedSwitch('offColor', theme), [theme])
@@ -68,14 +66,27 @@ export default function MIDIModal({
     [offColor, onColor, offHandleColor, onHandleColor]
   )
 
-  const midiChannel = useMemo(() => <p className="channel-num">{(channelNum ?? 0) + 1}</p>, [channelNum])
-  const customInput = useMemo(
-    () => (
-      <div className="modal-param">
-        <NumInput value={midiOutChannel ?? 1} setValue={setMidiOutChannel} min={1} max={16} />
-      </div>
-    ),
-    [midiOutChannel, setMidiOutChannel]
+  // Output cells: every click toggles (no modifier needed — this is the dedicated
+  // editor, and toggling keeps multi-assign reachable on touch). "all" fills the
+  // set or, when already full, deactivates output — as does toggling off the last
+  // lit cell. Click-drag paints the pressed cell's new state across the row.
+  const { beginPaint, paintState } = useDragPaint()
+  const toggleOutChannel = useCallback(
+    (midiChannel: number | null) => {
+      const next = nextMidiOutChannels(midiOutChannels ?? [], midiChannel, true)
+      if (midiChannel !== null) beginPaint(next.includes(midiChannel))
+      setMidiOutChannels(next)
+    },
+    [midiOutChannels, setMidiOutChannels, beginPaint]
+  )
+  const sweepOutChannel = useCallback(
+    (midiChannel: number) => {
+      const paint = paintState()
+      if (paint === null) return
+      const next = sweepMidiOutChannels(midiOutChannels ?? [], midiChannel, paint)
+      if (next !== null) setMidiOutChannels(next)
+    },
+    [midiOutChannels, setMidiOutChannels, paintState]
   )
 
   const customInChannelInput = useMemo(
@@ -89,22 +100,20 @@ export default function MIDIModal({
 
   return (
     <div className="midi-modal">
-      <div className="modal-item modal-num-input">
-        <p className="modal-label">MIDI Output Channel</p>
-        {midiOutAll ? ALL_CHANNELS_EL : customMidiOutChannel ? customInput : midiChannel}
-      </div>
-      <div className="modal-item">
-        <p className="modal-label">All Output Channels</p>
-        <Switch className="modal-param" onChange={setMidiOutAll} checked={midiOutAll ?? false} {...switchProps} />
-      </div>
-      <div className="modal-item">
-        <p className="modal-label">Custom Output Channel</p>
-        <Switch
-          className="modal-param"
-          onChange={setCustomMidiOutChannel}
-          checked={customMidiOutChannel ?? false}
-          {...switchProps}
-        />
+      <div className="modal-item midi-out-channels">
+        <p className="modal-label">MIDI Output Channels</p>
+        <div className="midi-matrix">
+          <MidiChannelLabels />
+          <div className="midi-matrix-row">
+            <MidiChannelCells
+              lit={midiOutChannels ?? []}
+              allLit={midiAllCellLit('out', midiOutChannels ?? [])}
+              color={color}
+              onSelect={toggleOutChannel}
+              onSweep={sweepOutChannel}
+            />
+          </div>
+        </div>
       </div>
       <div className="modal-item">
         <p className="modal-label">MIDI Input</p>
