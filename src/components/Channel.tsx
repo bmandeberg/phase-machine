@@ -23,6 +23,7 @@ import {
 import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds, shift, opposite, flip } from '../math'
 import classNames from 'classnames'
 import Modal from './Modal'
+import VizModal, { getVizViewMode, setVizViewMode } from './VizModal'
 import StackedView from './channel/StackedView'
 import CondensedView from './channel/CondensedView'
 import HorizontalView from './channel/HorizontalView'
@@ -72,6 +73,11 @@ interface ChannelProps {
   fanOutAction: (sourceId: string, action: ChannelAction) => void
   registerApplyChannelState: (id: string, fn: ApplyChannelState) => () => void
   registerOpenInstrument: (id: string, fn: () => void) => () => void
+  registerOpenViz: (id: string, fn: () => void) => () => void
+  // inline-dock geometry (see App.stackedAuxOffsets): report this channel's open
+  // dock height; shift the stacked aux row down past the docks above it
+  reportDockHeight: (id: string, height: number) => void
+  stackedAuxOffset: number
   setGrabbing: Setter<boolean>
   grabbing: boolean
   resizing: boolean
@@ -117,6 +123,9 @@ export default function Channel({
   fanOutAction,
   registerApplyChannelState,
   registerOpenInstrument,
+  registerOpenViz,
+  reportDockHeight,
+  stackedAuxOffset,
   setGrabbing,
   grabbing,
   resizing,
@@ -497,6 +506,53 @@ export default function Channel({
   const openMidiModal = useCallback(() => {
     setModalType('MIDI')
   }, [])
+
+  // The visualizer shows either as the fullscreen modal or docked inline below
+  // this channel, per the user's persisted preference (see getVizViewMode).
+  const [vizDockOpen, setVizDockOpen] = useState(false)
+  const openVizModal = useCallback(() => {
+    if (getVizViewMode() === 'dock') {
+      setVizDockOpen(true)
+    } else {
+      setModalType('visualizer')
+    }
+  }, [])
+  // modal header's dock button: swap to the inline view and remember the choice
+  const dockViz = useCallback(() => {
+    setVizViewMode('dock')
+    setModalType(null)
+    setVizDockOpen(true)
+  }, [])
+  // dock toolbar's expand button: pop back into the modal and remember the choice
+  const expandViz = useCallback(() => {
+    setVizViewMode('modal')
+    setVizDockOpen(false)
+    setModalType('visualizer')
+  }, [])
+  const closeVizDock = useCallback(() => {
+    setVizDockOpen(false)
+  }, [])
+  // report the dock's rendered height to App while open (responsive wrapping and
+  // collapsible descriptions change it), zero when closed/unmounted — the stacked
+  // view's aux rows restack around it (see App.stackedAuxOffsets)
+  const vizDockRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (!vizDockOpen || !vizDockRef.current) {
+      reportDockHeight(id.current, 0)
+      return
+    }
+    const el = vizDockRef.current
+    const report = () => reportDockHeight(id.current, el.offsetHeight)
+    report()
+    const observer = new ResizeObserver(report)
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+      reportDockHeight(id.current, 0)
+    }
+  }, [vizDockOpen, reportDockHeight])
+  // register with App so the `v` selection hotkey can open this channel's visualizer
+  useEffect(() => registerOpenViz(id.current, openVizModal), [registerOpenViz, openVizModal])
 
   useEffect(() => {
     if (updateOnce) {
@@ -1500,11 +1556,111 @@ export default function Channel({
     keyRestart,
     openMidiModal,
     openInstrumentModal,
+    openVizModal,
     updateOnce,
     triggerNote,
     channelPreset,
     setChannelColor
   )
+
+  // Interactive hooks for the visualizer modal, riding the SAME paths as the main
+  // key controls: mSetKeyToggle fans out per-pitch gestures, the transforms emit
+  // their gesture after the raw update, and audition reuses the ALT+click path.
+  // The viz shift is a plain ±1 rotate (no shiftAmt knob/preview machinery).
+  const vizShiftKey = useCallback(
+    (amount: number) => {
+      setKey((prev) => shift(amount, prev))
+      emitAction({ kind: 'keyShift', amount })
+    },
+    [emitAction]
+  )
+  const vizAuditionPitch = useCallback((pitch: number) => triggerNote(pitch, () => {}), [triggerNote])
+  const vizActions = useMemo(
+    () => ({
+      setKey: mSetKeyToggle,
+      doFlip,
+      doOpposite,
+      shiftKey: vizShiftKey,
+      auditionPitch: vizAuditionPitch,
+    }),
+    [mSetKeyToggle, doFlip, doOpposite, vizShiftKey, vizAuditionPitch]
+  )
+
+  // The data bundle for the visualizer (see VizModal). Built only while the
+  // modal or the inline dock is open, so the live playing* fields — which change
+  // on every note — don't re-render anything for nothing the rest of the time.
+  const vizData = useMemo(
+    () =>
+      modalType === 'visualizer' || vizDockOpen
+        ? {
+            config: {
+              key,
+              keyRate,
+              keyMovement,
+              keyArpInc1,
+              keyArpInc2,
+              sustain,
+              rangeMode,
+              rangeStart,
+              rangeEnd,
+              keybdPitches,
+              seqSteps,
+              seqLength,
+              seqRate,
+              seqMovement,
+              seqArpInc1,
+              seqArpInc2,
+              hold,
+            },
+            tempo,
+            color,
+            axis,
+            keySwing,
+            keySwingLength,
+            seqSwing,
+            seqSwingLength,
+            playingPitchClass,
+            playingNote,
+            playingStep,
+          }
+        : null,
+    [
+      modalType,
+      vizDockOpen,
+      key,
+      keyRate,
+      keyMovement,
+      keyArpInc1,
+      keyArpInc2,
+      sustain,
+      rangeMode,
+      rangeStart,
+      rangeEnd,
+      keybdPitches,
+      seqSteps,
+      seqLength,
+      seqRate,
+      seqMovement,
+      seqArpInc1,
+      seqArpInc2,
+      hold,
+      tempo,
+      color,
+      axis,
+      keySwing,
+      keySwingLength,
+      seqSwing,
+      seqSwingLength,
+      playingPitchClass,
+      playingNote,
+      playingStep,
+    ]
+  )
+
+  // Hand vizData to the (always-mounted) Modal only while the modal itself is
+  // showing — with the dock open instead, the per-note vizData churn would
+  // otherwise re-render the hidden Modal on every note.
+  const modalVizData = useMemo(() => (modalType === 'visualizer' ? vizData : null), [modalType, vizData])
 
   const modalEl = useMemo(
     () => (
@@ -1554,10 +1710,16 @@ export default function Channel({
           setGrabbing={setGrabbing}
           tempo={tempo}
           instrumentSyncKey={instrumentSyncKey}
+          vizData={modalVizData}
+          vizActions={vizActions}
+          onDockViz={dockViz}
         />
       </CSSTransition>
     ),
     [
+      modalVizData,
+      vizActions,
+      dockViz,
       channelNum,
       color,
       scribbler,
@@ -1759,9 +1921,21 @@ export default function Channel({
     }
   }, [mute, theme])
 
+  // The inline visualizer, docked as a flow sibling right below this channel's
+  // row (full-width, so in every view it drops onto its own line and pushes the
+  // following channels down). Same VizModal as the fullscreen window, plus the
+  // compact toolbar for popping back into the modal / closing.
+  const vizDockEl =
+    vizDockOpen && vizData ? (
+      <div className="viz-dock" ref={vizDockRef}>
+        <VizModal data={vizData} actions={vizActions} dock onExpand={expandViz} onClose={closeVizDock} />
+      </div>
+    ) : null
+
+  let viewEl: React.ReactNode = null
   switch (view) {
     case 'stacked':
-      return (
+      viewEl = (
         <StackedView
           {...ui}
           flash={flash}
@@ -1786,10 +1960,12 @@ export default function Channel({
           dragTarget={dragTarget}
           dragTargetHorizontal={dragTargetHorizontal}
           modalEl={modalEl}
+          stackedAuxOffset={stackedAuxOffset}
         />
       )
+      break
     case 'condensed':
-      return (
+      viewEl = (
         <CondensedView
           {...ui}
           flash={flash}
@@ -1813,8 +1989,9 @@ export default function Channel({
           modalEl={modalEl}
         />
       )
+      break
     case 'horizontal':
-      return (
+      viewEl = (
         <HorizontalView
           {...ui}
           flash={flash}
@@ -1840,8 +2017,9 @@ export default function Channel({
           modalEl={modalEl}
         />
       )
+      break
     case 'clock':
-      return (
+      viewEl = (
         <ClockView
           {...ui}
           flash={flash}
@@ -1868,7 +2046,14 @@ export default function Channel({
           toggleDrawerOpen={toggleDrawerOpen}
         />
       )
+      break
     default:
       return null
   }
+  return (
+    <>
+      {viewEl}
+      {vizDockEl}
+    </>
+  )
 }

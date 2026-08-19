@@ -11,6 +11,10 @@ type StackedViewProps = UIElements & {
   color: string
   channelNum: number
   numChannels: number
+  // extra downward shift for the aux row while inline visualizer docks are open
+  // above it — keeps the absolutely-positioned aux block below the (now taller)
+  // main-row block. 0 when no docks are open. See App.stackedAuxOffsets.
+  stackedAuxOffset: number
   rangeMode: boolean
   arrowSmallGraphic: string | null
   seqSteps: boolean[]
@@ -40,6 +44,7 @@ function StackedView({
   color,
   channelNum,
   numChannels,
+  stackedAuxOffset,
   rangeMode,
   arrowSmallGraphic,
   seqSteps,
@@ -123,7 +128,7 @@ function StackedView({
           {keySwingNormal}
         </div>
         <div
-          style={{ top: numChannels * CHANNEL_HEIGHT }}
+          style={{ top: numChannels * CHANNEL_HEIGHT + stackedAuxOffset }}
           onMouseDownCapture={onWrapperMouseDown}
           onFocusCapture={onWrapperFocus}
           className={classNames('channel channel-horizontal stacked-auxiliary', {

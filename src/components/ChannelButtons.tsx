@@ -12,6 +12,7 @@ interface ChannelButtonsProps {
   mute?: boolean
   openInstrumentModal: () => void
   openMidiModal: () => void
+  openVizModal: () => void
   duplicateChannel: (id: string) => void
   deleteChannel: (id: string) => void
 }
@@ -38,6 +39,24 @@ function MidiIcon() {
   )
 }
 
+// Mini bar chart — the channel's visualizer icon. Inherits the menu item's
+// (themed) text color via currentColor.
+function VizIcon() {
+  return (
+    <svg
+      className="channel-menu-icon viz-menu-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false">
+      <rect x="3.5" y="13" width="4" height="7.5" rx="0.8" fill="currentColor" />
+      <rect x="10" y="7.5" width="4" height="13" rx="0.8" fill="currentColor" />
+      <rect x="16.5" y="3.5" width="4" height="17" rx="0.8" fill="currentColor" />
+    </svg>
+  )
+}
+
 // The buttons at the start of a channel: the channel's instrument icon (opens the
 // instrument modal) stacked above a "..." button that opens a little menu with
 // Duplicate / Delete actions.
@@ -48,6 +67,7 @@ export default function ChannelButtons({
   mute,
   openInstrumentModal,
   openMidiModal,
+  openVizModal,
   duplicateChannel,
   deleteChannel,
 }: ChannelButtonsProps) {
@@ -84,6 +104,10 @@ export default function ChannelButtons({
     openMidiModal()
     setMenuOpen(false)
   }, [openMidiModal])
+  const visualizer = useCallback(() => {
+    openVizModal()
+    setMenuOpen(false)
+  }, [openVizModal])
   const duplicate = useCallback(() => {
     duplicateChannel(id)
     setMenuOpen(false)
@@ -121,6 +145,10 @@ export default function ChannelButtons({
           <div className="channel-menu-item" onClick={midiOptions}>
             <MidiIcon />
             <span>MIDI Options</span>
+          </div>
+          <div className="channel-menu-item" onClick={visualizer}>
+            <VizIcon />
+            <span>Visualizer</span>
           </div>
         </div>
       )}
