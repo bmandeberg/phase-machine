@@ -128,7 +128,10 @@ function ClockView({
           <div
             ref={drawerNodeRef}
             className={classNames('channel-clock-bottom', { 'drawer-open': drawerOpen })}
-            style={{ '--drawer-height': 251 + Math.floor(seqLength / 16) * (22 + 16) + 'px' } as React.CSSProperties}>
+            style={
+              // 16 steps fit per sequencer row; add a row of height per extra row of steps
+              { '--drawer-height': 251 + Math.floor((seqLength - 1) / 16) * (22 + 16) + 'px' } as React.CSSProperties
+            }>
             <div className="piano-container">{pianoEl}</div>
             <div className="piano-drawer-border"></div>
             <Sequencer
