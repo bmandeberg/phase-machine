@@ -3,7 +3,8 @@ import { v4 as uuid } from 'uuid'
 import { PRESET_HOLD_TIME } from '../globals'
 import { arrayEq } from '../math'
 import { midiStartContinue, midiStop } from './useMIDI'
-import { patchPresetAndChannels } from '../App'
+import { patchPresetAndChannels, validPreset } from '../preset'
+import { parsePresetText } from '../presetCode'
 import * as Tone from 'tone'
 import { alertDialog } from '../dialog'
 import { Channel, Preset, Setter, MidiOutRef, MidiInRef } from '../types'
@@ -320,123 +321,16 @@ export default function usePresets(
     window.localStorage.removeItem('activePreset')
   }, [dedupName, deepStateCopy, presets, setCurrentPreset, setPresets, setRestartChannels, setUIState, uiState])
 
-  // Validates arbitrary parsed JSON from an imported file, so the shapes are
-  // genuinely untrusted/unknown here — `any` is the pragmatic choice.
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const validPreset = useCallback((preset: any) => {
-    function invalidProp(obj: any, prop: string, type: string) {
-      const typeCheck = typeof obj[prop] !== type
-      return !obj.hasOwnProperty(prop) || (type === 'number' ? typeCheck && obj[prop] !== null : typeCheck)
-    }
-    if (
-      invalidProp(preset, 'name', 'string') ||
-      invalidProp(preset, 'id', 'string') ||
-      invalidProp(preset, 'hotkey', 'number') ||
-      invalidProp(preset, 'placeholder', 'boolean') ||
-      invalidProp(preset, 'numChannels', 'number') ||
-      invalidProp(preset, 'channelSync', 'boolean') ||
-      invalidProp(preset, 'tempo', 'number') ||
-      invalidProp(preset, 'channels', 'object')
-    ) {
-      return false
-    }
-    for (let i = 0; i < preset.channels.length; i++) {
-      const channel = preset.channels[i]
-      if (
-        invalidProp(channel, 'id', 'string') ||
-        invalidProp(channel, 'color', 'string') ||
-        invalidProp(channel, 'channelNum', 'number') ||
-        invalidProp(channel, 'velocity', 'number') ||
-        invalidProp(channel, 'key', 'object') ||
-        channel.key.length !== 12 ||
-        invalidProp(channel, 'keyRate', 'string') ||
-        invalidProp(channel, 'keyMovement', 'string') ||
-        invalidProp(channel, 'keyArpInc1', 'number') ||
-        invalidProp(channel, 'keyArpInc2', 'number') ||
-        invalidProp(channel, 'sustain', 'number') ||
-        invalidProp(channel, 'keySwing', 'number') ||
-        invalidProp(channel, 'keySwingLength', 'number') ||
-        invalidProp(channel, 'mute', 'boolean') ||
-        invalidProp(channel, 'solo', 'boolean') ||
-        invalidProp(channel, 'shiftAmt', 'number') ||
-        invalidProp(channel, 'axis', 'number') ||
-        invalidProp(channel, 'rangeStart', 'number') ||
-        invalidProp(channel, 'rangeEnd', 'number') ||
-        invalidProp(channel, 'seqSteps', 'object') ||
-        invalidProp(channel, 'seqLength', 'number') ||
-        invalidProp(channel, 'seqShiftAmt', 'number') ||
-        invalidProp(channel, 'seqRate', 'string') ||
-        invalidProp(channel, 'seqMovement', 'string') ||
-        invalidProp(channel, 'seqArpInc1', 'number') ||
-        invalidProp(channel, 'seqArpInc2', 'number') ||
-        invalidProp(channel, 'seqSwing', 'number') ||
-        invalidProp(channel, 'seqSwingLength', 'number') ||
-        invalidProp(channel, 'hold', 'boolean') ||
-        invalidProp(channel, 'instrumentOn', 'boolean') ||
-        invalidProp(channel, 'instrumentType', 'string') ||
-        invalidProp(channel, 'rangeMode', 'boolean') ||
-        invalidProp(channel, 'keybdPitches', 'object') ||
-        invalidProp(channel, 'midiIn', 'boolean') ||
-        invalidProp(channel, 'midiHold', 'boolean') ||
-        invalidProp(channel, 'customMidiInChannel', 'boolean') ||
-        invalidProp(channel, 'midiInChannel', 'number') ||
-        // legacy midiOutAll/customMidiOutChannel/midiOutChannel presets are migrated
-        // into this set by patchPresetAndChannels before validation runs
-        invalidProp(channel, 'midiOutChannels', 'object')
-      ) {
-        return false
-      }
-      if (
-        invalidProp(channel.instrumentParams, 'gain', 'number') ||
-        invalidProp(channel.instrumentParams, 'pan', 'number') ||
-        invalidProp(channel.instrumentParams, 'poly', 'boolean') ||
-        invalidProp(channel.instrumentParams, 'portamento', 'number') ||
-        invalidProp(channel.instrumentParams, 'modulationType', 'string') ||
-        invalidProp(channel.instrumentParams, 'harmonicity', 'number') ||
-        invalidProp(channel.instrumentParams, 'fatSpread', 'number') ||
-        invalidProp(channel.instrumentParams, 'fatCount', 'number') ||
-        invalidProp(channel.instrumentParams, 'pulseWidth', 'number') ||
-        invalidProp(channel.instrumentParams, 'pwmFreq', 'number') ||
-        invalidProp(channel.instrumentParams, 'envAttack', 'number') ||
-        invalidProp(channel.instrumentParams, 'envDecay', 'number') ||
-        invalidProp(channel.instrumentParams, 'envSustain', 'number') ||
-        invalidProp(channel.instrumentParams, 'envRelease', 'number') ||
-        invalidProp(channel.instrumentParams, 'cutoff', 'number') ||
-        invalidProp(channel.instrumentParams, 'resonance', 'number') ||
-        invalidProp(channel.instrumentParams, 'rolloff', 'number') ||
-        invalidProp(channel.instrumentParams, 'filterAttack', 'number') ||
-        invalidProp(channel.instrumentParams, 'filterDecay', 'number') ||
-        invalidProp(channel.instrumentParams, 'filterSustain', 'number') ||
-        invalidProp(channel.instrumentParams, 'filterRelease', 'number') ||
-        invalidProp(channel.instrumentParams, 'filterAmount', 'number') ||
-        invalidProp(channel.instrumentParams, 'samplerAttack', 'number') ||
-        invalidProp(channel.instrumentParams, 'samplerRelease', 'number') ||
-        invalidProp(channel.instrumentParams, 'metalHarmonicity', 'number') ||
-        invalidProp(channel.instrumentParams, 'metalModulationIndex', 'number') ||
-        invalidProp(channel.instrumentParams, 'metalResonance', 'number') ||
-        invalidProp(channel.instrumentParams, 'metalOctaves', 'number') ||
-        invalidProp(channel.instrumentParams, 'metalAttack', 'number') ||
-        invalidProp(channel.instrumentParams, 'metalDecay', 'number') ||
-        invalidProp(channel.instrumentParams, 'metalRelease', 'number') ||
-        invalidProp(channel.instrumentParams, 'pluckAttackNoise', 'number') ||
-        invalidProp(channel.instrumentParams, 'pluckDampening', 'number') ||
-        invalidProp(channel.instrumentParams, 'pluckResonance', 'number') ||
-        invalidProp(channel.instrumentParams, 'pluckRelease', 'number') ||
-        // 3-slot effects array. Legacy flat effect fields are no longer validated —
-        // patchPresetAndChannels migrates/normalizes them into 3 fully-populated
-        // slots before validation runs, so an object/array check is sufficient.
-        invalidProp(channel.instrumentParams, 'effects', 'object')
-      ) {
-        return false
-      }
-    }
-    return true
-  }, [])
-
   const importPresets = useCallback(
-    (presetsString: string) => {
+    async (presetsString: string) => {
       try {
-        const parsedPresets = JSON.parse(presetsString)
+        // compressed base64 or legacy raw JSON — parsePresetText handles both
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let parsedPresets: any = await parsePresetText(presetsString)
+        // a single shared preset object imports as a one-element library
+        if (!Array.isArray(parsedPresets) && parsedPresets && Array.isArray(parsedPresets.channels)) {
+          parsedPresets = [parsedPresets]
+        }
         if (Array.isArray(parsedPresets) && parsedPresets.length) {
           for (let i = 0; i < parsedPresets.length; i++) {
             patchPresetAndChannels(parsedPresets[i])
@@ -447,20 +341,20 @@ export default function usePresets(
           }
           setPresets((presets: Preset[]) => {
             const presetsCopy = presets.slice()
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             parsedPresets.forEach((p: any) => {
               const id = uuid()
               presetsCopy.push(Object.assign(p, { name: dedupName(p.name, id, presetsCopy), id, hotkey: null }))
             })
             return presetsCopy
           })
-          /* eslint-enable @typescript-eslint/no-explicit-any */
           alertDialog(`${parsedPresets.length} Preset${parsedPresets.length !== 1 ? 's' : ''} imported`)
         } else alertDialog('No valid presets to import')
       } catch {
         alertDialog('Invalid presets!')
       }
     },
-    [dedupName, setPresets, validPreset]
+    [dedupName, setPresets]
   )
 
   // update localStorage when presets change

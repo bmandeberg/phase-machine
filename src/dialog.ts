@@ -80,3 +80,15 @@ export function alertDialog(message: string, options?: Pick<DialogOptions, 'titl
 export function confirmDialog(message: string, options?: DialogOptions): Promise<boolean> {
   return enqueue('confirm', message, options)
 }
+
+// Copy text to the clipboard and report the outcome as an alert. Accepts a
+// promise so an async producer's failure (e.g. encoding a preset) lands on the
+// same failure alert as a clipboard rejection.
+export function copyWithAlert(text: string | Promise<string>, success: string, failure: string): Promise<void> {
+  return Promise.resolve(text)
+    .then((t) => navigator.clipboard.writeText(t))
+    .then(
+      () => alertDialog(success),
+      () => alertDialog(failure)
+    )
+}

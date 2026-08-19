@@ -6,7 +6,8 @@ import MidiMatrix from './MidiMatrix'
 import { THEMES, themedSwitch } from '../globals'
 import classNames from 'classnames'
 import { ChannelMidiAssignment, Preset } from '../types'
-import { alertDialog, confirmDialog } from '../dialog'
+import { alertDialog, confirmDialog, copyWithAlert } from '../dialog'
+import { encodePreset } from '../presetCode'
 import './Settings.scss'
 
 // stable fallback so a missing channels prop doesn't defeat MidiMatrix's memo
@@ -93,14 +94,8 @@ export default function Settings({
 
   const copyPresets = useCallback(() => {
     const exportPresets = selectedPresets.map((sp) => presets.find((p) => p.name === sp))
-    navigator.clipboard.writeText(JSON.stringify(exportPresets)).then(
-      () => {
-        alertDialog('Presets copied to clipboard!')
-      },
-      () => {
-        alertDialog('Unable to copy presets to clipboard!')
-      }
-    )
+    // compressed base64 (see presetCode.ts) — Import Presets accepts this and legacy raw JSON
+    copyWithAlert(encodePreset(exportPresets), 'Presets copied to clipboard!', 'Unable to copy presets to clipboard!')
   }, [presets, selectedPresets])
 
   const clearLocalStorage = useCallback(async () => {

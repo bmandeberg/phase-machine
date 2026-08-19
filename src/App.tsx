@@ -11,10 +11,7 @@ import {
   VIEWS,
   SECTIONS,
   DEFAULT_PRESET,
-  DEFAULT_PRESETS,
   BLANK_CHANNEL,
-  migrateEffectSlots,
-  ALL_MIDI_CHANNELS,
   CHANNEL_COLORS,
   INSTRUMENT_TYPES,
   SIGNAL_TYPES,
@@ -31,6 +28,7 @@ import useSelectionHotkeys from './hooks/useSelectionHotkeys'
 import useHistory, { deepEqual } from './hooks/useHistory'
 import useMIDI, { midiStartContinue, midiStop } from './hooks/useMIDI'
 import { subscribeDialogs, getActiveDialog, DialogRequest } from './dialog'
+import { patchPreset, patchChannel, patchPresetAndChannels } from './preset'
 import {
   Channel as ChannelType,
   Preset,
@@ -41,12 +39,9 @@ import {
   ChannelMidiAssignment,
 } from './types'
 
-// load/set presets
-if (!window.localStorage.getItem('presets')) {
-  window.localStorage.setItem('presets', DEFAULT_PRESETS)
-  const defaultPresets = JSON.parse(DEFAULT_PRESETS)
-  window.localStorage.setItem('activePreset', defaultPresets[0].id)
-}
+// Preset bootstrapping (factory-preset seeding and ?preset= share links) happens
+// entirely before this module loads — presetBoot.ts, awaited by AppLoader — by
+// writing the same localStorage keys the initializers below read.
 
 // Each channel's left edge (number, scribbler, mute/solo) lives in a sticky header
 // that floats over the horizontally-scrolling body. The "Scroll To" buttons jump to
@@ -971,82 +966,6 @@ function deepStateCopy(state: Preset): Preset {
   return Object.assign({}, state, {
     channels: state.channels.map((c) => channelCopy(c)),
   })
-}
-
-// The patch* helpers backfill missing fields on presets/channels loaded from
-// localStorage or imported files (schema migration). The objects are partially
-// formed, so they're walked generically via a loose indexable view.
-export function patchPreset(preset: Preset, updated?: boolean) {
-  const p = preset as unknown as Record<string, unknown>
-  const defaults = DEFAULT_PRESET as unknown as Record<string, unknown>
-  for (const prop in DEFAULT_PRESET) {
-    if (p[prop] === undefined) {
-      p[prop] = defaults[prop]
-      updated = true
-    }
-  }
-  return updated
-}
-
-export function patchChannel(channel: ChannelType, tempo?: number, updated?: boolean) {
-  const defaultChannel = DEFAULT_PRESET.channels[0]
-  const c = channel as unknown as Record<string, unknown>
-  // Migrate the retired orange channel color to baby pink so orange is reserved for the
-  // "playing" indicator (channel/instrument selected/on now uses the channel color).
-  if (c.color === '#ff9700') {
-    c.color = '#ff85de'
-    updated = true
-  }
-  // Migrate the retired output tri-state (midiOutAll / customMidiOutChannel /
-  // midiOutChannel) to the explicit midiOutChannels set — the old default becomes
-  // a stored [channelNum + 1]. Must run BEFORE the generic fill below, both so old
-  // presets keep their routing and so no default array is aliased across channels.
-  if (c.midiOutChannels === undefined) {
-    c.midiOutChannels =
-      c.midiOutAll === true
-        ? ALL_MIDI_CHANNELS.slice()
-        : c.customMidiOutChannel === true && typeof c.midiOutChannel === 'number'
-        ? [c.midiOutChannel]
-        : [channel.channelNum + 1]
-    delete c.midiOutAll
-    delete c.customMidiOutChannel
-    delete c.midiOutChannel
-    updated = true
-  }
-  const cParams = channel.instrumentParams as unknown as Record<string, unknown>
-  const dc = defaultChannel as unknown as Record<string, unknown>
-  const dcParams = defaultChannel.instrumentParams as unknown as Record<string, unknown>
-  for (const prop in defaultChannel) {
-    if (c[prop] === undefined) {
-      c[prop] = dc[prop]
-      updated = true
-    }
-  }
-  // 3-slot effects: migrate legacy single-effect presets into slot 0 / normalize.
-  // Flag a change only when there was no `effects` yet (avoids spurious re-saves on
-  // every load). NB: must run BEFORE the generic instrumentParams fill, and that
-  // loop must SKIP `effects` so it never aliases DEFAULT_PRESET's slot array onto
-  // every channel (migrateEffectSlots always returns fresh per-channel objects).
-  if (cParams.effects === undefined) {
-    updated = true
-  }
-  cParams.effects = migrateEffectSlots(cParams, tempo)
-  for (const prop in defaultChannel.instrumentParams) {
-    if (prop === 'effects') continue
-    if (cParams[prop] === undefined) {
-      cParams[prop] = dcParams[prop]
-      updated = true
-    }
-  }
-  return updated
-}
-
-export function patchPresetAndChannels(preset: Preset, updated?: boolean) {
-  updated = patchPreset(preset, updated)
-  preset.channels.forEach((channel) => {
-    updated = patchChannel(channel, preset.tempo, updated)
-  })
-  return updated
 }
 
 function initializePresets(): Preset[] {
