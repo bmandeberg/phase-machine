@@ -648,6 +648,50 @@ export default function App() {
     if (firstId) channelOpenInstrumentRegistry.current.get(firstId)?.()
   }, [orderedIds, selection])
 
+  // Stacked view geometry for the inline visualizer docks: a dock adds height
+  // after its channel's main row, but the aux (sequencer) rows are absolutely
+  // positioned assuming uniform CHANNEL_HEIGHT rows. Channels report their open
+  // dock's height; each channel's aux row then shifts down by the total dock
+  // height minus the docks above its own row, which restacks the aux block
+  // below all main rows + docks. (Zero everywhere while no dock is open.)
+  const [dockHeights, setDockHeights] = useState<Record<string, number>>({})
+  const setChannelDockHeight = useCallback((id: string, height: number) => {
+    setDockHeights((prev) => {
+      if ((prev[id] ?? 0) === height) return prev
+      const next = { ...prev }
+      if (height) {
+        next[id] = height
+      } else {
+        delete next[id]
+      }
+      return next
+    })
+  }, [])
+  const stackedAuxOffsets = useMemo(() => {
+    const total = orderedIds.reduce((acc: number, id: string) => acc + (dockHeights[id] ?? 0), 0)
+    let before = 0
+    const offsets: Record<string, number> = {}
+    orderedIds.forEach((id: string) => {
+      offsets[id] = total - before
+      before += dockHeights[id] ?? 0
+    })
+    return offsets
+  }, [orderedIds, dockHeights])
+
+  // Same registry pattern for the `v` hotkey → the channel's visualizer modal.
+  const channelOpenVizRegistry = useRef<Map<string, () => void>>(new Map())
+  const registerOpenViz = useCallback((id: string, fn: () => void) => {
+    channelOpenVizRegistry.current.set(id, fn)
+    return () => {
+      channelOpenVizRegistry.current.delete(id)
+    }
+  }, [])
+  const openVizForSelection = useCallback(() => {
+    const sel = selection.selectedIdsRef.current
+    const firstId = orderedIds.find((id) => sel.has(id))
+    if (firstId) channelOpenVizRegistry.current.get(firstId)?.()
+  }, [orderedIds, selection])
+
   const muteSoloSelected = useCallback(
     (field: 'mute' | 'solo') => {
       const ids = Array.from(selection.selectedIdsRef.current)
@@ -684,6 +728,7 @@ export default function App() {
     onDeselect: selection.deselectAll,
     onSelectAll: selection.selectAll,
     onOpenInstrument: openInstrumentForSelection,
+    onOpenVisualizer: openVizForSelection,
     onSavePreset: useCallback(() => savePreset(null), [savePreset]),
     onCopy: copyChannels,
     onPaste: pasteChannels,
@@ -754,6 +799,9 @@ export default function App() {
           fanOutAction={fanOutAction}
           registerApplyChannelState={registerApplyChannelState}
           registerOpenInstrument={registerOpenInstrument}
+          registerOpenViz={registerOpenViz}
+          reportDockHeight={setChannelDockHeight}
+          stackedAuxOffset={stackedAuxOffsets[d.id] ?? 0}
           setGrabbing={setGrabbing}
           grabbing={grabbing}
           resizing={resizing}
@@ -801,6 +849,9 @@ export default function App() {
       registerApplyChannelState,
       registerApplyEdit,
       registerOpenInstrument,
+      registerOpenViz,
+      setChannelDockHeight,
+      stackedAuxOffsets,
       longestSequence,
       midiNoteOff,
       midiNoteOn,

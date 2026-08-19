@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 //   Cmd/Ctrl+C → copy the selected channels to the channel clipboard
 //   Cmd/Ctrl+V → paste the copied channels (after the selection, or at the end)
 //   m / s   → mute / solo the selection (unified — see App's handler)
+//   i / v   → open the instrument editor / visualizer for the selection
 //   Delete  → delete the selected channels
 //   Escape  → deselect all (only when no modal / dialog / menu is open)
 // One document keydown listener (bubble phase). Dropdowns + AlertDialog already swallow
@@ -19,6 +20,7 @@ interface SelectionHotkeysParams {
   onDeselect: () => void
   onSelectAll: () => void
   onOpenInstrument: () => void
+  onOpenVisualizer: () => void
   onSavePreset: () => void
   onCopy: () => void
   onPaste: () => void
@@ -117,6 +119,15 @@ export default function useSelectionHotkeys(params: SelectionHotkeysParams) {
           if (p.anySelected() && !p.isBlocked()) {
             e.preventDefault()
             p.onOpenInstrument()
+          }
+          break
+        case 'v':
+        case 'V':
+          // open the visualizer for the selection (first channel in order); plain v
+          // only — Cmd/Ctrl+V (paste) is handled and returned from above
+          if (p.anySelected() && !p.isBlocked()) {
+            e.preventDefault()
+            p.onOpenVisualizer()
           }
           break
         case 'Escape':
