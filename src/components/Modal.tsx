@@ -42,13 +42,8 @@ interface ModalProps {
   setCustomMidiInChannel?: any
   midiInChannel?: number
   setMidiInChannel?: any
-  midiOutAll?: boolean
-  setMidiOutAll?: any
-  customMidiOutChannel?: boolean
-  setCustomMidiOutChannel?: any
-  channelNum?: number
-  midiOutChannel?: number
-  setMidiOutChannel?: any
+  midiOutChannels?: number[]
+  setMidiOutChannels?: any
   presets?: Preset[]
   importPresets?: any
   instrumentOn?: boolean
@@ -80,8 +75,8 @@ interface ModalProps {
   presetsStopTransport?: boolean
   setPresetsStopTransport?: any
   channelMidiAssignments?: ChannelMidiAssignment[]
-  setChannelMidiAssignment?: (id: string, midiChannel: number | null) => void
-  setChannelMidiInAssignment?: (id: string, midiChannel: number | null) => void
+  setChannelMidiAssignment?: (id: string, midiChannels: number[]) => void
+  setChannelMidiInAssignment?: (id: string, midiChannels: number[]) => void
   // the channel's visualizer bundle — only built while that modal is open — and
   // the (stable) edit/audition hooks its interactive views use
   vizData?: VizData | null
@@ -111,13 +106,8 @@ export default function Modal({
   setCustomMidiInChannel,
   midiInChannel,
   setMidiInChannel,
-  midiOutAll,
-  setMidiOutAll,
-  customMidiOutChannel,
-  setCustomMidiOutChannel,
-  channelNum,
-  midiOutChannel,
-  setMidiOutChannel,
+  midiOutChannels,
+  setMidiOutChannels,
   presets,
   importPresets,
   modalContent,
@@ -263,34 +253,24 @@ export default function Modal({
         setCustomMidiInChannel={setCustomMidiInChannel}
         midiInChannel={midiInChannel}
         setMidiInChannel={setMidiInChannel}
-        midiOutAll={midiOutAll}
-        setMidiOutAll={setMidiOutAll}
-        customMidiOutChannel={customMidiOutChannel}
-        setCustomMidiOutChannel={setCustomMidiOutChannel}
-        channelNum={channelNum}
+        midiOutChannels={midiOutChannels}
+        setMidiOutChannels={setMidiOutChannels}
         theme={theme}
-        midiOutChannel={midiOutChannel}
-        setMidiOutChannel={setMidiOutChannel}
         color={color as string}
       />
     ),
     [
-      channelNum,
       color,
       customMidiInChannel,
       setCustomMidiInChannel,
       midiInChannel,
       setMidiInChannel,
-      midiOutAll,
-      setMidiOutAll,
-      customMidiOutChannel,
+      midiOutChannels,
+      setMidiOutChannels,
       midiIn,
       setMidiIn,
       midiHold,
-      midiOutChannel,
-      setCustomMidiOutChannel,
       setMidiHold,
-      setMidiOutChannel,
       theme,
     ]
   )

@@ -835,16 +835,11 @@ export function convertMidiNumber(midiNumber: number) {
 // The 16 MIDI channels — webmidi's `channels` option takes this array for "all"
 export const ALL_MIDI_CHANNELS = Array.from({ length: 16 }, (_, i) => i + 1)
 
-// The one place the MIDI output-channel precedence lives, in webmidi `channels`
-// form: all 16 channels when midiOutAll, else the custom channel when set, else
-// the default channelNum + 1. Callers holding refs pass the .current values.
-export function effectiveMidiOutChannel(
-  midiOutAll: boolean,
-  customMidiOutChannel: boolean,
-  midiOutChannel: number,
-  channelNum: number
-): number | number[] {
-  return midiOutAll ? ALL_MIDI_CHANNELS : customMidiOutChannel ? midiOutChannel : channelNum + 1
+// Normalize an output-channel set: unique and sorted. The set is the whole truth:
+// a new channel starts at [channelNum + 1], and EMPTY means "no MIDI output" —
+// senders must skip MIDI entirely rather than pass an empty channels array.
+export function normalizeMidiOutChannels(midiOutChannels: number[]): number[] {
+  return [...new Set(midiOutChannels)].sort((a, b) => a - b)
 }
 
 export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: boolean): Channel => ({
@@ -885,9 +880,7 @@ export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: bool
   midiHold: false,
   customMidiInChannel: false,
   midiInChannel: 1,
-  midiOutAll: false,
-  customMidiOutChannel: false,
-  midiOutChannel: 1,
+  midiOutChannels: [channelNum + 1],
   instrumentParams: {
     gain: 1,
     pan: 0,
