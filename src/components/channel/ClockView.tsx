@@ -9,6 +9,9 @@ type ClockViewProps = UIElements & {
   muted: boolean
   color: string
   channelNum: number
+  // Condensed modifier: only the whitelisted controls render — the canonical list of
+  // what's kept/hidden lives on HorizontalView's condensed prop.
+  condensed?: boolean
   rangeMode: boolean
   arrowClockGraphic: string | null
   seqSteps: boolean[]
@@ -38,6 +41,7 @@ function ClockView({
   onWrapperFocus,
   color,
   channelNum,
+  condensed,
   rangeMode,
   arrowClockGraphic,
   seqSteps,
@@ -88,7 +92,7 @@ function ClockView({
       nodeRef={clockViewRef}>
       <div
         ref={clockViewRef}
-        className={classNames('channel channel-clock', { mute: muted, selected })}
+        className={classNames('channel channel-clock', { 'channel-condensed': condensed, mute: muted, selected })}
         onMouseDownCapture={onWrapperMouseDown}
         onFocusCapture={onWrapperFocus}
         style={{ '--channel-color': color } as React.CSSProperties}>
@@ -98,25 +102,29 @@ function ClockView({
           {channelButtonsEl}
           <div className="channel-primary">
             {muteSoloEl}
-            {velocityEl}
+            {!condensed && velocityEl}
           </div>
-          <div className="channel-vertical left-vertical">
-            {notesModeEl}
-            {rangeMode && shiftEl}
-            {rangeMode && flipOppositeEl}
-            {!rangeMode && midiInputModeEl}
-            {!rangeMode && clearResetEl}
-            {/* {keyViewTypeEl} */}
-          </div>
-          {rangeMode && <img className="arrow-clock" src={arrowClockGraphic ?? undefined} alt="" />}
+          {!condensed && (
+            <>
+              <div className="channel-vertical left-vertical">
+                {notesModeEl}
+                {rangeMode && shiftEl}
+                {rangeMode && flipOppositeEl}
+                {!rangeMode && midiInputModeEl}
+                {!rangeMode && clearResetEl}
+                {/* {keyViewTypeEl} */}
+              </div>
+              {rangeMode && <img className="arrow-clock" src={arrowClockGraphic ?? undefined} alt="" />}
+            </>
+          )}
           {axisClock}
           <div className="channel-vertical">
             {keyMovementEl}
             <div>
               {keyRateEl}
-              {sustainVertical}
+              {!condensed && sustainVertical}
             </div>
-            {keySwingVertical}
+            {!condensed && keySwingVertical}
           </div>
           <div
             className={classNames('channel-drawer-control', { 'drawer-open': drawerOpen })}
@@ -145,10 +153,14 @@ function ClockView({
               {seqLengthNormal}
               {seqRateNormal}
               {seqMovementNormal}
-              {seqSwingNormal}
-              {holdNormal}
-              {seqOppositeRestartEl}
-              {seqShiftNormal}
+              {!condensed && (
+                <>
+                  {seqSwingNormal}
+                  {holdNormal}
+                  {seqOppositeRestartEl}
+                  {seqShiftNormal}
+                </>
+              )}
             </div>
           </div>
         </CSSTransition>

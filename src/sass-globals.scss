@@ -34,6 +34,10 @@ $darkGray: #666666;
 $darkGrayHover: color.adjust($darkGray, $lightness: 8%);
 $lightTextGray: #999999;
 $transitionTime: 0.3s;
+// One channel row's total height (96px content + 1px bottom border). Must stay in
+// sync with CHANNEL_HEIGHT in globals.tsx — the TS side positions the stacked/layered
+// aux rows and the drag-reorder math with the same number.
+$channelHeight: 97px;
 // Length of the piano-roll key's per-note attack accent (Piano.scss) — a quick brighten
 // that decays. The key is fully lit from frame 0; this only sets how long the pop lasts.
 // Short enough to stay crisp at fast key rates, long enough to survive a few frames.

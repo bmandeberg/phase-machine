@@ -166,6 +166,17 @@ body:has(.coquette-theme) {
   // ── Header: a flat solid pink bar ─────────────────────────────────────────
   #header {
     background-color: $headerBg;
+    // Condensed checkbox: the same flat panel surface as the header's small
+    // dropdowns, with the mark in the theme text color.
+    .condensed-checkbox .checkbox {
+      @include flat($panel);
+      @include hover {
+        background-color: $panelHover;
+      }
+      .checkmark {
+        background-color: $text;
+      }
+    }
     // the floating header labels (Tempo / View / MIDI / Preset …) read white on
     // the pink bar.
     color: #ffffff;

@@ -11,6 +11,13 @@ type StackedViewProps = UIElements & {
   color: string
   channelNum: number
   numChannels: number
+  // Layered mode: identical markup, but the aux (sequencer) row is pinned one row
+  // below its own channel instead of pooling below all the channels. The wrapper
+  // gains .channel-layered, whose margin reserves the aux row's flow space (see
+  // Channel.scss), and every aux row draws the .first-auxiliary seam.
+  layered?: boolean
+  // Condensed modifier: only the whitelisted controls render — see HorizontalView.
+  condensed?: boolean
   rangeMode: boolean
   arrowSmallGraphic: string | null
   seqSteps: boolean[]
@@ -40,6 +47,8 @@ function StackedView({
   color,
   channelNum,
   numChannels,
+  layered,
+  condensed,
   rangeMode,
   arrowSmallGraphic,
   seqSteps,
@@ -91,7 +100,12 @@ function StackedView({
       nodeRef={stackedViewRef}>
       <div
         ref={stackedViewRef}
-        className={classNames('channel channel-horizontal', { mute: muted, selected })}
+        className={classNames('channel channel-horizontal', {
+          'channel-layered': layered,
+          'channel-condensed': condensed,
+          mute: muted,
+          selected,
+        })}
         onMouseDownCapture={onWrapperMouseDown}
         onFocusCapture={onWrapperFocus}
         style={{ '--channel-color': color } as React.CSSProperties}>
@@ -103,33 +117,45 @@ function StackedView({
         </div>
         {/* Key-side card group — see HorizontalView. display:contents by default. */}
         <div className="channel-section channel-section-key">
-          {velocityEl}
-          {notesModeEl}
+          {!condensed && (
+            <>
+              {velocityEl}
+              {notesModeEl}
+            </>
+          )}
           {keyEl}
-          <div className="transformations">
-            {rangeMode && shiftEl}
-            {rangeMode && axisNormal}
-            {rangeMode && (
-              <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />
-            )}
-            {rangeMode && flipOppositeEl}
-            {!rangeMode && midiInputModeEl}
-            {!rangeMode && clearResetEl}
-          </div>
+          {!condensed && (
+            <div className="transformations">
+              {rangeMode && shiftEl}
+              {rangeMode && axisNormal}
+              {rangeMode && (
+                <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />
+              )}
+              {rangeMode && flipOppositeEl}
+              {!rangeMode && midiInputModeEl}
+              {!rangeMode && clearResetEl}
+            </div>
+          )}
           {pianoEl}
           {keyRateEl}
           {keyMovementEl}
-          {sustainNormal}
-          {keySwingNormal}
+          {!condensed && (
+            <>
+              {sustainNormal}
+              {keySwingNormal}
+            </>
+          )}
         </div>
         <div
-          style={{ top: numChannels * CHANNEL_HEIGHT }}
+          style={{ top: layered ? CHANNEL_HEIGHT : numChannels * CHANNEL_HEIGHT }}
           onMouseDownCapture={onWrapperMouseDown}
           onFocusCapture={onWrapperFocus}
           className={classNames('channel channel-horizontal stacked-auxiliary', {
             mute: muted,
             selected,
-            'first-auxiliary': channelNum === 0,
+            // the ::before seam above the aux row: stacked needs it only where the
+            // pooled block begins; layered at every key-row/sequencer-row boundary
+            'first-auxiliary': layered || channelNum === 0,
           })}>
           <div className="channel-sticky channel-sticky-aux">
             {scribblerEl}
@@ -149,11 +175,15 @@ function StackedView({
               {seqLengthInline}
               {seqRateInline}
               {seqMovementInline}
-              {seqSwingInline}
-              {holdInline}
-              {seqRestartEl}
-              {seqOppositeEl}
-              {seqShiftInline}
+              {!condensed && (
+                <>
+                  {seqSwingInline}
+                  {holdInline}
+                  {seqRestartEl}
+                  {seqOppositeEl}
+                  {seqShiftInline}
+                </>
+              )}
             </div>
           </Sequencer>
         </div>

@@ -392,7 +392,10 @@ body:has(.contrast-theme) {
   #header {
     background-color: $headerDarkBlue;
     color: $blue;
-    .button {
+    // .condensed-checkbox: the box shares the header buttons' control surface; the
+    // mark takes the same dark blue as the control text.
+    .button,
+    .condensed-checkbox .checkbox {
       border: 1px solid $blue;
       color: $headerDarkBlue;
       background-color: $blue;
@@ -403,6 +406,9 @@ body:has(.contrast-theme) {
       &:active {
         background-color: $blueActive;
       }
+    }
+    .condensed-checkbox .checkmark {
+      background-color: $headerDarkBlue;
     }
     .header-aux {
       // shape comes from the mask in Header.scss; the theme only recolours it

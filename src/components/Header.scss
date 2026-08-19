@@ -176,29 +176,33 @@ $margin: 12px;
   }
 }
 
-.view-dropdown {
-  display: none;
+// The "Condensed" modifier checkbox next to the View dropdown. The 21px box is
+// the same height as the small dropdowns' control and top-aligns with them at the
+// top of the header row; the label is put back in flow (the component's default is
+// an absolute hanging label that reserves no space) so it sizes the item, sits
+// left-aligned under the box, and gets the standard .header-item margin-right —
+// the same spacing as every other header element.
+.condensed-checkbox {
+  align-self: flex-start;
+  .checkmark-label {
+    position: static;
+    font-size: 15px;
+    height: 14px;
+    line-height: 14px;
+    // drops the label's top onto the shared header label line, level with the
+    // dropdowns' hanging labels (21px box + 7px = the dropdowns' 28px label offset)
+    margin-top: 7px;
+  }
 }
 
-// Horizontal/condensed view adds the wide "Scroll To" radio group. Since the undo/redo
-// arrows joined the row, keeping Scroll To until 1207px let the arrows slide under the
-// fixed gear/question aux icons in a ~1208-1250px band. Drop it earlier so the row clears
-// the aux zone with margin to spare.
+// Horizontal view adds the wide "Scroll To" radio group; it's the first thing to
+// drop as the row narrows, so the undo/redo arrows can't slide under the fixed
+// gear/question aux icons. (Threshold tuned when the view selector was a wide
+// segmented control — now that it's a compact dropdown the row has ~150px of slack
+// up here, so this is conservative, but comfortably clear of the aux zone.)
 @media screen and (max-width: 1279px) {
   .scroll-to {
     display: none;
-  }
-}
-
-// Swap the wide "View" segmented control for the compact dropdown. Raised from 1057px
-// once the undo/redo arrows joined the row: with View buttons shown the row reached under
-// the fixed aux icons in a ~1058-1092px band. The dropdown frees ~150px and clears them.
-@media screen and (max-width: 1120px) {
-  .view-buttons {
-    display: none;
-  }
-  .view-dropdown {
-    display: block;
   }
 }
 
@@ -224,7 +228,8 @@ $margin: 12px;
 }
 
 @media screen and (max-width: 693px) {
-  .view-dropdown {
+  .view-dropdown,
+  .condensed-checkbox {
     display: none;
   }
   .header-about {
@@ -238,7 +243,8 @@ $margin: 12px;
   .tempo-input {
     display: none;
   }
-  .view-dropdown {
+  .view-dropdown,
+  .condensed-checkbox {
     display: block;
   }
   .header-about {
@@ -253,7 +259,8 @@ $margin: 12px;
 }
 
 @media screen and (max-width: 485px) {
-  .view-dropdown {
+  .view-dropdown,
+  .condensed-checkbox {
     display: none;
   }
   // On phones, keep only the preset selector (dropdown) — the save/new/delete actions

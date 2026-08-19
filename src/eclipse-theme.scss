@@ -380,7 +380,7 @@ body:has(.eclipse-theme)::before {
       color: var(--channel-color);
     }
   }
-  // Row views (horizontal / stacked / condensed): the scribbler is a full-height
+  // Row views (horizontal / stacked / layered): the scribbler is a full-height
   // label band running down the channel's rounded beginning. The whole scribbler
   // is rotated 270°, so the container's LOCAL top-left / top-right corners map to
   // the VISUAL bottom-left / top-left — rounding those follows the channel's
@@ -428,7 +428,7 @@ body:has(.eclipse-theme)::before {
     border-color: rgba(0, 0, 0, 0.45);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
   }
-  // Horizontal / stacked / condensed: the lane itself is transparent. The
+  // Horizontal / stacked / layered: the lane itself is transparent. The
   // key-side and sequencer SECTIONS each render as their own rounded card
   // floating on the lit background (see the section-cards block below), so the
   // lane no longer carries a veil, border or divider of its own.
@@ -528,7 +528,9 @@ body:has(.eclipse-theme)::before {
     display: inline-flex;
     flex-direction: column;
     justify-content: center;
-    height: 99px;
+    // one row plus 2px of deliberate overflow onto the row below — the card
+    // overlap that makes the per-card top bevels read as seams (see below)
+    height: $channelHeight + 2px;
     margin-top: 0;
     // left padding matches the standard module gap (≈ the gap before the RATE
     // dropdown) so the sequence section begins like the dark theme
@@ -550,7 +552,7 @@ body:has(.eclipse-theme)::before {
   }
   // Stacked view: the auxiliary (sequence) row's card flows out of ITS OWN sticky
   // header, just like the key card does in the primary row — borderless + flush on
-  // the left. (In horizontal/condensed the sequencer is a standalone gapped card,
+  // the left. (In horizontal the sequencer is a standalone gapped card,
   // so this is scoped to .stacked-auxiliary; the second selector keeps the aux row
   // flush when muted too.)
   .stacked-auxiliary .sequencer,
@@ -566,6 +568,20 @@ body:has(.eclipse-theme)::before {
     // (The sticky-aux already escapes via its own z-index:1999.)
     position: relative;
     z-index: 1;
+  }
+  // Layered view: the aux sequencer card's 2px overflow would land on the NEXT
+  // channel's key card and paint over the top bevel that draws the seam between
+  // channels — the same black-seam problem as stacked's first aux row, but at every
+  // sequencer→key boundary. Do NOT solve it by z-lifting the key card: the axis
+  // knob inside it carries a fixed full-viewport ::before backdrop (RotaryKnob.scss,
+  // z-index:-1, transparent at rest), and giving the key section a stacking context
+  // hoists that invisible backdrop above the page, where it swallows every click on
+  // "empty" space (selection, the add-channel button, scrollbar drags) and re-anchors
+  // the absolutely-positioned .arrow-small. Instead trim the card flush to its row so
+  // the next channel's own top bevel stays exposed. (The card's top overlap onto its
+  // own key card is still handled by the .stacked-auxiliary z-lift above.)
+  .channel-layered .sequencer {
+    height: $channelHeight;
   }
   // Channel-card borders: a dark stroke next to a light stroke for a touch of
   // beveled depth — a dark outer edge with a light highlight just inside the top.
@@ -769,6 +785,19 @@ body:has(.eclipse-theme)::before {
   // ── Header: an elevated charcoal bar with a cool top-stroke ────────────────
   // ── Header: a sleek "control deck" — glass panel + iridescent corona rim ────
   #header {
+    // Condensed checkbox: the same neutral "control deck" glass tile as the
+    // header's dropdowns (NOT the body dropdowns' blue accent surface, which
+    // stands out up here), hover-brightening the same way, with the mark in the
+    // header control text color.
+    .condensed-checkbox .checkbox {
+      @include ec-hdr;
+      @include hover {
+        @include ec-hdr($ecHdrTileHovTop, $ecHdrTileHovBot);
+      }
+      .checkmark {
+        background-color: $ecHdrText;
+      }
+    }
     background-color: $ecHdrDeckBot;
     // a faint cool corona glow blooming from the top, over the glass gradient
     background-image: radial-gradient(110% 160% at 50% -10%, rgba(96, 124, 200, 0.16) 0%, rgba(96, 124, 200, 0) 55%),

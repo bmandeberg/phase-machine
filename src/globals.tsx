@@ -84,7 +84,9 @@ document.addEventListener('keyup', (e) => {
 
 export const CHORUS_ENABLED = !BROWSER.name?.includes('Safari')
 
-export const VIEWS = ['horizontal', 'stacked', 'condensed', 'clock']
+// Layouts only — "condensed" is a separate modifier (a per-channel control whitelist
+// any layout can apply), not a view. See the `condensed` state in App.tsx.
+export const VIEWS = ['horizontal', 'stacked', 'layered', 'clock']
 
 export const SECTIONS = ['key', 'piano', 'sequence']
 

@@ -14,6 +14,18 @@
     background-color: $green;
     border: $green;
   }
+  // The mark, drawn as a mask so its color is just background-color — themes
+  // override it (see the .condensed-checkbox rules in the *-theme.scss files).
+  // The url must be literal at this call site: passing it through a mixin breaks
+  // Sass's asset-path rewriting (see mask-icon in sass-globals.scss).
+  .checkmark {
+    width: 100%;
+    height: 100%;
+    -webkit-mask-image: url('../assets/checkmark.svg');
+    mask-image: url('../assets/checkmark.svg');
+    @include mask-icon(contain);
+    background-color: #ffffff;
+  }
 }
 
 .checkmark-container {

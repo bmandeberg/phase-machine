@@ -582,10 +582,23 @@
   width: max-content;
 }
 
-// Condensed view: most controls (the MODE toggle, Swing modules, etc.) are
-// omitted in the JSX — see CondensedView.tsx. Mute/Solo stack vertically in every
-// view now (see MuteSolo.scss).
+// Layered view: stacked's structure, but each channel's aux (sequencer) row is
+// pinned one row below its own channel (top: CHANNEL_HEIGHT in StackedView.tsx)
+// instead of pooling below all the channels. The channel box keeps stacked's
+// one-row geometry — so every per-row theme treatment (borders, bevels, washes)
+// applies to each row unchanged — and the aux row's flow space is reserved by a
+// margin that the absolutely-positioned aux row paints into.
+.channel-layered {
+  margin-bottom: $channelHeight; // one full aux row
+}
+
+// Condensed modifier (any view): most controls (the MODE toggle, Swing modules,
+// etc.) are omitted in the JSX — see the views' `condensed` prop. Mute/Solo stack
+// vertically in every view now (see MuteSolo.scss).
 .channel-condensed {
+  // tightens the gap left where velocity used to sit. Tuned for the row views;
+  // in clock this out-orders .channel-clock's 16px (equal specificity, later in
+  // the file), shaving an invisible 2px — fine.
   .channel-primary {
     margin-right: 14px;
   }
@@ -722,7 +735,7 @@
 
 .scribbler {
   // Pinning is handled by the sticky .channel-sticky header wrapper that contains
-  // it (horizontal/stacked/condensed). Clock view re-positions it to absolute.
+  // it (horizontal/stacked/layered). Clock view re-positions it to absolute.
   box-sizing: border-box;
   display: inline-block;
   vertical-align: middle;

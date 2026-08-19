@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid'
 import arrayMove from 'array-move'
 import {
   MAX_CHANNELS,
-  VIEWS,
+  CHANNEL_HEIGHT,
   SECTIONS,
   DEFAULT_PRESET,
   DEFAULT_PRESETS,
@@ -47,11 +47,22 @@ if (!window.localStorage.getItem('presets')) {
   window.localStorage.setItem('activePreset', defaultPresets[0].id)
 }
 
+// Pre-modifier migration: 'condensed' used to be a fifth view (the pared-down
+// horizontal layout); it's now a modifier flag any layout can apply. Rewrite the
+// stored prefs once, here at module scope, so the initialView/initialCondensed
+// initializers below stay plain reads with no ordering coupling between them.
+if (window.localStorage.getItem('view') === 'condensed') {
+  window.localStorage.setItem('view', 'horizontal')
+  if (window.localStorage.getItem('condensed') === null) {
+    window.localStorage.setItem('condensed', 'true')
+  }
+}
+
 // Each channel's left edge (number, scribbler, mute/solo) lives in a sticky header
 // that floats over the horizontally-scrolling body. The "Scroll To" buttons jump to
 // the piano / sequencer, so their target must clear that pinned header — otherwise
 // the section lands partly behind it. Offset each target by the live width of its
-// channel's sticky header (it differs per view — ~97px horizontal, ~103px condensed),
+// channel's sticky header (it varies — ~97px, ~103px with the condensed modifier),
 // plus a hair to clear the header's elevation shadow (which paints past its box edge
 // and isn't counted in offsetWidth), so the section sits just past the header.
 const STICKY_SHADOW = 8
@@ -64,8 +75,8 @@ function sectionScrollPositions(): number[] {
   // Scroll to the sequencer's left edge (a direct child of .channel), pulled back by
   // the sticky header's width via offsetFor so the section clears the pinned header.
   // NB: we deliberately target .sequencer itself, not the .channel-module.border
-  // divider just before it — that divider is display:none in the horizontal/condensed
-  // views this runs in, so its offsetLeft is 0, which broke both the sequence scroll
+  // divider just before it — that divider is display:none in the horizontal view
+  // this runs in, so its offsetLeft is 0, which broke both the sequence scroll
   // target (clamped to ~0, "doesn't scroll") and the section highlight (scrollLeft >= a
   // negative position is always true, pinning it to "sequence").
   const seq = document.querySelector('.sequencer') as HTMLElement | null
@@ -86,6 +97,9 @@ export default function App() {
   const [view, setView] = useState(initialView)
   const viewRef = useRef<string | undefined>(undefined)
   viewRef.current = view
+  // The condensed modifier: any layout minus the per-channel controls outside the
+  // whitelist (see the views' `condensed` prop). Orthogonal to `view`.
+  const [condensed, setCondensed] = useState(initialCondensed)
 
   const [restartChannels, setRestartChannels] = useState(true)
   const [resetTransport, setResetTransport] = useState(false)
@@ -226,6 +240,10 @@ export default function App() {
     }, 500)
   }, [view])
 
+  useEffect(() => {
+    window.localStorage.setItem('condensed', String(condensed))
+  }, [condensed])
+
   // init scrolling
 
   const topGradient = useRef<HTMLDivElement | null>(null)
@@ -234,7 +252,7 @@ export default function App() {
     const containerEl = container.current
     if (!containerEl) return
     function handleScroll() {
-      if (viewRef.current === 'horizontal' || viewRef.current === 'condensed') {
+      if (viewRef.current === 'horizontal') {
         const scrollPositions = sectionScrollPositions()
         let scrollEl = 0
         for (let i = 0; i < SECTIONS.length; i++) {
@@ -262,7 +280,7 @@ export default function App() {
 
   const updateView = useCallback((view: string) => {
     viewRef.current = view
-    if (view === 'horizontal' || view === 'condensed') {
+    if (view === 'horizontal') {
       setScrollTo(SECTIONS[0])
     }
     setView(view)
@@ -771,6 +789,7 @@ export default function App() {
           resizing={resizing}
           setResizing={setResizing}
           view={view}
+          condensed={condensed}
           // count of OTHER soloed channels (exclude this one's own contribution) so a
           // channel's own solo toggle can't transiently mis-mute it — see Channel's `muted`
           numOtherChannelsSoloed={numChannelsSoloed - (d.solo ? 1 : 0)}
@@ -833,6 +852,7 @@ export default function App() {
       theme,
       uiState.channels,
       view,
+      condensed,
     ]
   )
 
@@ -870,6 +890,8 @@ export default function App() {
         midiUnavailableReason={midiUnavailableReason}
         view={view}
         setView={updateView}
+        condensed={condensed}
+        setCondensed={setCondensed}
         scrollTo={scrollTo}
         setScrollTo={doScroll}
         channelSync={channelSync}
@@ -901,10 +923,17 @@ export default function App() {
           <div className="channels-flex">
             <div className="channels-container">
               {channels}
-              {view === 'stacked' && (
+              {/* The stacked/layered aux (sequencer) rows are absolutely positioned, so
+                  they reserve no scroll extent of their own: this spacer provides the
+                  horizontal extent for both, and the vertical extent for stacked's
+                  pooled-below-the-channels rows (layered's live inside their channel). */}
+              {(view === 'stacked' || view === 'layered') && (
                 <div
                   className="stacked-spacer"
-                  style={{ height: numChannels * 97, minWidth: longestAuxChannel + 'px' }}></div>
+                  style={{
+                    height: view === 'stacked' ? numChannels * CHANNEL_HEIGHT : 0,
+                    minWidth: longestAuxChannel + 'px',
+                  }}></div>
               )}
               {numChannels > 0 && numChannels < MAX_CHANNELS && <AddChannel addChannel={addChannel} />}
             </div>
@@ -1082,15 +1111,24 @@ function initializeUiState(): Preset {
   return activePatch
 }
 
-// Initial view: a stored preference always wins (switching views persists it). With no
-// stored view, phones default to the most compact 'condensed' layout; everything else
-// keeps the 'stacked' default. "Phone" = a touch device whose shorter screen edge is
-// under 500px — phones sit ~360–430px there in any orientation, tablets ≥ ~740px.
-function initialView(): string {
-  const stored = window.localStorage.getItem('view')
-  if (stored) return stored
-  const isPhone =
+// "Phone" = a touch device whose shorter screen edge is under 500px — phones sit
+// ~360–430px there in any orientation, tablets ≥ ~740px.
+function isPhone(): boolean {
+  return (
     window.matchMedia('(hover: none) and (pointer: coarse)').matches &&
     Math.min(window.screen.width, window.screen.height) < 500
-  return isPhone ? 'condensed' : VIEWS[1]
+  )
+}
+
+// Initial view: a stored preference always wins (switching views persists it; a legacy
+// stored 'condensed' was rewritten by the module-scope migration above). With no stored
+// view, everything defaults to 'stacked' except phones, which get the most compact
+// combination: 'horizontal' + condensed (see initialCondensed).
+function initialView(): string {
+  return window.localStorage.getItem('view') ?? (isPhone() ? 'horizontal' : 'stacked')
+}
+
+// Initial condensed modifier: stored preference wins; phones default it on.
+function initialCondensed(): boolean {
+  return JSON.parse(window.localStorage.getItem('condensed') as string) ?? isPhone()
 }

@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import classNames from 'classnames'
-import checkmark from '../assets/checkmark.svg'
 import './Checkbox.scss'
 
 interface CheckboxProps {
@@ -17,8 +16,10 @@ export default function Checkbox({ label, className, checked, setChecked }: Chec
 
   return (
     <div className={classNames('checkmark-container', className)}>
+      {/* The mark is a CSS-masked div (not an <img>) so themes can recolor it with a
+          plain background-color — same technique as the header's gear/? icons. */}
       <div className={classNames('checkbox', { checked: checked })} onClick={toggle}>
-        {checked && <img className="no-select" src={checkmark} alt="" />}
+        {checked && <div className="checkmark" />}
       </div>
       <p className="checkmark-label no-select" onClick={toggle}>
         {label}

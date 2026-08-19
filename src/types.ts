@@ -7,7 +7,7 @@ import type * as Tone from 'tone'
 import type { RhythmSampler } from './rhythmSampler'
 
 export type Theme = 'dark' | 'light' | 'contrast' | 'aero' | 'coquette' | 'eclipse'
-export type View = 'horizontal' | 'stacked' | 'condensed' | 'clock'
+export type View = 'horizontal' | 'stacked' | 'layered' | 'clock'
 export type Section = 'key' | 'piano' | 'sequence'
 
 // Shorthand for a React state setter (the second tuple element of useState).

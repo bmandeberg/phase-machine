@@ -9,6 +9,7 @@ import RotaryKnob from './RotaryKnob'
 import Dropdown from './Dropdown'
 import Presets from './Presets'
 import RadioButtons from './RadioButtons'
+import Checkbox from './Checkbox'
 import { Preset } from '../types'
 import logo from '../assets/logo.svg'
 import logoDark from '../assets/logo-dark.svg'
@@ -45,6 +46,8 @@ interface HeaderProps {
   midiUnavailableReason?: string | null
   view?: string
   setView: any
+  condensed?: boolean
+  setCondensed: (condensed: boolean) => void
   scrollTo?: string
   setScrollTo: any
   channelSync?: boolean
@@ -117,7 +120,7 @@ export default class Header extends React.Component<HeaderProps> {
         e.preventDefault()
         this.playStop()
       }
-      if (this.props.view === 'horizontal' || this.props.view === 'condensed') {
+      if (this.props.view === 'horizontal') {
         // z / x / c jump to the key / piano / sequence sections. (Moved off a / s / d so
         // 's' is free for the solo-selected-channels hotkey; 'm'/'s' now act on selection.)
         switch (e.key) {
@@ -220,13 +223,6 @@ export default class Header extends React.Component<HeaderProps> {
           max={300}
           small
         />
-        <RadioButtons
-          className="header-item view-buttons"
-          label="View"
-          options={VIEWS}
-          selected={this.props.view}
-          setSelected={this.props.setView}
-        />
         <Dropdown
           className="header-item view-dropdown"
           label="View"
@@ -234,6 +230,12 @@ export default class Header extends React.Component<HeaderProps> {
           setValue={this.props.setView}
           value={this.props.view}
           small
+        />
+        <Checkbox
+          className="header-item condensed-checkbox"
+          label="Condensed"
+          checked={this.props.condensed}
+          setChecked={this.props.setCondensed}
         />
         <Dropdown
           className="header-item midi-dropdown"
@@ -255,7 +257,7 @@ export default class Header extends React.Component<HeaderProps> {
           noOptions={this.props.midiUnavailableReason ?? 'MIDI only works in Google Chrome'}
           small
         />
-        {(this.props.view === 'horizontal' || this.props.view === 'condensed') && (
+        {this.props.view === 'horizontal' && (
           <RadioButtons
             className="header-item scroll-to"
             label="Scroll To"

@@ -9,6 +9,11 @@ type HorizontalViewProps = UIElements & {
   muted: boolean
   color: string
   channelNum: number
+  // Condensed modifier: the same single inline row, but only the whitelisted controls
+  // (key/piano + rate/movement, sequencer + length/rate/movement) render — everything
+  // else (velocity, MODE, transformations, sustain, swing, hold/restart/opposite/shift)
+  // is omitted for a denser overview. Replaces the old standalone CondensedView.
+  condensed?: boolean
   rangeMode: boolean
   arrowSmallGraphic: string | null
   seqSteps: boolean[]
@@ -37,6 +42,7 @@ function HorizontalView({
   onWrapperFocus,
   color,
   channelNum,
+  condensed,
   rangeMode,
   arrowSmallGraphic,
   seqSteps,
@@ -87,7 +93,7 @@ function HorizontalView({
       nodeRef={horizontalViewRef}>
       <div
         ref={horizontalViewRef}
-        className={classNames('channel channel-horizontal', { mute: muted, selected })}
+        className={classNames('channel channel-horizontal', { 'channel-condensed': condensed, mute: muted, selected })}
         onMouseDownCapture={onWrapperMouseDown}
         onFocusCapture={onWrapperFocus}
         style={{ '--channel-color': color } as React.CSSProperties}>
@@ -101,24 +107,34 @@ function HorizontalView({
             theme can render it as one rounded card; `.channel-section` is
             display:contents by default, so every other theme is unaffected. */}
         <div className="channel-section channel-section-key">
-          {velocityEl}
-          {notesModeEl}
+          {!condensed && (
+            <>
+              {velocityEl}
+              {notesModeEl}
+            </>
+          )}
           {keyEl}
-          <div className="transformations">
-            {rangeMode && shiftEl}
-            {rangeMode && axisNormal}
-            {rangeMode && (
-              <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />
-            )}
-            {rangeMode && flipOppositeEl}
-            {!rangeMode && midiInputModeEl}
-            {!rangeMode && clearResetEl}
-          </div>
+          {!condensed && (
+            <div className="transformations">
+              {rangeMode && shiftEl}
+              {rangeMode && axisNormal}
+              {rangeMode && (
+                <img className="arrow-small" src={arrowSmallGraphic ?? undefined} alt="" draggable="false" />
+              )}
+              {rangeMode && flipOppositeEl}
+              {!rangeMode && midiInputModeEl}
+              {!rangeMode && clearResetEl}
+            </div>
+          )}
           {pianoEl}
           {keyRateEl}
           {keyMovementEl}
-          {sustainNormal}
-          {keySwingNormal}
+          {!condensed && (
+            <>
+              {sustainNormal}
+              {keySwingNormal}
+            </>
+          )}
         </div>
         <div className="channel-module border"></div>
         <Sequencer
@@ -135,11 +151,15 @@ function HorizontalView({
             {seqLengthInline}
             {seqRateInline}
             {seqMovementInline}
-            {seqSwingInline}
-            {holdInline}
-            {seqRestartEl}
-            {seqOppositeEl}
-            {seqShiftInline}
+            {!condensed && (
+              <>
+                {seqSwingInline}
+                {holdInline}
+                {seqRestartEl}
+                {seqOppositeEl}
+                {seqShiftInline}
+              </>
+            )}
           </div>
         </Sequencer>
         {draggingChannel && dragTarget !== channelNum && dragTargetHorizontal}

@@ -242,6 +242,17 @@ body:has(.aero-theme) {
 
   // ── Header: a thin frosted aqua bar ───────────────────────────────────────
   #header {
+    // Condensed checkbox: the same flat glass surface as the header's small
+    // dropdowns, with the mark in the same ink as the surrounding control text.
+    .condensed-checkbox .checkbox {
+      @include aero-flat($glassNeutral);
+      @include hover {
+        background-color: $glassNeutralHover;
+      }
+      .checkmark {
+        background-color: $aeroText;
+      }
+    }
     // No backdrop blur: the header is fixed, so blurring would re-process the
     // whole scrolling channel list behind it every frame. A more opaque tint
     // reads as the same frosted bar without the cost.

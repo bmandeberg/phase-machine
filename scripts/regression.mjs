@@ -51,6 +51,14 @@ const playingStepIndex = () =>
     const steps = [...document.querySelectorAll('.sequence-step')]
     return steps.findIndex((s) => s.classList.contains('playing'))
   })
+// The view selector is a dropdown (with a separate "condensed" modifier checkbox):
+// open it, then click the option by its text.
+const selectView = async (view) => {
+  await page.click('.view-dropdown .dropdown-control')
+  await sleep(300)
+  await clickByText('.view-dropdown .dropdown-option', view)
+  await sleep(700)
+}
 // ---- 1. mount / render ----
 const channels0 = await count('.channel')
 ok('app mounted with channels', channels0 > 0, `channels=${channels0}`)
@@ -58,14 +66,18 @@ ok('sequencer steps render', (await count('.sequence-step')) > 0, `steps=${await
 
 // ---- 2. views ----
 {
-  await clickByText('.radio-button', 'clock')
-  await sleep(700)
+  await selectView('clock')
   ok('clock view renders', (await count('.channel.channel-clock')) > 0, `clock=${await count('.channel.channel-clock')}`)
-  await clickByText('.radio-button', 'horizontal')
-  await sleep(700)
+  await selectView('horizontal')
   ok('horizontal view renders', (await count('.channel.channel-horizontal')) > 0)
-  await clickByText('.radio-button', 'stacked')
+  // condensed modifier: toggling the checkbox marks the channels without changing view
+  await page.click('.condensed-checkbox .checkbox')
   await sleep(700)
+  ok('condensed modifier applies', (await count('.channel.channel-condensed')) > 0)
+  await page.click('.condensed-checkbox .checkbox')
+  await sleep(700)
+  ok('condensed modifier clears', (await count('.channel.channel-condensed')) === 0)
+  await selectView('stacked')
   ok('stacked view renders', (await count('.channel.channel-horizontal')) > 0)
 }
 
@@ -135,13 +147,30 @@ ok('sequencer steps render', (await count('.sequence-step')) > 0, `steps=${await
 
 // ---- 6. persistence (view survives reload) ----
 {
-  await clickByText('.radio-button', 'clock')
-  await sleep(500)
+  await selectView('clock')
   ok('view persisted to localStorage', (await ls('view')) === 'clock', `view=${await ls('view')}`)
   await page.reload({ waitUntil: 'networkidle2' })
   await page.waitForSelector('.channel', { timeout: 25000 })
   await sleep(1000)
   ok('view restored after reload', (await count('.channel.channel-clock')) > 0)
+}
+
+// ---- 7. legacy pref migration ('condensed' used to be a fifth view) ----
+{
+  await page.evaluate(() => {
+    window.localStorage.setItem('view', 'condensed')
+    window.localStorage.removeItem('condensed')
+  })
+  await page.reload({ waitUntil: 'networkidle2' })
+  await page.waitForSelector('.channel', { timeout: 25000 })
+  await sleep(700)
+  ok(
+    'legacy condensed view migrates to horizontal + flag',
+    (await ls('view')) === 'horizontal' &&
+      (await ls('condensed')) === 'true' &&
+      (await count('.channel.channel-condensed')) > 0,
+    `view=${await ls('view')} condensed=${await ls('condensed')}`
+  )
 }
 
 await page.screenshot({ path: '/tmp/pm-regression.png' })

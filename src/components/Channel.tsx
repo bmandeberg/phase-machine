@@ -24,7 +24,6 @@ import { pitchesInRange, constrain, scaleToRange, shiftSeq, rateToSeconds, shift
 import classNames from 'classnames'
 import Modal from './Modal'
 import StackedView from './channel/StackedView'
-import CondensedView from './channel/CondensedView'
 import HorizontalView from './channel/HorizontalView'
 import ClockView from './channel/ClockView'
 import useLoop from '../hooks/useLoop'
@@ -77,6 +76,7 @@ interface ChannelProps {
   resizing: boolean
   setResizing: Setter<boolean>
   view: string
+  condensed: boolean
   numOtherChannelsSoloed: number
   tempo: number
   playing: boolean
@@ -122,6 +122,7 @@ export default function Channel({
   resizing,
   setResizing,
   view,
+  condensed,
   numOtherChannelsSoloed,
   tempo,
   playing,
@@ -521,16 +522,17 @@ export default function Channel({
   const drag = useGesture({
     onDrag: ({ event, xy: [x, y] }) => {
       let hoveredChannel: any
-      if (view === 'stacked' || view === 'horizontal' || view === 'condensed') {
+      if (view === 'stacked' || view === 'horizontal') {
         const topOffset =
           62 +
           ((event.target as HTMLElement).classList.contains('auxiliary') ? numChannels * CHANNEL_HEIGHT : 0) -
           container.current!.scrollTop
         hoveredChannel = constrain(Math.round((y - topOffset) / CHANNEL_HEIGHT), 0, numChannels)
-        if (hoveredChannel !== dragChannel.current) {
-          dragChannel.current = hoveredChannel
-          setDragTarget(hoveredChannel > channelNum ? hoveredChannel - 1 : hoveredChannel)
-        }
+      } else if (view === 'layered') {
+        // each layered channel spans two rows (key row + its own sequencer row), and the
+        // aux row lives inside the channel block — no aux offset like stacked needs
+        const topOffset = 62 - container.current!.scrollTop
+        hoveredChannel = constrain(Math.round((y - topOffset) / (CHANNEL_HEIGHT * 2)), 0, numChannels)
       } else if (view === 'clock') {
         const topOffset = 62 - container.current!.scrollTop
         const column = Math.round(x / CLOCK_CHANNEL_WIDTH)
@@ -1593,9 +1595,13 @@ export default function Channel({
   const dragTargetUI = useCallback(
     (horizontal: any) => {
       const numHorizontalChannels = Math.floor(window.innerWidth / CLOCK_CHANNEL_WIDTH)
+      const rowDelta = dragTarget - channelNum + (dragTarget > channelNum ? 1 : 0)
+      // layered channels are two rows tall, and each aux row sits inside its own
+      // channel block, so no stacked-style pooled-aux offset applies
+      const layered = view === 'layered'
       const top = horizontal
-        ? (dragTarget - channelNum + (dragTarget > channelNum ? 1 : 0)) * CHANNEL_HEIGHT +
-          (dragAuxChannel.current ? numChannels * CHANNEL_HEIGHT : 0)
+        ? rowDelta * CHANNEL_HEIGHT * (layered ? 2 : 1) +
+          (!layered && dragAuxChannel.current ? numChannels * CHANNEL_HEIGHT : 0)
         : (dragRow - Math.floor(channelNum / numHorizontalChannels)) * CLOCK_CHANNEL_HEIGHT
       let left
       if (horizontal) {
@@ -1621,7 +1627,7 @@ export default function Channel({
           style={{ top, left, backgroundColor: color }}></div>
       )
     },
-    [channelNum, color, dragRow, dragTarget, numChannels]
+    [channelNum, color, dragRow, dragTarget, numChannels, view]
   )
 
   const dragTargetHorizontal = useMemo(() => dragTargetUI(true), [dragTargetUI])
@@ -1761,6 +1767,7 @@ export default function Channel({
 
   switch (view) {
     case 'stacked':
+    case 'layered':
       return (
         <StackedView
           {...ui}
@@ -1772,33 +1779,10 @@ export default function Channel({
           color={color}
           channelNum={channelNum}
           numChannels={numChannels}
+          layered={view === 'layered'}
+          condensed={condensed}
           rangeMode={rangeMode}
           arrowSmallGraphic={arrowSmallGraphic}
-          seqSteps={seqSteps}
-          setSeqSteps={mSetSeqStepsToggle}
-          seqLength={seqLength}
-          seqPreview={seqPreview}
-          showSeqPreview={showSeqPreview}
-          playingStep={playingStep}
-          showStepNumbers={showStepNumbers}
-          longestSequence={longestSequence}
-          draggingChannel={draggingChannel}
-          dragTarget={dragTarget}
-          dragTargetHorizontal={dragTargetHorizontal}
-          modalEl={modalEl}
-        />
-      )
-    case 'condensed':
-      return (
-        <CondensedView
-          {...ui}
-          flash={flash}
-          muted={muted}
-          selected={selected}
-          onWrapperMouseDown={onWrapperMouseDown}
-          onWrapperFocus={onWrapperFocus}
-          color={color}
-          channelNum={channelNum}
           seqSteps={seqSteps}
           setSeqSteps={mSetSeqStepsToggle}
           seqLength={seqLength}
@@ -1824,6 +1808,7 @@ export default function Channel({
           onWrapperFocus={onWrapperFocus}
           color={color}
           channelNum={channelNum}
+          condensed={condensed}
           rangeMode={rangeMode}
           arrowSmallGraphic={arrowSmallGraphic}
           seqSteps={seqSteps}
@@ -1851,6 +1836,7 @@ export default function Channel({
           onWrapperFocus={onWrapperFocus}
           color={color}
           channelNum={channelNum}
+          condensed={condensed}
           rangeMode={rangeMode}
           arrowClockGraphic={arrowClockGraphic}
           seqSteps={seqSteps}
