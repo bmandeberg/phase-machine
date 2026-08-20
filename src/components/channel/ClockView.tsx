@@ -106,19 +106,22 @@ function ClockView({
             {!condensed && velocityEl}
             {!condensed && fifthsEl}
           </div>
-          {!condensed && (
-            <>
-              <div className="channel-vertical left-vertical">
+          {/* The column keeps its fixed width when condensed empties it: the clock's
+              width is the same either way, so dropping it from the flow would slide
+              the clock (and everything right of it) sideways as condensed toggles. */}
+          <div className="channel-vertical left-vertical">
+            {!condensed && (
+              <>
                 {notesModeEl}
                 {rangeMode && shiftEl}
                 {rangeMode && flipOppositeEl}
                 {!rangeMode && midiInputModeEl}
                 {!rangeMode && clearResetEl}
                 {/* {keyViewTypeEl} */}
-              </div>
-              {rangeMode && <img className="arrow-clock" src={arrowClockGraphic ?? undefined} alt="" />}
-            </>
-          )}
+              </>
+            )}
+          </div>
+          {!condensed && rangeMode && <img className="arrow-clock" src={arrowClockGraphic ?? undefined} alt="" />}
           {axisClock}
           <div className="channel-vertical">
             {keyMovementEl}

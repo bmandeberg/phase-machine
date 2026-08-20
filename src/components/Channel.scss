@@ -316,6 +316,12 @@
     width: 61px;
     margin-top: 16px;
   }
+  // The right-hand column is sized by its widest row (Rate + Sustain). Condensed
+  // drops Sustain and Swing, so pin the width the full set produces — otherwise
+  // the Movement dropdown, which fills this column, resizes as condensed toggles.
+  .channel-vertical:not(.left-vertical) {
+    width: 148px;
+  }
   .key {
     margin-top: 1px;
     margin-right: 32px;
@@ -615,10 +621,10 @@
 // etc.) are omitted in the JSX — see the views' `condensed` prop. Mute/Solo stack
 // vertically in every view now (see MuteSolo.scss).
 .channel-condensed {
-  // tightens the gap left where velocity used to sit. Tuned for the row views;
-  // in clock this out-orders .channel-clock's 16px (equal specificity, later in
-  // the file), shaving an invisible 2px — fine.
-  .channel-primary {
+  // tightens the gap left where velocity used to sit. Row views only: clock view
+  // keeps its 16px, because there the controls after this one hold their exact
+  // position as condensed toggles (see ClockView's reserved left column).
+  &:not(.channel-clock) .channel-primary {
     margin-right: 14px;
   }
 }
