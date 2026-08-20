@@ -71,6 +71,7 @@ The Phase Machine is inspired by <a href="https://en.wikipedia.org/wiki/Post-ton
       'Hotkey Restart Sequencer',
       'Default channel mode',
       'Presets restart timeline',
+      'ignore presets midi channels',
       'Knob type',
       'theme',
       'export presets',

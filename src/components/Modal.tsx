@@ -72,6 +72,8 @@ interface ModalProps {
   setMidiClockOut?: any
   ignorePresetsTempo?: boolean
   setIgnorePresetsTempo?: any
+  ignorePresetsMidiChannels?: boolean
+  setIgnorePresetsMidiChannels?: any
   presetsStopTransport?: boolean
   setPresetsStopTransport?: any
   channelMidiAssignments?: ChannelMidiAssignment[]
@@ -135,6 +137,8 @@ export default function Modal({
   setMidiClockOut,
   ignorePresetsTempo,
   setIgnorePresetsTempo,
+  ignorePresetsMidiChannels,
+  setIgnorePresetsMidiChannels,
   presetsStopTransport,
   setPresetsStopTransport,
   channelMidiAssignments,
@@ -210,6 +214,8 @@ export default function Modal({
         setMidiClockOut={setMidiClockOut}
         ignorePresetsTempo={ignorePresetsTempo}
         setIgnorePresetsTempo={setIgnorePresetsTempo}
+        ignorePresetsMidiChannels={ignorePresetsMidiChannels}
+        setIgnorePresetsMidiChannels={setIgnorePresetsMidiChannels}
         presetsStopTransport={presetsStopTransport}
         setPresetsStopTransport={setPresetsStopTransport}
         channelMidiAssignments={channelMidiAssignments}
@@ -223,6 +229,7 @@ export default function Modal({
       setChannelMidiInAssignment,
       defaultChannelModeKeybd,
       ignorePresetsTempo,
+      ignorePresetsMidiChannels,
       importPresets,
       midiClockIn,
       midiClockOut,
@@ -231,6 +238,7 @@ export default function Modal({
       presetsRestartTransport,
       setDefaultChannelModeKeybd,
       setIgnorePresetsTempo,
+      setIgnorePresetsMidiChannels,
       setMidiClockIn,
       setMidiClockOut,
       setPresetsRestartTransport,

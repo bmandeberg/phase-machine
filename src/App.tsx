@@ -172,31 +172,41 @@ export default function App() {
 
   // settings
 
+  // Lazy initializers throughout: App re-renders constantly (every channel edit, every
+  // transport tick that changes state), and a plain initializer would re-read localStorage
+  // and re-parse on each of those renders even though only the first one is used.
   const [showStepNumbers, setShowStepNumbers] = useState(
-    JSON.parse(window.localStorage.getItem('showStepNumbers') as string) ?? true
+    () => JSON.parse(window.localStorage.getItem('showStepNumbers') as string) ?? true
   )
 
-  const [theme, setTheme] = useState(window.localStorage.getItem('theme') ?? 'eclipse')
+  const [theme, setTheme] = useState(() => window.localStorage.getItem('theme') ?? 'eclipse')
 
   const [defaultChannelModeKeybd, setDefaultChannelModeKeybd] = useState(
-    JSON.parse(window.localStorage.getItem('defaultChannelModeKeybd') as string) ?? false
+    () => JSON.parse(window.localStorage.getItem('defaultChannelModeKeybd') as string) ?? false
   )
 
   const [presetsRestartTransport, setPresetsRestartTransport] = useState(
-    JSON.parse(window.localStorage.getItem('presetsRestartTransport') as string) ?? true
+    () => JSON.parse(window.localStorage.getItem('presetsRestartTransport') as string) ?? true
   )
 
   const [presetsStopTransport, setPresetsStopTransport] = useState(
-    JSON.parse(window.localStorage.getItem('presetsStopTransport') as string) ?? true
+    () => JSON.parse(window.localStorage.getItem('presetsStopTransport') as string) ?? true
   )
 
   const [ignorePresetsTempo, setIgnorePresetsTempo] = useState(
-    JSON.parse(window.localStorage.getItem('ignorePresetsTempo') as string) ?? false
+    () => JSON.parse(window.localStorage.getItem('ignorePresetsTempo') as string) ?? false
+  )
+
+  // Pin MIDI channel routing to the live session: loading a preset keeps whatever routing
+  // the channels are already using, and saving over a preset leaves its stored routing
+  // alone. For rigs where the routing belongs to the hardware, not to the patch.
+  const [ignorePresetsMidiChannels, setIgnorePresetsMidiChannels] = useState(
+    () => JSON.parse(window.localStorage.getItem('ignorePresetsMidiChannels') as string) ?? false
   )
 
   // Global output attenuator (0..1, 1 = unity / 100%). Applied to the master.
   const [globalVolume, setGlobalVolume] = useState(
-    JSON.parse(window.localStorage.getItem('globalVolume') as string) ?? 1
+    () => JSON.parse(window.localStorage.getItem('globalVolume') as string) ?? 1
   )
 
   useEffect(() => {
@@ -222,6 +232,10 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('ignorePresetsTempo', ignorePresetsTempo)
   }, [ignorePresetsTempo])
+
+  useEffect(() => {
+    window.localStorage.setItem('ignorePresetsMidiChannels', ignorePresetsMidiChannels)
+  }, [ignorePresetsMidiChannels])
 
   useEffect(() => {
     window.localStorage.setItem('globalVolume', globalVolume)
@@ -341,7 +355,8 @@ export default function App() {
       setPlaying,
       midiOutRef,
       midiInRef,
-      ignorePresetsTempo
+      ignorePresetsTempo,
+      ignorePresetsMidiChannels
     )
 
   // channel management
@@ -1023,6 +1038,8 @@ export default function App() {
           importPresets={importPresets}
           ignorePresetsTempo={ignorePresetsTempo}
           setIgnorePresetsTempo={setIgnorePresetsTempo}
+          ignorePresetsMidiChannels={ignorePresetsMidiChannels}
+          setIgnorePresetsMidiChannels={setIgnorePresetsMidiChannels}
           presetsStopTransport={presetsStopTransport}
           setPresetsStopTransport={setPresetsStopTransport}
           channelMidiAssignments={channelMidiAssignments}

@@ -32,6 +32,8 @@ interface SettingsProps {
   setMidiClockOut: any
   ignorePresetsTempo?: boolean
   setIgnorePresetsTempo: any
+  ignorePresetsMidiChannels?: boolean
+  setIgnorePresetsMidiChannels: any
   presetsStopTransport?: boolean
   setPresetsStopTransport: any
   channelMidiAssignments?: ChannelMidiAssignment[]
@@ -58,6 +60,8 @@ export default function Settings({
   setMidiClockOut,
   ignorePresetsTempo,
   setIgnorePresetsTempo,
+  ignorePresetsMidiChannels,
+  setIgnorePresetsMidiChannels,
   presetsStopTransport,
   setPresetsStopTransport,
   channelMidiAssignments,
@@ -77,6 +81,46 @@ export default function Settings({
   const onColor = useMemo(() => themedSwitch('onColor', theme), [theme])
   const offHandleColor = useMemo(() => themedSwitch('offHandleColor', theme, false), [theme])
   const onHandleColor = useMemo(() => themedSwitch('onHandleColor', theme), [theme])
+
+  // the props every Switch in this modal shares (same shape MIDIModal uses)
+  const switchProps = useMemo(
+    () => ({
+      uncheckedIcon: false as const,
+      checkedIcon: false as const,
+      offColor,
+      onColor,
+      offHandleColor,
+      onHandleColor,
+      width: 48,
+      height: 24,
+    }),
+    [offColor, onColor, offHandleColor, onHandleColor]
+  )
+
+  // Every plain on/off preference is this same labelled row — declare them as data so a
+  // change to the switch (sizing, theme wiring, a11y) lands in one place. The order here
+  // is the order they render in.
+  const toggles: { label: string; checked?: boolean; onChange: (checked: boolean) => void }[] = [
+    { label: 'Show step numbers', checked: showStepNumbers, onChange: setShowStepNumbers },
+    { label: 'Presets restart timeline', checked: presetsRestartTransport, onChange: setPresetsRestartTransport },
+    { label: 'Presets stop timeline', checked: presetsStopTransport, onChange: setPresetsStopTransport },
+    { label: 'MIDI clock in', checked: midiClockIn, onChange: setMidiClockIn },
+    { label: 'MIDI clock out', checked: midiClockOut, onChange: setMidiClockOut },
+  ]
+  const presetIgnoreToggles: typeof toggles = [
+    { label: 'Ignore presets tempo', checked: ignorePresetsTempo, onChange: setIgnorePresetsTempo },
+    {
+      label: 'Ignore presets MIDI channels',
+      checked: ignorePresetsMidiChannels,
+      onChange: setIgnorePresetsMidiChannels,
+    },
+  ]
+  const toggleEl = ({ label, checked, onChange }: (typeof toggles)[number]) => (
+    <div className="settings-item" key={label}>
+      <p className="settings-label">{label}</p>
+      <Switch className="instrument-switch" onChange={onChange} checked={checked ?? false} {...switchProps} />
+    </div>
+  )
 
   const presetNames = useMemo(() => presets.map((p) => p.name), [presets])
   const [selectedPresets, setSelectedPresets] = useState<string[]>([])
@@ -128,86 +172,7 @@ export default function Settings({
 
   return (
     <div className="settings">
-      <div className="settings-item">
-        <p className="settings-label">Show step numbers</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setShowStepNumbers}
-          checked={showStepNumbers ?? false}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
-      </div>
-      <div className="settings-item">
-        <p className="settings-label">Presets restart timeline</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setPresetsRestartTransport}
-          checked={presetsRestartTransport ?? false}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
-      </div>
-      <div className="settings-item">
-        <p className="settings-label">Presets stop timeline</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setPresetsStopTransport}
-          checked={presetsStopTransport ?? false}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
-      </div>
-      <div className="settings-item">
-        <p className="settings-label">MIDI clock in</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setMidiClockIn}
-          checked={midiClockIn ?? false}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
-      </div>
-      <div className="settings-item">
-        <p className="settings-label">MIDI clock out</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setMidiClockOut}
-          checked={midiClockOut ?? false}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
-      </div>
+      {toggles.map(toggleEl)}
       <MidiMatrix
         label="MIDI out matrix"
         channels={channelMidiAssignments ?? NO_CHANNELS}
@@ -222,22 +187,7 @@ export default function Settings({
         onAssign={setChannelMidiInAssignment}
         modalType={modalType}
       />
-      <div className="settings-item">
-        <p className="settings-label">Ignore presets tempo</p>
-        <Switch
-          className="instrument-switch"
-          onChange={setIgnorePresetsTempo}
-          checked={ignorePresetsTempo ?? false}
-          uncheckedIcon={false}
-          checkedIcon={false}
-          offColor={offColor}
-          onColor={onColor}
-          offHandleColor={offHandleColor}
-          onHandleColor={onHandleColor}
-          width={48}
-          height={24}
-        />
-      </div>
+      {presetIgnoreToggles.map(toggleEl)}
       <div className="settings-item">
         <p className="settings-label">Default channel mode</p>
         <div className="switch-container inline">
@@ -250,14 +200,10 @@ export default function Settings({
             className="switch"
             onChange={setDefaultChannelModeKeybd}
             checked={defaultChannelModeKeybd ?? false}
-            uncheckedIcon={false}
-            checkedIcon={false}
-            offColor={offColor}
-            onColor={onColor}
+            {...switchProps}
+            // this one is a labelled either/or, not an on/off — the handle keeps the
+            // "on" color in both positions
             offHandleColor={onHandleColor}
-            onHandleColor={onHandleColor}
-            width={48}
-            height={24}
           />
           <p
             onClick={setKeybdModeDefault}

@@ -9,6 +9,37 @@ import * as Tone from 'tone'
 import { alertDialog } from '../dialog'
 import { Channel, Preset, Setter, MidiOutRef, MidiInRef } from '../types'
 
+// The per-channel fields that make up MIDI channel routing — exactly what the two
+// Settings matrices edit: the output channel set, and the input channel filter. These
+// are what the global "Ignore presets MIDI channels" setting decouples from presets, in
+// both directions (a load doesn't take them, saving over a preset doesn't store them).
+// The single source of truth for both halves: the carry-over below copies them, and the
+// dirty check exempts them.
+const MIDI_ROUTING_FIELDS = [
+  'midiOutChannels',
+  'customMidiInChannel',
+  'midiInChannel',
+] as const satisfies readonly (keyof Channel)[]
+const MIDI_ROUTING_FIELD_SET: ReadonlySet<string> = new Set(MIDI_ROUTING_FIELDS)
+
+// Copy the MIDI routing of `from`'s channels onto `to`'s, matched by position — channel 1
+// keeps channel 1's routing. Channels past the end of `from` (a preset with more channels
+// than the session it's landing in) keep their own. Mutates `to`, whose channels are
+// always a fresh copy at both call sites.
+function carryOverMidiRouting(from: Channel[], to: Channel[]) {
+  to.forEach((channel, i) => {
+    const source = from[i]
+    if (!source) return
+    MIDI_ROUTING_FIELDS.forEach((field) => {
+      const value = source[field]
+      // keyed writes across a heterogeneous field list — the same dynamic access the
+      // dirty check below does. Array values are cloned so the two presets never share one.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(channel as any)[field] = Array.isArray(value) ? value.slice() : value
+    })
+  })
+}
+
 export default function usePresets(
   setUIState: Setter<Preset>,
   channelSync: boolean,
@@ -31,7 +62,8 @@ export default function usePresets(
   setPlaying: Setter<boolean>,
   midiOutRef: MidiOutRef,
   midiInRef: MidiInRef,
-  ignorePresetsTempo: boolean
+  ignorePresetsTempo: boolean,
+  ignorePresetsMidiChannels: boolean
 ) {
   // state management for presets
 
@@ -118,6 +150,9 @@ export default function usePresets(
             const channel = ui[param][i]
             const presetChannel = cur[param][i]
             for (const channelParam in channel) {
+              // with MIDI channels ignored, routing belongs to the live rig rather than
+              // to the preset, so a routing difference must not read as an unsaved edit
+              if (ignorePresetsMidiChannels && MIDI_ROUTING_FIELD_SET.has(channelParam)) continue
               if (channel.hasOwnProperty(channelParam) && channelParam !== 'id') {
                 if (['key', 'seqSteps', 'keybdPitches', 'midiOutChannels'].some((s) => s === channelParam)) {
                   // compare arrays element-wise (keybdPitches/midiOutChannels grow and shrink)
@@ -157,21 +192,28 @@ export default function usePresets(
     }
     /* eslint-enable @typescript-eslint/no-explicit-any */
     return false
-  }, [currentPreset, ignorePresetsTempo, uiState])
+  }, [currentPreset, ignorePresetsMidiChannels, ignorePresetsTempo, uiState])
 
   // preset actions
 
   const setPreset = useCallback(
     (presetID: string) => {
       const preset = presets.find((p) => p.id === presetID)!
-      setCurrentPreset(deepStateCopy(preset))
-      setRestartChannels(presetsRestartTransport)
-      setUIState(deepStateCopy(preset))
-      setNumChannels(preset.numChannels)
-      if (!ignorePresetsTempo) {
-        setTempo(preset.tempo)
+      const loaded = deepStateCopy(preset)
+      // Keep the routing the session is already using instead of the preset's. Applied to
+      // the saved-preset baseline as well as the active patch, so the channels that get
+      // re-applied from it (preset re-select, undo/redo) carry the live routing too.
+      if (ignorePresetsMidiChannels) {
+        carryOverMidiRouting(uiState.channels, loaded.channels)
       }
-      setChannelSync(preset.channelSync)
+      setCurrentPreset(loaded)
+      setRestartChannels(presetsRestartTransport)
+      setUIState(deepStateCopy(loaded))
+      setNumChannels(loaded.numChannels)
+      if (!ignorePresetsTempo) {
+        setTempo(loaded.tempo)
+      }
+      setChannelSync(loaded.channelSync)
       // restart transport if necessary
       if (presetsRestartTransport || presetsStopTransport) {
         Tone.getTransport().stop()
@@ -191,6 +233,7 @@ export default function usePresets(
     },
     [
       deepStateCopy,
+      ignorePresetsMidiChannels,
       ignorePresetsTempo,
       midiInRef,
       midiOutRef,
@@ -205,6 +248,7 @@ export default function usePresets(
       setRestartChannels,
       setTempo,
       setUIState,
+      uiState.channels,
     ]
   )
 
@@ -248,9 +292,17 @@ export default function usePresets(
         const presetsCopy = presets.slice()
         const i = presetsCopy.findIndex((p) => p.id === uiStateCopy.id)
         if (i !== -1) {
-          const tempo = ignorePresetsTempo ? presetsCopy[i].tempo : uiStateCopy.tempo
-          presetsCopy[i] = uiStateCopy
-          presetsCopy[i].tempo = tempo
+          const stored = presetsCopy[i]
+          // The library entry is its own copy: the ignore-settings below restore fields
+          // from `stored` onto it, and uiStateCopy is shared with currentPreset (which
+          // tracks the live values).
+          presetsCopy[i] = deepStateCopy(uiStateCopy)
+          if (ignorePresetsTempo) {
+            presetsCopy[i].tempo = stored.tempo
+          }
+          if (ignorePresetsMidiChannels) {
+            carryOverMidiRouting(stored.channels, presetsCopy[i].channels)
+          }
         } else {
           presetsCopy.push(uiStateCopy)
         }
@@ -262,6 +314,7 @@ export default function usePresets(
     [
       dedupName,
       deepStateCopy,
+      ignorePresetsMidiChannels,
       ignorePresetsTempo,
       presets,
       setCurrentPreset,
