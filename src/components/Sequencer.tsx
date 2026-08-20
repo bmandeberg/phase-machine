@@ -13,7 +13,6 @@ interface SequencerProps {
   playingStep?: number
   children?: React.ReactNode
   showStepNumbers?: boolean
-  longestSequence?: number
 }
 
 export default function Sequencer({
@@ -26,7 +25,6 @@ export default function Sequencer({
   playingStep,
   children,
   showStepNumbers,
-  longestSequence,
 }: SequencerProps) {
   // Click-drag painting: mousedown toggles the first step and records its new
   // value; dragging over subsequent steps paints that same value across them.
@@ -101,13 +99,10 @@ export default function Sequencer({
 
   return (
     <div className={classNames('sequencer', className)}>
-      <div
-        className="sequencer-container"
-        style={
-          { width: longestSequence && longestSequence > seqLength && (22 + 18) * longestSequence + 'px' } as React.CSSProperties
-        }>
-        {steps}
-      </div>
+      {/* Sizes to its own steps. (Sequencer widths were once unified across channels
+          via a longestSequence prop so the since-removed instrument module after the
+          sequence would vertically align — no longer needed.) */}
+      <div className="sequencer-container">{steps}</div>
       {children}
     </div>
   )

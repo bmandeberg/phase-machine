@@ -33,7 +33,6 @@ type StackedViewProps = UIElements & {
   showSeqPreview: boolean
   playingStep?: number
   showStepNumbers: boolean
-  longestSequence: number
   draggingChannel: boolean
   dragTarget: number
   dragTargetHorizontal: React.ReactNode
@@ -65,7 +64,6 @@ function StackedView({
   showSeqPreview,
   playingStep,
   showStepNumbers,
-  longestSequence,
   draggingChannel,
   dragTarget,
   dragTargetHorizontal,
@@ -176,8 +174,7 @@ function StackedView({
             seqPreview={seqPreview}
             showSeqPreview={showSeqPreview}
             playingStep={playingStep}
-            showStepNumbers={showStepNumbers}
-            longestSequence={longestSequence}>
+            showStepNumbers={showStepNumbers}>
             <div className="sequencer-controls">
               {seqLengthInline}
               {seqRateInline}

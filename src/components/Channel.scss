@@ -561,6 +561,10 @@
 .stacked-auxiliary {
   position: absolute;
   left: 0;
+  // At least as wide as the key/piano row above it (the containing channel block,
+  // which is width: max-content), so the two rows read as one aligned panel with
+  // matching right edges; a long sequence's content can still push it wider.
+  min-width: 100%;
 
   &.first-auxiliary::before {
     content: '';

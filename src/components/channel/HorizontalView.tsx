@@ -23,7 +23,6 @@ type HorizontalViewProps = UIElements & {
   showSeqPreview: boolean
   playingStep?: number
   showStepNumbers: boolean
-  longestSequence: number
   draggingChannel: boolean
   dragTarget: number
   dragTargetHorizontal: React.ReactNode
@@ -52,7 +51,6 @@ function HorizontalView({
   showSeqPreview,
   playingStep,
   showStepNumbers,
-  longestSequence,
   draggingChannel,
   dragTarget,
   dragTargetHorizontal,
@@ -145,8 +143,7 @@ function HorizontalView({
           seqPreview={seqPreview}
           showSeqPreview={showSeqPreview}
           playingStep={playingStep}
-          showStepNumbers={showStepNumbers}
-          longestSequence={longestSequence}>
+          showStepNumbers={showStepNumbers}>
           <div className="sequencer-controls">
             {seqLengthInline}
             {seqRateInline}

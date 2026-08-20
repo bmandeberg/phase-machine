@@ -109,7 +109,6 @@ interface ChannelProps {
   restartChannels: boolean
   resetTransport: boolean
   preventUpdate: boolean | undefined
-  longestSequence: number
   defaultChannelModeKeybd?: boolean
   // true only for a channel freshly added by the user — gates the one-shot create
   // flash so it doesn't replay on app startup or when switching views.
@@ -158,7 +157,6 @@ export default function Channel({
   restartChannels,
   resetTransport,
   preventUpdate,
-  longestSequence,
 }: ChannelProps) {
   const id = useRef(initState.id)
 
@@ -1955,7 +1953,6 @@ export default function Channel({
           showSeqPreview={showSeqPreview}
           playingStep={playingStep}
           showStepNumbers={showStepNumbers}
-          longestSequence={longestSequence}
           draggingChannel={draggingChannel}
           dragTarget={dragTarget}
           dragTargetHorizontal={dragTargetHorizontal}
@@ -1985,7 +1982,6 @@ export default function Channel({
           showSeqPreview={showSeqPreview}
           playingStep={playingStep}
           showStepNumbers={showStepNumbers}
-          longestSequence={longestSequence}
           draggingChannel={draggingChannel}
           dragTarget={dragTarget}
           dragTargetHorizontal={dragTargetHorizontal}

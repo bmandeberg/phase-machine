@@ -851,7 +851,6 @@ export default function App() {
           restartChannels={restartChannels}
           resetTransport={resetTransport}
           preventUpdate={preventUpdate}
-          longestSequence={longestSequence}
         />
         )
       }),
@@ -871,7 +870,6 @@ export default function App() {
       registerOpenViz,
       setChannelDockHeight,
       stackedAuxOffsets,
-      longestSequence,
       midiNoteOff,
       midiNoteOn,
       midiOut,
