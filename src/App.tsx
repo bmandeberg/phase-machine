@@ -778,9 +778,15 @@ export default function App() {
     setPreventUpdate(true)
   }, [])
 
-  const longestSequence = useMemo(() => Math.max(...uiState.channels.map((c) => c.seqLength)), [uiState])
-
-  const longestAuxChannel = useMemo(() => 277.66 + longestSequence * (22 + 18), [longestSequence])
+  // Conservative width estimate of the widest aux (sequencer) row, for the
+  // stacked/layered spacer's minWidth — the rows are absolutely positioned, so only
+  // this creates horizontal scroll extent when a long sequence outgrows its key row.
+  // (22 + 18) = a .sequence-step's width + margin (Sequencer.scss); 277.66 covers
+  // the row's fixed chrome (sticky header etc.), erring slightly wide.
+  const longestAuxChannel = useMemo(
+    () => 277.66 + Math.max(...uiState.channels.map((c) => c.seqLength)) * (22 + 18),
+    [uiState.channels]
+  )
 
   // render UI
 

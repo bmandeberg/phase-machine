@@ -77,7 +77,6 @@ export default function Sequencer({
             selected: seqSteps[i],
             previewed: showSeqPreview && seqPreview?.[i],
             playing: playingStep === i,
-            hidden: i >= seqLength,
           })}
           onMouseDown={(e) => handleStepMouseDown(e, i)}
           onMouseEnter={() => handleStepMouseEnter(i)}
@@ -99,9 +98,6 @@ export default function Sequencer({
 
   return (
     <div className={classNames('sequencer', className)}>
-      {/* Sizes to its own steps. (Sequencer widths were once unified across channels
-          via a longestSequence prop so the since-removed instrument module after the
-          sequence would vertically align — no longer needed.) */}
       <div className="sequencer-container">{steps}</div>
       {children}
     </div>

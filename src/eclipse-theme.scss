@@ -564,8 +564,8 @@ body:has(.eclipse-theme)::before {
     // Fill the aux row (which is min-width: 100% of its key row — Channel.scss) so
     // the card's right edge lines up with the key card above; a longer sequence's
     // content can still push past this. 62px = the sticky-aux header beside it
-    // (scribbler tab + channel number column). box-sizing: border-box is set on the
-    // base .channel-horizontal .sequencer rule above.
+    // (18px scribbler tab + 43px number column + this theme's 1px sticky border).
+    // box-sizing: border-box is set on the base .channel-horizontal .sequencer rule.
     min-width: calc(100% - 62px);
     // The cards stand ~2px taller than their row, so the LAST primary channel's
     // key card (later in the DOM) overflows onto the FIRST aux row (channel 1,
