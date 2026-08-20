@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { KNOB_MAX } from '../globals'
 import Key from './Key'
 import LinearKnob from './LinearKnob'
-import { expInterpolate } from '../math'
+import { expInterpolate, fifthsPos } from '../math'
 import './RotaryKnob.scss'
 
 const AXIS_LINE_SIZE = 270
@@ -25,6 +25,10 @@ interface RotaryKnobProps {
   className?: string
   axisKnob?: boolean
   axisKnobLarge?: boolean
+  // axis knobs only: draw the pitch-class ring in circle-of-fifths order. The knob
+  // then operates in display space (see fifthsPos), so the axis line always passes
+  // through the notes it reflects between.
+  fifths?: boolean
   musicalKey?: boolean[]
   setKey?: React.Dispatch<React.SetStateAction<boolean[]>>
   playingPitchClass?: number | null
@@ -68,6 +72,7 @@ export default function RotaryKnob({
   className,
   axisKnob,
   axisKnobLarge,
+  fifths,
   musicalKey,
   setKey,
   playingPitchClass,
@@ -100,37 +105,37 @@ export default function RotaryKnob({
 
   const updateValue = useCallback(
     (val: number) => {
-      let newValue: number | undefined
       if (axisKnob) {
+        // the drag arrives in display space; fifthsPos converts it back to the axis
         const roundedVal = Math.round(val) % 12
-        if (roundedVal !== value) {
-          newValue = roundedVal
+        const axisVal = fifths ? fifthsPos(roundedVal) : roundedVal
+        if (axisVal !== value) {
+          setValue(axisVal)
         }
-      } else {
-        const mid = (maxVal - minVal) / 2 + minVal
-        const range = maxVal - minVal
-        if (detent && val > mid - range * 0.05 && val < mid + range * 0.05) {
-          newValue = mid
-        } else {
-          newValue = val
-        }
+        return
       }
-      if (newValue != null) {
-        setInternalValue(newValue)
-        if (logarithmic) {
-          newValue = expInterpolate(minVal, maxVal, newValue, false, logExp)
-        }
-        setValue(newValue)
+      const mid = (maxVal - minVal) / 2 + minVal
+      const range = maxVal - minVal
+      let newValue = detent && val > mid - range * 0.05 && val < mid + range * 0.05 ? mid : val
+      setInternalValue(newValue)
+      if (logarithmic) {
+        newValue = expInterpolate(minVal, maxVal, newValue, false, logExp)
       }
+      setValue(newValue)
     },
-    [axisKnob, logarithmic, logExp, setValue, value, maxVal, minVal, detent]
+    [axisKnob, fifths, logarithmic, logExp, setValue, value, maxVal, minVal, detent]
   )
 
+  // axis knobs bypass internalValue: LinearKnob (face rotation and drag) and the
+  // axis-line overlay all run in display space, derived straight from the value prop
+  const axisDisplayValue = fifths ? fifthsPos(value) : value
+
   useEffect(() => {
-    if (updateOnce) {
+    // axis knobs render from axisDisplayValue, so internalValue would go unread
+    if (updateOnce && !axisKnob) {
       setInternalValue(logarithmic ? expInterpolate(minVal, maxVal, value, true, logExp) : value)
     }
-  }, [logarithmic, logExp, maxVal, minVal, updateOnce, value])
+  }, [axisKnob, logarithmic, logExp, maxVal, minVal, updateOnce, value])
 
   const startTurningKnob = useCallback(() => {
     setGrabbing?.(true)
@@ -474,7 +479,7 @@ export default function RotaryKnob({
         <svg
           xmlns="http://www.w3.org/2000/svg"
           style={{
-            transform: `rotate(${value * 15}deg)`,
+            transform: `rotate(${axisDisplayValue * 15}deg)`,
             left: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 149 : 21),
             top: AXIS_LINE_SIZE / -2 + (axisKnobLarge ? 114 : 21),
           }}
@@ -506,11 +511,22 @@ export default function RotaryKnob({
             className="axis-knob-supplemental"
             keyPreview={keyPreview}
             showKeyPreview={showKeyPreview}
+            fifths={fifths}
           />
         )}
       </div>
     ),
-    [axisKnobLarge, keyPreview, musicalKey, playingPitchClass, setKey, setPlayingPitchClass, showKeyPreview, value]
+    [
+      axisDisplayValue,
+      axisKnobLarge,
+      fifths,
+      keyPreview,
+      musicalKey,
+      playingPitchClass,
+      setKey,
+      setPlayingPitchClass,
+      showKeyPreview,
+    ]
   )
   const axisKey = useMemo(
     () => (
@@ -523,9 +539,11 @@ export default function RotaryKnob({
         keyPreview={keyPreview}
         showKeyPreview={showKeyPreview}
         rangeMode={rangeMode}
+        fifths={fifths}
       />
     ),
     [
+      fifths,
       keyPreview,
       musicalKey,
       playingPitchClass,
@@ -542,7 +560,7 @@ export default function RotaryKnob({
         className={activeClass}
         min={minVal}
         max={maxVal}
-        value={internalValue}
+        value={axisKnob ? axisDisplayValue : internalValue}
         onChange={updateValue}
         skin={activeSkin}
         unlockDistance={30}
@@ -556,6 +574,8 @@ export default function RotaryKnob({
     [
       activeClass,
       activeSkin,
+      axisDisplayValue,
+      axisKnob,
       clampMax,
       internalValue,
       knobSize,

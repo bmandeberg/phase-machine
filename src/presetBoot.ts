@@ -84,9 +84,20 @@ async function loadSharedPreset(encoded: string): Promise<boolean> {
     patchPresetAndChannels(shared)
     // if the receiver's library already holds this exact preset (same name and
     // content — e.g. an unedited factory preset), select it like a normal preset
-    // pick instead of landing a redundant unsaved copy
-    const presets: Preset[] = JSON.parse(window.localStorage.getItem('presets') || '[]')
-    const match = Array.isArray(presets) && presets.find((p) => deepEqual(stripIdentity(p), stripIdentity(shared)))
+    // pick instead of landing a redundant unsaved copy. The candidates are patched
+    // too (these are throwaway parses, nothing is written back): a stored library
+    // from before a schema addition would otherwise never match a patched payload.
+    const stored = JSON.parse(window.localStorage.getItem('presets') || '[]')
+    const presets: Preset[] = Array.isArray(stored) ? stored : []
+    const match = presets.find((p) => {
+      try {
+        patchPresetAndChannels(p)
+      } catch {
+        // a corrupt library entry just can't match — it must not sink a valid link
+        return false
+      }
+      return deepEqual(stripIdentity(p), stripIdentity(shared))
+    })
     if (match) {
       window.localStorage.setItem('activePatch', JSON.stringify(match))
       window.localStorage.setItem('activePreset', match.id)

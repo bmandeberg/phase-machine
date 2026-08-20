@@ -234,6 +234,25 @@ body:has(.eclipse-theme)::before {
   }
 
   // ── Buttons ─────────────────────────────────────────────────────────────
+  // "5ths" checkbox in the clock channels: the channel buttons' neutral surface;
+  // the checked state keeps the app's semantic confirm-green, with the mark in
+  // the green-button text color
+  .fifths-checkbox .checkbox {
+    @include ec-surface;
+    @include hover {
+      @include ec-surface($ecSurfHovTop, $ecSurfHovBot);
+    }
+    &.checked {
+      @include ec-surface(color.adjust($ecGreen, $lightness: 6%), $ecGreen);
+      @include hover {
+        @include ec-surface(color.adjust($ecGreenHov, $lightness: 6%), $ecGreenHov);
+      }
+    }
+    .checkmark {
+      background-color: $ecInkDark;
+    }
+  }
+
   .button {
     @include ec-surface;
     color: $ecText;

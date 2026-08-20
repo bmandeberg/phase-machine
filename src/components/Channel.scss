@@ -294,6 +294,21 @@
     margin-top: 21px;
     margin-right: 0;
   }
+  // "5ths" checkbox below the scribbler/VEL row: the box left-aligns with the
+  // scribbler (like the drawer control under it), and the label hangs to the
+  // box's right, in line with the VEL column
+  .fifths-checkbox {
+    position: absolute;
+    top: 197px;
+    left: 16px;
+    .checkmark-label {
+      // left-aligned with the rendered "Vel" text above (which sits centered
+      // inside its 28px fader column)
+      left: 31px;
+      // vertically center the label (14px) against the 21px box
+      bottom: 3.5px;
+    }
+  }
   .notes-mode {
     margin-left: 0;
   }

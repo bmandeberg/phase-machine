@@ -58,6 +58,28 @@ body:has(.dark-theme) {
     }
   }
 
+  // "5ths" checkbox in the clock channels: the channel buttons' neutral surface;
+  // the checked state keeps the app's semantic confirm-green, with the mark in
+  // the green-button text color
+  .fifths-checkbox .checkbox {
+    background-color: $darkMediumGray;
+    border-color: $darkMediumGray;
+    box-shadow: none;
+    @include hover {
+      background-color: $darkMediumGrayHover;
+    }
+    &.checked {
+      background-color: $darkGreen;
+      border-color: $darkGreen;
+      @include hover {
+        background-color: $darkGreenHover;
+      }
+    }
+    .checkmark {
+      background-color: $darkBackground;
+    }
+  }
+
   .button {
     background-color: $darkMediumGray;
     color: $darkLightGray;

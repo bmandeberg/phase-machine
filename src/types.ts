@@ -266,6 +266,8 @@ export interface Channel {
   instrumentOn: boolean
   instrumentType: string
   rangeMode: boolean
+  // draw this channel's axis clock in circle-of-fifths order instead of chromatic
+  fifthsClock: boolean
   keybdPitches: number[]
   midiIn: boolean | string
   midiHold: boolean

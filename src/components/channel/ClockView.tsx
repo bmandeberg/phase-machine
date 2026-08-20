@@ -62,6 +62,7 @@ function ClockView({
   channelButtonsEl,
   muteSoloEl,
   velocityEl,
+  fifthsEl,
   notesModeEl,
   shiftEl,
   flipOppositeEl,
@@ -103,6 +104,7 @@ function ClockView({
           <div className="channel-primary">
             {muteSoloEl}
             {!condensed && velocityEl}
+            {!condensed && fifthsEl}
           </div>
           {!condensed && (
             <>

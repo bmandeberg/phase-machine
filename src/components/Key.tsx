@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from 'react'
 import { whiteKey, blackKeyLeft, blackKeyRight } from '../globals'
+import { fifthsPos } from '../math'
 import pitchClassesCircle from '../assets/pitch-classes-circle.svg'
+import pitchClassesCircleFifths from '../assets/pitch-classes-circle-fifths.svg'
 import classNames from 'classnames'
 import './Key.scss'
 
@@ -16,6 +18,8 @@ interface KeyProps {
   showKeyPreview?: boolean
   mute?: boolean
   rangeMode?: boolean
+  // clock layout only: order the ring by perfect fifths instead of chromatically
+  fifths?: boolean
 }
 
 export default function Key({
@@ -30,6 +34,7 @@ export default function Key({
   showKeyPreview,
   mute,
   rangeMode,
+  fifths,
 }: KeyProps) {
   const togglePitchClass = useCallback(
     (i: number) => {
@@ -49,26 +54,29 @@ export default function Key({
 
   const pitchClasses = useMemo(
     () =>
-      [...Array(12)].map((_d, i) => (
-        <div
-          key={i}
-          className={classNames('pitch-class', {
-            'white-key': whiteKey(i),
-            'black-key-left': blackKeyLeft(i),
-            'black-key-right': blackKeyRight(i),
-            selected: musicalKey[i],
-            previewed: !pianoKeys && showKeyPreview && keyPreview?.[i],
-            playing: playingPitchClass === i && musicalKey[i],
-            'ghost-playing': playingPitchClass === i && !musicalKey[i],
-            mute,
-            'no-pointer-events': !rangeMode,
-          })}
-          style={{
-            transform: !pianoKeys ? `rotate(${i * 30}deg) translate(0px, -81px)` : undefined,
-          }}
-          onClick={() => togglePitchClass(i)}></div>
-      )),
-    [keyPreview, musicalKey, mute, pianoKeys, playingPitchClass, rangeMode, showKeyPreview, togglePitchClass]
+      [...Array(12)].map((_d, i) => {
+        const slot = fifths ? fifthsPos(i) : i
+        return (
+          <div
+            key={i}
+            className={classNames('pitch-class', {
+              'white-key': whiteKey(i),
+              'black-key-left': blackKeyLeft(i),
+              'black-key-right': blackKeyRight(i),
+              selected: musicalKey[i],
+              previewed: !pianoKeys && showKeyPreview && keyPreview?.[i],
+              playing: playingPitchClass === i && musicalKey[i],
+              'ghost-playing': playingPitchClass === i && !musicalKey[i],
+              mute,
+              'no-pointer-events': !rangeMode,
+            })}
+            style={{
+              transform: !pianoKeys ? `rotate(${slot * 30}deg) translate(0px, -81px)` : undefined,
+            }}
+            onClick={() => togglePitchClass(i)}></div>
+        )
+      }),
+    [fifths, keyPreview, musicalKey, mute, pianoKeys, playingPitchClass, rangeMode, showKeyPreview, togglePitchClass]
   )
 
   const selectedKeys = useMemo(
@@ -77,8 +85,14 @@ export default function Key({
   )
 
   const pitchClassLabels = useMemo(
-    () => <img className="pitch-class-labels no-select" src={pitchClassesCircle} alt="" />,
-    []
+    () => (
+      <img
+        className={classNames('pitch-class-labels', 'no-select', { fifths })}
+        src={fifths ? pitchClassesCircleFifths : pitchClassesCircle}
+        alt=""
+      />
+    ),
+    [fifths]
   )
 
   return (

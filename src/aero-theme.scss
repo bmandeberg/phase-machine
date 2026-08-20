@@ -190,6 +190,25 @@ body:has(.aero-theme) {
     }
   }
 
+  // "5ths" checkbox in the clock channels: the channel buttons' neutral surface;
+  // the checked state keeps the app's semantic confirm-green, with the mark in
+  // the green-button text color
+  .fifths-checkbox .checkbox {
+    @include aero-flat($glassNeutral);
+    @include hover {
+      background-color: $glassNeutralHover;
+    }
+    &.checked {
+      @include aero-flat($glassGreen);
+      @include hover {
+        background-color: $glassGreenHover;
+      }
+    }
+    .checkmark {
+      background-color: #ffffff;
+    }
+  }
+
   .button {
     @include aero-flat($glassNeutral);
     color: $aeroText;

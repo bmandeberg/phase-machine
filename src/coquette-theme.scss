@@ -119,6 +119,25 @@ body:has(.coquette-theme) {
     }
   }
 
+  // "5ths" checkbox in the clock channels: the channel buttons' neutral surface;
+  // the checked state keeps the app's semantic confirm-green, with the mark in
+  // the green-button text color
+  .fifths-checkbox .checkbox {
+    @include flat($panel);
+    @include hover {
+      background-color: $panelHover;
+    }
+    &.checked {
+      @include flat($green, #2fb84a);
+      @include hover {
+        background-color: #5bd66e;
+      }
+    }
+    .checkmark {
+      background-color: #ffffff;
+    }
+  }
+
   .button {
     @include flat($panel);
     color: $text;

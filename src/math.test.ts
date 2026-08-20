@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   rangeWrapper,
+  fifthsPos,
   flip,
   opposite,
   shiftWrapper,
@@ -35,6 +36,29 @@ describe('rangeWrapper', () => {
   it('honors a custom range', () => {
     expect(rangeWrapper(8, 7)).toBe(1)
     expect(rangeWrapper(-1, 7)).toBe(6)
+  })
+})
+
+describe('fifthsPos', () => {
+  it('orders the ring by perfect fifths', () => {
+    // C stays at 12 o'clock, then G, D, A ... clockwise
+    expect([0, 7, 2, 9].map(fifthsPos)).toEqual([0, 1, 2, 3])
+  })
+  it('is its own inverse, so it maps both directions', () => {
+    for (let i = 0; i < 12; i++) {
+      expect(fifthsPos(fifthsPos(i))).toBe(i)
+    }
+  })
+  it('is a permutation of all 12 positions', () => {
+    const positions = Array.from({ length: 12 }, (_, i) => fifthsPos(i))
+    expect([...new Set(positions)].sort((a, b) => a - b)).toEqual([...Array(12).keys()])
+  })
+  it('maps reflection axes to reflection axes (parity is preserved)', () => {
+    // the axis knob stores 0..11; an even/odd axis must stay even/odd in display
+    // space, or the axis line would fall between the notes it reflects
+    for (let a = 0; a < 12; a++) {
+      expect(fifthsPos(a) % 2).toBe(a % 2)
+    }
   })
 })
 

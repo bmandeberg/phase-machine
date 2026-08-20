@@ -877,6 +877,7 @@ export const BLANK_CHANNEL = (channelNum: number, color: string, rangeMode: bool
   instrumentOn: true,
   instrumentType: 'synth',
   rangeMode,
+  fifthsClock: false,
   keybdPitches: [],
   midiIn: false,
   midiHold: false,

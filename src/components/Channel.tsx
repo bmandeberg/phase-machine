@@ -338,6 +338,7 @@ export default function Channel({
   const [seqSwing, setSeqSwing] = useState(initState.seqSwing)
   const [seqSwingLength, setSeqSwingLength] = useState(initState.seqSwingLength)
   const [hold, setHold] = useState(initState.hold)
+  const [fifthsClock, setFifthsClock] = useState(initState.fifthsClock)
   const [instrumentOn, setInstrumentOn] = useState(initState.instrumentOn)
   const [instrumentType, setInstrumentType] = useState(initState.instrumentType)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -685,6 +686,7 @@ export default function Channel({
         case 'seqSwingLength': setSeqSwingLength(value as number); break
         case 'seqLength': setSeqLength(value as number); break
         case 'rangeMode': setRangeMode(value as boolean); break
+        case 'fifthsClock': setFifthsClock(value as boolean); break
         case 'rangeStart': setRangeStart(value as number); break
         case 'rangeEnd': setRangeEnd(value as number); break
         case 'midiHold': setMidiHold(value as boolean); break
@@ -725,6 +727,7 @@ export default function Channel({
       velocity: makeMirroredSetter('velocity', setVelocity),
       sustain: makeMirroredSetter('sustain', setSustain),
       hold: makeMirroredSetter('hold', setHold),
+      fifthsClock: makeMirroredSetter('fifthsClock', setFifthsClock),
       mute: makeMirroredSetter('mute', setMute),
       solo: makeMirroredSetter('solo', setSolo),
       instrumentOn: makeMirroredSetter('instrumentOn', setInstrumentOn),
@@ -1326,6 +1329,7 @@ export default function Channel({
       setSeqSwing(data.seqSwing)
       setSeqSwingLength(data.seqSwingLength)
       setHold(data.hold)
+      setFifthsClock(data.fifthsClock)
       setInstrumentOn(data.instrumentOn)
       setInstrumentType(data.instrumentType)
       setRangeMode(data.rangeMode)
@@ -1546,6 +1550,8 @@ export default function Channel({
     drag,
     draggingChannel,
     theme,
+    fifthsClock,
+    mset.fifthsClock,
     seqRestart,
     seqOpposite,
     rangeMode,
@@ -1828,6 +1834,7 @@ export default function Channel({
         instrumentOn,
         instrumentType,
         rangeMode,
+        fifthsClock,
         keybdPitches,
         midiIn,
         midiHold,
@@ -1858,6 +1865,7 @@ export default function Channel({
     keySwingLength,
     keybdPitches,
     hold,
+    fifthsClock,
     midiHold,
     midiIn,
     mute,

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react'
 import classNames from 'classnames'
 import VizCard from './VizCard'
 import { intervalVector, identifyScales, pitchClassName } from '../../visualization'
-import { flip, opposite, shift } from '../../math'
+import { flip, opposite, shift, fifthsPos } from '../../math'
 import { Setter } from '../../types'
 
 interface KeyAnalysisProps {
@@ -69,7 +69,7 @@ export default React.memo(function KeyAnalysis({
   )
 
   // circle position -> pitch class: chromatic is identity, fifths steps by 7
-  const pcAt = useMemo(() => Array.from({ length: 12 }, (_, p) => (fifths ? (p * 7) % 12 : p)), [fifths])
+  const pcAt = useMemo(() => Array.from({ length: 12 }, (_, p) => (fifths ? fifthsPos(p) : p)), [fifths])
 
   const polygon = useMemo(() => polygonPoints(musicalKey, pcAt), [musicalKey, pcAt])
   const previewKey = useMemo(() => {

@@ -4,6 +4,12 @@ export function rangeWrapper(n: number, range = 12) {
   return n < 0 ? range - 1 + ((n + 1) % range) : n % range
 }
 
+// Circle-of-fifths ring order. 7 is its own inverse mod 12, so one function maps
+// both directions: pitch class -> ring position, and ring position -> pitch class.
+export function fifthsPos(n: number) {
+  return rangeWrapper(n * 7)
+}
+
 export function flip(axis: number, key: boolean[]) {
   const dedupAxis = (axis / 2) % 6
   const keyCopy = key.slice()
@@ -54,7 +60,7 @@ export function shift(shiftAmt: number, key: boolean[]) {
 export function shiftSeq(shiftAmt: number, seqSteps: boolean[], seqLength: number) {
   const shifted = seqSteps.slice()
   if (seqLength <= 0) return shifted
-  const n = (((shiftAmt % seqLength) + seqLength) % seqLength) || 0
+  const n = ((shiftAmt % seqLength) + seqLength) % seqLength || 0
   for (let i = 0; i < seqLength; i++) {
     shifted[(i + n) % seqLength] = seqSteps[i]
   }

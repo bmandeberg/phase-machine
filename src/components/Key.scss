@@ -84,6 +84,14 @@
     }
     .pitch-class-labels {
       pointer-events: none;
+      // the fifths asset carries a 16-unit-wider canvas on each side (the only
+      // room for the wide D#/Eb label at due-left) — size it so its ring stays
+      // at exactly the chromatic asset's scale and position
+      &.fifths {
+        width: 271px;
+        margin-left: -16px;
+        margin-right: -16px;
+      }
     }
   }
   .pitch-class {

@@ -140,6 +140,7 @@ export function validPreset(preset: any) {
       invalidProp(channel, 'instrumentOn', 'boolean') ||
       invalidProp(channel, 'instrumentType', 'string') ||
       invalidProp(channel, 'rangeMode', 'boolean') ||
+      invalidProp(channel, 'fifthsClock', 'boolean') ||
       invalidProp(channel, 'keybdPitches', 'object') ||
       invalidProp(channel, 'midiIn', 'boolean') ||
       invalidProp(channel, 'midiHold', 'boolean') ||

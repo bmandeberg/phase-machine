@@ -14,6 +14,7 @@ import Piano from '../components/Piano'
 import Fader from '../components/Fader'
 import MidiInputMode from '../components/MidiInputMode'
 import NotesMode from '../components/NotesMode'
+import Checkbox from '../components/Checkbox'
 import Switch from 'react-switch'
 
 // ui elements
@@ -110,6 +111,10 @@ export default function useUI(
   drag: (...args: unknown[]) => ReactDOMAttributes,
   draggingChannel: boolean,
   theme: string,
+  // draw this channel's axis clock in circle-of-fifths order (channel state,
+  // toggled by the "5ths" checkbox in clock view)
+  fifthsClock: boolean,
+  setFifthsClock: Setter<boolean>,
   seqRestart: () => void,
   seqOpposite: () => void,
   rangeMode: boolean,
@@ -285,6 +290,12 @@ export default function useUI(
     )
   }, [grabbing, muted, setGrabbing, setVelocity, theme, velocity])
 
+  // clock view only: toggles this channel's axis clock into circle-of-fifths order
+  const fifthsEl = useMemo(
+    () => <Checkbox className="fifths-checkbox" label="5ths" checked={fifthsClock} setChecked={setFifthsClock} />,
+    [fifthsClock, setFifthsClock]
+  )
+
   const shiftEl = useMemo(() => {
     return (
       <NumInput
@@ -312,6 +323,7 @@ export default function useUI(
           grabbing={grabbing}
           axisKnob
           axisKnobLarge={clock}
+          fifths={fifthsClock}
           musicalKey={key}
           setKey={setKey}
           playingPitchClass={playingPitchClass}
@@ -330,6 +342,7 @@ export default function useUI(
     },
     [
       axis,
+      fifthsClock,
       grabbing,
       key,
       keyPreview,
@@ -758,6 +771,7 @@ export default function useUI(
     keyEl,
     muteSoloEl,
     velocityEl,
+    fifthsEl,
     shiftEl,
     axisNormal,
     axisClock,
